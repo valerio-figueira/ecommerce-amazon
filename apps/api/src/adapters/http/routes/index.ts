@@ -126,6 +126,7 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         category?: string;
         marketplace?: Marketplace;
         sort?: import('@ecommerce-amazon/domain').ProductSortField;
+        visibleOnly?: boolean;
       } = {};
       if (query.page !== undefined) filters.page = query.page;
       if (query.pageSize !== undefined) filters.pageSize = query.pageSize;
@@ -135,6 +136,9 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       }
       if (query.sort !== undefined) {
         filters.sort = parseProductSortField(query.sort);
+      }
+      if (query.visibleOnly !== undefined) {
+        filters.visibleOnly = query.visibleOnly;
       }
       const result = await useCases.listProducts.execute(filters);
       return reply.send({

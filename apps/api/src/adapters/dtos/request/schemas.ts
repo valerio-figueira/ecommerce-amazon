@@ -8,6 +8,10 @@ export const ListProductsQuerySchema = z.object({
   category: z.string().optional(),
   marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),
   sort: z.enum(['editorial_score', 'price_updated_at']).optional(),
+  visibleOnly: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((value) => value === 'true'),
 });
 
 export const ProductSlugParamsSchema = z.object({

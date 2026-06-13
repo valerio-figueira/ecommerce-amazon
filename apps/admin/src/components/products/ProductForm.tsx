@@ -31,6 +31,7 @@ const emptyValues: ProductFormValues = {
   cons: [],
   price: 0,
   shouldShowPrice: false,
+  visible: true,
   availability: 'in_stock',
 };
 

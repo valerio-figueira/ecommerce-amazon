@@ -120,12 +120,14 @@ export const products = pgTable(
     canonicalUrl: varchar('canonical_url', { length: 512 }),
     pros: jsonb('pros').$type<string[]>(),
     cons: jsonb('cons').$type<string[]>(),
+    visible: boolean('visible').notNull().default(true),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex('products_slug_idx').on(table.slug),
     uniqueIndex('products_marketplace_external_idx').on(table.marketplace, table.externalId),
     index('products_stale_price_idx').on(table.stalePrice, table.priceUpdatedAt),
+    index('products_visible_idx').on(table.visible),
   ],
 );
 

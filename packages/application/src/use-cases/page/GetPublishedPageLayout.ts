@@ -109,6 +109,7 @@ export class GetPublishedPageLayout {
       sort: ProductSortField;
       category?: string;
       minDiscountPercentage?: number;
+      visibleOnly?: boolean;
     } = {
       page: 1,
       pageSize: props.limit,
@@ -121,6 +122,7 @@ export class GetPublishedPageLayout {
     if (props.minDiscountPercentage !== undefined) {
       listFilters.minDiscountPercentage = props.minDiscountPercentage;
     }
+    listFilters.visibleOnly = true;
 
     const { items } = await this.listProducts.execute(listFilters);
 

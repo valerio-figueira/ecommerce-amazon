@@ -58,6 +58,7 @@ export function mapProductRowToDomain(row: ProductRow): Product {
     canonicalUrl: row.canonicalUrl ?? undefined,
     pros: row.pros ?? undefined,
     cons: row.cons ?? undefined,
+    visible: row.visible,
     createdAt: row.createdAt,
   });
 }
@@ -93,6 +94,7 @@ export function mapProductToRow(product: Product): typeof schema.products.$infer
     canonicalUrl: product.canonicalUrl,
     pros: product.pros,
     cons: product.cons,
+    visible: product.visible,
     createdAt: product.createdAt,
   };
 }

@@ -35,6 +35,7 @@ export const createProductBodySchema = z
     price: z.number().min(0),
     strikethroughPrice: z.number().min(0).optional(),
     shouldShowPrice: z.boolean(),
+    visible: z.boolean(),
     availability: productAvailabilitySchema,
   })
   .superRefine((data, ctx) => {
@@ -81,6 +82,7 @@ export const adminProductDetailSchema = z.object({
   price: z.number().min(0),
   strikethroughPrice: z.number().min(0).optional(),
   shouldShowPrice: z.boolean(),
+  visible: z.boolean(),
   availability: productAvailabilitySchema,
   createdAt: z.string(),
 });
@@ -113,6 +115,7 @@ export const adminProductListItemSchema = z.object({
   price: adminProductPriceSchema,
   availability: productAvailabilitySchema,
   editorialScore: z.number(),
+  visible: z.boolean(),
   imageUrl: z.string().url().optional(),
   createdAt: z.string(),
 });

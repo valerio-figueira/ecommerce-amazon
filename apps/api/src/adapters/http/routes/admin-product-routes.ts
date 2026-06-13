@@ -50,7 +50,7 @@ export async function registerAdminProductRoutes(
   app.get('/admin/products', async (request, reply) => {
     try {
       const query = adminListProductsQuerySchema.parse(request.query);
-      const filters: Parameters<typeof useCases.listProducts.execute>[0] = {};
+      const filters: Parameters<typeof useCases.listAdminProducts.execute>[0] = {};
       if (query.page !== undefined) filters.page = query.page;
       if (query.pageSize !== undefined) filters.pageSize = query.pageSize;
       if (query.marketplace !== undefined) {
@@ -59,7 +59,7 @@ export async function registerAdminProductRoutes(
       if (query.sort !== undefined) {
         filters.sort = parseProductSortField(query.sort);
       }
-      const result = await useCases.listProducts.execute(filters);
+      const result = await useCases.listAdminProducts.execute(filters);
       return reply.send(toAdminProductListResponseDto(result));
     } catch (error) {
       return handleAdminProductError(error, reply);

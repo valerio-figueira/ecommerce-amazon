@@ -10,6 +10,7 @@ export type ProductListFilters = {
   marketplace?: Marketplace;
   sort?: ProductSortField;
   minDiscountPercentage?: number;
+  visibleOnly?: boolean;
 };
 
 export type ProductCategoryCount = {

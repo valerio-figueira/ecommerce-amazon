@@ -5,6 +5,7 @@ import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
 export type ProductFormValues = z.input<typeof createProductBodySchema>;
 
 export function adminProductDetailToFormValues(product: AdminProductDetail): ProductFormValues {
+  const visible: boolean = product.visible;
   return {
     affiliateLink: product.affiliateLink,
     marketplace: product.marketplace,
@@ -19,6 +20,7 @@ export function adminProductDetailToFormValues(product: AdminProductDetail): Pro
       ? { strikethroughPrice: product.strikethroughPrice }
       : {}),
     shouldShowPrice: product.shouldShowPrice,
+    visible,
     availability: product.availability,
   };
 }

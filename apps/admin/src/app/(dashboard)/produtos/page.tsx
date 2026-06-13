@@ -114,6 +114,14 @@ export default async function ProdutosPage(): Promise<React.JSX.Element> {
                             <span
                               className={cn(
                                 'cms-status-pill',
+                                product.visible ? 'is-published' : 'is-draft',
+                              )}
+                            >
+                              {product.visible ? 'Visível na home' : 'Oculto na home'}
+                            </span>
+                            <span
+                              className={cn(
+                                'cms-status-pill',
                                 product.price.isStale ? 'is-draft' : 'is-published',
                               )}
                             >

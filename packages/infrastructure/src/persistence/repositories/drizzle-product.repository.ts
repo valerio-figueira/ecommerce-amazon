@@ -56,6 +56,9 @@ export class DrizzleProductRepository implements ProductRepository {
         ),
       );
     }
+    if (filters.visibleOnly) {
+      conditions.push(eq(schema.products.visible, true));
+    }
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
     const sortField = filters.sort ?? ProductSortField.EDITORIAL_SCORE;

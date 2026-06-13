@@ -10,9 +10,21 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
+- Switch **Exibir na home e vitrine?** (`visible`) — oculta produto de grids/listagens públicas e blocos dinâmicos
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
+- Migration `0007_product_visible.sql` — coluna `visible` (default `true`)
+
+## Visibilidade na home (`visible`)
+
+| Switch admin | Persistência | Efeito |
+|--------------|--------------|--------|
+| Ligado (default) | `visible = true` | Aparece nos blocos da home (`product_grid`, `dynamic_product_grid`, `featured_product`) |
+| Desligado | `visible = false` | Oculto da home; **sempre listado no admin**; página `/produtos/:slug` continua acessível |
+
+- Listagem admin (`GET /admin/products`) usa `ListAdminProducts` — **não** filtra por `visible`.
+- Vitrine pública filtra `visible` apenas nos blocos da home e em `GET /products?visibleOnly=true`.
 
 ## Fora de escopo (fase 3)
 

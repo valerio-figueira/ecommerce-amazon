@@ -73,6 +73,7 @@ export class CreateProduct {
       tags: [],
       ...(filteredPros.length > 0 ? { pros: filteredPros } : {}),
       ...(filteredCons.length > 0 ? { cons: filteredCons } : {}),
+      visible: input.visible,
       createdAt: now,
     });
 

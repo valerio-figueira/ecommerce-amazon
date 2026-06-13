@@ -9,6 +9,7 @@ export type ProductListItemDto = {
   rating?: number | undefined;
   reviewCount?: number | undefined;
   imageUrl?: string | undefined;
+  visible: boolean;
   goUrl: string;
   editorialScore: number;
 };
@@ -46,6 +47,7 @@ export type AdminProductListItemDto = {
   price: ProductPriceDto;
   availability: string;
   editorialScore: number;
+  visible: boolean;
   imageUrl?: string | undefined;
   createdAt: string;
 };
@@ -71,6 +73,7 @@ export type AdminProductDetailDto = {
   price: number;
   strikethroughPrice?: number | undefined;
   shouldShowPrice: boolean;
+  visible: boolean;
   availability: string;
   createdAt: string;
 };
@@ -97,6 +100,7 @@ export function toProductListItemDto(product: Product): ProductListItemDto {
     ...(product.rating !== undefined ? { rating: product.rating } : {}),
     ...(product.reviewCount !== undefined ? { reviewCount: product.reviewCount } : {}),
     ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
+    visible: product.visible,
     goUrl: `/go/${product.slug}`,
     editorialScore: product.editorialScore,
   };
@@ -137,6 +141,7 @@ export function toAdminProductListItemDto(product: Product): AdminProductListIte
     price: toProductPriceDto(product),
     availability: product.availability,
     editorialScore: product.editorialScore,
+    visible: product.visible,
     ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
     createdAt: product.createdAt.toISOString(),
   };
@@ -175,6 +180,7 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
       ? { strikethroughPrice: product.strikethroughPrice }
       : {}),
     shouldShowPrice: !product.price.isStale,
+    visible: product.visible,
     availability: product.availability,
     createdAt: product.createdAt.toISOString(),
   };

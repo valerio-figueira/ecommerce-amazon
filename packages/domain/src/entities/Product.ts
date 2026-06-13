@@ -31,6 +31,7 @@ export type ProductProps = {
   canonicalUrl?: string | undefined;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
+  visible?: boolean | undefined;
   createdAt: Date;
 };
 
@@ -61,6 +62,7 @@ export class Product {
   canonicalUrl?: string | undefined;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
+  visible: boolean;
   readonly createdAt: Date;
 
   private constructor(props: ProductProps) {
@@ -88,6 +90,7 @@ export class Product {
     this.canonicalUrl = props.canonicalUrl;
     this.pros = props.pros;
     this.cons = props.cons;
+    this.visible = props.visible ?? true;
     this.createdAt = props.createdAt;
   }
 

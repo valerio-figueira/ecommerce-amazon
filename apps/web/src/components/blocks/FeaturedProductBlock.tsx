@@ -35,6 +35,10 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
     );
   }
 
+  if (!product.visible) {
+    return null;
+  }
+
   const detailHref = `/produtos/${product.slug}`;
 
   return (

@@ -90,9 +90,10 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | `meta_title`, `meta_description` | text | SEO |
 | `canonical_url` | varchar(512) | nullable; sobrescrita manual Admin |
 | `pros`, `cons` | jsonb `string[]` | editorial |
+| `visible` | boolean | default `true`; oculta da home quando `false`; admin lista todos |
 | `created_at` | timestamptz | |
 
-Índices: UNIQUE `slug`; UNIQUE `(marketplace, external_id)`; INDEX `(stale_price, price_updated_at)`.
+Índices: UNIQUE `slug`; UNIQUE `(marketplace, external_id)`; INDEX `(stale_price, price_updated_at)`; INDEX `(visible)`.
 
 ### Preços — `price_snapshots`
 

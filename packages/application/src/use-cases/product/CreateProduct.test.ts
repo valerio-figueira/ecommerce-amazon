@@ -28,6 +28,7 @@ const baseInput = {
   cons: ['Preço alto'],
   price: 899.9,
   shouldShowPrice: true,
+  visible: true,
   availability: 'in_stock' as const,
 };
 
@@ -51,6 +52,7 @@ describe('CreateProduct', () => {
 
     const savedProduct = vi.mocked(productRepository.save).mock.calls[0]?.[0] as Product;
     expect(savedProduct.shouldShowPrice).toBe(true);
+    expect(savedProduct.visible).toBe(true);
     expect(savedProduct.editorialScore).toBe(85);
     expect(snapshotRepository.insertBatch).toHaveBeenCalledOnce();
     expect(cacheInvalidator.invalidateProducts).toHaveBeenCalledOnce();

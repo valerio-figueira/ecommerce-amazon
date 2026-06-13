@@ -28,6 +28,7 @@ const baseInput = {
   cons: [],
   price: 799.9,
   shouldShowPrice: true,
+  visible: true,
   availability: 'in_stock' as const,
 };
 
@@ -102,6 +103,28 @@ describe('UpdateProduct', () => {
     });
 
     expect(existing.shouldShowPrice).toBe(false);
+  });
+
+  it('updates visible flag for home vitrine', async () => {
+    const existing = createExistingProduct();
+    const productRepository = createMockProductRepository({
+      findBySlug: vi.fn().mockResolvedValue(existing),
+      findByExternalId: vi.fn().mockResolvedValue(existing),
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const useCase = new UpdateProduct(
+      productRepository,
+      createMockPriceSnapshotRepository(),
+      createMockCacheInvalidator(),
+    );
+
+    await useCase.execute('cadeira-ergonomica-pro-x', {
+      ...baseInput,
+      visible: false,
+    });
+
+    expect(existing.visible).toBe(false);
   });
 
   it('throws EntityNotFoundError when slug is missing', async () => {

@@ -98,6 +98,25 @@ export function ProductPriceSection(): React.JSX.Element {
 
       <FormField
         control={form.control}
+        name="visible"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] p-4">
+            <div className="space-y-1">
+              <FormLabel className="normal-case tracking-normal">Exibir na home?</FormLabel>
+              <FormDescription>
+                Quando desativado, o produto deixa de aparecer nos blocos da home (grids e destaque).
+                Continua visível no painel admin e acessível pela página de detalhe.
+              </FormDescription>
+            </div>
+            <FormControl>
+              <Switch checked={field.value ?? true} onCheckedChange={field.onChange} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
         name="availability"
         render={({ field }) => (
           <FormItem>

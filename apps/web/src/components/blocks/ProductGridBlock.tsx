@@ -43,9 +43,10 @@ export function ProductGridBlock({
   if (activeCategory) queryParams.set('category', activeCategory);
   if (props.marketplace) queryParams.set('marketplace', props.marketplace);
   queryParams.set('sort', props.sort);
+  queryParams.set('visibleOnly', 'true');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['products', activeCategory, props.sort, props.pageSize, props.marketplace],
+    queryKey: ['products', activeCategory, props.sort, props.pageSize, props.marketplace, 'home-visible'],
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
   });
 

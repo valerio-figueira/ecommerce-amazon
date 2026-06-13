@@ -2,6 +2,7 @@ import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
 import {
   GetProductBySlug,
   ListProducts,
+  ListAdminProducts,
   GetProductPriceHistory,
   CreateProduct,
   GetAdminProduct,
@@ -60,6 +61,7 @@ export function buildApiContainer(env = loadEnv()) {
   const pageRepository = new DrizzlePageRepository(db);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
   const listProducts = new ListProducts(productRepository);
+  const listAdminProducts = new ListAdminProducts(productRepository);
   const createProduct = new CreateProduct(productRepository, snapshotRepository, cache);
   const getAdminProduct = new GetAdminProduct(productRepository);
   const updateProduct = new UpdateProduct(productRepository, snapshotRepository, cache);
@@ -85,6 +87,7 @@ export function buildApiContainer(env = loadEnv()) {
     useCases: {
       getProductBySlug: new GetProductBySlug(productRepository),
       listProducts,
+      listAdminProducts,
       createProduct,
       getAdminProduct,
       updateProduct,

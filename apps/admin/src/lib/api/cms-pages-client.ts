@@ -29,7 +29,7 @@ const productListItemSchema = z.object({
   marketplace: z.string(),
 });
 
-const productsPageSchema = z.object({
+const adminProductsPageSchema = z.object({
   items: z.array(productListItemSchema),
   total: z.number(),
   page: z.number(),
@@ -132,13 +132,18 @@ export async function listCategoriesClient(): Promise<Array<{ slug: string; labe
 export async function listProductsClient(
   params: { pageSize?: number } = {},
 ): Promise<ProductPickerOption[]> {
-  const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
   const pageSize = params.pageSize ?? 50;
-  const response = await fetch(`${apiUrl}/products?pageSize=${pageSize}`, { cache: 'no-store' });
+  const response = await fetch(`/api/admin/products?pageSize=${pageSize}`, { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
-  const parsed = productsPageSchema.safeParse(payload);
-  return parsed.success ? parsed.data.items : [];
+  const parsed = adminProductsPageSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return parsed.data.items.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    title: item.title,
+    marketplace: item.marketplace,
+  }));
 }
 
 export type { BlockType };
