@@ -25,7 +25,7 @@ Arquivo: [`packages/domain/src/entities/Product.ts`](../packages/domain/src/enti
 | `rating`, `reviewCount` | number? | |
 | `categoryVertical` | string? | filtro categoria |
 | `tags` | string[] | |
-| `metaTitle`, `metaDescription`, `canonicalUrl` | string? | SEO editorial / Admin |
+| `metaTitle`, `metaDescription`, `canonicalUrl` | string? | SEO; `canonicalUrl` = sobrescrita editorial (NULL → vitrine gera `/produtos/{slug}`) |
 | `pros`, `cons` | string[]? | editorial |
 | `createdAt` | Date | |
 

@@ -112,8 +112,6 @@ export class UpdateProduct {
     product.pros = filteredPros.length > 0 ? filteredPros : undefined;
     product.cons = filteredCons.length > 0 ? filteredCons : undefined;
     product.visible = input.visible;
-    product.canonicalUrl =
-      input.canonicalUrl.trim().length > 0 ? input.canonicalUrl.trim() : undefined;
 
     if (input.strikethroughPrice !== undefined && input.strikethroughPrice > 0) {
       product.strikethroughPrice = input.strikethroughPrice;

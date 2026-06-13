@@ -11,7 +11,6 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
 - Switch **Exibir na home?** (`visible`) — oculta produto dos blocos da home
-- Campo **URL canônica** no formulário admin (`canonicalUrl`)
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
@@ -23,12 +22,12 @@ Utilitário: [`packages/shared/src/seo/product-canonical.ts`](../packages/shared
 
 | Camada | Comportamento |
 |--------|---------------|
-| Banco | `canonical_url` varchar(512), nullable — sobrescrita manual no admin |
-| Admin | Campo opcional; vazio → vitrine gera `{NEXT_PUBLIC_SITE_URL}/produtos/{slug}` |
-| Web `/produtos/[slug]` | `generateMetadata().alternates.canonical` **sempre** preenchido |
-| JSON-LD | Campo `url` do Product aponta para a URL canônica da página |
+| Banco | `canonical_url` varchar(512), nullable — **sobrescrita editorial de segurança** (Editorial Override); default `NULL` no dia a dia |
+| Admin | **Sem input no formulário** — operador leigo deixa vazio; alterações avançadas via DB/Drizzle Studio |
+| Web `/produtos/[slug]` | `resolveProductCanonicalUrl`: override do banco **ou** fallback `{NEXT_PUBLIC_SITE_URL}/produtos/{slug}` |
+| JSON-LD | Campo `url` do Product segue a mesma hierarquia |
 
-Evita punição por conteúdo duplicado quando o produto é acessado via coleções, UTMs ou rotas alternativas.
+Evita punição por conteúdo duplicado quando o produto é acessado via coleções, UTMs ou rotas alternativas. A coluna permite manobras cirúrgicas de SEO (migração de URL, consolidação de slugs duplicados) sem deploy.
 
 ## Visibilidade na home (`visible`)
 

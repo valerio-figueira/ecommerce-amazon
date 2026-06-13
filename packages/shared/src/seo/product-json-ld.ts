@@ -16,7 +16,7 @@ export type ProductJsonLdInput = {
     currency: string;
   } | undefined;
   siteBaseUrl: string;
-  canonicalUrl?: string | undefined;
+  canonicalUrl?: string | null | undefined;
 };
 
 function marketplaceBrandName(marketplace: string): string {

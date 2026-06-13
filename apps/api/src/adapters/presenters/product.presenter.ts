@@ -75,7 +75,6 @@ export type AdminProductDetailDto = {
   shouldShowPrice: boolean;
   visible: boolean;
   availability: string;
-  canonicalUrl?: string | undefined;
   createdAt: string;
 };
 
@@ -183,7 +182,6 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     shouldShowPrice: !product.price.isStale,
     visible: product.visible,
     availability: product.availability,
-    ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
     createdAt: product.createdAt.toISOString(),
   };
 }

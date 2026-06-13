@@ -10,12 +10,15 @@ export function buildProductCanonicalUrl(siteBaseUrl: string, slug: string): str
   return `${normalizeSiteBaseUrl(siteBaseUrl)}${buildProductPagePath(slug)}`;
 }
 
+/**
+ * Editorial override fallback: DB `canonical_url` when set, otherwise slug-based default.
+ */
 export function resolveProductCanonicalUrl(
   slug: string,
   siteBaseUrl: string,
-  override?: string | undefined,
+  editorialOverride?: string | null | undefined,
 ): string {
-  const trimmed = override?.trim();
+  const trimmed = editorialOverride?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {
     return trimmed;
   }

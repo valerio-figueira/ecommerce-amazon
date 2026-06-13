@@ -41,7 +41,7 @@ describe('buildProductJsonLd', () => {
     expect(jsonLd['offers']).toBeUndefined();
   });
 
-  it('sets product page url from canonical override', () => {
+  it('uses editorial override from database when provided', () => {
     const jsonLd = buildProductJsonLd({
       ...baseProduct,
       shouldShowPrice: false,
@@ -51,7 +51,7 @@ describe('buildProductJsonLd', () => {
     expect(jsonLd['url']).toBe('https://vitrine.local/produtos/cadeira-custom');
   });
 
-  it('defaults product page url from slug when canonical is absent', () => {
+  it('defaults product page url from slug when override is absent', () => {
     const jsonLd = buildProductJsonLd({
       ...baseProduct,
       shouldShowPrice: false,

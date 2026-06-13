@@ -161,7 +161,7 @@ Ver [go-redirect-seo.md](./go-redirect-seo.md).
   cons?: string[];
   metaTitle?: string;
   metaDescription?: string;
-  canonicalUrl?: string;
+  canonicalUrl?: string; // editorial override; omit when null
 }
 ```
 
@@ -398,7 +398,7 @@ Implementação: [`admin-product-routes.ts`](../apps/api/src/adapters/http/route
 
 ### `POST /admin/products`
 
-**Body:** `createProductBodySchema` — link de afiliado, marketplace, externalId, título, imagens, nota editorial (0–10), prós/contras, preço, `shouldShowPrice`, `visible`, `canonicalUrl` (opcional), disponibilidade.
+**Body:** `createProductBodySchema` — link de afiliado, marketplace, externalId, título, imagens, nota editorial (0–10), prós/contras, preço, `shouldShowPrice`, `visible`, disponibilidade.
 
 **Response 201:** `{ id, slug }`
 

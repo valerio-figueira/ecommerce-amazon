@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { ProductEditorialSection } from '@/components/products/ProductEditorialSection';
 import { ProductLinkSection } from '@/components/products/ProductLinkSection';
 import { ProductPriceSection } from '@/components/products/ProductPriceSection';
-import { ProductSeoSection } from '@/components/products/ProductSeoSection';
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
@@ -34,7 +33,6 @@ const emptyValues: ProductFormValues = {
   shouldShowPrice: false,
   visible: true,
   availability: 'in_stock',
-  canonicalUrl: '',
 };
 
 type ProductFormProps = {
@@ -138,13 +136,12 @@ export function ProductForm({
 
           <div className="cms-float-panel cms-blocks-panel">
             <p className="cms-blocks-panel__meta">
-              Dados do produto · <strong>4 seções</strong>
+              Dados do produto · <strong>3 seções</strong>
             </p>
 
             <div className="space-y-8">
               <ProductLinkSection lockIdentity={isEdit} />
               <ProductEditorialSection />
-              <ProductSeoSection slug={isEdit ? slug : undefined} />
               <ProductPriceSection />
             </div>
           </div>

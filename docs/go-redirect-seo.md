@@ -50,7 +50,8 @@ Helper: [`resolveProductCanonicalUrl`](../packages/shared/src/seo/product-canoni
 
 - Página produto: [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx) — tag **sempre** emitida via `metadata.alternates.canonical`
 - Home: [`apps/web/src/app/page.tsx`](../apps/web/src/app/page.tsx) — canonical = `NEXT_PUBLIC_SITE_URL`
-- Override manual via `products.canonical_url` (admin) ou fallback automático `/produtos/{slug}`
+- Produto: hierarquia **Editorial Override** — `products.canonical_url` quando preenchido; senão `{SITE_URL}/produtos/{slug}` gerado no Next.js
+- Admin: sem input no formulário; override apenas via banco (Drizzle Studio / SQL)
 
 ## Interlinkagem
 

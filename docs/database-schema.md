@@ -88,7 +88,7 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | `category_vertical` | text | ex.: `home-office`, `games` |
 | `tags` | jsonb `string[]` | |
 | `meta_title`, `meta_description` | text | SEO |
-| `canonical_url` | varchar(512) | nullable; sobrescrita manual Admin |
+| `canonical_url` | varchar(512) | nullable; Editorial Override — NULL = automação no frontend |
 | `pros`, `cons` | jsonb `string[]` | editorial |
 | `visible` | boolean | default `true`; oculta da home quando `false`; admin lista todos |
 | `created_at` | timestamptz | |
