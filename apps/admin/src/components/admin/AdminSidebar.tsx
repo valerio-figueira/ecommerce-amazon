@@ -2,90 +2,64 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronLeft, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronLeft, X } from 'lucide-react';
 
 import { ADMIN_NAV_ITEMS } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 
-const SIDEBAR_STORAGE_KEY = 'vitrine-admin-sidebar-collapsed';
+type AdminSidebarProps = {
+  collapsed: boolean;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+  onToggleCollapsed: () => void;
+};
 
-export function AdminSidebar() {
+export function AdminSidebar({
+  collapsed,
+  mobileOpen,
+  onMobileClose,
+  onToggleCollapsed,
+}: AdminSidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
-    if (stored === 'true') {
-      setCollapsed(true);
-    }
-  }, []);
-
-  function toggleCollapsed() {
-    setCollapsed((value) => {
-      const next = !value;
-      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
-      return next;
-    });
-  }
 
   return (
     <>
-      <button
-        type="button"
-        className="admin-open-nav fixed left-4 top-[4.75rem] z-40 rounded-lg border border-[color:var(--admin-gray)] bg-[color:var(--admin-surface)] p-2 shadow md:hidden"
-        aria-label="Abrir menu de navegação"
-        onClick={() => setMobileOpen(true)}
-      >
-        <Menu className="size-5 text-[color:var(--admin-navy)]" />
-      </button>
-
-      {mobileOpen && (
-        <button
-          type="button"
-          className="fixed inset-0 z-40 bg-black/30 md:hidden"
-          aria-label="Fechar menu"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
       <aside
-        className={cn(
-          'admin-side-column fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[color:var(--admin-gray)] bg-[color:var(--admin-surface)] transition-transform duration-200 md:static md:translate-x-0',
-          collapsed ? 'w-[4.75rem]' : 'w-[16.75rem]',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-        )}
+        className={cn('admin-side-column relative', mobileOpen && 'open')}
+        aria-label="Menu lateral"
       >
-        <div className="flex items-center justify-between border-b border-[color:var(--admin-gray)] px-4 py-4">
-          <div className={cn('flex items-center gap-3 overflow-hidden', collapsed && 'justify-center')}>
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
-              V
-            </div>
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">Vitrine</p>
-                <p className="truncate text-xs text-[color:var(--admin-text-muted)]">Painel CMS</p>
+        <div className="admin-side-inner">
+          <div className="side-brand-card">
+            <div className={cn('side-brand-mark flex items-center gap-3', collapsed && 'justify-center')}>
+              <div className="side-brand-logo flex size-11 shrink-0 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
+                V
               </div>
-            )}
+              {!collapsed && (
+                <div className="side-brand-text min-w-0">
+                  <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">Vitrine</p>
+                  <p className="truncate text-xs text-[color:var(--admin-text-muted)]">Painel CMS</p>
+                </div>
+              )}
+            </div>
           </div>
+
           <button
             type="button"
-            className="rounded-md p-1 text-[color:var(--admin-text-muted)] hover:bg-[color:var(--admin-bg)] md:hidden"
+            id="close-nav"
+            className="admin-close-nav absolute right-3 top-3 rounded-md p-1 text-[color:var(--admin-text-muted)] hover:bg-[color:var(--admin-bg)]"
             aria-label="Fechar menu"
-            onClick={() => setMobileOpen(false)}
+            onClick={onMobileClose}
           >
             <X className="size-5" />
           </button>
-        </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-4">
           {!collapsed && (
-            <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--admin-text-muted)]">
+            <p className="admin-nav-section-label px-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--admin-text-muted)]">
               Navegação
             </p>
           )}
-          <nav aria-label="Navegação principal">
+
+          <nav className="admin-side-nav" aria-label="Navegação principal">
             <ul className="space-y-1">
               {ADMIN_NAV_ITEMS.map((item) => {
                 const isActive =
@@ -101,15 +75,15 @@ export function AdminSidebar() {
                       className={cn(
                         'admin-nav-link flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                         isActive
-                          ? 'bg-[color:color-mix(in_srgb,var(--admin-primary)_12%,white)] text-[color:var(--admin-primary)] shadow-[inset_3px_0_0_0_var(--admin-primary)]'
+                          ? 'is-active'
                           : 'text-[color:var(--admin-navy)] hover:bg-[color:var(--admin-bg)]',
                         collapsed && 'justify-center px-2',
                       )}
                       title={collapsed ? item.label : undefined}
-                      onClick={() => setMobileOpen(false)}
+                      onClick={onMobileClose}
                     >
                       <Icon className="size-[1.1em] shrink-0" aria-hidden="true" />
-                      {!collapsed && <span>{item.label}</span>}
+                      {!collapsed && <span className="admin-nav-label">{item.label}</span>}
                     </Link>
                   </li>
                 );
@@ -117,29 +91,21 @@ export function AdminSidebar() {
             </ul>
           </nav>
         </div>
-
-        <button
-          type="button"
-          className="hidden border-t border-[color:var(--admin-gray)] p-3 text-[color:var(--admin-text-muted)] hover:bg-[color:var(--admin-bg)] md:flex md:items-center md:justify-center"
-          aria-label={collapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
-          onClick={toggleCollapsed}
-        >
-          {collapsed ? <PanelLeftOpen className="size-5" /> : <PanelLeftClose className="size-5" />}
-        </button>
       </aside>
-    </>
-  );
-}
 
-export function AdminHeaderBackLink() {
-  return (
-    <Link
-      href="/"
-      className="backward-link hidden items-center justify-center rounded-md p-1 text-[color:var(--admin-text-muted)] hover:bg-[color:var(--admin-bg)] md:inline-flex"
-      aria-label="Voltar para o painel"
-      title="Voltar"
-    >
-      <ChevronLeft className="size-5" />
-    </Link>
+      <button
+        type="button"
+        className="admin-sidebar-collapse-btn"
+        aria-label={collapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
+        onClick={onToggleCollapsed}
+      >
+        <span className="admin-sidebar-collapse-btn-inner">
+          <ChevronLeft
+            className={cn('admin-sidebar-collapse-icon size-4', collapsed && 'rotate-180')}
+            aria-hidden="true"
+          />
+        </span>
+      </button>
+    </>
   );
 }

@@ -14,7 +14,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <section className="space-y-4">
+    <section className="admin-dashboard-board w-full max-w-[var(--admin-page-max-width)] space-y-4">
       <div className="grid gap-4 md:grid-cols-3">
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
