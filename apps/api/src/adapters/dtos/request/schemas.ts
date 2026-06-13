@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { BlockType } from '@ecommerce-amazon/domain';
+
 export const ListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(100).optional(),
@@ -93,4 +95,38 @@ export const PageSlugParamsSchema = z.object({
 export const AdminLoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+});
+
+export const AdminPageSlugParamsSchema = z.object({
+  slug: z.string().min(1),
+});
+
+export const AdminPageBlockParamsSchema = z.object({
+  slug: z.string().min(1),
+  id: z.string().uuid(),
+});
+
+export const CreatePageBlockSchema = z.object({
+  type: z.nativeEnum(BlockType),
+  position: z.number().int().min(0),
+  props: z.unknown(),
+  visibility: z.enum(['all', 'desktop', 'mobile']).optional(),
+});
+
+export const UpdatePageBlockSchema = z.object({
+  type: CreatePageBlockSchema.shape.type.optional(),
+  position: z.number().int().min(0).optional(),
+  props: z.unknown().optional(),
+  visibility: z.enum(['all', 'desktop', 'mobile']).optional(),
+});
+
+export const ReorderPageBlocksSchema = z.object({
+  blocksOrder: z
+    .array(
+      z.object({
+        blockId: z.string().uuid(),
+        position: z.number().int().min(0),
+      }),
+    )
+    .min(1),
 });

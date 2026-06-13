@@ -19,6 +19,8 @@ import {
   SavePageBlock,
   DeletePageBlock,
   UpdatePageBlocksOrder,
+  GetAdminPageLayout,
+  ListAdminPages,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
 } from '@ecommerce-amazon/application';
@@ -98,6 +100,8 @@ export function buildApiContainer(env = loadEnv()) {
       savePageBlock: new SavePageBlock(pageRepository, cache),
       deletePageBlock: new DeletePageBlock(pageRepository, cache),
       updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache),
+      getAdminPageLayout: new GetAdminPageLayout(pageRepository),
+      listAdminPages: new ListAdminPages(pageRepository),
       resolveAffiliateRedirect: new ResolveAffiliateRedirect(
         productRepository,
         affiliateAccountRepository,
@@ -114,6 +118,7 @@ export function buildApiContainer(env = loadEnv()) {
     },
     repositories: {
       wishlistRepository,
+      pageRepository,
     },
   };
 }

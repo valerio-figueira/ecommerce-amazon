@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
 import {
-  BlockType,
   BlockVisibility,
   EntityNotFoundError,
   PageBlock,
   ValidationError,
+  type BlockType,
   type PageCacheInvalidator,
   type PageRepository,
 } from '@ecommerce-amazon/domain';
@@ -32,6 +32,21 @@ export class SavePageBlock {
       return err(new EntityNotFoundError('Page', input.pageId));
     }
 
+    const isUpdate = input.blockId !== undefined;
+    let existingVisibility: BlockVisibility | undefined;
+
+    if (isUpdate) {
+      const existingBlockId = input.blockId;
+      if (!existingBlockId) {
+        return err(new ValidationError('blockId is required for update'));
+      }
+      const existing = await this.pageRepository.findBlockById(existingBlockId);
+      if (!existing || existing.pageId !== input.pageId) {
+        return err(new EntityNotFoundError('PageBlock', existingBlockId));
+      }
+      existingVisibility = existing.visibility;
+    }
+
     let parsedProps: Record<string, unknown>;
     try {
       parsedProps = parseBlockProps(input.type, input.props) as Record<string, unknown>;
@@ -43,16 +58,23 @@ export class SavePageBlock {
     }
 
     const blockId = input.blockId ?? randomUUID();
+    const visibility = input.visibility ?? existingVisibility ?? BlockVisibility.ALL;
+
     const block = PageBlock.create({
       id: blockId,
       pageId: input.pageId,
       type: input.type,
       sortOrder: input.position,
       props: parsedProps,
-      ...(input.visibility !== undefined ? { visibility: input.visibility } : {}),
+      visibility,
     });
 
-    await this.pageRepository.saveBlock(block);
+    if (isUpdate) {
+      await this.pageRepository.saveBlock(block);
+    } else {
+      await this.pageRepository.insertBlockAtPosition(block);
+    }
+
     await this.pageCacheInvalidator.invalidateBySlug(page.layout.slug);
 
     return ok({ blockId });

@@ -14,6 +14,8 @@ import {
   createMockPageRepository,
 } from '../../test/mock-factories.js';
 import { DeletePageBlock } from './DeletePageBlock.js';
+import { GetAdminPageLayout } from './GetAdminPageLayout.js';
+import { ListAdminPages } from './ListAdminPages.js';
 import { SavePageBlock } from './SavePageBlock.js';
 import { UpdatePageBlocksOrder } from './UpdatePageBlocksOrder.js';
 
@@ -57,7 +59,7 @@ describe('SavePageBlock', () => {
   it('validates props with BlockPropsResolver and saves block', async () => {
     const pageRepository = createMockPageRepository({
       findPageById: vi.fn().mockResolvedValue(mockPage()),
-      saveBlock: vi.fn(),
+      insertBlockAtPosition: vi.fn(),
     });
     const pageCacheInvalidator = createMockPageCacheInvalidator();
 
@@ -77,7 +79,8 @@ describe('SavePageBlock', () => {
     if (result.ok) {
       expect(result.value.blockId).toBeDefined();
     }
-    expect(pageRepository.saveBlock).toHaveBeenCalled();
+    expect(pageRepository.insertBlockAtPosition).toHaveBeenCalled();
+    expect(pageRepository.saveBlock).not.toHaveBeenCalled();
     expect(pageCacheInvalidator.invalidateBySlug).toHaveBeenCalledWith('home');
   });
 
@@ -97,6 +100,54 @@ describe('SavePageBlock', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toBeInstanceOf(ValidationError);
+    }
+  });
+});
+
+describe('GetAdminPageLayout', () => {
+  it('returns layout with blocks sorted by sortOrder', async () => {
+    const pageRepository = createMockPageRepository({
+      findPageBySlug: vi.fn().mockResolvedValue(mockPage()),
+    });
+    const useCase = new GetAdminPageLayout(pageRepository);
+
+    const result = await useCase.execute({ slug: 'home' });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.slug).toBe('home');
+      expect(result.value.blocks).toHaveLength(2);
+      expect(result.value.blocks[0]?.sortOrder).toBe(0);
+    }
+  });
+
+  it('returns EntityNotFoundError when page is missing', async () => {
+    const pageRepository = createMockPageRepository({
+      findPageBySlug: vi.fn().mockResolvedValue(null),
+    });
+    const useCase = new GetAdminPageLayout(pageRepository);
+
+    const result = await useCase.execute({ slug: 'missing' });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toBeInstanceOf(EntityNotFoundError);
+    }
+  });
+});
+
+describe('ListAdminPages', () => {
+  it('returns page summaries', async () => {
+    const pageRepository = createMockPageRepository({
+      listPages: vi.fn().mockResolvedValue([
+        { id: PAGE_ID, slug: 'home', title: 'Home', status: PageStatus.PUBLISHED },
+      ]),
+    });
+    const useCase = new ListAdminPages(pageRepository);
+
+    const result = await useCase.execute();
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toHaveLength(1);
+      expect(result.value[0]?.slug).toBe('home');
     }
   });
 });

@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
 
 import {
   BlockType,
@@ -9,6 +9,7 @@ import {
   parseBlockType,
   parseBlockVisibility,
   parsePageStatus,
+  type AdminPageSummary,
   type PageRepository,
   type PublishedPageResult,
   type PageWithBlocksResult,
@@ -55,6 +56,38 @@ export class DrizzlePageRepository implements PageRepository {
     if (!pageRow) return null;
 
     return this.loadBlocksForPage(pageRow);
+  }
+
+  async findPageBySlug(slug: string): Promise<PageWithBlocksResult | null> {
+    const pageRows = await this.db
+      .select()
+      .from(schema.pages)
+      .where(eq(schema.pages.slug, slug))
+      .limit(1);
+
+    const pageRow = pageRows[0];
+    if (!pageRow) return null;
+
+    return this.loadBlocksForPage(pageRow);
+  }
+
+  async listPages(): Promise<AdminPageSummary[]> {
+    const rows = await this.db
+      .select({
+        id: schema.pages.id,
+        slug: schema.pages.slug,
+        title: schema.pages.title,
+        status: schema.pages.status,
+      })
+      .from(schema.pages)
+      .orderBy(asc(schema.pages.slug));
+
+    return rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      status: parsePageStatus(row.status),
+    }));
   }
 
   async findPageById(pageId: string): Promise<PageWithBlocksResult | null> {
@@ -135,6 +168,29 @@ export class DrizzlePageRepository implements PageRepository {
           visibility: block.visibility,
         },
       });
+  }
+
+  async insertBlockAtPosition(block: PageBlock): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      await tx
+        .update(schema.pageBlocks)
+        .set({ sortOrder: sql`${schema.pageBlocks.sortOrder} + 1` })
+        .where(
+          and(
+            eq(schema.pageBlocks.pageId, block.pageId),
+            gte(schema.pageBlocks.sortOrder, block.sortOrder),
+          ),
+        );
+
+      await tx.insert(schema.pageBlocks).values({
+        id: block.id,
+        pageId: block.pageId,
+        type: block.type,
+        sortOrder: block.sortOrder,
+        props: block.props,
+        visibility: block.visibility,
+      });
+    });
   }
 
   async deleteBlock(blockId: string): Promise<{ pageId: string; pageSlug: string }> {

@@ -350,6 +350,42 @@ Rotas `/admin/*` (exceto login/logout) exigem header `Authorization: Bearer <JWT
 
 ---
 
+## Admin — páginas e blocos CMS
+
+Implementação: [`admin-cms-routes.ts`](../apps/api/src/adapters/http/routes/admin-cms-routes.ts). Doc: [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md).
+
+### `GET /admin/pages`
+
+**Response 200:** `Array<{ id, slug, title, status }>`
+
+### `GET /admin/pages/:slug`
+
+**Response 200:** `PageLayoutDto` — blocos ordenados por `sortOrder`, props JSON crus.
+
+### `POST /admin/pages/:slug/blocks`
+
+**Body:** `{ type: BlockType, position: number, props: unknown, visibility?: 'all'|'desktop'|'mobile' }`
+
+**Response 201:** `PageBlockDto` criado. Blocos com `sortOrder >= position` são deslocados +1 em transação.
+
+### `PATCH /admin/pages/:slug/blocks/:id`
+
+**Body:** `{ type?, position?, props?, visibility? }` (parcial)
+
+**Response 200:** `PageBlockDto` atualizado.
+
+### `DELETE /admin/pages/:slug/blocks/:id`
+
+**Response 200:** `PageBlockDto[]` — blocos restantes reindexados `[0..n-1]`.
+
+### `PATCH /admin/pages/:slug/blocks/reorder`
+
+**Body:** `{ blocksOrder: Array<{ blockId: uuid, position: number }> }` — posições contíguas `0..n-1`, todos os blocos da página.
+
+**Response 200:** `PageBlockDto[]` na nova ordem.
+
+---
+
 ## Schemas de request (referência)
 
 Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts)
@@ -372,6 +408,11 @@ Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapt
 | `CollectionSlugParamsSchema` | GET /collections |
 | `PageSlugParamsSchema` | GET /pages |
 | `AdminLoginSchema` | POST /admin/auth/login |
+| `AdminPageSlugParamsSchema` | GET/POST/PATCH /admin/pages/:slug/* |
+| `AdminPageBlockParamsSchema` | PATCH/DELETE /admin/pages/:slug/blocks/:id |
+| `CreatePageBlockSchema` | POST /admin/pages/:slug/blocks |
+| `UpdatePageBlockSchema` | PATCH /admin/pages/:slug/blocks/:id |
+| `ReorderPageBlocksSchema` | PATCH /admin/pages/:slug/blocks/reorder |
 
 ## Schemas web (client)
 
@@ -385,7 +426,7 @@ Client HTTP: [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.t
 |------|-------|
 | `DELETE /price-alerts/:token` | PRD Core |
 | `GET /coupons/:marketplace` | PRD Core |
-| `POST/PATCH /admin/pages/*` | UI Home fase Admin (use cases parciais existem) |
+| `POST /admin/pages/:slug/publish` | Admin CMS draft/publish |
 
 ## CORS
 

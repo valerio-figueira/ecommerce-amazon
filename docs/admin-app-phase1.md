@@ -14,9 +14,11 @@ Plano de referência: [`.cursor/plans/ui_home_vitrine.plan.md`](../.cursor/plans
 
 ## Fora de escopo (fase seguinte)
 
-- CRUD HTTP de páginas/blocos (`/admin/pages/*`)
-- Editor drag-and-drop
+- Draft/preview/publish de páginas
+- Formulários dos tipos de bloco restantes
 - Gestão de operadores além do seed dev
+
+Ver [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) para o editor de blocos entregue.
 
 ## Fluxo de autenticação
 
@@ -70,7 +72,8 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 |------|----------|
 | `/login` | Tela de login |
 | `/` | Dashboard com KPIs placeholder |
-| `/paginas` | Empty state — editor CMS |
+| `/paginas` | Lista páginas CMS + link para editor |
+| `/paginas/[slug]` | Editor de blocos (`CMSBlockOrderManager`) |
 | `/produtos` | Empty state — catálogo |
 | `/artigos` | Empty state — hub de conteúdo |
 | `/colecoes` | Empty state — coleções curadas |
@@ -90,7 +93,9 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 
 ## Próximos passos
 
-1. Rotas REST `/admin/pages/*` + editor de blocos
-2. Preview draft com token
-3. `PublishPage` use case + botão publicar
+1. Preview draft com token
+2. `PublishPage` use case + botão publicar
+3. Formulários dos tipos de bloco restantes
 4. Gestão de operadores (convite, desativar)
+
+Editor de blocos: [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md).

@@ -77,10 +77,13 @@ export function createMockPageRepository(
 ): PageRepository {
   return {
     findPublishedBySlug: vi.fn(),
+    findPageBySlug: vi.fn(),
     findPageById: vi.fn(),
+    listPages: vi.fn(),
     findBlockById: vi.fn(),
     updateBlocksOrder: vi.fn(),
     saveBlock: vi.fn(),
+    insertBlockAtPosition: vi.fn(),
     deleteBlock: vi.fn(),
     ...overrides,
   };

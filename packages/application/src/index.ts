@@ -21,6 +21,8 @@ export { GetPublishedPageLayout } from './use-cases/page/GetPublishedPageLayout.
 export { SavePageBlock } from './use-cases/admin-cms/SavePageBlock.js';
 export { DeletePageBlock } from './use-cases/admin-cms/DeletePageBlock.js';
 export { UpdatePageBlocksOrder } from './use-cases/admin-cms/UpdatePageBlocksOrder.js';
+export { GetAdminPageLayout } from './use-cases/admin-cms/GetAdminPageLayout.js';
+export { ListAdminPages } from './use-cases/admin-cms/ListAdminPages.js';
 export { ListProductCategories } from './use-cases/product/ListProductCategories.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';
 export { AuthenticateOperator } from './use-cases/admin-auth/AuthenticateOperator.js';
