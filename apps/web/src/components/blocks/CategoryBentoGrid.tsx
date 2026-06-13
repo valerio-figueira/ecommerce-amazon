@@ -20,36 +20,46 @@ type CategoryBentoTileCardProps = {
 function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.Element {
   const { categorySlug, setCategorySlug } = useCategoryFilter();
   const isActive = Boolean(tile.categorySlug && categorySlug === tile.categorySlug);
+  const isInteractive = Boolean(tile.href || tile.categorySlug);
 
   const cardClassName = cn(
-    'group relative flex min-h-[9.5rem] flex-col overflow-hidden rounded-2xl bg-neutral-100 p-5 transition-shadow md:min-h-[11rem]',
+    'group relative block min-h-[9.5rem] overflow-hidden rounded-2xl bg-neutral-200 md:min-h-[11rem]',
     tile.size === 'large' && 'col-span-2',
     isActive && 'ring-2 ring-[var(--primary)] ring-offset-2',
-    (tile.href || tile.categorySlug) && 'hover:shadow-md',
+    isInteractive && 'hover:shadow-md',
   );
 
   const content = (
     <>
-      <div className="relative z-10 max-w-[65%]">
-        <h3 className="text-base font-semibold leading-tight text-neutral-900 md:text-lg">
-          {tile.title}
-        </h3>
-        {tile.subtitle && (
-          <p className="mt-1 text-sm text-neutral-500">{tile.subtitle}</p>
-        )}
-      </div>
       <Image
         src={tile.imageUrl}
         alt=""
-        width={240}
-        height={240}
+        fill
+        sizes={
+          tile.size === 'large'
+            ? '(max-width: 768px) 100vw, 50vw'
+            : '(max-width: 768px) 50vw, 25vw'
+        }
         className={cn(
-          'pointer-events-none absolute bottom-0 right-0 h-auto w-[42%] max-w-[9.5rem] object-contain object-bottom-right transition-transform duration-300 md:max-w-[11rem]',
-          tile.size === 'large' && 'md:max-w-[13rem]',
-          (tile.href || tile.categorySlug) && 'group-hover:scale-105',
+          'object-cover transition-transform duration-500 ease-out',
+          isInteractive && 'group-hover:scale-105',
         )}
         aria-hidden
       />
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/5 to-transparent"
+        aria-hidden
+      />
+      <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-col items-start gap-1.5 md:left-4 md:top-4">
+        <span className="inline-flex rounded-full bg-white/95 px-3 py-1.5 text-sm font-semibold leading-tight text-neutral-900 shadow-sm backdrop-blur-sm">
+          {tile.title}
+        </span>
+        {tile.subtitle && (
+          <span className="inline-flex rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-neutral-600 shadow-sm backdrop-blur-sm">
+            {tile.subtitle}
+          </span>
+        )}
+      </div>
     </>
   );
 
@@ -66,7 +76,7 @@ function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.
       <button
         type="button"
         onClick={() => setCategorySlug(isActive ? null : tile.categorySlug ?? null)}
-        className={cn(cardClassName, 'text-left')}
+        className={cn(cardClassName, 'w-full text-left')}
       >
         {content}
       </button>
