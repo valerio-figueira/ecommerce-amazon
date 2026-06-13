@@ -871,8 +871,14 @@ body.admin-login-page {
 
 .cms-limit-chip.is-active {
   border-color: var(--admin-primary);
-  background: var(--admin-accent-muted);
-  color: var(--admin-primary-hover);
+  background: var(--admin-primary);
+  color: #fff;
+}
+
+.cms-limit-chip.is-active:hover {
+  border-color: var(--admin-primary-hover);
+  background: var(--admin-primary-hover);
+  color: #fff;
 }
 
 .cms-category-checklist {

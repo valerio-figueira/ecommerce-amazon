@@ -60,6 +60,14 @@ Toda **nova tela** do admin (listagem, editor, wizard) deve usar painéis flutua
 
 Classes em [`apps/admin/src/app/globals.css`](../apps/admin/src/app/globals.css): `cms-editor-section`, `cms-float-panel`, `cms-vitrine-panel`, `cms-blocks-panel`, `cms-panel-head`, `cms-panel-title`, `cms-panel-meta`, `cms-panel-actions`, `cms-blocks-panel__meta`, `cms-block-list`, `cms-block-card`, `cms-block-card--plain`.
 
+## Botões (CTA primário)
+
+- Cor padrão: **`#0d6efd`** via `--admin-primary` / `--admin-primary-hover` em `globals.css`
+- Usar `<Button>` de `@/components/ui/button` — variant padrão já é `primary` (não navy)
+- Ações principais: `variant="primary"` ou omitir variant; secundárias: `outline` ou `ghost`; exclusão: `destructive`
+- **Não** usar `bg-[var(--admin-navy)]` em botões; navy é cor de texto/marca, não de CTA
+- Tabs ativos, chips selecionados (`.cms-limit-chip.is-active`) e switch checked seguem `--admin-primary`
+
 ## Checklist nova tela admin
 
 - [ ] `AdminPageHeader` + breadcrumbs

@@ -94,6 +94,16 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 | Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql` |
 | Seed operador | `packages/infrastructure/src/persistence/drizzle/seed.ts` |
 
+## Design tokens (botões)
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `--admin-primary` | `#0d6efd` | CTA primário (`Button` default/primary, tabs ativos, chips selecionados) |
+| `--admin-primary-hover` | `#0b5ed7` | Hover de CTA |
+| `--admin-navy` | `#182a5a` | Texto e marca — **não** usar como fundo de botão |
+
+Componente: `apps/admin/src/components/ui/button.tsx` (`variant="primary"` por padrão).
+
 ## Próximos passos
 
 1. Preview draft com token

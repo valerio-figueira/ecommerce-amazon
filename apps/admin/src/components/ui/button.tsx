@@ -4,13 +4,17 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/** Primary CTA styles — always use `--admin-primary` (#0d6efd). */
+const primaryButtonStyles =
+  'bg-[var(--admin-primary)] text-white hover:bg-[var(--admin-primary-hover)]';
+
 export const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-focus-ring)] disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-[var(--admin-navy)] text-white hover:opacity-90',
-        primary: 'bg-[var(--admin-primary)] text-white hover:bg-[var(--admin-primary-hover)]',
+        default: primaryButtonStyles,
+        primary: primaryButtonStyles,
         outline:
           'border border-[var(--admin-gray)] bg-white text-[var(--admin-navy)] hover:bg-[var(--admin-bg)]',
         ghost:
@@ -24,7 +28,7 @@ export const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'primary',
       size: 'default',
     },
   },

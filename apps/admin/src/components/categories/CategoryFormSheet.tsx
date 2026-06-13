@@ -10,7 +10,7 @@ import {
 } from '@/lib/api/categories-utils';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input, Textarea } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -204,8 +204,8 @@ export function CategoryFormSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="overflow-y-auto sm:max-w-lg">
-        <SheetHeader>
+      <SheetContent side="right" className="cms-props-sheet flex w-full flex-col p-0 sm:max-w-lg">
+        <SheetHeader className="shrink-0 border-b border-[var(--admin-gray)] px-6 py-5">
           <SheetTitle>{editing ? 'Editar categoria' : 'Nova categoria'}</SheetTitle>
           <SheetDescription>
             Preencha nome e hierarquia; slug e SEO têm sugestões automáticas. Campos de marketplace
@@ -213,8 +213,12 @@ export function CategoryFormSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <form className="mt-6 space-y-6" onSubmit={(event) => void handleSubmit(event)}>
-          <fieldset className="space-y-4">
+        <form
+          className="flex min-h-0 flex-1 flex-col"
+          onSubmit={(event) => void handleSubmit(event)}
+        >
+          <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+          <fieldset className="m-0 min-w-0 space-y-4 border-0 p-0">
             <legend className="text-sm font-semibold text-[var(--admin-navy)]">Identificação</legend>
 
             <div className="space-y-2">
@@ -320,7 +324,7 @@ export function CategoryFormSheet({
               />
             </div>
 
-            <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+            <div className="flex items-center justify-between rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] px-3 py-2">
               <div className="flex items-center gap-2">
                 <Label htmlFor="category-visible">Visível na vitrine</Label>
                 <CategoryFieldHint text="Oculte rascunhos ou categorias internas sem excluir da árvore." />
@@ -329,7 +333,7 @@ export function CategoryFormSheet({
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4 border-t border-[var(--admin-gray)] pt-4">
+          <fieldset className="m-0 min-w-0 space-y-4 border-0 border-t border-[var(--admin-gray)] p-0 pt-4">
             <div className="flex items-center justify-between gap-2">
               <legend className="text-sm font-semibold text-[var(--admin-navy)]">SEO</legend>
               <CategoryLlmPromptHelper
@@ -376,9 +380,9 @@ export function CategoryFormSheet({
                 <Label htmlFor="category-seo-description">SEO description (opcional)</Label>
                 <CategoryFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres, mencione curadoria e comparação de preços." />
               </div>
-              <textarea
+              <Textarea
                 id="category-seo-description"
-                className="min-h-20 w-full rounded-md border px-3 py-2 text-sm"
+                rows={4}
                 value={seoDescription}
                 onChange={(event) => setSeoDescription(event.target.value)}
                 placeholder={
@@ -399,9 +403,10 @@ export function CategoryFormSheet({
                 <Label htmlFor="category-description-html">Conteúdo HTML (rodapé da listagem)</Label>
                 <CategoryFieldHint text="Texto editorial no fim da página /categorias/slug. Melhora SEO e contexto para o visitante. Use o ícone ✨ para prompt de IA." />
               </div>
-              <textarea
+              <Textarea
                 id="category-description-html"
-                className="min-h-28 w-full rounded-md border px-3 py-2 font-mono text-sm"
+                rows={8}
+                className="font-mono text-xs leading-relaxed"
                 value={descriptionHtml}
                 onChange={(event) => setDescriptionHtml(event.target.value)}
                 placeholder="<h2>Sobre teclados mecânicos</h2><p>Texto introdutório sobre a categoria...</p>"
@@ -409,7 +414,7 @@ export function CategoryFormSheet({
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4 border-t border-[var(--admin-gray)] pt-4">
+          <fieldset className="m-0 min-w-0 space-y-4 border-0 border-t border-[var(--admin-gray)] p-0 pt-4">
             <legend className="text-sm font-semibold text-[var(--admin-navy)]">
               Integração marketplace (opcional)
             </legend>
@@ -456,9 +461,10 @@ export function CategoryFormSheet({
               </div>
             </div>
           </fieldset>
+          </div>
 
-          <SheetFooter>
-            <Button type="submit" disabled={saving || !label.trim()}>
+          <SheetFooter className="shrink-0 px-6 py-4">
+            <Button type="submit" disabled={saving || !label.trim()} className="w-full sm:w-auto">
               {saving ? 'Salvando...' : 'Salvar categoria'}
             </Button>
           </SheetFooter>

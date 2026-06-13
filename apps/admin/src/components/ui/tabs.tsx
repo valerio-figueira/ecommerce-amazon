@@ -75,7 +75,7 @@ export function TabsTrigger({
       className={cn(
         'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
         isActive
-          ? 'bg-[var(--admin-navy)] text-white'
+          ? 'bg-[var(--admin-primary)] text-white hover:bg-[var(--admin-primary-hover)]'
           : 'text-[var(--admin-text-muted)] hover:bg-[var(--admin-accent-subtle)] hover:text-[var(--admin-navy)]',
         className,
       )}
