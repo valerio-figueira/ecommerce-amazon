@@ -1,7 +1,7 @@
 'use client';
 
 import { BlockType } from '@ecommerce-amazon/domain';
-import { CheckCircle2, Layers, Plus, Save, Sparkles } from 'lucide-react';
+import { Layers, Plus, Save, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { BlockPropsSheet } from '@/components/cms/BlockPropsSheet';
@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { useAdminToast } from '@/components/ui/admin-toast';
 import {
   Dialog,
   DialogContent,
@@ -51,11 +52,10 @@ export function CMSBlockOrderManager({
   pageTitle,
   initialBlocks,
 }: CMSBlockOrderManagerProps): React.JSX.Element {
+  const adminToast = useAdminToast();
   const [blocks, setBlocks] = useState<AdminBlock[]>(() => toAdminBlocks(initialBlocks));
   const [orderDirty, setOrderDirty] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [editingBlock, setEditingBlock] = useState<AdminBlock | null>(null);
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('edit');
@@ -139,8 +139,9 @@ export function CMSBlockOrderManager({
         ),
       );
     }
-    setStatusMessage(dialogMode === 'create' ? 'Bloco adicionado com sucesso.' : 'Propriedades atualizadas.');
-    setErrorMessage(null);
+    adminToast.success(
+      dialogMode === 'create' ? 'Bloco adicionado com sucesso.' : 'Propriedades atualizadas.',
+    );
   }
 
   async function refreshBlocksAfterMutation(): Promise<void> {
@@ -155,10 +156,9 @@ export function CMSBlockOrderManager({
       const remaining = await deletePageBlockClient(slug, deleteTarget.id);
       setBlocks(toAdminBlocks(remaining));
       setOrderDirty(false);
-      setStatusMessage('Bloco removido da página.');
-      setErrorMessage(null);
+      adminToast.success('Bloco removido da página.');
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Erro ao excluir bloco');
+      adminToast.error(error instanceof Error ? error.message : 'Erro ao excluir bloco');
     } finally {
       setDeleteTarget(null);
     }
@@ -166,7 +166,6 @@ export function CMSBlockOrderManager({
 
   async function handleSaveOrder(): Promise<void> {
     setIsSavingOrder(true);
-    setErrorMessage(null);
     try {
       const updated = await reorderPageBlocksClient(
         slug,
@@ -174,9 +173,9 @@ export function CMSBlockOrderManager({
       );
       setBlocks(toAdminBlocks(updated));
       setOrderDirty(false);
-      setStatusMessage('Ordem publicada na vitrine.');
+      adminToast.success('Ordem publicada na vitrine.');
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Erro ao salvar ordem');
+      adminToast.error(error instanceof Error ? error.message : 'Erro ao salvar ordem');
     } finally {
       setIsSavingOrder(false);
     }
@@ -192,19 +191,6 @@ export function CMSBlockOrderManager({
             <span className="cms-panel-slug">/{slug}</span>
           </p>
         </div>
-
-        {(statusMessage || errorMessage) && (
-          <div
-            className={cn(
-              'cms-status-banner',
-              errorMessage ? 'is-error' : 'is-success',
-            )}
-            role="status"
-          >
-            {!errorMessage && <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />}
-            {errorMessage ?? statusMessage}
-          </div>
-        )}
 
         <div className="cms-panel-actions">
           <Button type="button" variant="outline" size="sm" onClick={() => openCreateDialog(blocks.length)}>

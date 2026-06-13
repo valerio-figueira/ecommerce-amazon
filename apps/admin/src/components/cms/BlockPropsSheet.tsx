@@ -31,6 +31,7 @@ import {
 } from '@/components/cms/props-forms/block-form-registry';
 import { translateZodError } from '@/components/cms/props-forms/dynamic-grid-form-meta';
 import { Button } from '@/components/ui/button';
+import { useAdminToast } from '@/components/ui/admin-toast';
 import { Form } from '@/components/ui/form';
 import {
   Sheet,
@@ -47,7 +48,6 @@ import {
   updatePageBlockClient,
   type ProductPickerOption,
 } from '@/lib/api/cms-pages-client';
-import { cn } from '@/lib/utils';
 
 type BlockPropsSheetProps = {
   slug: string;
@@ -133,6 +133,7 @@ export function BlockPropsSheet({
     [block],
   );
 
+  const adminToast = useAdminToast();
   const form = useForm<BlockFormValues>({
     defaultValues: block ? normalizeFormValues(block.type, block.props) : {},
   });
@@ -140,12 +141,10 @@ export function BlockPropsSheet({
   const [categories, setCategories] = useState<Array<{ slug: string; label: string }>>([]);
   const [products, setProducts] = useState<ProductPickerOption[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (block && open) {
       form.reset(normalizeFormValues(block.type, block.props));
-      setError(null);
     }
   }, [block, form, open]);
 
@@ -167,7 +166,6 @@ export function BlockPropsSheet({
   async function handleSubmit(values: BlockFormValues): Promise<void> {
     if (!block) return;
     setIsSaving(true);
-    setError(null);
 
     const sanitized = sanitizeFormValues(block.type, values);
 
@@ -181,9 +179,9 @@ export function BlockPropsSheet({
         const message = first
           ? translateZodError(first.message, first.path.map(String))
           : 'Dados inválidos';
-        setError(message);
+        adminToast.error(message);
       } else {
-        setError('Dados inválidos');
+        adminToast.error('Dados inválidos');
       }
       return;
     }
@@ -208,7 +206,7 @@ export function BlockPropsSheet({
       }
       onOpenChange(false);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'Erro ao salvar');
+      adminToast.error(submitError instanceof Error ? submitError.message : 'Erro ao salvar');
     } finally {
       setIsSaving(false);
     }
@@ -260,16 +258,6 @@ export function BlockPropsSheet({
               </div>
 
               <SheetFooter className="shrink-0 flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
-                {error && (
-                  <div
-                    className={cn(
-                      'cms-status-banner is-error w-full sm:order-first sm:mr-auto sm:max-w-[60%]',
-                    )}
-                    role="alert"
-                  >
-                    {error}
-                  </div>
-                )}
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancelar
                 </Button>

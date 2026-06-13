@@ -3,19 +3,19 @@
 import { useSearchParams } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
+import { useAdminToast } from '@/components/ui/admin-toast';
 import { cn } from '@/lib/utils';
 
 export function LoginForm() {
   const searchParams = useSearchParams();
+  const adminToast = useAdminToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -39,14 +39,14 @@ export function LoginForm() {
         } catch {
           // keep default message
         }
-        setError(errorMessage);
+        adminToast.error(errorMessage);
         return;
       }
 
       const next = searchParams.get('next') ?? '/';
       window.location.assign(next);
     } catch {
-      setError('Não foi possível conectar ao servidor. Tente novamente.');
+      adminToast.error('Não foi possível conectar ao servidor. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -112,21 +112,6 @@ export function LoginForm() {
           </form>
         </div>
       </div>
-
-      {error && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="admin-flash-toast-container fixed bottom-4 right-4 z-[1100] max-w-sm rounded-lg border border-[#dadce0] bg-white p-4 shadow-lg"
-        >
-          <div className="admin-gcp-toast flex gap-3 border-l-4 border-[#d93025] pl-3">
-            <div>
-              <p className="text-sm font-semibold text-[#3c4043]">Erro</p>
-              <p className="mt-1 text-sm text-[#3c4043]">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

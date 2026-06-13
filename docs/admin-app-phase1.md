@@ -10,6 +10,7 @@ Plano de referência: [`.cursor/plans/ui_home_vitrine.plan.md`](../.cursor/plans
 - Auth completa: tabela `operators`, `POST /admin/auth/login`, `GET /admin/auth/me`, JWT HS256
 - Login com card centrado + gradiente azul (padrão php-app)
 - Shell autenticado: sidebar colapsável, header com breadcrumbs, menu do operador, footer
+- Feedback unificado via **toast** no canto inferior direito (`useAdminToast`, variantes success/error/info)
 - Rotas stub: Painel, Páginas, Produtos, Artigos, Coleções, Cupons, Configurações
 
 ## Fora de escopo (fase seguinte)
@@ -86,6 +87,7 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 |------|------|
 | App Next.js | `apps/admin/` |
 | Login + shell | `apps/admin/src/components/admin/`, `apps/admin/src/components/auth/` |
+| Toast global | `apps/admin/src/components/ui/admin-toast.tsx`, provider em `AdminAppProviders.tsx` |
 | Auth API | `apps/api/src/adapters/http/routes/admin-routes.ts` |
 | Use case | `packages/application/src/use-cases/admin-auth/AuthenticateOperator.ts` |
 | Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql` |

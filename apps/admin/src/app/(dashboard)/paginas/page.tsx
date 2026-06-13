@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { AdminToastOnMount } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { listAdminPages } from '@/lib/api/cms-pages';
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ export default async function PaginasPage(): Promise<React.JSX.Element> {
 
   return (
     <>
+      {error ? <AdminToastOnMount message={error} variant="error" /> : null}
       <AdminPageHeader
         title="Páginas"
         breadcrumbs={[
@@ -45,11 +47,7 @@ export default async function PaginasPage(): Promise<React.JSX.Element> {
             </div>
           </header>
 
-          {error ? (
-            <div className="cms-status-banner is-error" role="alert">
-              {error}
-            </div>
-          ) : pages.length === 0 ? (
+          {error ? null : pages.length === 0 ? (
             <div className="cms-empty-state">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--admin-accent-muted)] text-[var(--admin-primary)]">
                 <FileText className="h-5 w-5" aria-hidden />
