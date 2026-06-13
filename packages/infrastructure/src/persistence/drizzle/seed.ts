@@ -531,6 +531,11 @@ async function seedCollections(
     })
     .where(eq(schema.curatedCollections.slug, 'setup-gamer-iniciante'));
 
+  await db
+    .update(schema.curatedCollections)
+    .set({ campaignOrigin: 'organico', updatedAt: now })
+    .where(eq(schema.curatedCollections.campaignOrigin, 'editorial'));
+
   const extraProducts = [
     {
       id: SEED_PRODUCT_TECLADO_ID,
@@ -600,7 +605,7 @@ async function seedCollections(
       title: 'Home office essencial',
       description: 'Conforto e produtividade para o dia a dia em casa.',
       coverImageUrl: PEXELS.homeOfficeCover,
-      campaignOrigin: 'editorial',
+      campaignOrigin: 'organico',
       utmDefaults: {
         utm_source: 'vitrine',
         utm_medium: 'home',
@@ -618,7 +623,7 @@ async function seedCollections(
       title: 'Periféricos premium',
       description: 'Teclado, mouse e áudio para elevar seu setup.',
       coverImageUrl: PEXELS.peripheralsCover,
-      campaignOrigin: 'editorial',
+      campaignOrigin: 'organico',
       utmDefaults: {
         utm_source: 'vitrine',
         utm_medium: 'home',

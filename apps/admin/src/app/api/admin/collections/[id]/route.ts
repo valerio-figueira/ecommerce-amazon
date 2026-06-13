@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 
 import {
   deleteAdminCollection,
@@ -11,6 +12,22 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+function resolveErrorStatus(error: unknown): number {
+  if (error instanceof ZodError) {
+    return 400;
+  }
+
+  const message = error instanceof Error ? error.message : 'Request failed';
+  if (message === 'Unauthorized') {
+    return 401;
+  }
+  if (message.toLowerCase().includes('not found') || message.includes('(404)')) {
+    return 404;
+  }
+
+  return 500;
+}
+
 export async function GET(_request: Request, context: RouteContext) {
   try {
     const { id } = await context.params;
@@ -18,8 +35,7 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 404;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message }, { status: resolveErrorStatus(error) });
   }
 }
 
