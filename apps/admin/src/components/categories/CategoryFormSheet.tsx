@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import {
+  buildCategoryParentOptions,
+  collectCategoryDescendantIds,
+  formatParentOptionLabel,
+} from '@/lib/api/categories-utils';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +34,7 @@ import { slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
 type CategoryFormSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  categories: AdminCategoryTreeNode[];
+  treeRoots: AdminCategoryTreeNode[];
   editing: AdminCategoryTreeNode | null;
   parentForCreate: AdminCategoryTreeNode | null;
   onSaved: () => Promise<void>;
@@ -37,7 +43,7 @@ type CategoryFormSheetProps = {
 export function CategoryFormSheet({
   open,
   onOpenChange,
-  categories,
+  treeRoots,
   editing,
   parentForCreate,
   onSaved,
@@ -87,7 +93,16 @@ export function CategoryFormSheet({
     setVisible(true);
   }, [open, editing, parentForCreate]);
 
-  const parentOptions = categories.filter((category) => category.id !== editing?.id);
+  const parentOptions = useMemo(() => {
+    const excludeIds = new Set<string>();
+    if (editing) {
+      excludeIds.add(editing.id);
+      for (const id of collectCategoryDescendantIds(editing.id, treeRoots)) {
+        excludeIds.add(id);
+      }
+    }
+    return buildCategoryParentOptions(treeRoots, excludeIds);
+  }, [editing, treeRoots]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -186,11 +201,13 @@ export function CategoryFormSheet({
               <SelectTrigger id="category-parent">
                 <SelectValue placeholder="Raiz" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__root__">Raiz</SelectItem>
-                {parentOptions.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.label}
+              <SelectContent className="max-h-72">
+                <SelectItem value="__root__">Raiz (sem pai)</SelectItem>
+                {parentOptions.map((option) => (
+                  <SelectItem key={option.id} value={option.id} title={option.pathLabel}>
+                    <span className="font-mono text-xs text-[var(--admin-text-muted)]">
+                      {formatParentOptionLabel(option)}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>

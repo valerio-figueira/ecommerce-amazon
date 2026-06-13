@@ -13,7 +13,7 @@ export type CategoryFlatOption = {
 export function flattenAdminCategoriesForPicker(
   nodes: AdminCategoryTreeNode[],
 ): CategoryFlatOption[] {
-  const allNodes = collectAllNodes(nodes);
+  const allNodes = collectCategoryNodes(nodes);
   const childIds = new Set(
     allNodes.filter((node) => node.subcategories?.length).map((node) => node.id),
   );
@@ -38,9 +38,80 @@ export function flattenAdminCategoriesForPicker(
   }));
 }
 
-function collectAllNodes(nodes: AdminCategoryTreeNode[]): AdminCategoryTreeNode[] {
+export function collectCategoryNodes(nodes: AdminCategoryTreeNode[]): AdminCategoryTreeNode[] {
   return nodes.flatMap((node) => [
     node,
-    ...(node.subcategories ? collectAllNodes(node.subcategories) : []),
+    ...(node.subcategories ? collectCategoryNodes(node.subcategories) : []),
   ]);
+}
+
+export function collectCategoryDescendantIds(categoryId: string, nodes: AdminCategoryTreeNode[]): Set<string> {
+  const all = collectCategoryNodes(nodes);
+  const byParent = new Map<string | null, AdminCategoryTreeNode[]>();
+
+  for (const node of all) {
+    const parentKey = node.parentId ?? null;
+    const siblings = byParent.get(parentKey) ?? [];
+    siblings.push(node);
+    byParent.set(parentKey, siblings);
+  }
+
+  const descendants = new Set<string>();
+
+  function walk(parentId: string) {
+    for (const child of byParent.get(parentId) ?? []) {
+      descendants.add(child.id);
+      walk(child.id);
+    }
+  }
+
+  walk(categoryId);
+  return descendants;
+}
+
+export type CategoryParentOption = {
+  id: string;
+  label: string;
+  depth: number;
+  pathLabel: string;
+};
+
+export function buildCategoryParentOptions(
+  nodes: AdminCategoryTreeNode[],
+  excludeIds: Set<string> = new Set(),
+): CategoryParentOption[] {
+  const options: CategoryParentOption[] = [];
+
+  function walk(branch: AdminCategoryTreeNode[], depth: number, ancestors: string[]) {
+    for (const node of [...branch].sort((a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label))) {
+      if (excludeIds.has(node.id)) {
+        continue;
+      }
+
+      const pathLabel = [...ancestors, node.label].join(' → ');
+      options.push({
+        id: node.id,
+        label: node.label,
+        depth,
+        pathLabel,
+      });
+
+      if (node.subcategories?.length) {
+        walk(node.subcategories, depth + 1, [...ancestors, node.label]);
+      }
+    }
+  }
+
+  walk(nodes, 0, []);
+  return options;
+}
+
+export function formatParentOptionLabel(option: CategoryParentOption): string {
+  const indent = depthIndent(option.depth);
+  return `${indent}${option.label}`;
+}
+
+function depthIndent(depth: number): string {
+  if (depth === 0) return '';
+  return `${'│  '.repeat(depth - 1)}├─ `;
 }

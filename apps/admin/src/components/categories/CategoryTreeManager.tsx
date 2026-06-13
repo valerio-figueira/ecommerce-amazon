@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronUp, FolderTree, Pencil, Plus, Trash2 } from 'lucide-react';
+import { FolderTree, Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
@@ -15,14 +15,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useAdminToast } from '@/components/ui/admin-toast';
+import { collectCategoryNodes } from '@/lib/api/categories-utils';
 import { adminCategoriesResponseSchema, type AdminCategoryTreeNode } from '@ecommerce-amazon/shared/admin';
-import { flattenCategoryTree, buildCategoryTree } from '@ecommerce-amazon/shared/category/build-category-tree';
 
 import { CategoryFormSheet } from './CategoryFormSheet';
-
-type FlatRow = ReturnType<typeof flattenCategoryTree>[number] & {
-  node: AdminCategoryTreeNode;
-};
+import { CategoryTreeView } from './CategoryTreeView';
 
 type CategoryTreeManagerProps = {
   initialItems: AdminCategoryTreeNode[];
@@ -36,10 +33,10 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
   const [parentForCreate, setParentForCreate] = useState<AdminCategoryTreeNode | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminCategoryTreeNode | null>(null);
 
-  const flatRows = useMemo(() => toFlatRows(items), [items]);
+  const totalCount = useMemo(() => collectCategoryNodes(items).length, [items]);
   const nodeById = useMemo(() => {
     const map = new Map<string, AdminCategoryTreeNode>();
-    collectNodes(items).forEach((node) => map.set(node.id, node));
+    collectCategoryNodes(items).forEach((node) => map.set(node.id, node));
     return map;
   }, [items]);
 
@@ -61,7 +58,7 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
     const node = nodeById.get(id);
     if (!node) return;
 
-    const siblings = collectNodes(items)
+    const siblings = collectCategoryNodes(items)
       .filter((item) => (item.parentId ?? null) === (node.parentId ?? null))
       .sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -155,88 +152,30 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
 
         <div className="cms-float-panel cms-blocks-panel">
           <p className="cms-blocks-panel__meta">
-            Hierarquia · <strong>{flatRows.length} categorias</strong>
+            Hierarquia · <strong>{totalCount} categorias</strong>
           </p>
 
-          <div className="cms-block-list space-y-2">
-            {flatRows.map((row) => (
-              <div
-                key={row.id}
-                className="cms-block-card cms-block-card--plain flex items-center justify-between gap-3"
-                style={{ marginLeft: `${row.depth * 1.25}rem` }}
-              >
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-[var(--admin-navy)]">
-                    {row.node.icon ? `${row.node.icon} ` : ''}
-                    {row.label}
-                  </p>
-                  <p className="truncate text-xs text-[var(--admin-text-muted)]">/{row.slug}</p>
-                </div>
-
-                <div className="flex shrink-0 items-center gap-1">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Subir"
-                    onClick={() => void handleReorder(row.id, 'up')}
-                  >
-                    <ChevronUp className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Descer"
-                    onClick={() => void handleReorder(row.id, 'down')}
-                  >
-                    <ChevronDown className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Nova subcategoria"
-                    onClick={() => openCreate(row.node)}
-                  >
-                    <Plus className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Editar"
-                    onClick={() => openEdit(row.node)}
-                  >
-                    <Pencil className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Excluir"
-                    onClick={() => setDeleteTarget(row.node)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-
-            {flatRows.length === 0 && (
-              <div className="rounded-lg border border-dashed p-8 text-center text-sm text-[var(--admin-text-muted)]">
-                <FolderTree className="mx-auto mb-3 size-8 opacity-60" />
-                Nenhuma categoria cadastrada ainda.
-              </div>
-            )}
-          </div>
+          {items.length > 0 ? (
+            <CategoryTreeView
+              nodes={items}
+              onCreateChild={(parent) => openCreate(parent)}
+              onEdit={openEdit}
+              onDelete={setDeleteTarget}
+              onReorder={(id, direction) => void handleReorder(id, direction)}
+            />
+          ) : (
+            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-[var(--admin-text-muted)]">
+              <FolderTree className="mx-auto mb-3 size-8 opacity-60" />
+              Nenhuma categoria cadastrada ainda.
+            </div>
+          )}
         </div>
       </section>
 
       <CategoryFormSheet
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        categories={collectNodes(items)}
+        treeRoots={items}
         editing={editing}
         parentForCreate={parentForCreate}
         onSaved={async () => {
@@ -263,27 +202,4 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
       </AlertDialog>
     </>
   );
-}
-
-function collectNodes(nodes: AdminCategoryTreeNode[]): AdminCategoryTreeNode[] {
-  return nodes.flatMap((node) => [node, ...(node.subcategories ? collectNodes(node.subcategories) : [])]);
-}
-
-function toFlatRows(items: AdminCategoryTreeNode[]): FlatRow[] {
-  const allNodes = collectNodes(items);
-  const byId = new Map(allNodes.map((node) => [node.id, node]));
-  const tree = buildCategoryTree(
-    allNodes.map((node) => ({
-      id: node.id,
-      slug: node.slug,
-      label: node.label,
-      parentId: node.parentId ?? null,
-      sortOrder: node.sortOrder,
-    })),
-  );
-
-  return flattenCategoryTree(tree).map((row) => ({
-    ...row,
-    node: byId.get(row.id)!,
-  }));
 }
