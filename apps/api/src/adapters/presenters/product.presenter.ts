@@ -36,6 +36,27 @@ export type ProductDetailDto = ProductListItemDto & {
   canonicalUrl?: string | undefined;
 };
 
+export type AdminProductListItemDto = {
+  id: string;
+  slug: string;
+  title: string;
+  marketplace: string;
+  externalId: string;
+  affiliateLink: string;
+  price: ProductPriceDto;
+  availability: string;
+  editorialScore: number;
+  imageUrl?: string | undefined;
+  createdAt: string;
+};
+
+export type AdminProductListResponseDto = {
+  items: AdminProductListItemDto[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export function toProductPriceDto(product: Product): ProductPriceDto {
   return {
     amount: product.shouldShowPrice ? product.price.amount : null,
@@ -84,5 +105,37 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
       ? { metaDescription: product.metaDescription }
       : {}),
     ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
+  };
+}
+
+export function toAdminProductListItemDto(product: Product): AdminProductListItemDto {
+  return {
+    id: product.id,
+    slug: product.slug,
+    title: product.titleClean,
+    marketplace: product.marketplace,
+    externalId: product.externalId,
+    affiliateLink: product.affiliateLink.url,
+    price: toProductPriceDto(product),
+    availability: product.availability,
+    editorialScore: product.editorialScore,
+    ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
+    createdAt: product.createdAt.toISOString(),
+  };
+}
+
+export function toAdminProductListResponseDto(
+  result: {
+    items: Product[];
+    total: number;
+    page: number;
+    pageSize: number;
+  },
+): AdminProductListResponseDto {
+  return {
+    items: result.items.map(toAdminProductListItemDto),
+    total: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
   };
 }

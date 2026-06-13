@@ -4,6 +4,7 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
   constructor(
     private readonly amazonTag: string,
     private readonly shopeeAffiliateId: string,
+    private readonly mercadoLivreAffiliateTag: string = '',
   ) {}
 
   build(marketplace: Marketplace, externalId: string): string {
@@ -28,17 +29,30 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
       return url.toString();
     }
 
-    const shopeeId = affiliateTag ?? this.shopeeAffiliateId;
-    const url = new URL(`https://shopee.com.br/product/${externalId}`);
-    url.searchParams.set('affiliate_id', shopeeId);
+    if (marketplace === Marketplace.SHOPEE_BR) {
+      const shopeeId = affiliateTag ?? this.shopeeAffiliateId;
+      const url = new URL(`https://shopee.com.br/product/${externalId}`);
+      url.searchParams.set('affiliate_id', shopeeId);
+      if (tracking.origin) {
+        url.searchParams.set('utm_source', tracking.origin);
+      }
+      if (tracking.blockId) {
+        url.searchParams.set('sub_id', tracking.blockId);
+      }
+      if (tracking.sessionId) {
+        url.searchParams.set('utm_content', tracking.sessionId);
+      }
+      return url.toString();
+    }
+
+    const mlId = externalId.replace(/^MLB-?/i, 'MLB');
+    const url = new URL(`https://produto.mercadolivre.com.br/${mlId}`);
+    const mlTag = affiliateTag ?? this.mercadoLivreAffiliateTag;
+    if (mlTag) {
+      url.searchParams.set('matt_tool', mlTag);
+    }
     if (tracking.origin) {
       url.searchParams.set('utm_source', tracking.origin);
-    }
-    if (tracking.blockId) {
-      url.searchParams.set('sub_id', tracking.blockId);
-    }
-    if (tracking.sessionId) {
-      url.searchParams.set('utm_content', tracking.sessionId);
     }
     return url.toString();
   }

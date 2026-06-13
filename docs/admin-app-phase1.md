@@ -75,7 +75,8 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 | `/` | Dashboard com KPIs placeholder |
 | `/paginas` | Lista páginas CMS + link para editor |
 | `/paginas/[slug]` | Editor de blocos (`CMSBlockOrderManager`) |
-| `/produtos` | Empty state — catálogo |
+| `/produtos` | Listagem + link para cadastro manual |
+| `/produtos/novo` | Formulário de criação (modo híbrido) |
 | `/artigos` | Empty state — hub de conteúdo |
 | `/colecoes` | Empty state — coleções curadas |
 | `/cupons` | Empty state — central de cupons |

@@ -37,6 +37,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/worker-pipelines.md](docs/worker-pipelines.md) | Filas BullMQ, pipelines A–D |
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
+| [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 
 ## Invariantes (nunca violar)

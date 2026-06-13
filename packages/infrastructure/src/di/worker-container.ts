@@ -21,6 +21,7 @@ import type {
 import {
   AmazonFetcherStrategy,
   DefaultMarketplaceFetcherFactory,
+  MercadoLivreFetcherStrategy,
   ShopeeFetcherStrategy,
 } from '../marketplace/strategies/marketplace-fetcher.strategy.js';
 import { MarketplaceRateLimiter } from '../marketplace/rate-limit/marketplace-rate-limiter.js';
@@ -47,6 +48,7 @@ export function buildWorkerContainer(env = loadEnv()) {
   const fetcherFactory = new DefaultMarketplaceFetcherFactory([
     new AmazonFetcherStrategy(),
     new ShopeeFetcherStrategy(),
+    new MercadoLivreFetcherStrategy(),
   ]);
 
   const queueConnection = parseRedisUrl(env.REDIS_URL, env.REDIS_QUEUE_DB);

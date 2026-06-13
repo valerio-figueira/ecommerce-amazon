@@ -92,7 +92,7 @@ Arquivo: [`packages/domain/src/enums/index.ts`](../packages/domain/src/enums/ind
 
 | Enum | Valores |
 |------|---------|
-| `Marketplace` | `amazon_br`, `shopee_br` |
+| `Marketplace` | `amazon_br`, `shopee_br`, `mercadolivre_br` |
 | `ProductAvailability` | `in_stock`, `out_of_stock`, `unknown` |
 | `AlertStatus` | `pending`, `active`, `triggered`, `expired` |
 | `ArticleType` | `guide`, `review`, `comparison`, `lookbook_social` |

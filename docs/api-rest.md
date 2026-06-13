@@ -386,6 +386,26 @@ Implementação: [`admin-cms-routes.ts`](../apps/api/src/adapters/http/routes/ad
 
 ---
 
+## Admin — produtos
+
+Implementação: [`admin-product-routes.ts`](../apps/api/src/adapters/http/routes/admin-product-routes.ts). Doc: [admin-products-phase1.md](./admin-products-phase1.md).
+
+### `GET /admin/products`
+
+**Query:** `page?`, `pageSize?` (max 100), `marketplace?` (`amazon_br` \| `shopee_br` \| `mercadolivre_br`), `sort?`
+
+**Response 200:** lista paginada com `affiliateLink` e metadados admin (ver `adminProductListResponseSchema` em `@ecommerce-amazon/shared/admin`).
+
+### `POST /admin/products`
+
+**Body:** `createProductBodySchema` — link de afiliado, marketplace, externalId, título, imagens, nota editorial (0–10), prós/contras, preço, `shouldShowPrice`, disponibilidade.
+
+**Response 201:** `{ id, slug }`
+
+**Response 409:** produto duplicado (`marketplace` + `externalId`).
+
+---
+
 ## Schemas de request (referência)
 
 Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts)

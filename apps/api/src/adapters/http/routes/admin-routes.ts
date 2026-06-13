@@ -36,6 +36,7 @@ function getBearerToken(request: FastifyRequest): string | null {
 }
 
 import { registerAdminCmsRoutes } from './admin-cms-routes.js';
+import { registerAdminProductRoutes } from './admin-product-routes.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
@@ -94,6 +95,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   });
 
   await registerAdminCmsRoutes(app, container);
+  await registerAdminProductRoutes(app, container);
 }
 
 declare module 'fastify' {

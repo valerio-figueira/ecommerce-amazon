@@ -13,7 +13,11 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-export const marketplaceEnum = pgEnum('marketplace', ['amazon_br', 'shopee_br']);
+export const marketplaceEnum = pgEnum('marketplace', [
+  'amazon_br',
+  'shopee_br',
+  'mercadolivre_br',
+]);
 export const availabilityEnum = pgEnum('availability', ['in_stock', 'out_of_stock', 'unknown']);
 export const alertStatusEnum = pgEnum('alert_status', [
   'pending',

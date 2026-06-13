@@ -3,6 +3,7 @@ import {
   GetProductBySlug,
   ListProducts,
   GetProductPriceHistory,
+  CreateProduct,
   CreatePriceAlert,
   ConfirmPriceAlert,
   AddToWishlist,
@@ -55,8 +56,9 @@ export function buildApiContainer(env = loadEnv()) {
 
   const productRepository = new DrizzleProductRepository(db);
   const pageRepository = new DrizzlePageRepository(db);
-  const listProducts = new ListProducts(productRepository);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
+  const listProducts = new ListProducts(productRepository);
+  const createProduct = new CreateProduct(productRepository, snapshotRepository, cache);
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
   const contentRepository = new DrizzleContentRepository(db);
@@ -79,6 +81,7 @@ export function buildApiContainer(env = loadEnv()) {
     useCases: {
       getProductBySlug: new GetProductBySlug(productRepository),
       listProducts,
+      createProduct,
       getProductPriceHistory: new GetProductPriceHistory(snapshotRepository, cache),
       createPriceAlert: new CreatePriceAlert(alertRepository, productRepository),
       confirmPriceAlert: new ConfirmPriceAlert(alertRepository),

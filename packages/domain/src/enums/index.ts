@@ -1,6 +1,7 @@
 export enum Marketplace {
   AMAZON_BR = 'amazon_br',
   SHOPEE_BR = 'shopee_br',
+  MERCADOLIVRE_BR = 'mercadolivre_br',
 }
 
 export enum ProductAvailability {

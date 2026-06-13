@@ -36,6 +36,13 @@ export class ValidationError extends DomainError {
   }
 }
 
+export class ConflictError extends DomainError {
+  constructor(message: string) {
+    super(message, 'CONFLICT');
+    this.name = 'ConflictError';
+  }
+}
+
 export class AuthenticationError extends DomainError {
   constructor(message = 'E-mail ou senha inválidos') {
     super(message, 'AUTHENTICATION_FAILED');

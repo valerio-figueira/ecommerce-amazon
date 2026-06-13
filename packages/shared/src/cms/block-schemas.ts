@@ -27,7 +27,7 @@ export const featuredProductPropsSchema = z.object({
 export const productGridPropsSchema = z.object({
   title: z.string().min(1),
   categorySlug: z.string().nullable().optional(),
-  marketplace: z.enum(['amazon_br', 'shopee_br']).optional(),
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),
   sort: z.enum(['editorial_score', 'price_updated_at']).default('editorial_score'),
   pageSize: z.number().int().min(4).max(24).default(12),
   columns: z.union([z.literal(2), z.literal(4)]).default(4),
@@ -65,7 +65,7 @@ export const curatedCollectionPropsSchema = z.object({
 });
 
 export const couponStripPropsSchema = z.object({
-  marketplace: z.enum(['amazon_br', 'shopee_br']).optional(),
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),
   maxItems: z.number().int().min(1).max(10).default(5),
 });
 

@@ -6,7 +6,7 @@ export const ListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(100).optional(),
   category: z.string().optional(),
-  marketplace: z.enum(['amazon_br', 'shopee_br']).optional(),
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),
   sort: z.enum(['editorial_score', 'price_updated_at']).optional(),
 });
 
@@ -41,7 +41,7 @@ export const WishlistRemoveParamsSchema = z.object({
 });
 
 export const BatchCheckoutSchema = z.object({
-  marketplace: z.enum(['amazon_br', 'shopee_br']),
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']),
 });
 
 export const CreateComparisonSchema = z.object({
@@ -85,7 +85,7 @@ export const CollectionSlugParamsSchema = z.object({
 });
 
 export const CouponMarketplaceParamsSchema = z.object({
-  marketplace: z.enum(['amazon_br', 'shopee_br']),
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']),
 });
 
 export const PageSlugParamsSchema = z.object({

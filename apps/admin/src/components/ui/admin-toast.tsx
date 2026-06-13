@@ -159,8 +159,18 @@ export function AdminToastProvider({ children }: { children: ReactNode }): React
   const value = useMemo<AdminToastContextValue>(
     () => ({
       toast: pushToast,
-      success: (message, title) => pushToast({ message, title, variant: 'success' }),
-      error: (message, title) => pushToast({ message, title, variant: 'error' }),
+      success: (message, title) =>
+        pushToast({
+          message,
+          variant: 'success',
+          ...(title !== undefined ? { title } : {}),
+        }),
+      error: (message, title) =>
+        pushToast({
+          message,
+          variant: 'error',
+          ...(title !== undefined ? { title } : {}),
+        }),
     }),
     [pushToast],
   );
@@ -203,7 +213,11 @@ export function AdminToastOnMount({
       return;
     }
 
-    adminToast.toast({ message, title, variant });
+    adminToast.toast({
+      message,
+      variant,
+      ...(title !== undefined ? { title } : {}),
+    });
   }, [adminToast, message, title, variant]);
 
   return null;

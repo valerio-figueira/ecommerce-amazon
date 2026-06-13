@@ -32,7 +32,7 @@ erDiagram
 
 | Enum DB | Valores TypeScript (`packages/domain`) |
 |---------|----------------------------------------|
-| `marketplace` | `amazon_br`, `shopee_br` |
+| `marketplace` | `amazon_br`, `shopee_br`, `mercadolivre_br` |
 | `availability` | `in_stock`, `out_of_stock`, `unknown` |
 | `alert_status` | `pending`, `active`, `triggered`, `expired` |
 | `article_type` | `guide`, `review`, `comparison`, `lookbook_social` |
@@ -66,7 +66,7 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | Coluna | Tipo | Notas |
 |--------|------|-------|
 | `id` | uuid PK | |
-| `marketplace` | enum | `amazon_br` \| `shopee_br` |
+| `marketplace` | enum | `amazon_br` \| `shopee_br` \| `mercadolivre_br` |
 | `external_id` | text | ID no marketplace |
 | `slug` | text | URL-friendly, UNIQUE |
 | `title_clean` | text | Título higienizado (Pipeline C) |

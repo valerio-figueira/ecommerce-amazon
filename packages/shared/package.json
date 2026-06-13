@@ -17,6 +17,14 @@
     "./seo": {
       "types": "./dist/seo/index.d.ts",
       "import": "./dist/seo/index.js"
+    },
+    "./admin": {
+      "types": "./dist/admin/product-schemas.d.ts",
+      "import": "./dist/admin/product-schemas.js"
+    },
+    "./marketplace": {
+      "types": "./dist/marketplace/index.d.ts",
+      "import": "./dist/marketplace/index.js"
     }
   },
   "scripts": {

@@ -17,7 +17,10 @@ export type ProductJsonLdInput = {
 };
 
 function marketplaceBrandName(marketplace: string): string {
-  return marketplace === 'amazon_br' ? 'Amazon' : 'Shopee';
+  if (marketplace === 'amazon_br') return 'Amazon';
+  if (marketplace === 'shopee_br') return 'Shopee';
+  if (marketplace === 'mercadolivre_br') return 'Mercado Livre';
+  return marketplace;
 }
 
 function schemaAvailability(availability: string): string {

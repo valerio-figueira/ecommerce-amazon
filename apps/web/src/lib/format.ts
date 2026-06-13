@@ -5,5 +5,6 @@ export function formatPrice(amount: number, currency: string): string {
 export function marketplaceLabel(marketplace: string): string {
   if (marketplace === 'amazon_br') return 'Amazon';
   if (marketplace === 'shopee_br') return 'Shopee';
+  if (marketplace === 'mercadolivre_br') return 'Mercado Livre';
   return marketplace;
 }
