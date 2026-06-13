@@ -60,3 +60,19 @@ export interface CacheInvalidator {
 export interface PageCacheInvalidator {
   invalidateBySlug(slug: string): Promise<void>;
 }
+
+export type AuthTokenPayload = {
+  sub: string;
+  email: string;
+  name: string;
+};
+
+export interface AuthTokenService {
+  sign(payload: AuthTokenPayload): Promise<string>;
+  verify(token: string): Promise<AuthTokenPayload>;
+}
+
+export interface PasswordHasher {
+  hash(plain: string): Promise<string>;
+  verify(plain: string, hash: string): Promise<boolean>;
+}

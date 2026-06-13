@@ -18,6 +18,7 @@ import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { schema } from '../drizzle/client.js';
 import { loadDotenvFromMonorepoRoot } from './load-env.js';
 import { insertPageWithBlocks } from '../repositories/drizzle-page.repository.js';
+import { BcryptPasswordHasher } from '../../auth/bcrypt-password.hasher.js';
 
 const SEED_PRODUCT_AMAZON_ID = 'a1111111-1111-4111-8111-111111111111';
 const SEED_PRODUCT_SHOPEE_ID = 'a2222222-2222-4222-8222-222222222222';
@@ -33,6 +34,7 @@ const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
+const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
 
 async function runSeed(): Promise<void> {
   loadDotenvFromMonorepoRoot();
@@ -64,6 +66,7 @@ async function runSeed(): Promise<void> {
     }
 
     await seedHomePage(db, now, logger);
+    await seedOperator(db, logger);
   } finally {
     await sql.end();
   }
@@ -329,6 +332,36 @@ async function seedHomePage(
   );
 
   logger.info('Home page CMS seed inserted');
+}
+
+async function seedOperator(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const env = loadEnv();
+  const existing = await db
+    .select({ id: schema.operators.id })
+    .from(schema.operators)
+    .where(eq(schema.operators.id, SEED_OPERATOR_ID))
+    .limit(1);
+
+  if (existing.length > 0) {
+    logger.info('Operator seed data already present, skipping operator');
+    return;
+  }
+
+  const passwordHasher = new BcryptPasswordHasher();
+  const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
+
+  await db.insert(schema.operators).values({
+    id: SEED_OPERATOR_ID,
+    email: env.ADMIN_SEED_EMAIL.toLowerCase(),
+    passwordHash,
+    name: 'Administrador Vitrine',
+    status: 'active',
+  });
+
+  logger.info('Operator seed inserted', { email: env.ADMIN_SEED_EMAIL });
 }
 
 runSeed().catch((error: unknown) => {

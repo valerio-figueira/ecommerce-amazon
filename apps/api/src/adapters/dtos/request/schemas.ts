@@ -89,3 +89,8 @@ export const CouponMarketplaceParamsSchema = z.object({
 export const PageSlugParamsSchema = z.object({
   slug: z.string().min(1),
 });
+
+export const AdminLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});

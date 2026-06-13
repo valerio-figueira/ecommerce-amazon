@@ -36,6 +36,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/api-rest.md](docs/api-rest.md) | Contrato REST (rotas, Zod, DTOs) |
 | [docs/worker-pipelines.md](docs/worker-pipelines.md) | Filas BullMQ, pipelines A–D |
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
+| [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 
 ## Invariantes (nunca violar)
@@ -52,6 +53,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 ```
 apps/api          → REST read-heavy
 apps/web          → Next.js vitrine (CMS-driven)
+apps/admin        → Painel CMS operador
 apps/worker       → BullMQ + fetchers externos
 packages/domain   → entidades, ports, eventos
 packages/application → use cases

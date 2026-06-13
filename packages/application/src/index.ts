@@ -23,3 +23,4 @@ export { DeletePageBlock } from './use-cases/admin-cms/DeletePageBlock.js';
 export { UpdatePageBlocksOrder } from './use-cases/admin-cms/UpdatePageBlocksOrder.js';
 export { ListProductCategories } from './use-cases/product/ListProductCategories.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';
+export { AuthenticateOperator } from './use-cases/admin-auth/AuthenticateOperator.js';

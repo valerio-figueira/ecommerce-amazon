@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+:root {
+  --admin-navy: #182a5a;
+  --admin-primary: #0d6efd;
+  --admin-primary-hover: #0b5ed7;
+  --admin-bg: #f8f9fa;
+  --admin-gray: #e7e7e7;
+  --admin-surface: #ffffff;
+  --admin-text-muted: #5c6a85;
+  --admin-focus-ring: rgba(13, 110, 253, 0.28);
+  --admin-shadow: rgba(24, 42, 90, 0.12);
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--admin-navy);
+  background: var(--admin-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']),
+a[href],
+label[for] {
+  cursor: pointer;
+}
+
+body.admin-login-page {
+  min-height: 100vh;
+}
+
+.admin-login-page .admin-login-wrapper {
+  min-height: 100vh;
+  background-color: var(--admin-bg);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(13, 110, 253, 0.14), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 100%, rgba(24, 42, 90, 0.08), transparent 50%),
+    linear-gradient(168deg, #eef3fb 0%, var(--admin-bg) 42%, #e8eef8 100%);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 850px) {
+  .admin-content-column {
+    padding-top: 3.5rem;
+  }
+}

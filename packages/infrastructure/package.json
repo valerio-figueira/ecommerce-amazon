@@ -25,11 +25,14 @@
     "@ecommerce-amazon/domain": "*",
     "@ecommerce-amazon/shared": "*",
     "bullmq": "^5.53.2",
+    "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.2",
     "ioredis": "^5.6.1",
+    "jose": "^6.0.11",
     "postgres": "^3.4.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.1",
     "tsx": "^4.19.4",

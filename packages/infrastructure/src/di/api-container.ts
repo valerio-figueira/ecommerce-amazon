@@ -20,6 +20,7 @@ import {
   DeletePageBlock,
   UpdatePageBlocksOrder,
   ResolveAffiliateRedirect,
+  AuthenticateOperator,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -40,6 +41,9 @@ import {
   DrizzleClickEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
+import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
+import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
+import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
 
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -58,6 +62,9 @@ export function buildApiContainer(env = loadEnv()) {
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
+  const operatorRepository = new DrizzleOperatorRepository(db);
+  const passwordHasher = new BcryptPasswordHasher();
+  const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
 
   const linkBuilder = new DefaultAffiliateLinkBuilder(
     env.AMAZON_AFFILIATE_TAG,
@@ -96,6 +103,14 @@ export function buildApiContainer(env = loadEnv()) {
         affiliateAccountRepository,
         linkBuilder,
       ),
+      authenticateOperator: new AuthenticateOperator(
+        operatorRepository,
+        passwordHasher,
+        authTokenService,
+      ),
+    },
+    services: {
+      authTokenService,
     },
     repositories: {
       wishlistRepository,

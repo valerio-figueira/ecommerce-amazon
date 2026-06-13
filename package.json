@@ -7,10 +7,11 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared && npm run build -w @ecommerce-amazon/application && npm run build -w @ecommerce-amazon/infrastructure && npm run build -w @ecommerce-amazon/api && npm run build -w @ecommerce-amazon/worker && npm run build -w @ecommerce-amazon/web",
+    "build": "npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared && npm run build -w @ecommerce-amazon/application && npm run build -w @ecommerce-amazon/infrastructure && npm run build -w @ecommerce-amazon/api && npm run build -w @ecommerce-amazon/worker && npm run build -w @ecommerce-amazon/web && npm run build -w @ecommerce-amazon/admin",
     "dev:api": "turbo run dev --filter=@ecommerce-amazon/api",
     "dev:worker": "turbo run dev --filter=@ecommerce-amazon/worker",
     "dev:web": "turbo run dev --filter=@ecommerce-amazon/web",
+    "dev:admin": "turbo run dev --filter=@ecommerce-amazon/admin",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",

@@ -6,6 +6,7 @@ import { ZodError } from 'zod';
 import { DomainError, parseMarketplace, parseProductSortField, ValidationError, type Marketplace } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
+import { registerAdminRoutes } from './admin-routes.js';
 import {
   toProductDetailDto,
   toProductListItemDto,
@@ -314,4 +315,6 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       return handleError(error, reply);
     }
   });
+
+  await registerAdminRoutes(app, container);
 }

@@ -5,7 +5,7 @@ export function parseCorsOrigins(origins: string): string[] {
     .filter((origin) => origin.length > 0);
 }
 
-export function isDevWebOrigin(origin: string, webPort: number): boolean {
+export function isDevWebOrigin(origin: string, webPort: number, adminPort = 3002): boolean {
   try {
     const url = new URL(origin);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
@@ -13,7 +13,7 @@ export function isDevWebOrigin(origin: string, webPort: number): boolean {
     }
 
     const port = url.port || (url.protocol === 'https:' ? '443' : '80');
-    const devPorts = new Set([String(webPort), '3000', '3001']);
+    const devPorts = new Set([String(webPort), String(adminPort), '3000', '3001', '3002']);
     if (!devPorts.has(port)) {
       return false;
     }
@@ -31,7 +31,7 @@ export function isDevWebOrigin(origin: string, webPort: number): boolean {
 export function isOriginAllowed(
   origin: string | undefined,
   allowedOrigins: string[],
-  options: { nodeEnv: string; webPort: number },
+  options: { nodeEnv: string; webPort: number; adminPort?: number },
 ): boolean {
   if (!origin) {
     return true;
@@ -39,7 +39,10 @@ export function isOriginAllowed(
   if (allowedOrigins.includes(origin)) {
     return true;
   }
-  if (options.nodeEnv === 'development' && isDevWebOrigin(origin, options.webPort)) {
+  if (
+    options.nodeEnv === 'development' &&
+    isDevWebOrigin(origin, options.webPort, options.adminPort ?? 3002)
+  ) {
     return true;
   }
   return false;
@@ -53,6 +56,7 @@ export function createCorsOriginDelegate(
   allowedOrigins: string[],
   nodeEnv: string,
   webPort: number,
+  adminPort = 3002,
 ): CorsOriginDelegate | string[] | boolean {
   if (nodeEnv !== 'development') {
     return allowedOrigins.length > 0 ? allowedOrigins : true;
@@ -61,7 +65,7 @@ export function createCorsOriginDelegate(
   return (origin: string | undefined, callback: CorsCallback): void => {
     callback(
       null,
-      isOriginAllowed(origin, allowedOrigins, { nodeEnv, webPort }),
+      isOriginAllowed(origin, allowedOrigins, { nodeEnv, webPort, adminPort }),
     );
   };
 }

@@ -44,8 +44,13 @@ const envSchemaBase = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
-  CORS_ORIGINS: z.string().default('http://localhost:3001'),
+  CORS_ORIGINS: z.string().default('http://localhost:3001,http://localhost:3002'),
   WEB_PORT: z.coerce.number().int().positive().default(3001),
+  ADMIN_PORT: z.coerce.number().int().positive().default(3002),
+  JWT_SECRET: z.string().default('dev-jwt-secret-change-in-production'),
+  JWT_EXPIRES_IN: z.string().default('8h'),
+  ADMIN_SEED_EMAIL: z.string().email().default('admin@vitrine.local'),
+  ADMIN_SEED_PASSWORD: z.string().min(8).default('vitrine-admin'),
 });
 
 export const envSchema = envSchemaBase.transform((data) => ({

@@ -73,4 +73,9 @@ export enum AffiliateAccountStatus {
   SUSPENDED = 'suspended',
 }
 
+export enum OperatorStatus {
+  ACTIVE = 'active',
+  DISABLED = 'disabled',
+}
+
 export { BlockType, PageStatus, BlockVisibility, ProductSortField } from './cms.js';

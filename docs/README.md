@@ -27,6 +27,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [cms-home-phase1.md](./cms-home-phase1.md) | Home CMS-driven: blocos, schemas Zod, seed, `apps/web`, wishlist, tracking |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [go-redirect-seo.md](./go-redirect-seo.md) | Redirect `/go`, JSON-LD produto, interlinkagem SEO |
+| [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
 
 ### Planos e especificação (fonte)
 
@@ -40,6 +41,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 |--------------|--------|---------------|
 | `apps/api` | REST read-heavy (Fastify) | [api-rest.md](./api-rest.md) |
 | `apps/web` | Vitrine Next.js 15 — Home via PageRenderer | [cms-home-phase1.md](./cms-home-phase1.md) |
+| `apps/admin` | Painel CMS operador (login + shell) | [admin-app-phase1.md](./admin-app-phase1.md) |
 | `apps/worker` | Filas BullMQ, sync marketplace | [worker-pipelines.md](./worker-pipelines.md) |
 | `packages/domain` | Entidades, enums, ports | [domain-model.md](./domain-model.md) |
 | `packages/application` | Use cases | [architecture.md](./architecture.md) |

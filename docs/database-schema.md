@@ -172,12 +172,15 @@ Sessão anônima via `session_id` (cookie web).
 
 INDEX `(block_id)`.
 
-### Ops — `sync_job_logs` / `affiliate_accounts`
+### Ops — `sync_job_logs` / `affiliate_accounts` / `operators`
 
 | Tabela | Uso |
 |--------|-----|
 | `sync_job_logs` | auditoria pipelines worker |
 | `affiliate_accounts` | tag afiliado por marketplace; `status` inclui `pending_manual_validation` |
+| `operators` | operadores CMS; enum `operator_status` (`active`, `disabled`); email único |
+
+Migration: [`0004_operators.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql).
 
 ## Seed de desenvolvimento
 
@@ -192,6 +195,7 @@ Arquivo: [`packages/infrastructure/src/persistence/drizzle/seed.ts`](../packages
 | Cupom | `d1111111-...` | `VITRINE10` |
 | Page home | `f1111111-...` | `home` |
 | Blocos CMS | `f2111111-...` … `f6111111-...` | ver [cms-home-phase1.md](./cms-home-phase1.md) |
+| Operador admin | `90111111-...` | email em `ADMIN_SEED_EMAIL` |
 
 Produção: seed ignorado salvo `SEED_FORCE=true`.
 

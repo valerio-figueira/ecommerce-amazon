@@ -324,6 +324,32 @@ Persistido em `click_events`. Redirect `/go` usa origem `redirect_go` automatica
 
 ---
 
+## Admin — autenticação
+
+Implementação: [`admin-routes.ts`](../apps/api/src/adapters/http/routes/admin-routes.ts). Doc: [admin-app-phase1.md](./admin-app-phase1.md).
+
+Rotas `/admin/*` (exceto login/logout) exigem header `Authorization: Bearer <JWT>`.
+
+### `POST /admin/auth/login`
+
+**Body:** `{ "email": string, "password": string }`
+
+**Response 200:** `{ token, operator: { id, email, name } }`
+
+**Response 401:** credenciais inválidas ou operador inativo.
+
+### `GET /admin/auth/me`
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response 200:** `{ id, email, name }`
+
+### `POST /admin/auth/logout`
+
+**Response:** `204` (stateless; cookie limpo no `apps/admin`).
+
+---
+
 ## Schemas de request (referência)
 
 Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts)
@@ -345,6 +371,7 @@ Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapt
 | `ArticleSlugParamsSchema` | GET /articles |
 | `CollectionSlugParamsSchema` | GET /collections |
 | `PageSlugParamsSchema` | GET /pages |
+| `AdminLoginSchema` | POST /admin/auth/login |
 
 ## Schemas web (client)
 
@@ -358,7 +385,7 @@ Client HTTP: [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.t
 |------|-------|
 | `DELETE /price-alerts/:token` | PRD Core |
 | `GET /coupons/:marketplace` | PRD Core |
-| `POST/PATCH /admin/pages/*` | UI Home fase Admin |
+| `POST/PATCH /admin/pages/*` | UI Home fase Admin (use cases parciais existem) |
 
 ## CORS
 

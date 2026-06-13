@@ -17,11 +17,16 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `POSTGRES_*` | `localhost:5432`, user `vitrine` | Catálogo |
 | `REDIS_*` | `localhost:6379` | Cache + filas |
 | `API_PORT` | `3000` | Fastify |
-| `WEB_PORT` | `3001` | Next.js |
+| `WEB_PORT` | `3001` | Next.js vitrine |
+| `ADMIN_PORT` | `3002` | Painel CMS (`apps/admin`) |
+| `JWT_SECRET` | (dev placeholder) | JWT operador — **mesmo valor** na API e no admin; o admin lê `.env` da raiz via `next.config.ts` |
+| `JWT_EXPIRES_IN` | `8h` | Expiração JWT |
+| `ADMIN_SEED_EMAIL` | `admin@vitrine.local` | Operador seed |
+| `ADMIN_SEED_PASSWORD` | `vitrine-admin` | Senha operador seed |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3000` | Fetch do browser/SSR |
 | `API_INTERNAL_URL` | `http://localhost:3000` | Rewrite `/go/:slug` no Next.js |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | URLs absolutas no JSON-LD |
-| `CORS_ORIGINS` | `http://localhost:3001,...` | Origens explícitas na API |
+| `CORS_ORIGINS` | `http://localhost:3001,...` | Origens explícitas na API (incluir `:3002` para admin) |
 | `NEXT_ALLOWED_DEV_ORIGINS` | — | IP LAN para assets Next dev (ex.: `192.168.100.6`) |
 
 ## Infraestrutura (Postgres + Redis)
@@ -69,9 +74,13 @@ npm run dev:api
 
 # Terminal 2
 npm run dev:web
+
+# Terminal 3 (painel CMS)
+npm run dev:admin
 ```
 
 - Web: http://localhost:3001  
+- Admin: http://localhost:3002/login (credenciais seed: `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD`)  
 - API: http://localhost:3000/health  
 
 ## CORS
@@ -79,7 +88,7 @@ npm run dev:web
 A API valida `Origin` via [`createCorsOriginDelegate`](../packages/shared/src/cors.ts):
 
 - **Produção:** lista em `CORS_ORIGINS`
-- **Development:** aceita também `localhost`, `127.0.0.1` e IPs LAN (`192.168.x.x`) nas portas 3000/3001
+- **Development:** aceita também `localhost`, `127.0.0.1` e IPs LAN (`192.168.x.x`) nas portas 3000/3001/3002
 
 Se acessar o web por IP de rede, reinicie a API após alterar `.env`.
 

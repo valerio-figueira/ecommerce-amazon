@@ -16,8 +16,9 @@ export async function buildServer() {
       allowedOrigins,
       container.env.NODE_ENV,
       container.env.WEB_PORT,
+      container.env.ADMIN_PORT,
     ),
-    allowedHeaders: ['Content-Type', 'x-session-id'],
+    allowedHeaders: ['Content-Type', 'x-session-id', 'Authorization'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
   await registerRoutes(app, container);
