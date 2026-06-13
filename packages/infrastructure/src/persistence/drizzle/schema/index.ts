@@ -46,6 +46,7 @@ export const blockTypeEnum = pgEnum('block_type', [
   'featured_product',
   'product_grid',
   'category_pills',
+  'category_bento_grid',
   'hero_split',
   'curated_collection',
   'coupon_strip',

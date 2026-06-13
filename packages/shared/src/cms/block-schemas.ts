@@ -39,6 +39,20 @@ export const categoryPillsPropsSchema = z.object({
   linkedBlockId: z.string().uuid().optional(),
 });
 
+export const categoryBentoTileSchema = z.object({
+  title: z.string().min(1),
+  subtitle: z.string().optional(),
+  imageUrl: z.string().url(),
+  href: z.string().optional(),
+  categorySlug: z.string().optional(),
+  size: z.enum(['small', 'large']).default('small'),
+});
+
+export const categoryBentoGridPropsSchema = z.object({
+  title: z.string().min(1),
+  tiles: z.array(categoryBentoTileSchema).min(1).max(8),
+});
+
 export const heroSplitPropsSchema = z.object({
   ratio: z.enum(['2/1', '1/1']).default('2/1'),
   leftBlockId: z.string().uuid(),
@@ -88,6 +102,8 @@ export type HeroCarouselProps = z.infer<typeof heroCarouselPropsSchema>;
 export type FeaturedProductProps = z.infer<typeof featuredProductPropsSchema>;
 export type ProductGridProps = z.infer<typeof productGridPropsSchema>;
 export type CategoryPillsProps = z.infer<typeof categoryPillsPropsSchema>;
+export type CategoryBentoTile = z.infer<typeof categoryBentoTileSchema>;
+export type CategoryBentoGridProps = z.infer<typeof categoryBentoGridPropsSchema>;
 export type HeroSplitProps = z.infer<typeof heroSplitPropsSchema>;
 export type CuratedCollectionProps = z.infer<typeof curatedCollectionPropsSchema>;
 export type CouponStripProps = z.infer<typeof couponStripPropsSchema>;
@@ -101,6 +117,7 @@ export type BlockPropsMap = {
   [BlockType.FEATURED_PRODUCT]: FeaturedProductProps;
   [BlockType.PRODUCT_GRID]: ProductGridProps;
   [BlockType.CATEGORY_PILLS]: CategoryPillsProps;
+  [BlockType.CATEGORY_BENTO_GRID]: CategoryBentoGridProps;
   [BlockType.HERO_SPLIT]: HeroSplitProps;
   [BlockType.CURATED_COLLECTION]: CuratedCollectionProps;
   [BlockType.COUPON_STRIP]: CouponStripProps;
@@ -115,6 +132,7 @@ export const BlockPropsResolver: Record<BlockType, z.ZodType<unknown>> = {
   [BlockType.FEATURED_PRODUCT]: featuredProductPropsSchema,
   [BlockType.PRODUCT_GRID]: productGridPropsSchema,
   [BlockType.CATEGORY_PILLS]: categoryPillsPropsSchema,
+  [BlockType.CATEGORY_BENTO_GRID]: categoryBentoGridPropsSchema,
   [BlockType.HERO_SPLIT]: heroSplitPropsSchema,
   [BlockType.CURATED_COLLECTION]: curatedCollectionPropsSchema,
   [BlockType.COUPON_STRIP]: couponStripPropsSchema,

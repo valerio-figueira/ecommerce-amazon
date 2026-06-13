@@ -2,7 +2,7 @@
 
 import type { Control } from 'react-hook-form';
 
-import type { HeroSlideFormValue } from '@/components/cms/props-forms/block-form-registry';
+import type { CategoryBentoTileFormValue, HeroSlideFormValue } from '@/components/cms/props-forms/block-form-registry';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Input, Textarea } from '@/components/ui/input';
 import {
@@ -16,6 +16,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 
 export type BlockFormValues = {
   slides?: HeroSlideFormValue[];
+  tiles?: CategoryBentoTileFormValue[];
   autoplay?: boolean;
   intervalMs?: number;
   categorySlugs?: string[];

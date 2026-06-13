@@ -1,6 +1,7 @@
 import { BlockType } from '@ecommerce-amazon/domain';
 import {
   bannerPropsSchema,
+  categoryBentoGridPropsSchema,
   categoryPillsPropsSchema,
   dynamicProductGridPropsSchema,
   featuredProductPropsSchema,
@@ -12,9 +13,14 @@ import {
 import type { z } from 'zod';
 
 type SlideButtonMode = 'none' | 'link' | 'product';
+type BentoTileActionMode = 'none' | 'category' | 'link';
 
 export type HeroSlideFormValue = Record<string, unknown> & {
   buttonMode?: SlideButtonMode;
+};
+
+export type CategoryBentoTileFormValue = Record<string, unknown> & {
+  actionMode?: BentoTileActionMode;
 };
 
 export type HeroCarouselFormValues = {
@@ -45,6 +51,7 @@ export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, 
   [BlockType.FEATURED_PRODUCT]: featuredProductPropsSchema,
   [BlockType.PRODUCT_GRID]: productGridPropsSchema,
   [BlockType.CATEGORY_PILLS]: categoryPillsPropsSchema,
+  [BlockType.CATEGORY_BENTO_GRID]: categoryBentoGridPropsSchema,
   [BlockType.HERO_SPLIT]: null,
   [BlockType.CURATED_COLLECTION]: null,
   [BlockType.COUPON_STRIP]: null,
@@ -82,6 +89,18 @@ export function normalizeFormValues(type: BlockType, props: unknown): Record<str
 
   if (type === BlockType.CATEGORY_PILLS && !Array.isArray(base['categorySlugs'])) {
     return { ...base, categorySlugs: [] };
+  }
+
+  if (type === BlockType.CATEGORY_BENTO_GRID && Array.isArray(base['tiles'])) {
+    const tiles = base['tiles'].filter(isRecord).map((tile): CategoryBentoTileFormValue => ({
+      ...tile,
+      actionMode: inferBentoTileActionMode(tile),
+    }));
+    return { ...base, tiles };
+  }
+
+  if (type === BlockType.CATEGORY_BENTO_GRID && !Array.isArray(base['tiles'])) {
+    return { ...base, tiles: [] };
   }
 
   if (type === BlockType.PRODUCT_GRID && base['categorySlug'] === null) {
@@ -146,6 +165,10 @@ export function sanitizeFormValues(
     }
   }
 
+  if (type === BlockType.CATEGORY_BENTO_GRID && Array.isArray(next['tiles'])) {
+    next['tiles'] = next['tiles'].map(sanitizeBentoTile);
+  }
+
   if (type === BlockType.PRODUCT_GRID) {
     if (next['categorySlug'] === ALL_CATEGORY_VALUE || next['categorySlug'] === null) {
       delete next['categorySlug'];
@@ -193,4 +216,47 @@ export function getSlideButtonMode(slide: unknown): SlideButtonMode {
     }
   }
   return inferSlideButtonMode(slide);
+}
+
+export function getBentoTileActionMode(tile: unknown): BentoTileActionMode {
+  if (!isRecord(tile)) return 'none';
+  if (typeof tile['actionMode'] === 'string') {
+    if (tile['actionMode'] === 'link' || tile['actionMode'] === 'category') {
+      return tile['actionMode'];
+    }
+  }
+  return inferBentoTileActionMode(tile);
+}
+
+function inferBentoTileActionMode(tile: Record<string, unknown>): BentoTileActionMode {
+  if (typeof tile['href'] === 'string' && tile['href']) {
+    return 'link';
+  }
+  if (typeof tile['categorySlug'] === 'string' && tile['categorySlug']) {
+    return 'category';
+  }
+  return 'none';
+}
+
+function sanitizeBentoTile(tile: unknown): Record<string, unknown> {
+  if (!isRecord(tile)) return {};
+  const record: CategoryBentoTileFormValue = { ...tile };
+  const mode = record.actionMode ?? inferBentoTileActionMode(record);
+  delete record.actionMode;
+
+  if (mode === 'link') {
+    delete record['categorySlug'];
+  } else if (mode === 'category') {
+    delete record['href'];
+    if (record['categorySlug'] === ALL_CATEGORY_VALUE || record['categorySlug'] === '') {
+      delete record['categorySlug'];
+    }
+  } else {
+    delete record['href'];
+    delete record['categorySlug'];
+  }
+
+  if (record['subtitle'] === '') delete record['subtitle'];
+
+  return record;
 }

@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Image,
   LayoutGrid,
+  LayoutPanelLeft,
   LayoutTemplate,
   Link2,
   Minus,
@@ -41,6 +42,11 @@ export const BLOCK_TYPE_META: Record<BlockType, BlockTypeMeta> = {
     label: BLOCK_TYPE_LABELS[BlockType.CATEGORY_PILLS],
     icon: Tag,
     accentClass: 'bg-teal-100 text-teal-900',
+  },
+  [BlockType.CATEGORY_BENTO_GRID]: {
+    label: BLOCK_TYPE_LABELS[BlockType.CATEGORY_BENTO_GRID],
+    icon: LayoutPanelLeft,
+    accentClass: 'bg-emerald-100 text-emerald-900',
   },
   [BlockType.HERO_SPLIT]: {
     label: BLOCK_TYPE_LABELS[BlockType.HERO_SPLIT],

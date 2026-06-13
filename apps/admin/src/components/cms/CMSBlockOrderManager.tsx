@@ -2,7 +2,7 @@
 
 import { BlockType } from '@ecommerce-amazon/domain';
 import { CheckCircle2, Layers, Plus, Save, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { BlockPropsSheet } from '@/components/cms/BlockPropsSheet';
 import { BlockListItem } from '@/components/cms/BlockListItem';
@@ -38,6 +38,7 @@ import {
 } from '@/lib/api/cms-pages-client';
 import type { PageBlockDto } from '@ecommerce-amazon/shared/cms';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 type CMSBlockOrderManagerProps = {
   slug: string;
@@ -62,7 +63,20 @@ export function CMSBlockOrderManager({
   const [insertAt, setInsertAt] = useState<number | null>(null);
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [blockTypeFilter, setBlockTypeFilter] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<AdminBlock | null>(null);
+
+  const filteredBlockTypes = useMemo(() => {
+    const query = blockTypeFilter.trim().toLowerCase();
+    if (!query) return ALL_BLOCK_TYPES;
+    return ALL_BLOCK_TYPES.filter((type) => {
+      const meta = getBlockTypeMeta(type);
+      return (
+        type.toLowerCase().includes(query) ||
+        meta.label.toLowerCase().includes(query)
+      );
+    });
+  }, [blockTypeFilter]);
 
   function updateBlocks(next: AdminBlock[], markDirty = false): void {
     setBlocks(normalizePositions(next));
@@ -94,6 +108,7 @@ export function CMSBlockOrderManager({
 
   function openCreateDialog(at: number | null): void {
     setInsertAt(at);
+    setBlockTypeFilter('');
     setAddDialogOpen(true);
   }
 
@@ -281,8 +296,20 @@ export function CMSBlockOrderManager({
               Posição de inserção: <strong>{insertAt ?? blocks.length}</strong>
             </DialogDescription>
           </DialogHeader>
-          <div className="cms-type-picker-grid">
-            {ALL_BLOCK_TYPES.map((type) => {
+          <Input
+            type="search"
+            value={blockTypeFilter}
+            onChange={(event) => setBlockTypeFilter(event.target.value)}
+            placeholder="Buscar bloco… (ex.: bento, grade, hero)"
+            className="text-sm"
+          />
+          <div className="cms-type-picker-grid cms-type-picker-grid--scroll">
+            {filteredBlockTypes.length === 0 ? (
+              <p className="col-span-full py-6 text-center text-sm text-[var(--admin-text-muted)]">
+                Nenhum bloco encontrado para &quot;{blockTypeFilter}&quot;.
+              </p>
+            ) : (
+              filteredBlockTypes.map((type) => {
               const meta = getBlockTypeMeta(type);
               const Icon = meta.icon;
               return (
@@ -305,7 +332,8 @@ export function CMSBlockOrderManager({
                   </span>
                 </button>
               );
-            })}
+            })
+            )}
           </div>
         </DialogContent>
       </Dialog>

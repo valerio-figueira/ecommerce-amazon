@@ -3,6 +3,7 @@ export enum BlockType {
   FEATURED_PRODUCT = 'featured_product',
   PRODUCT_GRID = 'product_grid',
   CATEGORY_PILLS = 'category_pills',
+  CATEGORY_BENTO_GRID = 'category_bento_grid',
   HERO_SPLIT = 'hero_split',
   CURATED_COLLECTION = 'curated_collection',
   COUPON_STRIP = 'coupon_strip',

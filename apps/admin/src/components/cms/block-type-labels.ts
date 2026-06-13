@@ -2,6 +2,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import {
   bannerPropsSchema,
   categoryPillsPropsSchema,
+  categoryBentoGridPropsSchema,
   dynamicProductGridPropsSchema,
   featuredProductPropsSchema,
   heroCarouselPropsSchema,
@@ -17,6 +18,7 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   [BlockType.FEATURED_PRODUCT]: 'Produto em Destaque',
   [BlockType.PRODUCT_GRID]: 'Grade de Produtos',
   [BlockType.CATEGORY_PILLS]: 'Pills de Categorias',
+  [BlockType.CATEGORY_BENTO_GRID]: 'Grade Bento de Categorias',
   [BlockType.HERO_SPLIT]: 'Hero Split',
   [BlockType.CURATED_COLLECTION]: 'Coleção Curada',
   [BlockType.COUPON_STRIP]: 'Faixa de Cupons',
@@ -31,6 +33,7 @@ export const EDITABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.FEATURED_PRODUCT,
   BlockType.PRODUCT_GRID,
   BlockType.CATEGORY_PILLS,
+  BlockType.CATEGORY_BENTO_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
   BlockType.RICH_TEXT,
   BlockType.BANNER,
@@ -39,7 +42,24 @@ export const EDITABLE_BLOCK_TYPES: BlockType[] = [
 
 export { isEditableBlockType };
 
-export const ALL_BLOCK_TYPES: BlockType[] = Object.values(BlockType);
+/** Explicit list — do not use Object.values(BlockType); stale domain builds omit new enum members at runtime. */
+export const ADDABLE_BLOCK_TYPES: BlockType[] = [
+  BlockType.HERO_CAROUSEL,
+  BlockType.HERO_SPLIT,
+  BlockType.FEATURED_PRODUCT,
+  BlockType.CATEGORY_BENTO_GRID,
+  BlockType.CATEGORY_PILLS,
+  BlockType.PRODUCT_GRID,
+  BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.CURATED_COLLECTION,
+  BlockType.COUPON_STRIP,
+  BlockType.BANNER,
+  BlockType.RICH_TEXT,
+  BlockType.SPACER,
+];
+
+/** @deprecated Prefer ADDABLE_BLOCK_TYPES */
+export const ALL_BLOCK_TYPES: BlockType[] = ADDABLE_BLOCK_TYPES;
 
 export function getBlockDisplayTitle(type: BlockType, props: unknown): string {
   if (typeof props === 'object' && props !== null && 'title' in props) {
@@ -74,6 +94,33 @@ export function getDefaultBlockProps(type: BlockType): unknown {
     case BlockType.CATEGORY_PILLS:
       return categoryPillsPropsSchema.parse({
         categorySlugs: ['home-office'],
+      });
+    case BlockType.CATEGORY_BENTO_GRID:
+      return categoryBentoGridPropsSchema.parse({
+        title: 'Categorias populares',
+        tiles: [
+          {
+            title: 'Home office',
+            subtitle: 'Curadoria ergonômica',
+            imageUrl: 'https://placehold.co/400x400?text=Office',
+            size: 'large',
+            categorySlug: 'home-office',
+          },
+          {
+            title: 'Games',
+            subtitle: 'Setup gamer',
+            imageUrl: 'https://placehold.co/300x300?text=Games',
+            size: 'small',
+            categorySlug: 'games',
+          },
+          {
+            title: 'Eletrônicos',
+            subtitle: 'Tech selecionada',
+            imageUrl: 'https://placehold.co/300x300?text=Tech',
+            size: 'small',
+            categorySlug: 'eletronicos',
+          },
+        ],
       });
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return dynamicProductGridPropsSchema.parse({

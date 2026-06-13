@@ -32,6 +32,7 @@ const SEED_BLOCK_HERO_SPLIT_ID = 'f2111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
@@ -295,9 +296,61 @@ async function seedHomePage(
         },
       },
       {
+        id: SEED_BLOCK_BENTO_ID,
+        type: BlockType.CATEGORY_BENTO_GRID,
+        sortOrder: 3,
+        props: {
+          title: 'Categorias populares',
+          tiles: [
+            {
+              title: 'Home office',
+              subtitle: 'Curadoria ergonômica',
+              imageUrl: 'https://placehold.co/400x400?text=Office',
+              size: 'large',
+              categorySlug: 'home-office',
+            },
+            {
+              title: 'Games',
+              subtitle: 'Setup gamer',
+              imageUrl: 'https://placehold.co/300x300?text=Games',
+              size: 'small',
+              categorySlug: 'games',
+            },
+            {
+              title: 'Eletrônicos',
+              subtitle: 'Tech selecionada',
+              imageUrl: 'https://placehold.co/300x300?text=Tech',
+              size: 'small',
+              categorySlug: 'eletronicos',
+            },
+            {
+              title: 'Ergonomia',
+              subtitle: 'Conforto no dia a dia',
+              imageUrl: 'https://placehold.co/300x300?text=Ergo',
+              size: 'small',
+              categorySlug: 'home-office',
+            },
+            {
+              title: 'Periféricos',
+              subtitle: 'Mouse, teclado e mais',
+              imageUrl: 'https://placehold.co/300x300?text=Perif',
+              size: 'small',
+              categorySlug: 'games',
+            },
+            {
+              title: 'Destaques',
+              subtitle: 'Seleção editorial',
+              imageUrl: 'https://placehold.co/400x400?text=Top',
+              size: 'large',
+              href: '/c/setup-gamer-iniciante',
+            },
+          ],
+        },
+      },
+      {
         id: SEED_BLOCK_PILLS_ID,
         type: BlockType.CATEGORY_PILLS,
-        sortOrder: 3,
+        sortOrder: 4,
         props: {
           categorySlugs: ['home-office', 'games', 'eletronicos'],
           linkedBlockId: SEED_BLOCK_GRID_ID,
@@ -306,7 +359,7 @@ async function seedHomePage(
       {
         id: SEED_BLOCK_GRID_ID,
         type: BlockType.PRODUCT_GRID,
-        sortOrder: 4,
+        sortOrder: 5,
         props: {
           title: 'Produtos populares',
           categorySlug: null,
@@ -318,7 +371,7 @@ async function seedHomePage(
       {
         id: SEED_BLOCK_DYNAMIC_GRID_ID,
         type: BlockType.DYNAMIC_PRODUCT_GRID,
-        sortOrder: 5,
+        sortOrder: 6,
         props: {
           title: 'Ofertas home office',
           subtitle: 'Seleção dinâmica por curadoria',

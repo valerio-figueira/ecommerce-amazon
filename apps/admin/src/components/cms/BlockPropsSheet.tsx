@@ -18,6 +18,7 @@ import {
   type BlockFormValues,
 } from '@/components/cms/forms/BlockPropsForm';
 import type { AdminBlock } from '@/components/cms/normalize-positions';
+import { CategoryBentoGridForm } from '@/components/cms/props-forms/CategoryBentoGridForm';
 import { CategoryPillsForm } from '@/components/cms/props-forms/CategoryPillsForm';
 import { DynamicGridForm } from '@/components/cms/props-forms/DynamicGridForm';
 import { FeaturedProductForm } from '@/components/cms/props-forms/FeaturedProductForm';
@@ -62,6 +63,7 @@ type BlockPropsSheetProps = {
 const CATEGORY_BLOCK_TYPES = new Set<BlockType>([
   BlockType.DYNAMIC_PRODUCT_GRID,
   BlockType.CATEGORY_PILLS,
+  BlockType.CATEGORY_BENTO_GRID,
   BlockType.PRODUCT_GRID,
 ]);
 
@@ -95,6 +97,8 @@ function BlockFormBody({
           currentBlockId={block.id === 'draft' ? undefined : block.id}
         />
       );
+    case BlockType.CATEGORY_BENTO_GRID:
+      return <CategoryBentoGridForm control={control} categories={categories} />;
     case BlockType.PRODUCT_GRID:
       return <ProductGridForm control={control} categories={categories} />;
     case BlockType.FEATURED_PRODUCT:
@@ -214,6 +218,7 @@ export function BlockPropsSheet({
     block.type === BlockType.DYNAMIC_PRODUCT_GRID ||
     block.type === BlockType.HERO_CAROUSEL ||
     block.type === BlockType.CATEGORY_PILLS ||
+    block.type === BlockType.CATEGORY_BENTO_GRID ||
     block.type === BlockType.PRODUCT_GRID ||
     block.type === BlockType.FEATURED_PRODUCT
       ? 'Aplicar configurações no bloco'

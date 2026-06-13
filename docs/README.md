@@ -25,6 +25,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | Documento | Conteúdo |
 |-----------|----------|
 | [cms-home-phase1.md](./cms-home-phase1.md) | Home CMS-driven: blocos, schemas Zod, seed, `apps/web`, wishlist, tracking |
+| [cms-category-bento-grid.md](./cms-category-bento-grid.md) | Bloco `category_bento_grid`: grade bento de categorias |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [go-redirect-seo.md](./go-redirect-seo.md) | Redirect `/go`, JSON-LD produto, interlinkagem SEO |
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |

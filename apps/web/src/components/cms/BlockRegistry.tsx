@@ -4,6 +4,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import type { PageBlockDeliveryDto } from '@ecommerce-amazon/shared/cms';
 
 import { BannerBlock } from '@/components/blocks/BannerBlock';
+import { CategoryBentoGridBlock } from '@/components/blocks/CategoryBentoGridBlock';
 import { CategoryPillsBlock } from '@/components/blocks/CategoryPillsBlock';
 import { CouponStripBlock } from '@/components/blocks/CouponStripBlock';
 import { CuratedCollectionBlock } from '@/components/blocks/CuratedCollectionBlock';
@@ -28,6 +29,7 @@ export const BlockRegistry: Record<
   [BlockType.FEATURED_PRODUCT]: FeaturedProductBlock,
   [BlockType.PRODUCT_GRID]: ProductGridBlock,
   [BlockType.CATEGORY_PILLS]: CategoryPillsBlock,
+  [BlockType.CATEGORY_BENTO_GRID]: CategoryBentoGridBlock,
   [BlockType.HERO_SPLIT]: HeroSplitBlock,
   [BlockType.CURATED_COLLECTION]: CuratedCollectionBlock,
   [BlockType.COUPON_STRIP]: CouponStripBlock,
