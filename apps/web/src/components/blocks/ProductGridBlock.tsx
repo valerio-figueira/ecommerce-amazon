@@ -55,11 +55,17 @@ export function ProductGridBlock({
       <div
         className={cn(
           'mb-6 flex flex-col gap-4',
-          linkedPillsProps && 'md:flex-row md:items-center md:justify-between',
+          linkedPillsProps && 'md:flex-row md:items-start md:justify-between',
         )}
       >
         <h2 className="shrink-0 text-2xl font-bold md:text-3xl">{props.title}</h2>
-        {linkedPillsProps && <CategoryPillsRow categorySlugs={linkedPillsProps.categorySlugs} />}
+        {linkedPillsProps && (
+          <CategoryPillsRow
+            categorySlugs={linkedPillsProps.categorySlugs}
+            mode={linkedPillsProps.mode}
+            showSubcategories={linkedPillsProps.showSubcategories}
+          />
+        )}
       </div>
       {isLoading ? (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

@@ -88,7 +88,15 @@ export function normalizeFormValues(type: BlockType, props: unknown): Record<str
   }
 
   if (type === BlockType.CATEGORY_PILLS && !Array.isArray(base['categorySlugs'])) {
-    return { ...base, categorySlugs: [] };
+    return { ...base, categorySlugs: [], mode: 'filter', showSubcategories: true };
+  }
+
+  if (type === BlockType.CATEGORY_PILLS) {
+    return {
+      ...base,
+      mode: base['mode'] ?? 'filter',
+      showSubcategories: base['showSubcategories'] ?? true,
+    };
   }
 
   if (type === BlockType.CATEGORY_BENTO_GRID && Array.isArray(base['tiles'])) {

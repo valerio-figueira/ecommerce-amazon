@@ -37,6 +37,8 @@ export const categoryPillsPropsSchema = z.object({
   title: z.string().optional(),
   categorySlugs: z.array(z.string()).min(1),
   linkedBlockId: z.string().uuid().optional(),
+  mode: z.enum(['filter', 'link']).default('filter'),
+  showSubcategories: z.boolean().default(true),
 });
 
 export const categoryBentoTileSchema = z.object({

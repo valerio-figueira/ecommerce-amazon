@@ -11,8 +11,10 @@
 - API admin: CRUD + reorder em `/admin/categories`
 - Admin: tela `/categorias` com árvore visual e formulário SEO
 - Produto: seletor cascata (`CategoryCascadeSelect`) amarrado à folha
-- Vitrine: `/categorias/[slug]` SSR com metadata, JSON-LD e grid de produtos
-- Menu do header alimentado pela árvore de categorias raiz
+- Vitrine: `/categorias/[slug]` SSR com metadata, JSON-LD, sidebar em árvore e grid de produtos
+- Home CMS: pills em cascata (2ª fileira de subcategorias) filtrando a grade vinculada
+- Header: mega menu multi-coluna (desktop) + drawer mobile com acordeão de categorias
+- Breadcrumb de produto com links para `/categorias/{slug}`
 
 ## Por quê
 
@@ -44,8 +46,10 @@ flowchart LR
 | Use cases | `packages/application/src/use-cases/category/`, `admin-category/` |
 | API | `apps/api/src/adapters/http/routes/index.ts`, `admin-category-routes.ts` |
 | Admin UI | `apps/admin/src/app/(dashboard)/categorias/page.tsx` |
-| Web | `apps/web/src/app/categorias/[slug]/page.tsx` |
-| Shared | `packages/shared/src/category/`, `packages/shared/src/admin/category-schemas.ts` |
+| Web pills | `apps/web/src/components/blocks/CategoryPillsRow.tsx` |
+| Web sidebar | `apps/web/src/components/category/CategorySidebarTree.tsx` |
+| Web header | `apps/web/src/components/layout/CategoryMegaMenu.tsx`, `MobileNavDrawer.tsx` |
+| Tree helpers | `packages/shared/src/category/category-tree-nav.ts` |
 
 ## API (resumo)
 
@@ -83,11 +87,24 @@ npm run test -w @ecommerce-amazon/application
 
 1. Admin → **Categorias** → criar subcategoria e preencher `descriptionHtml`
 2. Admin → **Produtos** → selecionar categoria em cascata
-3. Vitrine → `/categorias/home-office` e menu do header
-4. `GET /products?category=games` deve incluir produtos em subcategorias
+3. Home → selecionar pill **Games** → segunda fileira com subcategorias; grade filtra por slug
+4. Vitrine → `/categorias/home-office` → sidebar em árvore (desktop) + chips horizontais (mobile)
+5. Header → hover em categoria raiz abre mega menu; mobile → ícone menu
+6. `GET /products?category=games` deve incluir produtos em subcategorias
+
+## Exposição na vitrine
+
+| Ponto | Componente | Comportamento |
+|-------|------------|---------------|
+| Home pills | `CategoryPillsRow` | 1ª fileira = raízes CMS; 2ª fileira = filhos do pai ativo |
+| Página categoria | `CategorySidebarTree` | Árvore lateral (lg+); chips horizontais em mobile |
+| Header desktop | `CategoryMegaMenu` | Painel multi-coluna com até 3 níveis |
+| Header mobile | `MobileNavDrawer` | Acordeão por categoria raiz |
+| Produto | breadcrumb em `produtos/[slug]` | `Home > … > categoria > produto` |
 
 ## Próximos passos (fora desta entrega)
 
 - Worker: auto-mapeamento `amazon_browse_node` → `category_id`
-- Mega-menu com imagens
+- Imagens no mega menu (hoje só `icon` textual/emoji)
+- Paginação e filtros avançados na listagem de categoria
 - Múltiplas categorias por produto (M:N)

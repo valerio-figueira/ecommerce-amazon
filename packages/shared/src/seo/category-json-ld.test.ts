@@ -22,13 +22,13 @@ describe('category json-ld', () => {
   it('builds breadcrumb list', () => {
     const jsonLd = buildCategoryBreadcrumbJsonLd(input);
     expect(jsonLd['@type']).toBe('BreadcrumbList');
-    expect(jsonLd.itemListElement).toHaveLength(4);
+    expect(jsonLd['itemListElement']).toHaveLength(4);
   });
 
   it('builds collection page', () => {
     const jsonLd = buildCategoryCollectionJsonLd(input);
     expect(jsonLd['@type']).toBe('CollectionPage');
-    expect(jsonLd.url).toBe('https://vitrine.example/categorias/teclados-mecanicos');
-    expect(jsonLd.numberOfItems).toBe(12);
+    expect(jsonLd['url']).toBe('https://vitrine.example/categorias/teclados-mecanicos');
+    expect(jsonLd['numberOfItems']).toBe(12);
   });
 });

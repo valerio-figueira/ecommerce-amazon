@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -42,6 +43,14 @@ function readString(value: unknown): string {
 function readStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === 'string');
+}
+
+function readBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback;
+}
+
+function readMode(value: unknown): 'filter' | 'link' {
+  return value === 'link' ? 'link' : 'filter';
 }
 
 export function CategoryPillsForm({
@@ -94,9 +103,59 @@ export function CategoryPillsForm({
                 />
               </FormControl>
               <FormDescription>
-                Escolha quais categorias aparecem na faixa horizontal e defina a ordem.
+                Prefira categorias raiz (ex.: Home Office, Games). Subcategorias aparecem
+                automaticamente na segunda fileira ao selecionar um pai com filhos.
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CmsFormSection>
+
+      <CmsFormSection title="Comportamento" className="cms-form-section-divider">
+        <FormField
+          control={control}
+          name="mode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Modo de interação</FormLabel>
+              <Select value={readMode(field.value)} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="filter">Filtrar grade na mesma página</SelectItem>
+                  <SelectItem value="link">Navegar para /categorias/{'{slug}'}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Use &quot;Filtrar&quot; quando as pills estiverem vinculadas a uma grade de
+                produtos.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="showSubcategories"
+          render={({ field }) => (
+            <FormItem className="flex items-center justify-between rounded-lg border px-3 py-2">
+              <div className="space-y-0.5">
+                <FormLabel>Exibir subcategorias em cascata</FormLabel>
+                <FormDescription>
+                  Segunda fileira de pills ao selecionar uma categoria com filhos.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={readBoolean(field.value, true)}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

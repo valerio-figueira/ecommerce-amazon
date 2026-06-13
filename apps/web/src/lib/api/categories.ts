@@ -1,3 +1,5 @@
+import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
+
 import { apiFetchParsed, getApiUrl } from '@/lib/api/client';
 import { categoriesResponseSchema, type CategoryTreeNodeDto } from '@/lib/api/schemas';
 
@@ -8,19 +10,25 @@ export async function fetchCategoryTree(): Promise<CategoryTreeNodeDto[]> {
   return result.items;
 }
 
-export function getCategoryNavItems(categories: CategoryTreeNodeDto[]) {
-  return categories.map((category) => ({
-    slug: category.slug,
-    label: category.label,
-    ...(category.subcategories?.length
-      ? {
-          children: category.subcategories.map((child) => ({
-            slug: child.slug,
-            label: child.label,
-          })),
-        }
+export async function fetchCategoryNavTree(): Promise<CategoryNavNode[]> {
+  try {
+    const tree = await fetchCategoryTree();
+    return tree.map(toCategoryNavNode);
+  } catch {
+    return [];
+  }
+}
+
+function toCategoryNavNode(node: CategoryTreeNodeDto): CategoryNavNode {
+  return {
+    slug: node.slug,
+    label: node.label,
+    icon: node.icon,
+    productCount: node.productCount,
+    ...(node.subcategories?.length
+      ? { subcategories: node.subcategories.map(toCategoryNavNode) }
       : {}),
-  }));
+  };
 }
 
 export { getApiUrl };

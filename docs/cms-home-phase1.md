@@ -176,10 +176,14 @@ Fonte: [`block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts).
 ```typescript
 {
   title?: string;
-  categorySlugs: string[];   // min 1
+  categorySlugs: string[];   // min 1 — preferir categorias raiz
   linkedBlockId?: string;    // uuid — sincroniza filtro com grid vizinho
+  mode?: 'filter' | 'link';  // default 'filter'
+  showSubcategories?: boolean; // default true — 2ª fileira em cascata
 }
 ```
+
+Comportamento em `filter` + `showSubcategories: true`: ao clicar numa categoria raiz com filhos, aparece segunda fileira (`Todas de {pai}` + subcategorias). A grade vinculada usa `GET /products?category={slug}` (subárvore).
 
 ### `hero_split`
 

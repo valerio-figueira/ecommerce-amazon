@@ -6,7 +6,9 @@ import {
   buildCategoryCollectionJsonLd,
 } from '@ecommerce-amazon/shared/seo';
 
+import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
 import { ProductCard } from '@/components/product/ProductCard';
+import { fetchCategoryTree } from '@/lib/api/categories';
 import { apiFetchParsed } from '@/lib/api/client';
 import {
   categoryDetailSchema,
@@ -62,12 +64,15 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }): Promise<React.JSX.Element> {
   const { slug } = await params;
-  const category = await getCategory(slug);
+  const [category, products, categoryTree] = await Promise.all([
+    getCategory(slug),
+    getCategoryProducts(slug),
+    fetchCategoryTree().catch(() => []),
+  ]);
+
   if (!category) {
     notFound();
   }
-
-  const products = await getCategoryProducts(slug);
   const siteBaseUrl = getSiteBaseUrl();
   const breadcrumbJsonLd = buildCategoryBreadcrumbJsonLd({
     siteBaseUrl,
@@ -97,6 +102,17 @@ export default async function CategoryPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
 
+      <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
+        {categoryTree.length > 0 && (
+          <aside className="mb-8 hidden lg:block">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              Navegar
+            </p>
+            <CategorySidebarTree nodes={categoryTree} activeSlug={category.slug} />
+          </aside>
+        )}
+
+        <div className="min-w-0">
       <nav className="mb-6 text-sm text-neutral-500">
         <Link href="/">Home</Link>
         {category.breadcrumbs.map((crumb) => (
@@ -158,6 +174,8 @@ export default async function CategoryPage({
           dangerouslySetInnerHTML={{ __html: category.descriptionHtml }}
         />
       )}
+        </div>
+      </div>
     </main>
   );
 }

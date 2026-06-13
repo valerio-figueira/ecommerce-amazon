@@ -1,26 +1,50 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useMemo } from 'react';
 
 import type { CategoryPillsProps } from '@ecommerce-amazon/shared/cms';
+import {
+  findCategoryNodeBySlug,
+  getDirectChildren,
+  getRootSlugForCategory,
+} from '@ecommerce-amazon/shared/category/category-tree-nav';
 
 import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
 import { apiFetchParsed } from '@/lib/api/client';
 import { categoriesResponseSchema, type CategoryTreeNodeDto } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
 
-function flattenCategoryLabels(items: CategoryTreeNodeDto[]): Array<{ slug: string; label: string }> {
-  return items.flatMap((item) => [
-    { slug: item.slug, label: item.label },
-    ...(item.subcategories ? flattenCategoryLabels(item.subcategories) : []),
-  ]);
-}
-
 type CategoryPillsRowProps = {
   categorySlugs: CategoryPillsProps['categorySlugs'];
+  mode?: CategoryPillsProps['mode'];
+  showSubcategories?: CategoryPillsProps['showSubcategories'];
 };
 
-export function CategoryPillsRow({ categorySlugs }: CategoryPillsRowProps): React.JSX.Element {
+function pillClassName(active: boolean): string {
+  return cn(
+    'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
+    active
+      ? 'bg-[var(--primary)] text-white'
+      : 'border border-neutral-300 bg-white hover:bg-neutral-50',
+  );
+}
+
+function subPillClassName(active: boolean): string {
+  return cn(
+    'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+    active
+      ? 'bg-neutral-900 text-white'
+      : 'border border-neutral-200 bg-neutral-50 hover:bg-neutral-100',
+  );
+}
+
+export function CategoryPillsRow({
+  categorySlugs,
+  mode = 'filter',
+  showSubcategories = true,
+}: CategoryPillsRowProps): React.JSX.Element {
   const { categorySlug, setCategorySlug } = useCategoryFilter();
 
   const { data: categories } = useQuery({
@@ -31,37 +55,93 @@ export function CategoryPillsRow({ categorySlugs }: CategoryPillsRowProps): Reac
     },
   });
 
-  const labels = new Map(flattenCategoryLabels(categories ?? []).map((c) => [c.slug, c.label]));
+  const tree = categories ?? [];
+
+  const rootNodes = useMemo(
+    () =>
+      categorySlugs
+        .map((slug) => findCategoryNodeBySlug(tree, slug))
+        .filter((node): node is CategoryTreeNodeDto => node !== null),
+    [categorySlugs, tree],
+  );
+
+  const activeRootSlug = useMemo(() => {
+    if (!categorySlug) return null;
+    const root = getRootSlugForCategory(tree, categorySlug);
+    if (root && categorySlugs.includes(root)) {
+      return root;
+    }
+    if (categorySlugs.includes(categorySlug)) {
+      return categorySlug;
+    }
+    return null;
+  }, [categorySlug, categorySlugs, tree]);
+
+  const activeRootNode = activeRootSlug ? findCategoryNodeBySlug(tree, activeRootSlug) : null;
+  const subcategoryNodes =
+    showSubcategories && activeRootNode ? getDirectChildren(tree, activeRootNode.slug) : [];
+
+  function handleFilterSelect(slug: string | null) {
+    setCategorySlug(slug);
+  }
+
+  function renderFilterPill(label: string, slug: string | null, active: boolean, sub = false) {
+    return (
+      <button
+        key={slug ?? '__all__'}
+        type="button"
+        onClick={() => handleFilterSelect(slug)}
+        className={sub ? subPillClassName(active) : pillClassName(active)}
+      >
+        {label}
+      </button>
+    );
+  }
+
+  function renderLinkPill(label: string, slug: string | null, active: boolean, sub = false) {
+    if (!slug) {
+      return (
+        <Link key="__all__" href="/" className={sub ? subPillClassName(active) : pillClassName(active)}>
+          {label}
+        </Link>
+      );
+    }
+
+    return (
+      <Link
+        key={slug}
+        href={`/categorias/${slug}`}
+        className={sub ? subPillClassName(active) : pillClassName(active)}
+      >
+        {label}
+      </Link>
+    );
+  }
+
+  const renderPill = mode === 'link' ? renderLinkPill : renderFilterPill;
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
-      <button
-        type="button"
-        onClick={() => setCategorySlug(null)}
-        className={cn(
-          'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-          categorySlug === null
-            ? 'bg-[var(--primary)] text-white'
-            : 'border border-neutral-300 bg-white hover:bg-neutral-50',
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+        {renderPill('Todos', null, categorySlug === null)}
+        {rootNodes.map((node) =>
+          renderPill(node.label, node.slug, activeRootSlug === node.slug),
         )}
-      >
-        Todos
-      </button>
-      {categorySlugs.map((slug) => (
-        <button
-          key={slug}
-          type="button"
-          onClick={() => setCategorySlug(slug)}
-          className={cn(
-            'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-            categorySlug === slug
-              ? 'bg-[var(--primary)] text-white'
-              : 'border border-neutral-300 bg-white hover:bg-neutral-50',
+      </div>
+
+      {subcategoryNodes.length > 0 && activeRootNode && (
+        <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+          {renderPill(
+            `Todas de ${activeRootNode.label}`,
+            activeRootNode.slug,
+            categorySlug === activeRootNode.slug,
+            true,
           )}
-        >
-          {labels.get(slug) ?? slug}
-        </button>
-      ))}
+          {subcategoryNodes.map((child) =>
+            renderPill(child.label, child.slug, categorySlug === child.slug, true),
+          )}
+        </div>
+      )}
     </div>
   );
 }

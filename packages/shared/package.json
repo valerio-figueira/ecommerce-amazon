@@ -30,6 +30,10 @@
       "types": "./dist/category/category-schemas.d.ts",
       "import": "./dist/category/category-schemas.js"
     },
+    "./category/category-tree-nav": {
+      "types": "./dist/category/category-tree-nav.d.ts",
+      "import": "./dist/category/category-tree-nav.js"
+    },
     "./marketplace": {
       "types": "./dist/marketplace/index.d.ts",
       "import": "./dist/marketplace/index.js"
