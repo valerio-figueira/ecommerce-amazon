@@ -9,6 +9,7 @@ import {
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import type { CreateProductBody } from '@ecommerce-amazon/shared/admin';
+import { resolveProductShortDescription } from '@ecommerce-amazon/shared/seo';
 import { parseMarketplaceProductUrl } from '@ecommerce-amazon/shared/marketplace';
 
 export function parseProductAvailability(value: string): ProductAvailability {
@@ -91,4 +92,29 @@ export function buildPriceFromForm(
 
 export function createAffiliateLink(input: CreateProductBody): AffiliateLink {
   return AffiliateLink.create(input.affiliateLink, input.marketplace);
+}
+
+export function resolveOptionalTrimmed(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed !== undefined && trimmed.length > 0 ? trimmed : undefined;
+}
+
+export function resolveEditorialContentFields(
+  input: Pick<
+    CreateProductBody,
+    'shortDescription' | 'longDescriptionHtml' | 'metaTitle' | 'metaDescription' | 'pros'
+  >,
+  filteredPros: string[],
+): {
+  shortDescription?: string | undefined;
+  longDescriptionHtml?: string | undefined;
+  metaTitle?: string | undefined;
+  metaDescription?: string | undefined;
+} {
+  return {
+    shortDescription: resolveProductShortDescription(input.shortDescription, filteredPros),
+    longDescriptionHtml: resolveOptionalTrimmed(input.longDescriptionHtml),
+    metaTitle: resolveOptionalTrimmed(input.metaTitle),
+    metaDescription: resolveOptionalTrimmed(input.metaDescription),
+  };
 }

@@ -25,6 +25,10 @@
     "./marketplace": {
       "types": "./dist/marketplace/index.d.ts",
       "import": "./dist/marketplace/index.js"
+    },
+    "./product/category-vertical": {
+      "types": "./dist/product/category-vertical.d.ts",
+      "import": "./dist/product/category-vertical.js"
     }
   },
   "scripts": {

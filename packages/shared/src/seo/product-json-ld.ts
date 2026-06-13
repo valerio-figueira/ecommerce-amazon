@@ -1,4 +1,5 @@
 import { resolveProductCanonicalUrl } from './product-canonical.js';
+import { resolveProductMetaDescription } from './product-meta.js';
 
 export type ProductJsonLdInput = {
   slug: string;
@@ -33,7 +34,7 @@ function schemaAvailability(availability: string): string {
 }
 
 export function buildProductJsonLd(product: ProductJsonLdInput): Record<string, unknown> {
-  const description = product.metaDescription ?? product.titleRaw;
+  const description = resolveProductMetaDescription(product.titleClean, product.metaDescription);
 
   const pageUrl = resolveProductCanonicalUrl(
     product.slug,

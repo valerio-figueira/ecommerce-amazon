@@ -3,7 +3,6 @@
 import { useFormContext } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
-import { DynamicStringList } from '@/components/products/DynamicStringList';
 import { ProductImageList } from '@/components/products/ProductImageList';
 import {
   FormControl,
@@ -14,22 +13,62 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { ProductFormValues } from '@/lib/product-form-values';
+import { PRODUCT_CATEGORY_VERTICALS } from '@ecommerce-amazon/shared/product/category-vertical';
 
-export function ProductEditorialSection(): React.JSX.Element {
+export function ProductEssentialsSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
 
   return (
-    <CmsFormSection title="2. Apresentação na vitrine">
+    <CmsFormSection title="Dados essenciais">
       <FormField
         control={form.control}
         name="titleClean"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome comercial do produto</FormLabel>
+            <FormLabel>Título limpo do produto</FormLabel>
             <FormControl>
               <Input placeholder="Ex: Cadeira Ergonômica DT3 Rhino" {...field} />
             </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="categoryVertical"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Categoria</FormLabel>
+            <Select
+              value={field.value ?? ''}
+              onValueChange={(value) => field.onChange(value === '' ? undefined : value)}
+            >
+              <FormControl>
+                <SelectTrigger className="sm:max-w-md">
+                  <SelectValue placeholder="Selecione a categoria vertical" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {PRODUCT_CATEGORY_VERTICALS.map((category) => (
+                  <SelectItem key={category.slug} value={category.slug}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              Usada para filtros da vitrine e contexto editorial. Meta tags SEO são geradas
+              automaticamente na publicação.
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -52,7 +91,7 @@ export function ProductEditorialSection(): React.JSX.Element {
         name="editorialScore"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nota da nossa equipe (0 a 10)</FormLabel>
+            <FormLabel>Nota editorial (0 a 10)</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -67,38 +106,6 @@ export function ProductEditorialSection(): React.JSX.Element {
             <FormDescription>
               Notas acima de 8,0 adicionam automaticamente o selo &quot;Escolha editorial&quot;.
             </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="pros"
-        render={() => (
-          <FormItem>
-            <FormLabel>Prós</FormLabel>
-            <DynamicStringList
-              name="pros"
-              addLabel="Adicionar pró"
-              placeholder="Ex: Apoio lombar ajustável"
-            />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="cons"
-        render={() => (
-          <FormItem>
-            <FormLabel>Contras</FormLabel>
-            <DynamicStringList
-              name="cons"
-              addLabel="Adicionar contra"
-              placeholder="Ex: Montagem demorada"
-            />
             <FormMessage />
           </FormItem>
         )}

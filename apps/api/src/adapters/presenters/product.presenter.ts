@@ -66,10 +66,15 @@ export type AdminProductDetailDto = {
   marketplace: string;
   externalId: string;
   titleClean: string;
+  categoryVertical?: string | undefined;
   images: string[];
   editorialScore: number;
   pros: string[];
   cons: string[];
+  shortDescription?: string | undefined;
+  longDescriptionHtml?: string | undefined;
+  metaTitle?: string | undefined;
+  metaDescription?: string | undefined;
   price: number;
   strikethroughPrice?: number | undefined;
   shouldShowPrice: boolean;
@@ -175,6 +180,13 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     editorialScore: product.editorialScore / 10,
     pros: product.pros ?? [],
     cons: product.cons ?? [],
+    ...(product.categoryVertical !== undefined ? { categoryVertical: product.categoryVertical } : {}),
+    ...(product.shortDescription !== undefined ? { shortDescription: product.shortDescription } : {}),
+    ...(product.longDescriptionHtml !== undefined
+      ? { longDescriptionHtml: product.longDescriptionHtml }
+      : {}),
+    ...(product.metaTitle !== undefined ? { metaTitle: product.metaTitle } : {}),
+    ...(product.metaDescription !== undefined ? { metaDescription: product.metaDescription } : {}),
     price: product.price.amount,
     ...(product.strikethroughPrice !== undefined
       ? { strikethroughPrice: product.strikethroughPrice }

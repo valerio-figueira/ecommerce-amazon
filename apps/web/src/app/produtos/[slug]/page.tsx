@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { resolveProductCanonicalUrl } from '@ecommerce-amazon/shared/seo';
+import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle } from '@ecommerce-amazon/shared/seo';
 
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
@@ -38,8 +38,8 @@ export async function generateMetadata({
   const canonical = resolveProductCanonicalUrl(product.slug, siteBaseUrl, product.canonicalUrl);
 
   return {
-    title: product.metaTitle ?? product.title,
-    description: product.metaDescription ?? product.shortDescription ?? product.titleRaw,
+    title: resolveProductMetaTitle(product.title, product.metaTitle),
+    description: resolveProductMetaDescription(product.title, product.metaDescription),
     alternates: {
       canonical,
     },

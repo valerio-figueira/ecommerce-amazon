@@ -26,7 +26,7 @@ export function ProductPriceSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
 
   return (
-    <CmsFormSection title="3. Preço e disponibilidade">
+    <CmsFormSection title="Preço e disponibilidade">
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
           control={form.control}

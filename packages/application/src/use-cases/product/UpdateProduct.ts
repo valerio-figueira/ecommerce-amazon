@@ -17,6 +17,7 @@ import {
   createAffiliateLink,
   filterNonEmptyStrings,
   parseProductAvailability,
+  resolveEditorialContentFields,
   resolveProductLink,
   toStoredEditorialScore,
 } from './product-form.helpers.js';
@@ -101,6 +102,7 @@ export class UpdateProduct {
     const filteredPros = filterNonEmptyStrings(input.pros);
     const filteredCons = filterNonEmptyStrings(input.cons);
     const filteredImages = filterNonEmptyStrings(input.images);
+    const editorialContent = resolveEditorialContentFields(input, filteredPros);
 
     product.titleClean = input.titleClean.trim();
     product.titleRaw = input.titleClean.trim();
@@ -112,6 +114,11 @@ export class UpdateProduct {
     product.pros = filteredPros.length > 0 ? filteredPros : undefined;
     product.cons = filteredCons.length > 0 ? filteredCons : undefined;
     product.visible = input.visible;
+    product.categoryVertical = input.categoryVertical;
+    product.shortDescription = editorialContent.shortDescription;
+    product.longDescriptionHtml = editorialContent.longDescriptionHtml;
+    product.metaTitle = editorialContent.metaTitle;
+    product.metaDescription = editorialContent.metaDescription;
 
     if (input.strikethroughPrice !== undefined && input.strikethroughPrice > 0) {
       product.strikethroughPrice = input.strikethroughPrice;

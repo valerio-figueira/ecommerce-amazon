@@ -11,10 +11,15 @@ export function adminProductDetailToFormValues(product: AdminProductDetail): Pro
     marketplace: product.marketplace,
     externalId: product.externalId,
     titleClean: product.titleClean,
+    ...(product.categoryVertical !== undefined ? { categoryVertical: product.categoryVertical } : {}),
     images: product.images,
     editorialScore: product.editorialScore,
     pros: product.pros,
     cons: product.cons,
+    shortDescription: product.shortDescription ?? '',
+    longDescriptionHtml: product.longDescriptionHtml ?? '',
+    metaTitle: product.metaTitle ?? '',
+    metaDescription: product.metaDescription ?? '',
     price: product.price,
     ...(product.strikethroughPrice !== undefined
       ? { strikethroughPrice: product.strikethroughPrice }

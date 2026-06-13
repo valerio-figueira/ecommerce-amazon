@@ -10,7 +10,10 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
-- Switch **Exibir na home?** (`visible`) — oculta produto dos blocos da home
+- Formulário em **3 abas** (Link & Essenciais · Análise Editorial · SEO Avançado)
+- `short_description` híbrida: gerada dos prós na API + textarea editável no admin
+- `long_description_html`: editor HTML manual (sem botão de IA)
+- Meta tags SEO automatizadas na vitrine; sobrescrita opcional na aba SEO Avançado
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
@@ -29,6 +32,24 @@ Utilitário: [`packages/shared/src/seo/product-canonical.ts`](../packages/shared
 
 Evita punição por conteúdo duplicado quando o produto é acessado via coleções, UTMs ou rotas alternativas. A coluna permite manobras cirúrgicas de SEO (migração de URL, consolidação de slugs duplicados) sem deploy.
 
+## Meta tags (`meta_title`, `meta_description`)
+
+Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/seo/product-meta.ts)
+
+| Camada | Comportamento |
+|--------|---------------|
+| Banco | nullable; default `NULL` no cadastro admin |
+| Vitrine | `resolveProductMetaTitle` / `resolveProductMetaDescription` no `generateMetadata` |
+| Padrão automático | `{titleClean} \| Análise, Prós, Contras e Ofertas` + frase padrão com nome do produto |
+| Admin | Aba **SEO Avançado** — sobrescrita opcional; vazio = automação na vitrine |
+
+## Apresentação e review
+
+| Campo | Admin | Backend |
+|-------|-------|---------|
+| `short_description` | Textarea pré-preenchida a partir dos prós | Se vazio no save, API gera dos prós |
+| `long_description_html` | Textarea HTML + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
+
 ## Visibilidade na home (`visible`)
 
 | Switch admin | Persistência | Efeito |
@@ -43,7 +64,7 @@ Evita punição por conteúdo duplicado quando o produto é acessado via coleç�
 
 - Upload de imagem (somente URLs HTTPS)
 - Enfileirar worker no create/update; `SyncCatalogBatch` ainda só atualiza produtos existentes
-- Campos SEO (`metaTitle`, `metaDescription`) no form
+- Botão de geração de review por IA (`POST /admin/products/generate-review`)
 - Delete / soft-delete
 
 ## Edição (fase 2)

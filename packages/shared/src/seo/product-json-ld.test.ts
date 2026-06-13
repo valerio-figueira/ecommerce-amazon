@@ -59,4 +59,14 @@ describe('buildProductJsonLd', () => {
 
     expect(jsonLd['url']).toBe('https://vitrine.local/produtos/cadeira-ergonomica-home-office');
   });
+
+  it('builds schema description from automated meta template when override is absent', () => {
+    const jsonLd = buildProductJsonLd({
+      ...baseProduct,
+      shouldShowPrice: false,
+    });
+
+    expect(jsonLd['description']).toContain('Cadeira Ergonômica');
+    expect(jsonLd['description']).toContain('menor preço monitorado');
+  });
 });

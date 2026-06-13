@@ -19,6 +19,7 @@ import {
   filterNonEmptyStrings,
   parseProductAvailability,
   resolveProductLink,
+  resolveEditorialContentFields,
   toStoredEditorialScore,
 } from './product-form.helpers.js';
 
@@ -51,6 +52,7 @@ export class CreateProduct {
     const filteredPros = filterNonEmptyStrings(input.pros);
     const filteredCons = filterNonEmptyStrings(input.cons);
     const filteredImages = filterNonEmptyStrings(input.images);
+    const editorialContent = resolveEditorialContentFields(input, filteredPros);
 
     const productId = randomUUID();
 
@@ -71,6 +73,17 @@ export class CreateProduct {
       editorialScore: toStoredEditorialScore(input.editorialScore),
       availability: parseProductAvailability(input.availability),
       tags: [],
+      ...(input.categoryVertical !== undefined ? { categoryVertical: input.categoryVertical } : {}),
+      ...(editorialContent.shortDescription !== undefined
+        ? { shortDescription: editorialContent.shortDescription }
+        : {}),
+      ...(editorialContent.longDescriptionHtml !== undefined
+        ? { longDescriptionHtml: editorialContent.longDescriptionHtml }
+        : {}),
+      ...(editorialContent.metaTitle !== undefined ? { metaTitle: editorialContent.metaTitle } : {}),
+      ...(editorialContent.metaDescription !== undefined
+        ? { metaDescription: editorialContent.metaDescription }
+        : {}),
       ...(filteredPros.length > 0 ? { pros: filteredPros } : {}),
       ...(filteredCons.length > 0 ? { cons: filteredCons } : {}),
       visible: input.visible,

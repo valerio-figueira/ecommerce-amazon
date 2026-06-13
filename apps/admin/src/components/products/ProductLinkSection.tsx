@@ -51,7 +51,7 @@ export function ProductLinkSection({
   };
 
   return (
-    <CmsFormSection title="1. Link de afiliado">
+    <CmsFormSection title="Link de afiliado">
       <FormField
         control={form.control}
         name="affiliateLink"

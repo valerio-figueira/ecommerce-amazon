@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { MARKETPLACE_VALUES } from '../marketplace/constants.js';
+import { productCategoryVerticalSlugs } from '../product/category-vertical.js';
 
 export const marketplaceSchema = z.enum(MARKETPLACE_VALUES);
 
@@ -12,6 +13,7 @@ export const createProductBodySchema = z
     marketplace: marketplaceSchema,
     externalId: z.string().min(1),
     titleClean: z.string().min(3).max(200),
+    categoryVertical: z.enum(productCategoryVerticalSlugs).optional(),
     slug: z
       .string()
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
@@ -32,6 +34,10 @@ export const createProductBodySchema = z
       .array(z.string())
       .default([])
       .transform((items) => items.map((item) => item.trim()).filter((item) => item.length > 0)),
+    shortDescription: z.string().max(500).default(''),
+    longDescriptionHtml: z.string().max(50000).default(''),
+    metaTitle: z.string().max(200).default(''),
+    metaDescription: z.string().max(320).default(''),
     price: z.number().min(0),
     strikethroughPrice: z.number().min(0).optional(),
     shouldShowPrice: z.boolean(),
@@ -75,10 +81,15 @@ export const adminProductDetailSchema = z.object({
   marketplace: marketplaceSchema,
   externalId: z.string(),
   titleClean: z.string(),
+  categoryVertical: z.enum(productCategoryVerticalSlugs).optional(),
   images: z.array(z.string().url()),
   editorialScore: z.number().min(0).max(10),
   pros: z.array(z.string()),
   cons: z.array(z.string()),
+  shortDescription: z.string().optional(),
+  longDescriptionHtml: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
   price: z.number().min(0),
   strikethroughPrice: z.number().min(0).optional(),
   shouldShowPrice: z.boolean(),

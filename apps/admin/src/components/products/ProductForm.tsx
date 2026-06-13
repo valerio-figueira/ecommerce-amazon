@@ -3,15 +3,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { ProductEditorialSection } from '@/components/products/ProductEditorialSection';
+import { ProductAdvancedSeoSection } from '@/components/products/ProductAdvancedSeoSection';
+import { ProductAnalysisSection } from '@/components/products/ProductAnalysisSection';
+import { ProductEssentialsSection } from '@/components/products/ProductEssentialsSection';
 import { ProductLinkSection } from '@/components/products/ProductLinkSection';
 import { ProductPriceSection } from '@/components/products/ProductPriceSection';
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   createAdminProductClient,
   updateAdminProductClient,
@@ -29,6 +33,10 @@ const emptyValues: ProductFormValues = {
   editorialScore: 5,
   pros: [],
   cons: [],
+  shortDescription: '',
+  longDescriptionHtml: '',
+  metaTitle: '',
+  metaDescription: '',
   price: 0,
   shouldShowPrice: false,
   visible: true,
@@ -51,6 +59,7 @@ export function ProductForm({
   const router = useRouter();
   const adminToast = useAdminToast();
   const isEdit = mode === 'edit';
+  const [activeTab, setActiveTab] = useState('essentials');
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(createProductBodySchema),
@@ -110,7 +119,7 @@ export function ProductForm({
                     <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
                       {isEdit
                         ? 'Atualize título, imagens, preço e conteúdo editorial. O slug permanece o mesmo para não quebrar links.'
-                        : 'Insira os dados manualmente. O sistema detecta marketplace e código a partir do link de afiliado.'}
+                        : 'Insira os dados manualmente. Meta tags SEO são geradas automaticamente na vitrine.'}
                     </span>
                   </p>
                 </div>
@@ -136,14 +145,30 @@ export function ProductForm({
 
           <div className="cms-float-panel cms-blocks-panel">
             <p className="cms-blocks-panel__meta">
-              Dados do produto · <strong>3 seções</strong>
+              Dados do produto · <strong>3 abas</strong>
             </p>
 
-            <div className="space-y-8">
-              <ProductLinkSection lockIdentity={isEdit} />
-              <ProductEditorialSection />
-              <ProductPriceSection />
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList>
+                <TabsTrigger value="essentials">Link &amp; Essenciais</TabsTrigger>
+                <TabsTrigger value="analysis">Análise Editorial</TabsTrigger>
+                <TabsTrigger value="seo">SEO Avançado</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="essentials">
+                <ProductLinkSection lockIdentity={isEdit} />
+                <ProductEssentialsSection />
+                <ProductPriceSection />
+              </TabsContent>
+
+              <TabsContent value="analysis">
+                <ProductAnalysisSection />
+              </TabsContent>
+
+              <TabsContent value="seo">
+                <ProductAdvancedSeoSection />
+              </TabsContent>
+            </Tabs>
           </div>
         </section>
       </form>
