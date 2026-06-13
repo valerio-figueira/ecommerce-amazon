@@ -10,6 +10,7 @@ export type ProductListItemDto = {
   reviewCount?: number | undefined;
   imageUrl?: string | undefined;
   goUrl: string;
+  editorialScore: number;
 };
 
 export type ProductPriceDto = {
@@ -58,6 +59,7 @@ export function toProductListItemDto(product: Product): ProductListItemDto {
     ...(product.reviewCount !== undefined ? { reviewCount: product.reviewCount } : {}),
     ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
     goUrl: `/go/${product.slug}`,
+    editorialScore: product.editorialScore,
   };
 }
 

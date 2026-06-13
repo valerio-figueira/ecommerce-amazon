@@ -15,5 +15,6 @@ export function toProductDeliveryItem(product: Product): ProductDeliveryItem {
       isStale: !product.shouldShowPrice,
       shouldShowPrice: product.shouldShowPrice,
     },
+    editorialScore: product.editorialScore,
   };
 }

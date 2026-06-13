@@ -163,6 +163,7 @@ export const productDeliveryItemSchema = z.object({
     isStale: z.boolean(),
     shouldShowPrice: z.boolean(),
   }),
+  editorialScore: z.number(),
 });
 
 export const pageBlockDeliverySchema = pageBlockDtoSchema.extend({

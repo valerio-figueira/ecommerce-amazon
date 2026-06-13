@@ -82,6 +82,10 @@ export default async function ProductPage({
           {product.shortDescription && (
             <p className="text-neutral-600">{product.shortDescription}</p>
           )}
+          <p className="rounded-lg bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
+            Curadoria independente: comparamos ofertas na {marketplaceLabel(product.marketplace)} e
+            redirecionamos você para a loja parceira. Não vendemos nem entregamos produtos.
+          </p>
           <a
             href={buildGoUrl(product.slug)}
             target="_blank"

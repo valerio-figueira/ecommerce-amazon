@@ -18,6 +18,7 @@ export const productListItemSchema = z.object({
   reviewCount: z.number().optional(),
   imageUrl: z.string().optional(),
   goUrl: z.string(),
+  editorialScore: z.number(),
 });
 
 export const productsPageSchema = z.object({

@@ -74,7 +74,7 @@ export function ProductGridBlock({
           )}
         >
           {data?.items.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} blockId={block.id} />
           ))}
         </div>
       )}

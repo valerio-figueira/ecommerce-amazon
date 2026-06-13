@@ -2,18 +2,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { featuredProductPropsSchema } from '@ecommerce-amazon/shared/cms';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
-import { Button } from '@/components/ui/button';
+import { ProductCardActions } from '@/components/product/ProductCardActions';
+import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
+import { ProductRating } from '@/components/product/ProductRating';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productListItemSchema } from '@/lib/api/schemas';
-import { buildGoUrl } from '@/lib/go-url';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
-import { marketplaceLabel } from '@/lib/format';
 
 export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.Element | null {
   const props = featuredProductPropsSchema.parse(block.props);
@@ -34,31 +35,31 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
     );
   }
 
-  const ctaLabel = props.ctaLabel ?? `Ver na ${marketplaceLabel(product.marketplace)}`;
+  const detailHref = `/produtos/${product.slug}`;
 
   return (
-    <div className="flex h-full min-h-[240px] flex-col rounded-[var(--radius)] bg-white p-4 shadow-sm">
-      <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-[var(--muted)]">
+    <div className="flex h-full min-h-[240px] flex-col rounded-[var(--radius)] border border-neutral-100 bg-white p-4 shadow-sm">
+      <Link
+        href={detailHref}
+        className="relative block min-h-[180px] flex-1 overflow-hidden rounded-2xl bg-[var(--muted)]"
+      >
         {product.imageUrl && (
           <Image src={product.imageUrl} alt={product.title} fill className="object-cover" />
         )}
-      </div>
+        <ProductEditorialBadges product={product} />
+      </Link>
       <div className="mt-4 flex shrink-0 flex-col gap-2">
-        <h3 className="text-lg font-bold">{product.title}</h3>
         {props.showMarketplaceBadge && <MarketplaceBadge marketplace={product.marketplace} />}
+        <Link href={detailHref} className="text-lg font-bold hover:underline">
+          {product.title}
+        </Link>
+        <ProductRating rating={product.rating} reviewCount={product.reviewCount} />
         <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
-        <Button
-          className="w-full"
-          onClick={() => {
-            window.open(
-              buildGoUrl(product.slug, { blockId: block.id, sessionId }),
-              '_blank',
-              'noopener,noreferrer',
-            );
-          }}
-        >
-          {ctaLabel}
-        </Button>
+        <ProductCardActions
+          product={product}
+          sessionId={sessionId}
+          blockId={block.id}
+        />
       </div>
     </div>
   );

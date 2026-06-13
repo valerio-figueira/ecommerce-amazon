@@ -289,6 +289,10 @@ apps/web/src/
     CouponStripBlock.tsx        # stub
   components/product/
     ProductCard.tsx
+    ProductCardActions.tsx
+    AffiliateGoLink.tsx
+    ProductEditorialBadges.tsx
+    ProductRating.tsx
     PriceDisplay.tsx
     MarketplaceBadge.tsx
   components/wishlist/
@@ -345,13 +349,34 @@ Estado client-side: categoria selecionada nas pills propaga para `ProductGridBlo
 
 | Regra | Implementação |
 |-------|---------------|
-| Preço stale | `PriceDisplay` oculta valor numérico (`amount: null`) |
-| CTA transparente | "Ver na Amazon" / "Ver na Shopee" — nunca "Comprar agora" |
-| Cenário B | Nova aba + `POST /events/click` antes do redirect |
+| Preço stale | `PriceDisplay` oculta valor numérico; pill âmbar "Consultar preço atualizado" |
+| CTA transparente | "Ver preço na Amazon" / "Ver preço na Shopee" — nunca "Comprar agora" |
+| Cenário A | Imagem/título e CTA primário (preço fresh) → `/produtos/[slug]` mesma aba |
+| Cenário B | CTA secundário (preço fresh) ou primário (stale) → `/go/[slug]` nova aba + `POST /events/click` |
 | Disclaimer | `AffiliateDisclaimer` visível com CTA comercial |
 | Session anônima | Cookie `vitrine_session` → header `x-session-id` |
-| Grid popular | Card enxuto: preço, título, CTA — sem badge/rating na listagem |
-| Links afiliado | `rel="noopener sponsored"` nos CTAs |
+| Badges editoriais | `ProductEditorialBadges` — Escolha editorial (`editorialScore >= 80`), Top avaliado, Melhor oferta (strikethrough fresh) |
+| Rating na listagem | `ProductRating` — estrelas + contagem quando dados locais existem |
+| Links afiliado | `rel="noopener sponsored"` via `AffiliateGoLink` |
+
+### Anatomia do `ProductCard` (Gold Standard Fase 1)
+
+```
+┌─────────────────────────────┐
+│ [Badge editorial]     [♥]   │
+│         Imagem (link A)     │
+├─────────────────────────────┤
+│ MarketplaceBadge            │
+│ Título (link A)             │
+│ Rating                      │
+│ Preço + frescor / pill stale│
+│ [Ver análise e ofertas]  A  │  ← fresh: primário
+│ [Ver preço na Amazon ↗]  B  │  ← fresh: secundário
+│ ou stale: só CTA B + link A │
+└─────────────────────────────┘
+```
+
+Componentes: `ProductCard`, `ProductCardActions`, `AffiliateGoLink`, `ProductEditorialBadges`, `ProductRating`, `PriceDisplay`.
 
 Regra Cursor: [`.cursor/rules/06-ux-conversion.mdc`](../.cursor/rules/06-ux-conversion.mdc).
 
@@ -399,8 +424,9 @@ Abrir http://localhost:3001
 1. Home renderiza hero split (carrossel + destaque).
 2. Pills filtram grid (client-side).
 3. Coração adiciona à wishlist; drawer lista itens por marketplace.
-4. CTA abre nova aba e registra clique.
-5. Produto com `stale_price` não mostra valor numérico.
+4. CTA afiliado abre nova aba, registra clique (`origin: listagem`) e usa `rel="noopener sponsored"`.
+5. CTA primário (preço fresh) leva à página interna do produto.
+6. Produto com preço stale: pill "Consultar preço atualizado"; CTA afiliado como ação principal.
 
 **API direta:**
 
