@@ -6,17 +6,13 @@ import { useEffect, useState } from 'react';
 
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
 
-type MobileNavDrawerProps = {
+type CategoryCatalogDrawerProps = {
   categories: CategoryNavNode[];
 };
 
-const STATIC_LINKS = [
-  { href: '#', label: 'Artigos' },
-  { href: '#', label: 'Cupons' },
-  { href: '#', label: 'Sobre' },
-];
-
-export function MobileNavDrawer({ categories }: MobileNavDrawerProps): React.JSX.Element {
+export function CategoryCatalogDrawer({
+  categories,
+}: CategoryCatalogDrawerProps): React.JSX.Element | null {
   const [open, setOpen] = useState(false);
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
 
@@ -38,45 +34,49 @@ export function MobileNavDrawer({ categories }: MobileNavDrawerProps): React.JSX
     };
   }, [open]);
 
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <button
         type="button"
-        className="rounded-full p-2 hover:bg-neutral-100 md:hidden"
-        aria-label="Abrir menu"
+        className="inline-flex items-center gap-1.5 rounded-full px-2 py-2 text-sm font-medium hover:bg-neutral-100 md:hidden"
+        aria-label="Explorar categorias"
         onClick={() => setOpen(true)}
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="size-5" />
+        <span className="sr-only sm:not-sr-only sm:inline">Categorias</span>
       </button>
 
       {open && (
         <>
           <button
             type="button"
-            className="mobile-nav-drawer__overlay md:hidden"
-            aria-label="Fechar menu"
+            className="category-catalog-drawer__overlay md:hidden"
+            aria-label="Fechar categorias"
             onClick={() => setOpen(false)}
           />
 
-          <div className="mobile-nav-drawer__panel md:hidden" role="dialog" aria-modal="true">
+          <div
+            className="category-catalog-drawer__panel md:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Explorar categorias"
+          >
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-                Menu
+                Categorias
               </p>
               <button
                 type="button"
                 className="rounded-full p-2 hover:bg-neutral-100"
-                aria-label="Fechar menu"
+                aria-label="Fechar categorias"
                 onClick={() => setOpen(false)}
               >
                 <X className="h-5 w-5" />
               </button>
-            </div>
-
-            <div className="mobile-nav-drawer__section">
-              <Link href="/" className="block py-1 text-sm font-medium" onClick={() => setOpen(false)}>
-                Catálogo
-              </Link>
             </div>
 
             {categories.map((category) => {
@@ -84,12 +84,12 @@ export function MobileNavDrawer({ categories }: MobileNavDrawerProps): React.JSX
               const isExpanded = expandedSlug === category.slug;
 
               return (
-                <div key={category.slug} className="mobile-nav-drawer__section">
+                <div key={category.slug} className="category-catalog-drawer__section">
                   {children.length > 0 ? (
                     <>
                       <button
                         type="button"
-                        className="mobile-nav-drawer__accordion-trigger"
+                        className="category-catalog-drawer__accordion-trigger"
                         aria-expanded={isExpanded}
                         onClick={() =>
                           setExpandedSlug((current) =>
@@ -108,20 +108,31 @@ export function MobileNavDrawer({ categories }: MobileNavDrawerProps): React.JSX
                         <div className="mt-1">
                           <Link
                             href={`/categorias/${category.slug}`}
-                            className="mobile-nav-drawer__child-link font-medium"
+                            className="category-catalog-drawer__child-link font-medium"
                             onClick={() => setOpen(false)}
                           >
                             Ver tudo em {category.label}
                           </Link>
                           {children.map((child) => (
-                            <Link
-                              key={child.slug}
-                              href={`/categorias/${child.slug}`}
-                              className="mobile-nav-drawer__child-link"
-                              onClick={() => setOpen(false)}
-                            >
-                              {child.label}
-                            </Link>
+                            <div key={child.slug}>
+                              <Link
+                                href={`/categorias/${child.slug}`}
+                                className="category-catalog-drawer__child-link"
+                                onClick={() => setOpen(false)}
+                              >
+                                {child.label}
+                              </Link>
+                              {(child.subcategories ?? []).map((grandchild) => (
+                                <Link
+                                  key={grandchild.slug}
+                                  href={`/categorias/${grandchild.slug}`}
+                                  className="category-catalog-drawer__grandchild-link"
+                                  onClick={() => setOpen(false)}
+                                >
+                                  {grandchild.label}
+                                </Link>
+                              ))}
+                            </div>
                           ))}
                         </div>
                       )}
@@ -139,19 +150,6 @@ export function MobileNavDrawer({ categories }: MobileNavDrawerProps): React.JSX
                 </div>
               );
             })}
-
-            <div className="mobile-nav-drawer__section">
-              {STATIC_LINKS.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="block py-1 text-sm text-neutral-600"
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
           </div>
         </>
       )}

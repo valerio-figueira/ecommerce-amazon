@@ -13,7 +13,7 @@
 - Produto: seletor cascata (`CategoryCascadeSelect`) amarrado à folha
 - Vitrine: `/categorias/[slug]` SSR com metadata, JSON-LD, sidebar em árvore e grid de produtos
 - Home CMS: pills em cascata (2ª fileira de subcategorias) filtrando a grade vinculada
-- Header: mega menu multi-coluna (desktop) + drawer mobile com acordeão de categorias
+- Header: hub único **Categorias** (flyout 2 colunas no desktop + drawer accordion no mobile) — barra fixa, escala com N raízes
 - Breadcrumb de produto com links para `/categorias/{slug}`
 
 ## Por quê
@@ -48,7 +48,7 @@ flowchart LR
 | Admin UI | `apps/admin/src/app/(dashboard)/categorias/page.tsx` |
 | Web pills | `apps/web/src/components/blocks/CategoryPillsRow.tsx` |
 | Web sidebar | `apps/web/src/components/category/CategorySidebarTree.tsx` |
-| Web header | `apps/web/src/components/layout/CategoryMegaMenu.tsx`, `MobileNavDrawer.tsx` |
+| Web header | `CategoryCatalogFlyout.tsx`, `CategoryCatalogDrawer.tsx`, `SiteHeader.tsx` |
 | Tree helpers | `packages/shared/src/category/category-tree-nav.ts` |
 
 ## API (resumo)
@@ -89,7 +89,7 @@ npm run test -w @ecommerce-amazon/application
 2. Admin → **Produtos** → selecionar categoria em cascata
 3. Home → selecionar pill **Games** → segunda fileira com subcategorias; grade filtra por slug
 4. Vitrine → `/categorias/home-office` → sidebar em árvore (desktop) + chips horizontais (mobile)
-5. Header → hover em categoria raiz abre mega menu; mobile → ícone menu
+5. Header → botão **Categorias** abre flyout (desktop) ou drawer (mobile); barra não cresce com novas raízes
 6. `GET /products?category=games` deve incluir produtos em subcategorias
 
 ## Exposição na vitrine
@@ -98,8 +98,8 @@ npm run test -w @ecommerce-amazon/application
 |-------|------------|---------------|
 | Home pills | `CategoryPillsRow` | 1ª fileira = raízes CMS; 2ª fileira = filhos do pai ativo |
 | Página categoria | `CategorySidebarTree` | Árvore lateral (lg+); chips horizontais em mobile |
-| Header desktop | `CategoryMegaMenu` | Painel multi-coluna com até 3 níveis |
-| Header mobile | `MobileNavDrawer` | Acordeão por categoria raiz |
+| Header desktop | `CategoryCatalogFlyout` | Botão Categorias → flyout 2 colunas (raízes + subcategorias) |
+| Header mobile | `CategoryCatalogDrawer` | Botão Categorias → drawer accordion só catálogo |
 | Produto | breadcrumb em `produtos/[slug]` | `Home > … > categoria > produto` |
 
 ## Próximos passos (fora desta entrega)

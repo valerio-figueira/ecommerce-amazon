@@ -3,13 +3,13 @@
 import { Heart, Search } from 'lucide-react';
 import Link from 'next/link';
 
-import { CategoryMegaMenu } from '@/components/layout/CategoryMegaMenu';
-import { MobileNavDrawer } from '@/components/layout/MobileNavDrawer';
+import { CategoryCatalogDrawer } from '@/components/layout/CategoryCatalogDrawer';
+import { CategoryCatalogFlyout } from '@/components/layout/CategoryCatalogFlyout';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { WishlistDrawer } from '@/components/wishlist/WishlistDrawer';
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
 
-const STATIC_LINKS = [
+const EDITORIAL_LINKS = [
   { href: '#', label: 'Artigos' },
   { href: '#', label: 'Cupons' },
   { href: '#', label: 'Sobre' },
@@ -25,18 +25,20 @@ export function SiteHeader({ navCategories = [] }: SiteHeaderProps): React.JSX.E
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-neutral-200/80 bg-[var(--background)]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4">
-          <div className="flex items-center gap-2">
-            <MobileNavDrawer categories={navCategories} />
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4">
+          <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-5">
+            <Link
+              href="/"
+              className="shrink-0 text-lg font-bold tracking-tight md:text-xl"
+            >
+              VITRINE
+            </Link>
 
-            <nav className="hidden items-center gap-5 text-sm font-medium md:flex">
-              <Link href="/" className="hover:text-neutral-600">
-                Catálogo
-              </Link>
-              {navCategories.map((category) => (
-                <CategoryMegaMenu key={category.slug} category={category} />
-              ))}
-              {STATIC_LINKS.map((link) => (
+            <CategoryCatalogFlyout categories={navCategories} />
+            <CategoryCatalogDrawer categories={navCategories} />
+
+            <nav className="hidden items-center gap-4 text-sm font-medium sm:flex md:gap-5">
+              {EDITORIAL_LINKS.map((link) => (
                 <Link key={link.label} href={link.href} className="hover:text-neutral-600">
                   {link.label}
                 </Link>
@@ -44,14 +46,7 @@ export function SiteHeader({ navCategories = [] }: SiteHeaderProps): React.JSX.E
             </nav>
           </div>
 
-          <Link
-            href="/"
-            className="text-xl font-bold tracking-tight md:absolute md:left-1/2 md:-translate-x-1/2"
-          >
-            VITRINE
-          </Link>
-
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 md:gap-3">
             <button
               type="button"
               aria-label="Buscar"
