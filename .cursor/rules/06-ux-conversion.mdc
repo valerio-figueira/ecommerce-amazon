@@ -1,0 +1,38 @@
+---
+description: UI/UX de conversão — cenários A/B, cards, CTAs e gatilhos honestos
+globs: "**/*.{tsx,vue,svelte}"
+alwaysApply: false
+---
+
+# UX e Conversão (Gold Standard)
+
+## Dois cenários de clique
+
+**Cenário A:** clique no card (imagem/título) → página de detalhe **mesma aba** → conteúdo + gráfico preço → CTA primário.
+
+**Cenário B:** clique no **botão CTA** do card → **nova aba** marketplace + toast opcional na vitrine.
+
+Áreas de clique distintas; tracking diferenciado por origem.
+
+## Card de produto
+
+- Título higienizado, máx. 2 linhas; preço oculto se stale
+- Rating visual + contagem de reviews (dados locais)
+- Badges ("Menor preço 30d", "Queda X%") **somente** com dados válidos e não stale
+- CTA full-width mobile com ícone + nome do marketplace
+
+## Detalhe interna
+
+Above the fold: imagem, título, preço, CTA, disclaimer afiliado. Gráfico histórico (mín. 7 snapshots). Bloco "Por que recomendamos" editorial.
+
+## Embeds em artigos
+
+Shortcode `[[product:slug]]` → mesmo componente de card (variante compacta). Embed → detalhe (A); CTA embed → marketplace (B). Primeiro CTA comercial após ≥300 palavras.
+
+## Coleções sociais `/c/[slug]`
+
+Mobile-first, LCP <1.5s, hero + grid ordenado como no vídeo/pin, UTMs na bio, CTA "Adicionar todos à lista".
+
+## Wishlist
+
+Drawer lateral; agrupar por marketplace; batch checkout separado Amazon vs Shopee; máx. 10 itens/marketplace/sessão.

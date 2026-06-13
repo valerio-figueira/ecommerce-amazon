@@ -1,0 +1,43 @@
+---
+description: Camadas Clean Architecture, dependências e estrutura de pastas
+globs: "{packages/**/*.ts,apps/**/*.ts}"
+alwaysApply: false
+---
+
+# Clean Architecture
+
+## Dependências (sempre para dentro)
+
+| Camada | Importa | Proibido |
+|--------|---------|----------|
+| `packages/domain` | — | application, infrastructure, apps, fastify, drizzle, bullmq |
+| `packages/application` | domain | infrastructure, ORM, HTTP clients |
+| `packages/infrastructure` | domain (+ application raro) | apps |
+| `apps/api`, `apps/worker` | application, infrastructure | Drizzle/schema direto em controllers |
+
+## Onde colocar código novo
+
+- Entidades, VOs (`Price`, `Slug`), eventos, interfaces → `packages/domain` (English names)
+- Use cases (`GetProductBySlug`, `UpdatePricesBatch`) → `packages/application`
+- Drizzle repos, Redis, BullMQ, fetchers Amazon/Shopee, email → `packages/infrastructure`
+- Controllers, Zod schemas request, presenters → `apps/api/adapters`
+- Processors, schedulers, event handlers → `apps/worker`
+- DI/composition root → `packages/infrastructure/di/` (único lugar com classes concretas)
+
+## Padrões obrigatórios
+
+- **Repository:** interface em `domain/repositories`, implementação em `infrastructure/persistence`
+- **Strategy + Factory:** `IMarketplaceFetcher` por marketplace; resolver via `MarketplaceFetcherFactory`
+- **Domain Events:** `PriceDropped` publicado por use case; email via fila `domain_events` → handler separado
+- **Mapper/Presenter:** DB row ↔ Entity ↔ ResponseDTO — entidade não conhece JSON HTTP
+
+## Anti-patterns
+
+```typescript
+// ❌ SQL ou Redis no controller/use case
+// ❌ import drizzle from 'apps/api/...'
+// ❌ nodemailer.sendMail dentro de UpdatePricesBatch
+// ✅ await this.eventBus.publish(new PriceDropped(...))
+```
+
+Substituir ORM/fila/email = reimplementar `infrastructure/` apenas; domain/application intactos.

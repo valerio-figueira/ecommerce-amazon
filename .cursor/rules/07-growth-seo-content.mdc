@@ -1,0 +1,35 @@
+---
+description: Hub de conteúdo, anti-duplicação SEO, comparador, cupons e coleções
+globs: "{**/content/**,**/articles/**,packages/**/Content*.ts,apps/api/**/article*,apps/api/**/coupon*,apps/api/**/comparison*,apps/api/**/collection*}"
+alwaysApply: false
+---
+
+# Growth, SEO e Conteúdo
+
+## Anti-duplicação (obrigatório)
+
+Artigos ≥800 palavras; comparador ≥150 palavras intro + prós/contras editoriais. Proibido publicar página produto só com descrição da API. ≥1 elemento exclusivo por peça (histórico preço local, tabela própria, mídia original).
+
+## Embeds dinâmicos
+
+Preço/rating/CTA do embed vêm do **catálogo local** em runtime — nunca API parceira no render do artigo.
+
+## Comparador MVP
+
+2–3 produtos, URL indexável `/comparar/[slug]`, share_token, intro editorial, specs normalizadas (Pipeline C). **Não** implementar comparador cross-marketplace mesmo SKU (fase 2).
+
+## Central de cupons
+
+`/cupons` + subrotas por marketplace; exibir só cupons com `last_verified_at` <24h; FAQ + texto único no nicho; recirculação 4 cards após copiar cupom.
+
+## Coleções curadas
+
+1 coleção = 1 campanha social; slug memorável; UTM `utm_source=pinterest|tiktok|instagram`; nunca link genérico para homepage.
+
+## Indexação
+
+Páginas produto com histórico: indexar se ≥7 snapshots. Meta description com faixa 30d quando disponível. Não indexar em massa até conta afiliado `active`.
+
+## Interlinking
+
+≥3 links internos por artigo; comparativos linkam para comparador técnico; detalhes linkam guias relacionados.

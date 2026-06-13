@@ -1,0 +1,39 @@
+{
+  "name": "@ecommerce-amazon/infrastructure",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/persistence/drizzle/migrate.ts",
+    "db:seed": "tsx src/persistence/drizzle/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ecommerce-amazon/application": "*",
+    "@ecommerce-amazon/domain": "*",
+    "@ecommerce-amazon/shared": "*",
+    "bullmq": "^5.53.2",
+    "drizzle-orm": "^0.44.2",
+    "ioredis": "^5.6.1",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "dotenv": "^16.5.0",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.1"
+  }
+}

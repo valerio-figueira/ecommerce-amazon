@@ -1,0 +1,40 @@
+---
+description: Visão do produto, escopo MVP e referências aos planos — aplicar sempre
+alwaysApply: true
+---
+
+# North Star — Vitrine Inteligente + Hub de Conteúdo (Afiliados)
+
+## O que estamos construindo
+
+Plataforma proprietária de afiliação vertical (Amazon BR + Shopee BR): **vitrine** monetiza via links de afiliado; **conteúdo e ferramentas** trazem tráfego. Não é clone de marketplace — é curadoria editorial + dados locais enriquecidos.
+
+**Tese:** vitrine = conversão; conteúdo/social/ímãs = combustível. Site só com listagem de produtos espelhados = "site fantasma" (conteúdo duplicado, sem SEO).
+
+## Documentos fonte (consultar antes de desviar do escopo)
+
+- `.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md` — negócio, workers, UX, retenção
+- `.cursor/plans/prd_growth_aquisicao_trafego.plan.md` — SEO, social, anti-duplicação
+- `.cursor/plans/arquitetura_tecnica_node.plan.md` — Clean Architecture, filas, cache, testes
+
+## Stack e processos
+
+- Node.js 20 + TypeScript strict, monorepo: `apps/api`, `apps/worker`, `packages/{domain,application,infrastructure,shared}`
+- PostgreSQL (catálogo), Redis (cache + BullMQ), Fastify, Drizzle, Zod, Vitest
+
+## MVP obrigatório (não adiar sem decisão explícita do usuário)
+
+Vitrine local, histórico de preços, alertas (double opt-in), wishlist + batch checkout, hub com embeds dinâmicos, comparador 2–3 produtos, central de cupons, coleções curadas (`/c/[slug]`), tracking de clique (listagem | detalhe | embed | comparador | cupons).
+
+## Fora de escopo MVP
+
+Login social, comparador cross-marketplace mesmo SKU, sub-afiliados, app nativo, checkout in-platform, automação de postagem social.
+
+## Princípios de implementação
+
+- YAGNI: feature mínima correta antes de abstração extra
+- DRY: reutilizar componentes de card/embed entre vitrine, artigos e coleções
+- SOLID + Clean Architecture: domain no centro, dependências para dentro
+- Não inventar features, rotas ou entidades fora dos planos sem alinhar
+- **Código em inglês** (identifiers, files, comments); copy de UI/emails em pt-BR — ver `09-code-standards.mdc`
+- **ESLint + Prettier** obrigatórios; CI deve falhar em lint/format nos pacotes alterados

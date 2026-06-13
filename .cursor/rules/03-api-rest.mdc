@@ -1,0 +1,42 @@
+---
+description: API REST read-heavy, rotas MVP, Zod e cache na borda
+globs: apps/api/**/*
+alwaysApply: false
+---
+
+# API REST (`apps/api`)
+
+## Responsabilidade
+
+Servir front-end: **leitura** do catálogo local + escrita de alertas, wishlist, comparações, eventos de clique. Zero fetch externo a marketplaces.
+
+## Rotas MVP (não renomear sem atualizar planos)
+
+```
+GET  /products, /products/:slug, /products/:id/price-history
+POST /price-alerts, POST /price-alerts/confirm/:token, DELETE /price-alerts/:token
+GET|POST|DELETE /wishlist, POST /wishlist/checkout-batch
+GET  /articles/:slug, GET /collections/:slug
+GET  /coupons, GET /coupons/:marketplace
+GET|POST /comparisons, GET /comparisons/:share_token
+POST /events/click
+```
+
+Origem do clique em telemetria: `listagem | detalhe | embed | comparador | cupons`.
+
+## Fluxo por request
+
+Controller → Zod parse → Use Case → (cache-aside) → Repository → Presenter → JSON.
+
+- Validação Zod **somente** em adapters HTTP e `shared/config/env`
+- Controllers finos: sem lógica de negócio, sem SQL
+
+## Cache Redis (leitura)
+
+- Cache-aside nos use cases de listagem/detalhe/artigo
+- Após write no worker: `INCR cache:version:product:{id}` — não fazer scan de chaves
+- TTL referência: listagem 5min, detalhe 10min, histórico 1h
+
+## CTA e links afiliados
+
+Gerar deep links via `IAffiliateLinkBuilder`; marketplace em nova aba; nunca substituir aba atual do usuário.

@@ -1,0 +1,41 @@
+---
+description: Entidades, value objects, use cases e regras puras de domínio
+globs: "{packages/domain/**,packages/application/**}"
+alwaysApply: false
+---
+
+# Domain e Application
+
+## Entidades MVP (PRD Core)
+
+`Product`, `PriceSnapshot`, `PriceAlert`, `WishlistItem`, `ContentArticle`, `ContentProductEmbed`, `CuratedCollection`, `Coupon`, `ProductComparison`, `SyncJobLog`, `AffiliateAccount`
+
+## Value Objects essenciais (English names in code)
+
+- `Price`: amount, currency, updatedAt, **isStale** — all alert checks go through this VO
+- `MarketplaceId`: `amazon_br | shopee_br`
+- `AffiliateLink`, `Slug`, `Email` (validados na criação)
+
+## Domain services
+
+- `PriceComplianceService` — regra SLA 24h, flag stale
+- `TitleHygieneService` — limpeza de títulos (Pipeline C)
+- Lógica de badge queda: só com snapshots confiáveis, nunca inventar preço
+
+## Use cases nomeados (referência)
+
+`GetProductBySlug`, `ListProducts`, `UpdatePricesBatch`, `CreatePriceAlert`, `ProcessTriggeredAlerts`, `AddToWishlist`, `BuildBatchCheckoutRedirect`, `GetArticleWithEmbeds`, `GetCuratedCollection`, `CreateComparison`, `VerifyCouponsBatch`
+
+## Domain events
+
+`PriceDropped`, `ProductPriceStale`, `PriceAlertTriggered` — classes plain, sem dependência de fila.
+
+## Use case rules
+
+- Depender de **interfaces** (`IProductRepository`, `IEventBus`, `IMarketplaceFetcher`)
+- Retornar `Result<T, DomainError>` para falhas esperadas quando fizer sentido
+- Use case orquestra; entidade encapsula invariantes (ex: `product.updatePrice()` emite evento)
+
+## Zero imports externos
+
+`packages/domain/package.json` não deve listar fastify, drizzle, bullmq, ioredis, nodemailer.

@@ -1,0 +1,25 @@
+{
+  "name": "@ecommerce-amazon/worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ecommerce-amazon/application": "*",
+    "@ecommerce-amazon/domain": "*",
+    "@ecommerce-amazon/infrastructure": "*",
+    "@ecommerce-amazon/shared": "*",
+    "bullmq": "^5.53.2",
+    "ioredis": "^5.6.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.1"
+  }
+}

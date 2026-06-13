@@ -1,0 +1,39 @@
+---
+description: Worker BullMQ, batch processing, rate limits e domain events
+globs: apps/worker/**/*
+alwaysApply: false
+---
+
+# Worker (`apps/worker`)
+
+## Único processo autorizado
+
+Chamar APIs/scrapers Amazon/Shopee, rodar higienização, verificar cupons, invalidar cache.
+
+## Filas BullMQ
+
+`catalog_sync` | `price_refresh` (high) | `hygiene` (low) | `coupon_verify` | `domain_events` | `email_delivery`
+
+## Batch de preços
+
+1. Scheduler enfileira jobs por marketplace, batches de 10–20 external IDs
+2. Processor: rate limiter → strategy fetch → domain update → UnitOfWork (produto + snapshot)
+3. Publicar `PriceDropped` na fila de eventos — **não** enviar email inline
+4. `CacheInvalidator` incrementa version stamp por product_id
+
+## Retry e rate limit
+
+- 5 tentativas, exponential backoff (30s base)
+- `MarketplaceRateLimitError` → delay fixo 5min, re-enqueue
+- Token bucket Redis por marketplace (`rate:amazon`, `rate:shopee`)
+- Concurrency: price_refresh ≤3 workers; usar `p-limit` em HTTP paralelo dentro do batch
+
+## Idempotência
+
+- JobId determinístico: `price_refresh:{productId}:{dateHour}`
+- Snapshot: unique `(product_id, captured_at::date)`
+- Alert handler: só dispara se alerta `active` e preço não stale
+
+## Event loop
+
+Jobs I/O-bound; regex/similaridade pesada em batches de 50 com yield — worker threads só se profiling exigir (YAGNI).

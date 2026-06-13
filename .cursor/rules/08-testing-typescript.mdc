@@ -1,0 +1,52 @@
+---
+description: TypeScript strict, Zod, Vitest e pirâmide de testes MVP
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript e Testes
+
+See also: `09-code-standards.mdc` (ESLint, Prettier, English identifiers).
+
+## Compiler
+
+`strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`. Branded types for `ProductId`, `Slug`. No `any` in domain/application.
+
+## Strong typing (mandatory)
+
+- **No type assertions** (`as Type`) — forbidden except `as const` for literal narrowing.
+- **Explicit return types** on all exported/public functions, methods, and use case `execute()`.
+- **Generics** for reusable utilities (queues, cache boundaries, repositories) instead of widening to `unknown`.
+- **Type guards** (`isX(value): value is X`) and domain parsers (`parseMarketplace`, etc.) at boundaries — never cast after parse.
+- **Zod** validates at HTTP/env edges; map to domain types via parsers, not casts.
+- **Tests:** use mock factories implementing full port interfaces — never `as never` or `as any`.
+
+ESLint: `@typescript-eslint/consistent-type-assertions: ['error', { assertionStyle: 'never' }]`.
+
+## Zod
+
+Apenas borda: controllers, env config. Domain recebe tipos já validados.
+
+## Testes (Vitest)
+
+| Camada | Alvo | Meta coverage |
+|--------|------|---------------|
+| Unit | VOs, domain services, use cases (repos mock) | domain+application ≥85% |
+| Integration | Repos (Testcontainers PG), Fastify inject | repos ≥70% |
+| E2E mínimo | alerta → price drop → email mock | 1–2 fluxos |
+
+## Testes obrigatórios antes de merge
+
+- `Price.meetsTarget` respects stale flag
+- `UpdatePricesBatch` publica `PriceDropped` sem chamar email
+- `GET /products/:slug` não invoca fetch externo (mock global)
+- Payload inválido → 400 com detalhe Zod
+- Cache version increment após price job (integration)
+
+## Ao adicionar use case
+
+1. Interface já existe em domain?
+2. Teste unitário com mocks de ports
+3. Controller + schema Zod + teste inject 200/400
+
+Não adicionar testes triviais que só assertam mock; focar comportamento de negócio real.

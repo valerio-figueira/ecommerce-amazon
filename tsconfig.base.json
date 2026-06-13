@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "paths": {
+      "@ecommerce-amazon/domain": ["./packages/domain/src/index.ts"],
+      "@ecommerce-amazon/domain/*": ["./packages/domain/src/*"],
+      "@ecommerce-amazon/application": ["./packages/application/src/index.ts"],
+      "@ecommerce-amazon/application/*": ["./packages/application/src/*"],
+      "@ecommerce-amazon/infrastructure": ["./packages/infrastructure/src/index.ts"],
+      "@ecommerce-amazon/infrastructure/*": ["./packages/infrastructure/src/*"],
+      "@ecommerce-amazon/shared": ["./packages/shared/src/index.ts"],
+      "@ecommerce-amazon/shared/*": ["./packages/shared/src/*"]
+    }
+  }
+}

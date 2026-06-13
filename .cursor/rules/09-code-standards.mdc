@@ -1,0 +1,112 @@
+---
+description: ESLint, Prettier, idioma inglês no código e convenções de estilo
+globs: "**/*.{ts,tsx,js,jsx,mjs,cjs,json}"
+alwaysApply: false
+---
+
+# Code Standards
+
+## Language
+
+| Context | Language |
+|---------|----------|
+| Source code (identifiers, files, folders, commits) | **English** |
+| Code comments and JSDoc | **English** |
+| User-facing copy (UI, emails, disclaimers) | **Portuguese (pt-BR)** |
+| Planning docs (`.cursor/plans/`) | Portuguese OK |
+
+```typescript
+// ✅ GOOD
+class UpdatePricesBatch { }
+const isPriceStale = product.price.isStale;
+// UI string: "Ver preço na Amazon"
+
+// ❌ BAD
+class AtualizarPrecosEmLote { }
+const precoDesatualizado = true;
+```
+
+Domain terms in English: `Price` (not `Preco`), `PriceAlert`, `WishlistItem`. PRD Portuguese names map 1:1 to English types.
+
+## Linting and formatting
+
+- **ESLint** flat config with `@typescript-eslint` recommended-type-checked rules
+- **Prettier** for formatting; ESLint handles logic, Prettier handles style — no conflicting rules
+- Root scripts: `lint`, `lint:fix`, `format`, `format:check` via Turborepo/pnpm workspaces
+- **Zero warnings** on CI for touched packages; fix or explicitly disable with comment + reason
+
+Required ESLint posture (enable when scaffold exists):
+
+- `@typescript-eslint/no-explicit-any`: error
+- `@typescript-eslint/no-floating-promises`: error
+- `@typescript-eslint/no-unused-vars`: error (prefix `_` for intentionally unused)
+- `@typescript-eslint/consistent-type-assertions`: error (`assertionStyle: 'never'` — only `as const` allowed)
+- `@typescript-eslint/explicit-function-return-type`: warn on exported functions in `packages/domain` and `packages/application`
+- `no-console`: warn in apps (use structured logger in infrastructure)
+
+## TypeScript typing
+
+- **Ban** `as Type` assertions; use type guards, generics, or Zod + domain parsers instead.
+- **Return types** must be explicit on exported/public APIs and use case `execute()` methods.
+- **Prefer generics** over `unknown` + cast when the type relationship is known at the call site.
+- **Cache/JSON boundaries:** `CacheStore.get()` returns `unknown | null`; callers validate with type guards before use.
+- **Tests:** mock factories with full interface implementations — no `as never`.
+
+```typescript
+// ✅ GOOD
+async execute(slug: string): Promise<Product | null> { ... }
+function parseMarketplace(value: string): Marketplace { ... }
+function isPriceHistoryResult(value: unknown): value is PriceHistoryResult { ... }
+
+// ❌ BAD
+async execute(slug: string) { ... }
+const data = JSON.parse(raw) as Product;
+productRepository as never;
+```
+
+## Naming
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Files (domain/use cases) | PascalCase | `Product.ts`, `GetProductBySlug.ts` |
+| Files (infra/adapters) | kebab-case or dot suffix | `product.repository.ts`, `amazon-fetcher.strategy.ts` |
+| Classes / types / enums | PascalCase | `PriceComplianceService` |
+| Functions / methods / vars | camelCase | `findDueForPriceRefresh` |
+| Constants | UPPER_SNAKE_CASE | `MAX_WISHLIST_ITEMS` |
+| Interfaces (ports) | `I` prefix optional; prefer plain name | `ProductRepository` or `IProductRepository` — pick one, stay consistent |
+| Zod schemas | `*Schema` suffix | `CreatePriceAlertSchema` |
+| Test files | `*.test.ts` colocated or `__tests__/` | `Price.test.ts` |
+
+## Modules and exports
+
+- Prefer **named exports**; avoid default exports (easier refactor and tree-shaking)
+- Path aliases: `@domain/*`, `@application/*`, `@infrastructure/*` — no deep relative imports crossing package boundaries (`../../../`)
+- One public class/function per file when practical; barrel `index.ts` only at package entrypoints
+
+## Imports order
+
+1. Node built-ins
+2. External packages
+3. Monorepo packages (`@domain/...`)
+4. Relative imports
+
+Blank line between groups; use ESLint `import/order` or equivalent.
+
+## Error handling
+
+- Domain: throw `DomainError` subclasses with stable `code`
+- Use cases: `Result<T, E>` for expected failures; throw only for programmer errors
+- Adapters: map domain errors to HTTP status in one place (`errorHandler` middleware)
+
+## Git hygiene
+
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `chore:`
+- Small focused PRs; no drive-by refactors
+- Pre-commit (when configured): `lint-staged` → eslint --fix + prettier on staged `*.{ts,tsx,json,md}`
+
+## Do not
+
+- Disable ESLint/Prettier globally to pass CI
+- Mix Portuguese identifiers in new code
+- Commit `.env`, secrets, or generated artifacts without gitignore
+- Use `// @ts-ignore` without adjacent explanation

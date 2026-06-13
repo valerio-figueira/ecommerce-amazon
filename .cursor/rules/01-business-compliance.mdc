@@ -1,0 +1,46 @@
+---
+description: Regras de negócio, conformidade afiliado, preços e LGPD
+alwaysApply: true
+---
+
+# Negócio e Conformidade
+
+## Regra de ouro de dados
+
+Request HTTP do visitante **nunca** chama API/scraper Amazon/Shopee. Leitura = catálogo local; escrita externa = apenas `apps/worker`.
+
+## SLA de preço (24h)
+
+- Produto ativo deve ter refresh tentado antes de `price_updated_at` > 24h
+- Após 24h sem refresh: `stale_price = true`, ocultar preço numérico, manter CTA
+- Sem badges de urgência/queda enquanto stale; alertas **não disparam** com preço stale
+
+## Pipelines worker (PRD Core)
+
+| Pipeline | Fila | Função |
+|----------|------|--------|
+| A | `catalog_sync` | Metadados não-preço (6h ativos, 2h wishlist/alertas) |
+| B | `price_refresh` | Preços (4h hot, 12h demais) — **nunca pausar por budget** |
+| C | `hygiene` | Títulos, specs, slugs — diário |
+| D | `coupon_verify` | Cupons — 6h destaque, 12h demais |
+
+Budget API estourado: pausar Pipeline A em produtos cold (>30d sem view); **nunca** pausar B em produtos com tráfego 7d.
+
+## Afiliado e escala
+
+- Gate manual antes de indexação massiva, alertas email e batch checkout: conta `pending_manual_validation` bloqueia
+- CTA transparente: "Ver preço na Amazon/Shopee" — nunca "Comprar agora" genérico
+- Disclaimer visível em toda página com CTA comercial
+- Links com tag válida; proibido encurtador que oculte destino; `rel="noopener sponsored"`
+
+## Alertas de preço
+
+Double opt-in, máx. 10 alertas/email, cooldown 24h mesmo produto, one-shot no MVP.
+
+## LGPD
+
+Opt-in explícito para emails; banner cookies para wishlist anônima; endpoint de exclusão de alertas/lista.
+
+## Dark patterns proibidos
+
+Countdown falso, "X pessoas comprando", preço inflado fictício, estoque inventado, cupom não verificado (<24h) na listagem pública.
