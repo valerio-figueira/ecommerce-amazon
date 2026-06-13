@@ -14,7 +14,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center rounded-full font-medium transition-colors',
+        'inline-flex cursor-pointer items-center justify-center rounded-full font-medium transition-colors disabled:cursor-not-allowed',
         variant === 'primary' && 'bg-[var(--primary)] text-white hover:opacity-90',
         variant === 'outline' && 'border border-neutral-300 bg-white hover:bg-neutral-50',
         variant === 'ghost' && 'hover:bg-neutral-100',

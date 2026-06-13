@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export {
+  createCorsOriginDelegate,
+  isDevWebOrigin,
+  isOriginAllowed,
+  parseCorsOrigins,
+  type CorsOriginDelegate,
+} from './cors.js';
+
 export type DatabaseConfig = {
   POSTGRES_HOST: string;
   POSTGRES_PORT: number;
@@ -50,13 +58,6 @@ export type Env = z.infer<typeof envSchema>;
 
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   return envSchema.parse(source);
-}
-
-export function parseCorsOrigins(origins: string): string[] {
-  return origins
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter((origin) => origin.length > 0);
 }
 
 export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
