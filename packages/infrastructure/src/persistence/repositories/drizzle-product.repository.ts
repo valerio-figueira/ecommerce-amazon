@@ -1,6 +1,6 @@
-import { and, desc, eq, inArray, isNotNull, lt, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 
-import { AlertStatus, Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository } from '@ecommerce-amazon/domain';
+import { Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -47,13 +47,33 @@ export class DrizzleProductRepository implements ProductRepository {
     if (filters.marketplace) {
       conditions.push(eq(schema.products.marketplace, filters.marketplace));
     }
+    if (filters.minDiscountPercentage !== undefined) {
+      conditions.push(isNotNull(schema.products.priceStrikethrough));
+      conditions.push(
+        gte(
+          sql`(((${schema.products.priceStrikethrough})::numeric - (${schema.products.priceAmount})::numeric) / (${schema.products.priceStrikethrough})::numeric * 100)`,
+          filters.minDiscountPercentage,
+        ),
+      );
+    }
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
     const sortField = filters.sort ?? ProductSortField.EDITORIAL_SCORE;
-    const orderColumn =
-      sortField === ProductSortField.PRICE_UPDATED_AT
-        ? schema.products.priceUpdatedAt
-        : schema.products.editorialScore;
+    const orderByClause = (() => {
+      switch (sortField) {
+        case ProductSortField.PRICE_UPDATED_AT:
+          return desc(schema.products.priceUpdatedAt);
+        case ProductSortField.CREATED_AT:
+          return desc(schema.products.createdAt);
+        case ProductSortField.PRICE_ASC:
+          return asc(schema.products.priceAmount);
+        case ProductSortField.PRICE_DESC:
+          return desc(schema.products.priceAmount);
+        case ProductSortField.EDITORIAL_SCORE:
+        default:
+          return desc(schema.products.editorialScore);
+      }
+    })();
 
     const [items, countResult] = await Promise.all([
       this.db
@@ -62,7 +82,7 @@ export class DrizzleProductRepository implements ProductRepository {
         .where(where)
         .limit(pageSize)
         .offset(offset)
-        .orderBy(desc(orderColumn)),
+        .orderBy(orderByClause),
       this.db
         .select({ count: sql<number>`count(*)::int` })
         .from(schema.products)

@@ -28,6 +28,7 @@ export type ProductProps = {
   tags: string[];
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
+  canonicalUrl?: string | undefined;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
   createdAt: Date;
@@ -57,6 +58,7 @@ export class Product {
   tags: string[];
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
+  canonicalUrl?: string | undefined;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
   readonly createdAt: Date;
@@ -83,6 +85,7 @@ export class Product {
     this.tags = props.tags;
     this.metaTitle = props.metaTitle;
     this.metaDescription = props.metaDescription;
+    this.canonicalUrl = props.canonicalUrl;
     this.pros = props.pros;
     this.cons = props.cons;
     this.createdAt = props.createdAt;
@@ -90,6 +93,10 @@ export class Product {
 
   static create(props: ProductProps): Product {
     return new Product(props);
+  }
+
+  get shouldShowPrice(): boolean {
+    return !this.price.isStale;
   }
 
   updatePrice(newPrice: Price): void {

@@ -25,6 +25,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | Documento | Conteúdo |
 |-----------|----------|
 | [cms-home-phase1.md](./cms-home-phase1.md) | Home CMS-driven: blocos, schemas Zod, seed, `apps/web`, wishlist, tracking |
+| [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 
 ### Planos e especificação (fonte)
 

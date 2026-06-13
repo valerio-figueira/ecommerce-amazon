@@ -174,12 +174,14 @@ export class DrizzleClickEventRepository implements ClickEventRepository {
     productId: string;
     origin: string;
     sessionId?: string;
+    blockId?: string;
     occurredAt: Date;
   }) {
     await this.db.insert(schema.clickEvents).values({
       productId: event.productId,
       origin: event.origin,
       sessionId: event.sessionId,
+      blockId: event.blockId,
       occurredAt: event.occurredAt,
     });
   }

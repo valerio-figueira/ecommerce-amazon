@@ -33,4 +33,5 @@ export const BlockRegistry: Record<
   [BlockType.RICH_TEXT]: RichTextBlock,
   [BlockType.BANNER]: BannerBlock,
   [BlockType.SPACER]: SpacerBlock,
+  [BlockType.DYNAMIC_PRODUCT_GRID]: undefined,
 };

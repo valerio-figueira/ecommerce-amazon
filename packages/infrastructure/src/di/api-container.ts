@@ -16,6 +16,9 @@ import {
   GetPublishedPageLayout,
   ListProductCategories,
   GetWishlist,
+  SavePageBlock,
+  DeletePageBlock,
+  UpdatePageBlocksOrder,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -44,6 +47,7 @@ export function buildApiContainer(env = loadEnv()) {
 
   const productRepository = new DrizzleProductRepository(db);
   const pageRepository = new DrizzlePageRepository(db);
+  const listProducts = new ListProducts(productRepository);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
@@ -62,7 +66,7 @@ export function buildApiContainer(env = loadEnv()) {
     env,
     useCases: {
       getProductBySlug: new GetProductBySlug(productRepository),
-      listProducts: new ListProducts(productRepository),
+      listProducts,
       getProductPriceHistory: new GetProductPriceHistory(snapshotRepository, cache),
       createPriceAlert: new CreatePriceAlert(alertRepository, productRepository),
       confirmPriceAlert: new ConfirmPriceAlert(alertRepository),
@@ -78,9 +82,12 @@ export function buildApiContainer(env = loadEnv()) {
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
-      getPublishedPageLayout: new GetPublishedPageLayout(pageRepository, cache),
+      getPublishedPageLayout: new GetPublishedPageLayout(pageRepository, cache, listProducts),
       listProductCategories: new ListProductCategories(productRepository),
       getWishlist: new GetWishlist(wishlistRepository, productRepository),
+      savePageBlock: new SavePageBlock(pageRepository, cache),
+      deletePageBlock: new DeletePageBlock(pageRepository, cache),
+      updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache),
     },
     repositories: {
       wishlistRepository,

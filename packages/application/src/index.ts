@@ -17,5 +17,8 @@ export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToke
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';
 export { RecordClickEvent } from './use-cases/events/RecordClickEvent.js';
 export { GetPublishedPageLayout } from './use-cases/page/GetPublishedPageLayout.js';
+export { SavePageBlock } from './use-cases/admin-cms/SavePageBlock.js';
+export { DeletePageBlock } from './use-cases/admin-cms/DeletePageBlock.js';
+export { UpdatePageBlocksOrder } from './use-cases/admin-cms/UpdatePageBlocksOrder.js';
 export { ListProductCategories } from './use-cases/product/ListProductCategories.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';

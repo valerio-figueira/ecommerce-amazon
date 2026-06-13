@@ -18,7 +18,8 @@
   },
     "dependencies": {
     "@ecommerce-amazon/domain": "*",
-    "@ecommerce-amazon/shared": "*"
+    "@ecommerce-amazon/shared": "*",
+    "zod": "^3.25.51"
   },
   "devDependencies": {
     "typescript": "^5.8.3",

@@ -25,6 +25,7 @@ Arquivo: [`packages/domain/src/entities/Product.ts`](../packages/domain/src/enti
 | `rating`, `reviewCount` | number? | |
 | `categoryVertical` | string? | filtro categoria |
 | `tags` | string[] | |
+| `metaTitle`, `metaDescription`, `canonicalUrl` | string? | SEO editorial / Admin |
 | `pros`, `cons` | string[]? | editorial |
 | `createdAt` | Date | |
 
@@ -32,6 +33,7 @@ Arquivo: [`packages/domain/src/entities/Product.ts`](../packages/domain/src/enti
 
 - `updatePrice(newPrice)` — emite `PriceDropped` se valor cai
 - `markPriceStale()` — SLA 24h estourado
+- `shouldShowPrice` — getter; `false` quando `price.isStale`, oculta valor numérico na UI/API
 - `pullDomainEvents()` — padrão outbox em memória
 
 ### `PageLayout` / `PageBlock` (CMS)
@@ -102,10 +104,10 @@ Arquivo: [`packages/domain/src/enums/index.ts`](../packages/domain/src/enums/ind
 | `SyncJobStatus` | `running`, `completed`, `failed` |
 | `ClickOrigin` | `listagem`, `detalhe`, `embed`, `comparador`, `cupons` |
 | `AffiliateAccountStatus` | `pending_manual_validation`, `active`, `suspended` |
-| `BlockType` | 10 tipos CMS — ver [cms-home-phase1.md](./cms-home-phase1.md) |
+| `BlockType` | 11 tipos CMS — ver [cms-home-phase1.md](./cms-home-phase1.md), [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) |
 | `PageStatus` | `draft`, `published` |
 | `BlockVisibility` | `all`, `desktop`, `mobile` |
-| `ProductSortField` | `editorial_score`, `price_updated_at` |
+| `ProductSortField` | `editorial_score`, `price_updated_at`, `created_at`, `price_asc`, `price_desc` |
 
 Parsers: [`packages/domain/src/enums/parsers.ts`](../packages/domain/src/enums/parsers.ts) — `parseMarketplace()`, `parseProductSortField()`.
 

@@ -55,6 +55,7 @@ export const RecordClickSchema = z.object({
   productId: z.string().uuid(),
   origin: z.enum(['listagem', 'detalhe', 'embed', 'comparador', 'cupons']),
   sessionId: z.string().optional(),
+  blockId: z.string().uuid().optional(),
 });
 
 export const ArticleSlugParamsSchema = z.object({

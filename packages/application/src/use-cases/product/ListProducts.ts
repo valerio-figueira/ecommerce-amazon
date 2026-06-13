@@ -24,6 +24,7 @@ export class ListProducts {
     category?: string;
     marketplace?: Marketplace;
     sort?: ProductSortField;
+    minDiscountPercentage?: number;
   }): Promise<ListProductsResult> {
     const page = filters.page ?? 1;
     const pageSize = filters.pageSize ?? 20;

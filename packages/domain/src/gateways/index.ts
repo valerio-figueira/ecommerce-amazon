@@ -44,3 +44,7 @@ export type { EventBus } from './event-bus.js';
 export interface CacheInvalidator {
   invalidateProducts(productIds: string[]): Promise<void>;
 }
+
+export interface PageCacheInvalidator {
+  invalidateBySlug(slug: string): Promise<void>;
+}

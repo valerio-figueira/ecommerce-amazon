@@ -9,6 +9,7 @@ export type ProductListFilters = {
   category?: string;
   marketplace?: Marketplace;
   sort?: ProductSortField;
+  minDiscountPercentage?: number;
 };
 
 export type ProductCategoryCount = {

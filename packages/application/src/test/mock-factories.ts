@@ -4,6 +4,8 @@ import type {
   CacheInvalidator,
   EventBus,
   MarketplaceFetcherFactory,
+  PageCacheInvalidator,
+  PageRepository,
   PriceSnapshotRepository,
   ProductRepository,
 } from '@ecommerce-amazon/domain';
@@ -57,6 +59,29 @@ export function createMockCacheInvalidator(
 ): CacheInvalidator {
   return {
     invalidateProducts: vi.fn(),
+    ...overrides,
+  };
+}
+
+export function createMockPageCacheInvalidator(
+  overrides: Partial<PageCacheInvalidator> = {},
+): PageCacheInvalidator {
+  return {
+    invalidateBySlug: vi.fn(),
+    ...overrides,
+  };
+}
+
+export function createMockPageRepository(
+  overrides: Partial<PageRepository> = {},
+): PageRepository {
+  return {
+    findPublishedBySlug: vi.fn(),
+    findPageById: vi.fn(),
+    findBlockById: vi.fn(),
+    updateBlocksOrder: vi.fn(),
+    saveBlock: vi.fn(),
+    deleteBlock: vi.fn(),
     ...overrides,
   };
 }

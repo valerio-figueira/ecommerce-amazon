@@ -48,9 +48,9 @@ export class GetWishlist {
           title: product.titleClean,
           ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
           price: {
-            amount: product.price.isStale ? null : product.price.amount,
+            amount: product.shouldShowPrice ? product.price.amount : null,
             currency: product.price.currency,
-            isStale: product.price.isStale,
+            isStale: !product.shouldShowPrice,
           },
           affiliateUrl: product.affiliateLink.url,
         },

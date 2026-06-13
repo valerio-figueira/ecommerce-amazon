@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import type { CacheInvalidator, CacheStore } from '@ecommerce-amazon/domain';
+import type { CacheInvalidator, CacheStore, PageCacheInvalidator } from '@ecommerce-amazon/domain';
 
 import { parseRedisUrl, type RedisConnectionOptions } from './redis-connection.js';
 
@@ -8,7 +8,7 @@ function parseJsonValue(raw: string): unknown {
   return JSON.parse(raw);
 }
 
-export class RedisCacheStore implements CacheStore, CacheInvalidator {
+export class RedisCacheStore implements CacheStore, CacheInvalidator, PageCacheInvalidator {
   constructor(private readonly redis: Redis) {}
 
   async get(key: string): Promise<unknown | null> {
@@ -42,6 +42,10 @@ export class RedisCacheStore implements CacheStore, CacheInvalidator {
     for (const id of productIds) {
       await this.incrementVersion('product', id);
     }
+  }
+
+  async invalidateBySlug(slug: string): Promise<void> {
+    await this.del(`vitrine:page:slug:${slug}`);
   }
 }
 

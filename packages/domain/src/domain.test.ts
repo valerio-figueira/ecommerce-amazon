@@ -83,6 +83,29 @@ describe('Product', () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.type).toBe('PriceDropped');
   });
+
+  it('shouldShowPrice is true for fresh price and false after markPriceStale', () => {
+    const product = Product.create({
+      id: '11111111-1111-4111-8111-111111111111',
+      marketplace: Marketplace.AMAZON_BR,
+      externalId: 'B002',
+      slug: 'fresh-product',
+      titleClean: 'Fresh',
+      titleRaw: 'Fresh Raw',
+      price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
+      affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/B002', 'amazon_br'),
+      images: [],
+      specsNormalized: {},
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      tags: [],
+      createdAt: new Date(),
+    });
+
+    expect(product.shouldShowPrice).toBe(true);
+    product.markPriceStale();
+    expect(product.shouldShowPrice).toBe(false);
+  });
 });
 
 describe('TitleHygieneService', () => {

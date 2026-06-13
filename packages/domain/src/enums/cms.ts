@@ -9,6 +9,7 @@ export enum BlockType {
   RICH_TEXT = 'rich_text',
   BANNER = 'banner',
   SPACER = 'spacer',
+  DYNAMIC_PRODUCT_GRID = 'dynamic_product_grid',
 }
 
 export enum PageStatus {
@@ -25,4 +26,7 @@ export enum BlockVisibility {
 export enum ProductSortField {
   EDITORIAL_SCORE = 'editorial_score',
   PRICE_UPDATED_AT = 'price_updated_at',
+  CREATED_AT = 'created_at',
+  PRICE_ASC = 'price_asc',
+  PRICE_DESC = 'price_desc',
 }

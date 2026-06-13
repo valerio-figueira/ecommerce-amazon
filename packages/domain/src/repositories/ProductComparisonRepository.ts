@@ -15,6 +15,7 @@ export interface ClickEventRepository {
     productId: string;
     origin: string;
     sessionId?: string;
+    blockId?: string;
     occurredAt: Date;
   }): Promise<void>;
 }

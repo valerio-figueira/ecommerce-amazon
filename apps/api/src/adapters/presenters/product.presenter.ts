@@ -30,15 +30,16 @@ export type ProductDetailDto = ProductListItemDto & {
   cons?: string[] | undefined;
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
+  canonicalUrl?: string | undefined;
 };
 
 export function toProductPriceDto(product: Product): ProductPriceDto {
   return {
-    amount: product.price.isStale ? null : product.price.amount,
+    amount: product.shouldShowPrice ? product.price.amount : null,
     currency: product.price.currency,
-    isStale: product.price.isStale,
+    isStale: !product.shouldShowPrice,
     updatedAt: product.price.updatedAt.toISOString(),
-    ...(product.strikethroughPrice !== undefined
+    ...(product.shouldShowPrice && product.strikethroughPrice !== undefined
       ? { strikethrough: product.strikethroughPrice }
       : {}),
   };
@@ -76,5 +77,6 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
     ...(product.metaDescription !== undefined
       ? { metaDescription: product.metaDescription }
       : {}),
+    ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
   };
 }

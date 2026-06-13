@@ -10,6 +10,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 export const marketplaceEnum = pgEnum('marketplace', ['amazon_br', 'shopee_br']);
@@ -51,6 +52,7 @@ export const blockTypeEnum = pgEnum('block_type', [
   'rich_text',
   'banner',
   'spacer',
+  'dynamic_product_grid',
 ]);
 
 export const pages = pgTable(
@@ -110,6 +112,7 @@ export const products = pgTable(
     tags: jsonb('tags').$type<string[]>().notNull().default([]),
     metaTitle: text('meta_title'),
     metaDescription: text('meta_description'),
+    canonicalUrl: varchar('canonical_url', { length: 512 }),
     pros: jsonb('pros').$type<string[]>(),
     cons: jsonb('cons').$type<string[]>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -260,15 +263,20 @@ export const syncJobLogs = pgTable('sync_job_logs', {
   finishedAt: timestamp('finished_at', { withTimezone: true }),
 });
 
-export const clickEvents = pgTable('click_events', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  productId: uuid('product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  origin: text('origin').notNull(),
-  sessionId: text('session_id'),
-  occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
-});
+export const clickEvents = pgTable(
+  'click_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productId: uuid('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    blockId: uuid('block_id').references(() => pageBlocks.id, { onDelete: 'set null' }),
+    origin: text('origin').notNull(),
+    sessionId: text('session_id'),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('click_events_block_id_idx').on(table.blockId)],
+);
 
 export const affiliateAccounts = pgTable('affiliate_accounts', {
   id: uuid('id').primaryKey().defaultRandom(),

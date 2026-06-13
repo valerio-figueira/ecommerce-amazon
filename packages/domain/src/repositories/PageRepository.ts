@@ -6,6 +6,19 @@ export type PublishedPageResult = {
   blocks: PageBlock[];
 };
 
+export type PageWithBlocksResult = {
+  layout: PageLayout;
+  blocks: PageBlock[];
+};
+
 export interface PageRepository {
   findPublishedBySlug(slug: string): Promise<PublishedPageResult | null>;
+  findPageById(pageId: string): Promise<PageWithBlocksResult | null>;
+  findBlockById(blockId: string): Promise<PageBlock | null>;
+  updateBlocksOrder(
+    pageId: string,
+    orders: Array<{ blockId: string; sortOrder: number }>,
+  ): Promise<void>;
+  saveBlock(block: PageBlock): Promise<void>;
+  deleteBlock(blockId: string): Promise<{ pageId: string; pageSlug: string }>;
 }

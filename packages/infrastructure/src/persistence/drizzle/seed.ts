@@ -32,6 +32,7 @@ const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 
 async function runSeed(): Promise<void> {
   loadDotenvFromMonorepoRoot();
@@ -116,6 +117,7 @@ async function insertProductSeed(
         tags: ['ergonomica', 'home-office'],
         metaTitle: 'Cadeira Ergonômica Home Office | Vitrine',
         metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
+        canonicalUrl: 'https://vitrine.local/p/cadeira-ergonomica-home-office',
         pros: ['Apoio lombar', 'Braços ajustáveis'],
         cons: ['Montagem demorada'],
         createdAt: now,
@@ -308,6 +310,19 @@ async function seedHomePage(
           sort: 'editorial_score',
           pageSize: 12,
           columns: 4,
+        },
+      },
+      {
+        id: SEED_BLOCK_DYNAMIC_GRID_ID,
+        type: BlockType.DYNAMIC_PRODUCT_GRID,
+        sortOrder: 5,
+        props: {
+          title: 'Ofertas home office',
+          subtitle: 'Seleção dinâmica por curadoria',
+          categoryVertical: 'home-office',
+          minDiscountPercentage: 10,
+          sortBy: 'editorial_score',
+          limit: 8,
         },
       },
     ],

@@ -15,6 +15,7 @@ npm run db:seed       # dados de desenvolvimento
 ```mermaid
 erDiagram
   pages ||--o{ page_blocks : contains
+  page_blocks ||--o{ click_events : tracks
   products ||--o{ price_snapshots : has
   products ||--o{ price_alerts : has
   products ||--o{ wishlist_items : has
@@ -58,7 +59,7 @@ Migration: `0001_cms_pages.sql`.
 
 Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 
-`block_type` valores: `hero_carousel`, `featured_product`, `product_grid`, `category_pills`, `hero_split`, `curated_collection`, `coupon_strip`, `rich_text`, `banner`, `spacer`.
+`block_type` valores: `hero_carousel`, `featured_product`, `product_grid`, `category_pills`, `hero_split`, `curated_collection`, `coupon_strip`, `rich_text`, `banner`, `spacer`, `dynamic_product_grid`.
 
 ### Catálogo — `products`
 
@@ -87,6 +88,7 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | `category_vertical` | text | ex.: `home-office`, `games` |
 | `tags` | jsonb `string[]` | |
 | `meta_title`, `meta_description` | text | SEO |
+| `canonical_url` | varchar(512) | nullable; sobrescrita manual Admin |
 | `pros`, `cons` | jsonb `string[]` | editorial |
 | `created_at` | timestamptz | |
 
@@ -163,9 +165,12 @@ Sessão anônima via `session_id` (cookie web).
 
 ### Telemetria — `click_events`
 
-| Coluna | Valores `origin` |
-|--------|------------------|
-| `product_id`, `origin`, `session_id`, `occurred_at` | `listagem`, `detalhe`, `embed`, `comparador`, `cupons` |
+| Coluna | Valores / notas |
+|--------|-----------------|
+| `product_id`, `origin`, `session_id`, `occurred_at` | `origin`: `listagem`, `detalhe`, `embed`, `comparador`, `cupons` |
+| `block_id` | uuid FK → `page_blocks.id`, ON DELETE SET NULL; rastreamento analítico CMS |
+
+INDEX `(block_id)`.
 
 ### Ops — `sync_job_logs` / `affiliate_accounts`
 

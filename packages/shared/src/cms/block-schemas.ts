@@ -70,6 +70,20 @@ export const spacerPropsSchema = z.object({
   size: z.enum(['sm', 'md', 'lg']).default('md'),
 });
 
+export const dynamicProductGridPropsSchema = z.object({
+  title: z.string().min(3).max(60),
+  subtitle: z.string().optional(),
+  categoryVertical: z.string().optional(),
+  minDiscountPercentage: z.number().min(0).max(100).optional(),
+  sortBy: z
+    .enum(['editorial_score', 'created_at', 'price_asc', 'price_desc'])
+    .default('editorial_score'),
+  limit: z.number().int().min(1).max(24).default(8),
+});
+
+/** @deprecated Use dynamicProductGridPropsSchema */
+export const DynamicProductGridPropsSchema = dynamicProductGridPropsSchema;
+
 export type HeroCarouselProps = z.infer<typeof heroCarouselPropsSchema>;
 export type FeaturedProductProps = z.infer<typeof featuredProductPropsSchema>;
 export type ProductGridProps = z.infer<typeof productGridPropsSchema>;
@@ -80,6 +94,7 @@ export type CouponStripProps = z.infer<typeof couponStripPropsSchema>;
 export type RichTextProps = z.infer<typeof richTextPropsSchema>;
 export type BannerProps = z.infer<typeof bannerPropsSchema>;
 export type SpacerProps = z.infer<typeof spacerPropsSchema>;
+export type DynamicProductGridProps = z.infer<typeof dynamicProductGridPropsSchema>;
 
 export type BlockPropsMap = {
   [BlockType.HERO_CAROUSEL]: HeroCarouselProps;
@@ -92,9 +107,10 @@ export type BlockPropsMap = {
   [BlockType.RICH_TEXT]: RichTextProps;
   [BlockType.BANNER]: BannerProps;
   [BlockType.SPACER]: SpacerProps;
+  [BlockType.DYNAMIC_PRODUCT_GRID]: DynamicProductGridProps;
 };
 
-const blockPropsSchemas: Record<BlockType, z.ZodType<unknown>> = {
+export const BlockPropsResolver: Record<BlockType, z.ZodType<unknown>> = {
   [BlockType.HERO_CAROUSEL]: heroCarouselPropsSchema,
   [BlockType.FEATURED_PRODUCT]: featuredProductPropsSchema,
   [BlockType.PRODUCT_GRID]: productGridPropsSchema,
@@ -105,7 +121,10 @@ const blockPropsSchemas: Record<BlockType, z.ZodType<unknown>> = {
   [BlockType.RICH_TEXT]: richTextPropsSchema,
   [BlockType.BANNER]: bannerPropsSchema,
   [BlockType.SPACER]: spacerPropsSchema,
+  [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
 };
+
+const blockPropsSchemas = BlockPropsResolver;
 
 export function parseBlockProps(type: BlockType, props: unknown): unknown {
   const schema = blockPropsSchemas[type];
@@ -130,3 +149,30 @@ export const pageLayoutDtoSchema = z.object({
 
 export type PageLayoutDto = z.infer<typeof pageLayoutDtoSchema>;
 export type PageBlockDto = z.infer<typeof pageBlockDtoSchema>;
+
+export const productDeliveryItemSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+  marketplace: z.string(),
+  affiliateUrl: z.string().url(),
+  imageUrl: z.string().url().optional(),
+  price: z.object({
+    amount: z.number().nullable(),
+    currency: z.string(),
+    isStale: z.boolean(),
+    shouldShowPrice: z.boolean(),
+  }),
+});
+
+export const pageBlockDeliverySchema = pageBlockDtoSchema.extend({
+  renderedData: z.array(productDeliveryItemSchema).optional(),
+});
+
+export const pageLayoutDeliverySchema = pageLayoutDtoSchema.extend({
+  blocks: z.array(pageBlockDeliverySchema),
+});
+
+export type ProductDeliveryItem = z.infer<typeof productDeliveryItemSchema>;
+export type PageBlockDeliveryDto = z.infer<typeof pageBlockDeliverySchema>;
+export type PageLayoutDeliveryDto = z.infer<typeof pageLayoutDeliverySchema>;

@@ -1,4 +1,4 @@
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, inArray } from 'drizzle-orm';
 
 import {
   BlockType,
@@ -11,6 +11,7 @@ import {
   parsePageStatus,
   type PageRepository,
   type PublishedPageResult,
+  type PageWithBlocksResult,
 } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
@@ -53,6 +54,137 @@ export class DrizzlePageRepository implements PageRepository {
     const pageRow = pageRows[0];
     if (!pageRow) return null;
 
+    return this.loadBlocksForPage(pageRow);
+  }
+
+  async findPageById(pageId: string): Promise<PageWithBlocksResult | null> {
+    const pageRows = await this.db
+      .select()
+      .from(schema.pages)
+      .where(eq(schema.pages.id, pageId))
+      .limit(1);
+
+    const pageRow = pageRows[0];
+    if (!pageRow) return null;
+
+    return this.loadBlocksForPage(pageRow);
+  }
+
+  async findBlockById(blockId: string): Promise<PageBlock | null> {
+    const rows = await this.db
+      .select()
+      .from(schema.pageBlocks)
+      .where(eq(schema.pageBlocks.id, blockId))
+      .limit(1);
+
+    const row = rows[0];
+    return row ? mapBlockRow(row) : null;
+  }
+
+  async updateBlocksOrder(
+    pageId: string,
+    orders: Array<{ blockId: string; sortOrder: number }>,
+  ): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      const blockIds = orders.map((o) => o.blockId);
+      const existing = await tx
+        .select({ id: schema.pageBlocks.id })
+        .from(schema.pageBlocks)
+        .where(
+          and(
+            eq(schema.pageBlocks.pageId, pageId),
+            inArray(schema.pageBlocks.id, blockIds),
+          ),
+        );
+
+      if (existing.length !== orders.length) {
+        throw new Error('One or more blocks do not belong to this page');
+      }
+
+      for (const order of orders) {
+        await tx
+          .update(schema.pageBlocks)
+          .set({ sortOrder: order.sortOrder })
+          .where(
+            and(
+              eq(schema.pageBlocks.id, order.blockId),
+              eq(schema.pageBlocks.pageId, pageId),
+            ),
+          );
+      }
+    });
+  }
+
+  async saveBlock(block: PageBlock): Promise<void> {
+    await this.db
+      .insert(schema.pageBlocks)
+      .values({
+        id: block.id,
+        pageId: block.pageId,
+        type: block.type,
+        sortOrder: block.sortOrder,
+        props: block.props,
+        visibility: block.visibility,
+      })
+      .onConflictDoUpdate({
+        target: schema.pageBlocks.id,
+        set: {
+          type: block.type,
+          sortOrder: block.sortOrder,
+          props: block.props,
+          visibility: block.visibility,
+        },
+      });
+  }
+
+  async deleteBlock(blockId: string): Promise<{ pageId: string; pageSlug: string }> {
+    return this.db.transaction(async (tx) => {
+      const blockRows = await tx
+        .select()
+        .from(schema.pageBlocks)
+        .where(eq(schema.pageBlocks.id, blockId))
+        .limit(1);
+
+      const blockRow = blockRows[0];
+      if (!blockRow) {
+        throw new Error(`Block not found: ${blockId}`);
+      }
+
+      const pageRows = await tx
+        .select()
+        .from(schema.pages)
+        .where(eq(schema.pages.id, blockRow.pageId))
+        .limit(1);
+
+      const pageRow = pageRows[0];
+      if (!pageRow) {
+        throw new Error(`Page not found for block: ${blockId}`);
+      }
+
+      await tx.delete(schema.pageBlocks).where(eq(schema.pageBlocks.id, blockId));
+
+      const remaining = await tx
+        .select()
+        .from(schema.pageBlocks)
+        .where(eq(schema.pageBlocks.pageId, blockRow.pageId))
+        .orderBy(asc(schema.pageBlocks.sortOrder));
+
+      for (let index = 0; index < remaining.length; index++) {
+        const row = remaining[index];
+        if (!row || row.sortOrder === index) continue;
+        await tx
+          .update(schema.pageBlocks)
+          .set({ sortOrder: index })
+          .where(eq(schema.pageBlocks.id, row.id));
+      }
+
+      return { pageId: pageRow.id, pageSlug: pageRow.slug };
+    });
+  }
+
+  private async loadBlocksForPage(
+    pageRow: typeof schema.pages.$inferSelect,
+  ): Promise<PublishedPageResult> {
     const blockRows = await this.db
       .select()
       .from(schema.pageBlocks)

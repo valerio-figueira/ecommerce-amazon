@@ -15,6 +15,20 @@
       "when": 1718208000000,
       "tag": "0001_cms_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1718294400000,
+      "tag": "0002_seo_click_analytics",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1718380800000,
+      "tag": "0003_dynamic_product_grid",
+      "breakpoints": true
     }
   ]
 }
