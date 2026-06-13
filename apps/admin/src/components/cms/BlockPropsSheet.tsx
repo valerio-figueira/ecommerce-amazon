@@ -1,19 +1,13 @@
 'use client';
 
 import { BlockType } from '@ecommerce-amazon/domain';
-import {
-  bannerPropsSchema,
-  dynamicProductGridPropsSchema,
-  richTextPropsSchema,
-  spacerPropsSchema,
-} from '@ecommerce-amazon/shared/cms';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ZodError, type z } from 'zod';
+import { ZodError } from 'zod';
 
 import {
   BLOCK_TYPE_LABELS,
-  EDITABLE_BLOCK_TYPES,
+  isEditableBlockType,
 } from '@/components/cms/block-type-labels';
 import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
 import {
@@ -24,8 +18,17 @@ import {
   type BlockFormValues,
 } from '@/components/cms/forms/BlockPropsForm';
 import type { AdminBlock } from '@/components/cms/normalize-positions';
-import { translateZodError } from '@/components/cms/props-forms/dynamic-grid-form-meta';
+import { CategoryPillsForm } from '@/components/cms/props-forms/CategoryPillsForm';
 import { DynamicGridForm } from '@/components/cms/props-forms/DynamicGridForm';
+import { FeaturedProductForm } from '@/components/cms/props-forms/FeaturedProductForm';
+import { HeroCarouselForm } from '@/components/cms/props-forms/HeroCarouselForm';
+import { ProductGridForm } from '@/components/cms/props-forms/ProductGridForm';
+import {
+  getSchemaForBlockType,
+  normalizeFormValues,
+  sanitizeFormValues,
+} from '@/components/cms/props-forms/block-form-registry';
+import { translateZodError } from '@/components/cms/props-forms/dynamic-grid-form-meta';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import {
@@ -39,7 +42,9 @@ import {
 import {
   createPageBlockClient,
   listCategoriesClient,
+  listProductsClient,
   updatePageBlockClient,
+  type ProductPickerOption,
 } from '@/lib/api/cms-pages-client';
 import { cn } from '@/lib/utils';
 
@@ -51,39 +56,60 @@ type BlockPropsSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved: (block: AdminBlock) => void;
+  pageBlocks?: AdminBlock[];
 };
 
-function getSchemaForType(type: BlockType): z.ZodType<BlockFormValues> {
-  switch (type) {
+const CATEGORY_BLOCK_TYPES = new Set<BlockType>([
+  BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.CATEGORY_PILLS,
+  BlockType.PRODUCT_GRID,
+]);
+
+const PRODUCT_BLOCK_TYPES = new Set<BlockType>([
+  BlockType.HERO_CAROUSEL,
+  BlockType.FEATURED_PRODUCT,
+]);
+
+function BlockFormBody({
+  block,
+  control,
+  categories,
+  products,
+  pageBlocks,
+}: {
+  block: AdminBlock;
+  control: ReturnType<typeof useForm<BlockFormValues>>['control'];
+  categories: Array<{ slug: string; label: string }>;
+  products: ProductPickerOption[];
+  pageBlocks: AdminBlock[];
+}): React.JSX.Element {
+  switch (block.type) {
+    case BlockType.HERO_CAROUSEL:
+      return <HeroCarouselForm control={control} products={products} />;
+    case BlockType.CATEGORY_PILLS:
+      return (
+        <CategoryPillsForm
+          control={control}
+          categories={categories}
+          pageBlocks={pageBlocks}
+          currentBlockId={block.id === 'draft' ? undefined : block.id}
+        />
+      );
+    case BlockType.PRODUCT_GRID:
+      return <ProductGridForm control={control} categories={categories} />;
+    case BlockType.FEATURED_PRODUCT:
+      return <FeaturedProductForm control={control} products={products} />;
     case BlockType.DYNAMIC_PRODUCT_GRID:
-      return dynamicProductGridPropsSchema;
+      return <DynamicGridForm control={control} categories={categories} />;
     case BlockType.SPACER:
-      return spacerPropsSchema;
+      return <SpacerFormFields control={control} />;
     case BlockType.BANNER:
-      return bannerPropsSchema;
+      return <BannerFormFields control={control} />;
     case BlockType.RICH_TEXT:
-      return richTextPropsSchema;
+      return <RichTextFormFields control={control} />;
     default:
-      return spacerPropsSchema;
+      return <UnsupportedBlockForm blockTypeLabel={BLOCK_TYPE_LABELS[block.type]} />;
   }
-}
-
-function toFormValues(props: unknown): BlockFormValues {
-  if (typeof props === 'object' && props !== null) {
-    return { ...props };
-  }
-  return {};
-}
-
-function sanitizeFormValues(values: BlockFormValues): BlockFormValues {
-  const next = { ...values };
-  if (next['minDiscountPercentage'] === 0 || next['minDiscountPercentage'] === undefined) {
-    delete next['minDiscountPercentage'];
-  }
-  if (next['subtitle'] === '') {
-    delete next['subtitle'];
-  }
-  return next;
 }
 
 export function BlockPropsSheet({
@@ -94,34 +120,40 @@ export function BlockPropsSheet({
   open,
   onOpenChange,
   onSaved,
+  pageBlocks = [],
 }: BlockPropsSheetProps): React.JSX.Element | null {
-  const isEditable = block ? EDITABLE_BLOCK_TYPES.includes(block.type) : false;
+  const isEditable = block ? isEditableBlockType(block.type) : false;
 
   const schema = useMemo(
-    () => (block ? getSchemaForType(block.type) : spacerPropsSchema),
+    () => (block ? getSchemaForBlockType(block.type) : getSchemaForBlockType(BlockType.SPACER)),
     [block],
   );
 
   const form = useForm<BlockFormValues>({
-    defaultValues: toFormValues(block?.props),
+    defaultValues: block ? normalizeFormValues(block.type, block.props) : {},
   });
 
   const [categories, setCategories] = useState<Array<{ slug: string; label: string }>>([]);
+  const [products, setProducts] = useState<ProductPickerOption[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (block && open) {
-      form.reset(toFormValues(block.props));
+      form.reset(normalizeFormValues(block.type, block.props));
       setError(null);
     }
   }, [block, form, open]);
 
   useEffect(() => {
-    if (open && block?.type === BlockType.DYNAMIC_PRODUCT_GRID) {
+    if (!open || !block) return;
+    if (CATEGORY_BLOCK_TYPES.has(block.type)) {
       void listCategoriesClient().then(setCategories);
     }
-  }, [block?.type, open]);
+    if (PRODUCT_BLOCK_TYPES.has(block.type)) {
+      void listProductsClient({ pageSize: 50 }).then(setProducts);
+    }
+  }, [block, open]);
 
   if (!block) return null;
 
@@ -133,7 +165,7 @@ export function BlockPropsSheet({
     setIsSaving(true);
     setError(null);
 
-    const sanitized = sanitizeFormValues(values);
+    const sanitized = sanitizeFormValues(block.type, values);
 
     let parsedValues: BlockFormValues;
     try {
@@ -179,7 +211,11 @@ export function BlockPropsSheet({
   }
 
   const saveLabel =
-    block.type === BlockType.DYNAMIC_PRODUCT_GRID
+    block.type === BlockType.DYNAMIC_PRODUCT_GRID ||
+    block.type === BlockType.HERO_CAROUSEL ||
+    block.type === BlockType.CATEGORY_PILLS ||
+    block.type === BlockType.PRODUCT_GRID ||
+    block.type === BlockType.FEATURED_PRODUCT
       ? 'Aplicar configurações no bloco'
       : 'Salvar propriedades';
 
@@ -209,17 +245,23 @@ export function BlockPropsSheet({
               }}
             >
               <div className="flex-1 overflow-y-auto px-6 py-5">
-                {block.type === BlockType.DYNAMIC_PRODUCT_GRID && (
-                  <DynamicGridForm control={form.control} categories={categories} />
-                )}
-                {block.type === BlockType.SPACER && <SpacerFormFields control={form.control} />}
-                {block.type === BlockType.BANNER && <BannerFormFields control={form.control} />}
-                {block.type === BlockType.RICH_TEXT && <RichTextFormFields control={form.control} />}
+                <BlockFormBody
+                  block={block}
+                  control={form.control}
+                  categories={categories}
+                  products={products}
+                  pageBlocks={pageBlocks}
+                />
               </div>
 
               <SheetFooter className="shrink-0 flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
                 {error && (
-                  <div className={cn('cms-status-banner is-error w-full sm:order-first sm:mr-auto sm:max-w-[60%]')} role="alert">
+                  <div
+                    className={cn(
+                      'cms-status-banner is-error w-full sm:order-first sm:mr-auto sm:max-w-[60%]',
+                    )}
+                    role="alert"
+                  >
                     {error}
                   </div>
                 )}
@@ -235,7 +277,7 @@ export function BlockPropsSheet({
         ) : (
           <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex-1 overflow-y-auto px-6 py-5">
-              <UnsupportedBlockForm props={block.props} />
+              <UnsupportedBlockForm blockTypeLabel={BLOCK_TYPE_LABELS[block.type]} />
             </div>
             <SheetFooter className="shrink-0 px-6 py-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

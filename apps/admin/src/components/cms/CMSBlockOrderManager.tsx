@@ -318,6 +318,7 @@ export function CMSBlockOrderManager({
         open={propsDialogOpen}
         onOpenChange={setPropsDialogOpen}
         onSaved={handleBlockSaved}
+        pageBlocks={blocks}
       />
 
       <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>

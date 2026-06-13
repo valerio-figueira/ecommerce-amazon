@@ -22,6 +22,22 @@ function parseCategoriesPayload(payload: unknown): Array<{ slug: string; label: 
   return parsed.data.items.map(({ slug, label }) => ({ slug, label }));
 }
 
+const productListItemSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  marketplace: z.string(),
+});
+
+const productsPageSchema = z.object({
+  items: z.array(productListItemSchema),
+  total: z.number(),
+  page: z.number(),
+  pageSize: z.number(),
+});
+
+export type ProductPickerOption = z.infer<typeof productListItemSchema>;
+
 function readErrorMessage(payload: unknown): string {
   if (typeof payload === 'object' && payload !== null && 'error' in payload) {
     const error = payload.error;
@@ -111,6 +127,18 @@ export async function listCategoriesClient(): Promise<Array<{ slug: string; labe
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   return parseCategoriesPayload(payload);
+}
+
+export async function listProductsClient(
+  params: { pageSize?: number } = {},
+): Promise<ProductPickerOption[]> {
+  const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
+  const pageSize = params.pageSize ?? 50;
+  const response = await fetch(`${apiUrl}/products?pageSize=${pageSize}`, { cache: 'no-store' });
+  if (!response.ok) return [];
+  const payload: unknown = await response.json();
+  const parsed = productsPageSchema.safeParse(payload);
+  return parsed.success ? parsed.data.items : [];
 }
 
 export type { BlockType };

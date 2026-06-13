@@ -2,6 +2,8 @@
 
 import type { Control } from 'react-hook-form';
 
+import type { HeroSlideFormValue } from '@/components/cms/props-forms/block-form-registry';
+import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Input, Textarea } from '@/components/ui/input';
 import {
   Select,
@@ -10,9 +12,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-export type BlockFormValues = Record<string, unknown>;
+export type BlockFormValues = {
+  slides?: HeroSlideFormValue[];
+  autoplay?: boolean;
+  intervalMs?: number;
+  categorySlugs?: string[];
+  linkedBlockId?: string;
+  title?: string;
+  categorySlug?: string;
+  marketplace?: string;
+  sort?: string;
+  pageSize?: number;
+  columns?: number;
+  productSlug?: string;
+  showMarketplaceBadge?: boolean;
+  ctaLabel?: string;
+  subtitle?: string;
+  categoryVertical?: string;
+  minDiscountPercentage?: number;
+  sortBy?: string;
+  limit?: number;
+  imageUrl?: string;
+  alt?: string;
+  href?: string;
+  html?: string;
+  align?: string;
+  size?: string;
+  [key: string]: unknown;
+};
 
 function readString(value: unknown): string {
   return typeof value === 'string' ? value : '';
@@ -24,28 +53,33 @@ export function SpacerFormFields({
   control: Control<BlockFormValues>;
 }): React.JSX.Element {
   return (
-    <FormField
-      control={control}
-      name="size"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Tamanho</FormLabel>
-          <Select onValueChange={field.onChange} value={readString(field.value) || 'md'}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="sm">Pequeno</SelectItem>
-              <SelectItem value="md">Médio</SelectItem>
-              <SelectItem value="lg">Grande</SelectItem>
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <CmsFormSection title="Espaçamento vertical">
+      <FormField
+        control={control}
+        name="size"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Quanto espaço adicionar?</FormLabel>
+            <Select onValueChange={field.onChange} value={readString(field.value) || 'md'}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="sm">Pequeno — respiro leve entre seções</SelectItem>
+                <SelectItem value="md">Médio — separação padrão</SelectItem>
+                <SelectItem value="lg">Grande — pausa visual mais ampla</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              Use para criar respiro entre blocos sem adicionar conteúdo.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </CmsFormSection>
   );
 }
 
@@ -55,46 +89,54 @@ export function BannerFormFields({
   control: Control<BlockFormValues>;
 }): React.JSX.Element {
   return (
-    <div className="space-y-4">
-      <FormField
-        control={control}
-        name="imageUrl"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>URL da imagem</FormLabel>
-            <FormControl>
-              <Input {...field} value={readString(field.value)} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="href"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Link de destino</FormLabel>
-            <FormControl>
-              <Input {...field} value={readString(field.value)} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="alt"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Texto alternativo</FormLabel>
-            <FormControl>
-              <Input {...field} value={readString(field.value)} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="space-y-6">
+      <CmsFormSection title="Imagem">
+        <FormField
+          control={control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Link da imagem</FormLabel>
+              <FormControl>
+                <Input {...field} value={readString(field.value)} placeholder="https://…" />
+              </FormControl>
+              <FormDescription>Cole a URL da imagem que aparecerá no banner.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="alt"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descrição da imagem</FormLabel>
+              <FormControl>
+                <Input {...field} value={readString(field.value)} placeholder="Ex: Promoção de verão" />
+              </FormControl>
+              <FormDescription>Texto alternativo para acessibilidade e SEO.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CmsFormSection>
+
+      <CmsFormSection title="Link de destino" className="cms-form-section-divider">
+        <FormField
+          control={control}
+          name="href"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Para onde o banner leva?</FormLabel>
+              <FormControl>
+                <Input {...field} value={readString(field.value)} placeholder="https://… ou /c/slug" />
+              </FormControl>
+              <FormDescription>Página interna ou link externo ao clicar no banner.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CmsFormSection>
     </div>
   );
 }
@@ -105,55 +147,75 @@ export function RichTextFormFields({
   control: Control<BlockFormValues>;
 }): React.JSX.Element {
   return (
-    <div className="space-y-4">
-      <FormField
-        control={control}
-        name="html"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>HTML</FormLabel>
-            <FormControl>
-              <Textarea rows={8} {...field} value={readString(field.value)} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="align"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Alinhamento</FormLabel>
-            <Select onValueChange={field.onChange} value={readString(field.value) || 'left'}>
+    <div className="space-y-6">
+      <CmsFormSection title="Conteúdo editorial">
+        <FormField
+          control={control}
+          name="html"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Texto da seção</FormLabel>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <Textarea
+                  rows={8}
+                  {...field}
+                  value={readString(field.value)}
+                  placeholder="<p>Seu texto aqui…</p>"
+                />
               </FormControl>
-              <SelectContent>
-                <SelectItem value="left">Esquerda</SelectItem>
-                <SelectItem value="center">Centro</SelectItem>
-                <SelectItem value="right">Direita</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormDescription>
+                Conteúdo em HTML simples. Editor visual chegará em versão futura.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CmsFormSection>
+
+      <CmsFormSection title="Layout" className="cms-form-section-divider">
+        <FormField
+          control={control}
+          name="align"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Alinhamento do texto</FormLabel>
+              <Select onValueChange={field.onChange} value={readString(field.value) || 'left'}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="left">Esquerda</SelectItem>
+                  <SelectItem value="center">Centro</SelectItem>
+                  <SelectItem value="right">Direita</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CmsFormSection>
     </div>
   );
 }
 
-export function UnsupportedBlockForm({ props }: { props: unknown }): React.JSX.Element {
+export function UnsupportedBlockForm({
+  blockTypeLabel,
+}: {
+  blockTypeLabel: string;
+  props?: unknown;
+}): React.JSX.Element {
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-[var(--admin-text-muted)]">
-        Formulário deste tipo em desenvolvimento. Props atuais:
+    <div className="cms-empty-state text-left">
+      <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
+        Edição amigável em breve
       </p>
-      <pre className="max-h-64 overflow-auto rounded-md bg-[var(--admin-bg)] p-3 text-xs">
-        {JSON.stringify(props, null, 2)}
-      </pre>
+      <p className="mx-auto mt-2 max-w-sm text-xs text-[var(--admin-text-muted)]">
+        O bloco <strong>{blockTypeLabel}</strong> ainda não possui formulário visual nesta fase.
+        Em breve você poderá configurá-lo por aqui. Consulte{' '}
+        <code className="text-[10px]">docs/admin-cms-blocks-phase2.md</code> para o roadmap.
+      </p>
     </div>
   );
 }

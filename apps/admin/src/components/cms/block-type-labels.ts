@@ -1,11 +1,16 @@
 import { BlockType } from '@ecommerce-amazon/domain';
 import {
   bannerPropsSchema,
-  BlockPropsResolver,
+  categoryPillsPropsSchema,
   dynamicProductGridPropsSchema,
+  featuredProductPropsSchema,
+  heroCarouselPropsSchema,
+  productGridPropsSchema,
   richTextPropsSchema,
   spacerPropsSchema,
 } from '@ecommerce-amazon/shared/cms';
+
+import { isEditableBlockType } from '@/components/cms/props-forms/block-form-registry';
 
 export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   [BlockType.HERO_CAROUSEL]: 'Hero Carousel',
@@ -22,11 +27,17 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
 };
 
 export const EDITABLE_BLOCK_TYPES: BlockType[] = [
+  BlockType.HERO_CAROUSEL,
+  BlockType.FEATURED_PRODUCT,
+  BlockType.PRODUCT_GRID,
+  BlockType.CATEGORY_PILLS,
   BlockType.DYNAMIC_PRODUCT_GRID,
-  BlockType.SPACER,
-  BlockType.BANNER,
   BlockType.RICH_TEXT,
+  BlockType.BANNER,
+  BlockType.SPACER,
 ];
+
+export { isEditableBlockType };
 
 export const ALL_BLOCK_TYPES: BlockType[] = Object.values(BlockType);
 
@@ -42,6 +53,28 @@ export function getBlockDisplayTitle(type: BlockType, props: unknown): string {
 
 export function getDefaultBlockProps(type: BlockType): unknown {
   switch (type) {
+    case BlockType.HERO_CAROUSEL:
+      return heroCarouselPropsSchema.parse({
+        slides: [
+          {
+            imageUrl: 'https://placehold.co/1200x800?text=Slide',
+            title: 'Novo slide',
+          },
+        ],
+      });
+    case BlockType.FEATURED_PRODUCT:
+      return featuredProductPropsSchema.parse({
+        productSlug: 'cadeira-ergonomica-home-office',
+        showMarketplaceBadge: true,
+      });
+    case BlockType.PRODUCT_GRID:
+      return productGridPropsSchema.parse({
+        title: 'Produtos populares',
+      });
+    case BlockType.CATEGORY_PILLS:
+      return categoryPillsPropsSchema.parse({
+        categorySlugs: ['home-office'],
+      });
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return dynamicProductGridPropsSchema.parse({
         title: 'Novo bloco editorial',
@@ -50,23 +83,15 @@ export function getDefaultBlockProps(type: BlockType): unknown {
       return spacerPropsSchema.parse({});
     case BlockType.BANNER:
       return bannerPropsSchema.parse({
-        imageUrl: 'https://example.com/banner.jpg',
+        imageUrl: 'https://placehold.co/1200x600?text=Banner',
         href: 'https://example.com',
-        alt: 'Banner',
+        alt: 'Banner promocional',
       });
     case BlockType.RICH_TEXT:
       return richTextPropsSchema.parse({
         html: '<p>Conteúdo editorial</p>',
       });
     default:
-      try {
-        const schema = BlockPropsResolver[type];
-        if ('parse' in schema && typeof schema.parse === 'function') {
-          return schema.parse({});
-        }
-      } catch {
-        return {};
-      }
       return {};
   }
 }
