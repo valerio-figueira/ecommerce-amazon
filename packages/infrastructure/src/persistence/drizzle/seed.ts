@@ -294,7 +294,6 @@ async function seedHomePage(
         type: BlockType.CATEGORY_PILLS,
         sortOrder: 3,
         props: {
-          title: 'Produtos populares',
           categorySlugs: ['home-office', 'games', 'eletronicos'],
           linkedBlockId: SEED_BLOCK_GRID_ID,
         },
