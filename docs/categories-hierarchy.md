@@ -92,6 +92,13 @@ npm run test -w @ecommerce-amazon/application
 5. Header → botão **Categorias** abre flyout (desktop) ou drawer (mobile); barra não cresce com novas raízes
 6. `GET /products?category=games` deve incluir produtos em subcategorias
 
+## Formulário admin (refino UX)
+
+- **Slug automático** — gerado a partir do nome (`slugifyTitle`); preview da URL `/categorias/{slug}`; campo avançado "Personalizar slug" com botão "Usar slug do nome"
+- **SEO automático** — templates em `packages/shared/src/seo/category-meta.ts`; campos vazios usam fallback na vitrine (ver `generateMetadata` em `/categorias/[slug]`)
+- **Placeholders e tooltips** — dicas por campo (ícone ?) com orientações SEO
+- **Prompt LLM** — ícone ✨ na seção SEO; prompt em `apps/admin/src/lib/category-llm-prompt.ts` retorna JSON `{ seoTitle, seoDescription, descriptionHtml }` para colar em IA externa
+
 ## Exposição na vitrine
 
 | Ponto | Componente | Comportamento |
