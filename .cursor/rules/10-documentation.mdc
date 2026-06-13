@@ -1,0 +1,47 @@
+---
+description: Documentar entregas em docs/ — aplicar ao concluir features ou mudanças de arquitetura
+alwaysApply: true
+---
+
+# Documentação de entregas
+
+## Quando documentar
+
+Ao **concluir** uma feature, endpoint, app, fluxo de infra ou mudança arquitetural:
+
+1. Atualizar ou criar doc em `docs/` (não em `.cursor/plans/` — planos são especificação; `docs/` é o que **foi implementado**).
+2. Se a entrega alterar setup local, env ou scripts → atualizar `docs/dev-setup.md`.
+3. Mencionar na resposta ao usuário quais arquivos de doc foram criados/atualizados.
+
+## Onde colocar
+
+| Tipo | Arquivo |
+|------|---------|
+| Índice geral | `docs/README.md` |
+| Setup, env, Docker, DB | `docs/dev-setup.md` |
+| Feature / módulo | `docs/<nome-feature>.md` (ex.: `cms-home-phase1.md`) |
+| Contrato API novo | seção em doc da feature + referência em `03-api-rest.mdc` se invariante |
+
+## Conteúdo mínimo por feature
+
+- **O quê** — escopo entregue e o que ficou fora
+- **Por quê** — ligação ao PRD/plano (link relativo)
+- **Como funciona** — fluxo, diagrama ASCII/mermaid se útil
+- **Arquivos-chave** — paths principais (domain, use case, rota, componente)
+- **API/contratos** — rotas, DTOs, env vars novas
+- **Como rodar/testar** — comandos concretos
+- **Próximos passos** — fase seguinte documentada, não implementada
+
+## Estilo
+
+- Prosa em **pt-BR**; identificadores de código em inglês
+- Preferir docs focados (< 200 linhas) a um monolito
+- Não duplicar PRD inteiro — resumir e linkar `.cursor/plans/`
+- Não commitar `.next/`, `dist/`, artefatos de build
+
+## Checklist antes de dar tarefa por concluída
+
+- [ ] Código + testes/build ok
+- [ ] `docs/` reflete a entrega
+- [ ] `AGENTS.md` ou `docs/README.md` indexa doc nova (se aplicável)
+- [ ] `.env.example` atualizado quando houver env nova

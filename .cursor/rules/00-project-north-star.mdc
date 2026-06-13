@@ -38,3 +38,4 @@ Login social, comparador cross-marketplace mesmo SKU, sub-afiliados, app nativo,
 - Não inventar features, rotas ou entidades fora dos planos sem alinhar
 - **Código em inglês** (identifiers, files, comments); copy de UI/emails em pt-BR — ver `09-code-standards.mdc`
 - **ESLint + Prettier** obrigatórios; CI deve falhar em lint/format nos pacotes alterados
+- **Documentar entregas** em `docs/` ao concluir features — ver `10-documentation.mdc`

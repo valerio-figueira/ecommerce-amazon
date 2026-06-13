@@ -21,6 +21,11 @@ Plataforma de afiliação: **Vitrine Inteligente + Hub de Conteúdo** (Amazon BR
 | `07-growth-seo-content.mdc` | Conteúdo, artigos, cupons, comparador |
 | `08-testing-typescript.mdc` | Todo TypeScript |
 | `09-code-standards.mdc` | ESLint, Prettier, English code, naming |
+| `10-documentation.mdc` | Sempre — documentar entregas em `docs/` |
+
+## Documentação implementada
+
+Consultar **`docs/README.md`** para o índice do que já foi construído (vs. planos em `.cursor/plans/`).
 
 ## Invariantes (nunca violar)
 
@@ -35,6 +40,7 @@ Plataforma de afiliação: **Vitrine Inteligente + Hub de Conteúdo** (Amazon BR
 
 ```
 apps/api          → REST read-heavy
+apps/web          → Next.js vitrine (CMS-driven)
 apps/worker       → BullMQ + fetchers externos
 packages/domain   → entidades, ports, eventos
 packages/application → use cases
