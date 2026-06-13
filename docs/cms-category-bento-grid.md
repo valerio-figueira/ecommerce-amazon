@@ -79,6 +79,16 @@ npm run build --workspace=@ecommerce-amazon/web
 npm run build --workspace=@ecommerce-amazon/admin
 ```
 
+## Imagens externas (Next.js)
+
+O bloco usa `next/image` na vitrine (`apps/web`). Hosts de imagem precisam estar em `apps/web/next.config.ts` → `images.remotePatterns`.
+
+Já configurados: `placehold.co`, `images.pexels.com` (testes). Para outro CDN, adicione o hostname e reinicie `npm run dev:web`:
+
+```typescript
+{ protocol: 'https', hostname: 'seu-cdn.exemplo.com' },
+```
+
 ## Próximos passos (opcional)
 
 - Preencher subtítulo com contagem real de produtos (`GET /categories`)
