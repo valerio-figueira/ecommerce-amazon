@@ -1,10 +1,9 @@
 import { adminMarketplaceLabel } from '@/lib/product-admin-format';
-import { getProductCategoryVerticalLabel } from '@ecommerce-amazon/shared/product/category-vertical';
 
 export type ProductLlmPromptInput = {
   titleClean: string;
   marketplace: string;
-  categoryVertical?: string | undefined;
+  categoryLabel?: string | undefined;
   editorialScore: number;
   pros: string[];
   cons: string[];
@@ -21,10 +20,7 @@ function formatBulletList(items: string[], emptyFallback: string): string {
 export function buildProductReviewLlmPrompt(input: ProductLlmPromptInput): string {
   const title = input.titleClean.trim() || '[Título do produto]';
   const marketplace = adminMarketplaceLabel(input.marketplace);
-  const category =
-    getProductCategoryVerticalLabel(input.categoryVertical) ??
-    input.categoryVertical ??
-    'Não informada';
+  const category = input.categoryLabel ?? 'Não informada';
   const pros = formatBulletList(input.pros, '- (preencha os prós no formulário)');
   const cons = formatBulletList(input.cons, '- (preencha os contras no formulário)');
   const score =

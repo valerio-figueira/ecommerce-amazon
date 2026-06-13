@@ -66,7 +66,7 @@ export type AdminProductDetailDto = {
   marketplace: string;
   externalId: string;
   titleClean: string;
-  categoryVertical?: string | undefined;
+  categoryId?: string | undefined;
   images: string[];
   editorialScore: number;
   pros: string[];
@@ -180,7 +180,7 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     editorialScore: product.editorialScore / 10,
     pros: product.pros ?? [],
     cons: product.cons ?? [],
-    ...(product.categoryVertical !== undefined ? { categoryVertical: product.categoryVertical } : {}),
+    ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
     ...(product.shortDescription !== undefined ? { shortDescription: product.shortDescription } : {}),
     ...(product.longDescriptionHtml !== undefined
       ? { longDescriptionHtml: product.longDescriptionHtml }

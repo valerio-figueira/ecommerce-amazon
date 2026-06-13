@@ -6,8 +6,15 @@ import type { CategoryPillsProps } from '@ecommerce-amazon/shared/cms';
 
 import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
 import { apiFetchParsed } from '@/lib/api/client';
-import { categoriesResponseSchema } from '@/lib/api/schemas';
+import { categoriesResponseSchema, type CategoryTreeNodeDto } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
+
+function flattenCategoryLabels(items: CategoryTreeNodeDto[]): Array<{ slug: string; label: string }> {
+  return items.flatMap((item) => [
+    { slug: item.slug, label: item.label },
+    ...(item.subcategories ? flattenCategoryLabels(item.subcategories) : []),
+  ]);
+}
 
 type CategoryPillsRowProps = {
   categorySlugs: CategoryPillsProps['categorySlugs'];
@@ -24,7 +31,7 @@ export function CategoryPillsRow({ categorySlugs }: CategoryPillsRowProps): Reac
     },
   });
 
-  const labels = new Map(categories?.map((c) => [c.slug, c.label]) ?? []);
+  const labels = new Map(flattenCategoryLabels(categories ?? []).map((c) => [c.slug, c.label]));
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">

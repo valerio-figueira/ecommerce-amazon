@@ -64,6 +64,18 @@ export default async function ProductPage({
       <ProductJsonLd product={product} siteBaseUrl={siteBaseUrl} />
       <nav className="mb-6 text-sm text-neutral-500">
         <Link href="/">Home</Link>
+        {product.category && (
+          <>
+            {product.category.breadcrumbs.slice(0, -1).map((crumb) => (
+              <span key={crumb.slug}>
+                <span className="mx-2">/</span>
+                <Link href={`/categorias/${crumb.slug}`}>{crumb.label}</Link>
+              </span>
+            ))}
+            <span className="mx-2">/</span>
+            <Link href={`/categorias/${product.category.slug}`}>{product.category.label}</Link>
+          </>
+        )}
         <span className="mx-2">/</span>
         <span>{product.title}</span>
       </nav>

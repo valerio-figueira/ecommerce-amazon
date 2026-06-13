@@ -85,7 +85,7 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | `availability` | enum | |
 | `rating` | decimal(3,2) | |
 | `review_count` | int | |
-| `category_vertical` | text | ex.: `home-office`, `games` |
+| `category_id` | uuid FK → categories | nullable |
 | `tags` | jsonb `string[]` | |
 | `meta_title`, `meta_description` | text | SEO |
 | `canonical_url` | varchar(512) | nullable; Editorial Override — NULL = automação no frontend |
@@ -93,7 +93,27 @@ Regra de negócio: apenas um layout `published` por `slug` (índice composto).
 | `visible` | boolean | default `true`; oculta da home quando `false`; admin lista todos |
 | `created_at` | timestamptz | |
 
-Índices: UNIQUE `slug`; UNIQUE `(marketplace, external_id)`; INDEX `(stale_price, price_updated_at)`; INDEX `(visible)`.
+Índices: UNIQUE `slug`; UNIQUE `(marketplace, external_id)`; INDEX `(stale_price, price_updated_at)`; INDEX `(visible)`; INDEX `(category_id)`.
+
+### Categorias — `categories`
+
+Árvore hierárquica com SEO e mapeamento de marketplaces. Ver [categories-hierarchy.md](./categories-hierarchy.md).
+
+| Coluna | Tipo | Notas |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `slug` | text UNIQUE | kebab-case global |
+| `label` | text | |
+| `icon` | varchar(50) | emoji ou Lucide |
+| `parent_id` | uuid FK → categories | nullable = raiz |
+| `sort_order` | int | ordenação no menu |
+| `seo_title`, `seo_description` | varchar/text | |
+| `description_html` | text | conteúdo editorial na listagem |
+| `amazon_browse_node` | varchar(50) | worker futuro |
+| `mercadolivre_category_id` | varchar(50) | |
+| `shopee_category_id` | varchar(50) | |
+| `visible` | boolean | default `true` |
+| `created_at`, `updated_at` | timestamptz | |
 
 ### Preços — `price_snapshots`
 

@@ -13,6 +13,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+import { categories } from './categories.js';
+
+export { categories };
+
 export const marketplaceEnum = pgEnum('marketplace', [
   'amazon_br',
   'shopee_br',
@@ -113,7 +117,7 @@ export const products = pgTable(
     availability: availabilityEnum('availability').notNull().default('unknown'),
     rating: decimal('rating', { precision: 3, scale: 2 }),
     reviewCount: integer('review_count'),
-    categoryVertical: text('category_vertical'),
+    categoryId: uuid('category_id').references(() => categories.id, { onDelete: 'set null' }),
     tags: jsonb('tags').$type<string[]>().notNull().default([]),
     metaTitle: text('meta_title'),
     metaDescription: text('meta_description'),
@@ -128,6 +132,7 @@ export const products = pgTable(
     uniqueIndex('products_marketplace_external_idx').on(table.marketplace, table.externalId),
     index('products_stale_price_idx').on(table.stalePrice, table.priceUpdatedAt),
     index('products_visible_idx').on(table.visible),
+    index('products_category_id_idx').on(table.categoryId),
   ],
 );
 

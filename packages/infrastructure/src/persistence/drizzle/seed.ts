@@ -36,6 +36,11 @@ const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
+const SEED_CATEGORY_HOME_OFFICE_ID = 'a0111111-1111-4111-8111-111111111111';
+const SEED_CATEGORY_GAMES_ID = 'a0222222-2222-4222-8222-222222222222';
+const SEED_CATEGORY_ELETRONICOS_ID = 'a0333333-3333-4333-8333-333333333333';
+const SEED_CATEGORY_PERIFERICOS_ID = 'a0444444-4444-4444-8444-444444444444';
+const SEED_CATEGORY_TECLADOS_ID = 'a0555555-5555-4555-8555-555555555555';
 
 async function runSeed(): Promise<void> {
   loadDotenvFromMonorepoRoot();
@@ -53,6 +58,8 @@ async function runSeed(): Promise<void> {
   const now = new Date();
 
   try {
+    await seedCategories(db, now, logger);
+
     const existing = await db
       .select({ id: schema.products.id })
       .from(schema.products)
@@ -117,7 +124,7 @@ async function insertProductSeed(
         availability: ProductAvailability.IN_STOCK,
         rating: '4.60',
         reviewCount: 128,
-        categoryVertical: 'home-office',
+        categoryId: SEED_CATEGORY_HOME_OFFICE_ID,
         tags: ['ergonomica', 'home-office'],
         metaTitle: 'Cadeira Ergonômica Home Office | Vitrine',
         metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
@@ -144,7 +151,7 @@ async function insertProductSeed(
         availability: ProductAvailability.IN_STOCK,
         rating: '4.40',
         reviewCount: 56,
-        categoryVertical: 'games',
+        categoryId: SEED_CATEGORY_GAMES_ID,
         tags: ['headset', 'gamer'],
         createdAt: now,
       },
@@ -218,6 +225,80 @@ async function insertProductSeed(
       sourceUrl: 'https://www.amazon.com.br/deals',
       lastVerifiedAt: now,
     });
+}
+
+async function seedCategories(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.categories.id })
+    .from(schema.categories)
+    .where(eq(schema.categories.id, SEED_CATEGORY_HOME_OFFICE_ID))
+    .limit(1);
+
+  if (existing.length > 0) {
+    logger.info('Category seed data already present, skipping categories');
+    return;
+  }
+
+  await db.insert(schema.categories).values([
+    {
+      id: SEED_CATEGORY_HOME_OFFICE_ID,
+      slug: 'home-office',
+      label: 'Home Office',
+      icon: '💼',
+      sortOrder: 0,
+      visible: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_CATEGORY_GAMES_ID,
+      slug: 'games',
+      label: 'Games',
+      icon: '🎮',
+      sortOrder: 1,
+      visible: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_CATEGORY_ELETRONICOS_ID,
+      slug: 'eletronicos',
+      label: 'Eletrônicos',
+      icon: '📱',
+      sortOrder: 2,
+      visible: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_CATEGORY_PERIFERICOS_ID,
+      slug: 'perifericos',
+      label: 'Periféricos',
+      icon: 'keyboard',
+      parentId: SEED_CATEGORY_GAMES_ID,
+      sortOrder: 0,
+      visible: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_CATEGORY_TECLADOS_ID,
+      slug: 'teclados-mecanicos',
+      label: 'Teclados Mecânicos',
+      icon: 'keyboard',
+      parentId: SEED_CATEGORY_PERIFERICOS_ID,
+      sortOrder: 0,
+      visible: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
+
+  logger.info('Category hierarchy seed inserted');
 }
 
 async function seedHomePage(

@@ -36,21 +36,44 @@ Regras: [`.cursor/rules/03-api-rest.mdc`](../.cursor/rules/03-api-rest.mdc). Pla
 
 ### `GET /categories`
 
-Lista verticais com contagem de produtos publicados.
+Árvore hierárquica de categorias visíveis com contagem de produtos na subárvore.
 
 **Response:**
 
 ```typescript
 {
   items: Array<{
-    slug: string;    // ex.: "home-office"
-    label: string;   // ex.: "Home Office"
-    count: number;
+    slug: string;
+    label: string;
+    icon?: string;
+    productCount: number;
+    subcategories?: /* recursivo */;
   }>;
 }
 ```
 
-Use case: `ListProductCategories`.
+Use case: `ListCategoryTree`.
+
+### `GET /categories/:slug`
+
+Detalhe SEO da categoria para página `/categorias/{slug}`.
+
+**Response:**
+
+```typescript
+{
+  slug: string;
+  label: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  descriptionHtml?: string;
+  productCount: number;
+  breadcrumbs: Array<{ slug: string; label: string }>;
+  children: Array<{ slug: string; label: string; productCount: number }>;
+}
+```
+
+Use case: `GetCategoryBySlug`.
 
 ---
 
@@ -94,7 +117,7 @@ Cache Redis: chave `vitrine:page:slug:{slug}`, TTL 300s.
 |-------|------|---------|-------|
 | `page` | int > 0 | 1 | |
 | `pageSize` | int ≤ 100 | 20 | |
-| `category` | string | — | `category_vertical` |
+| `category` | string | — | Filtra subárvore via `category_id` (slug + descendentes) |
 | `marketplace` | `amazon_br` \| `shopee_br` | — | |
 | `sort` | `editorial_score` \| `price_updated_at` | `editorial_score` | |
 

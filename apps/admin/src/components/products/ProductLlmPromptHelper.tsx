@@ -29,7 +29,7 @@ export function ProductLlmPromptHelper(): React.JSX.Element {
 
   const titleClean = useWatch({ control: form.control, name: 'titleClean' }) ?? '';
   const marketplace = useWatch({ control: form.control, name: 'marketplace' }) ?? 'amazon_br';
-  const categoryVertical = useWatch({ control: form.control, name: 'categoryVertical' });
+  const categoryId = useWatch({ control: form.control, name: 'categoryId' });
   const editorialScore = useWatch({ control: form.control, name: 'editorialScore' }) ?? 0;
   const pros = useWatch({ control: form.control, name: 'pros' }) ?? [];
   const cons = useWatch({ control: form.control, name: 'cons' }) ?? [];
@@ -40,13 +40,13 @@ export function ProductLlmPromptHelper(): React.JSX.Element {
       buildProductReviewLlmPrompt({
         titleClean,
         marketplace,
-        categoryVertical,
+        categoryLabel: categoryId,
         editorialScore,
         pros,
         cons,
         affiliateLink,
       }),
-    [affiliateLink, categoryVertical, cons, editorialScore, marketplace, pros, titleClean],
+    [affiliateLink, categoryId, cons, editorialScore, marketplace, pros, titleClean],
   );
 
   const handleCopy = async (): Promise<void> => {

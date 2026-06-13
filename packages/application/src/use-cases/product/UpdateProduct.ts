@@ -7,12 +7,14 @@ import {
   SnapshotSource,
   ValidationError,
   type CacheInvalidator,
+  type CategoryRepository,
   type PriceSnapshotRepository,
   type Product,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import type { UpdateProductBody } from '@ecommerce-amazon/shared/admin';
 
+import { assertCategoryIsLeaf } from '../category/category.helpers.js';
 import {
   createAffiliateLink,
   filterNonEmptyStrings,
@@ -30,6 +32,7 @@ export type UpdateProductResult = {
 export class UpdateProduct {
   constructor(
     private readonly productRepository: ProductRepository,
+    private readonly categoryRepository: CategoryRepository,
     private readonly snapshotRepository: PriceSnapshotRepository,
     private readonly cacheInvalidator: CacheInvalidator,
   ) {}
@@ -38,6 +41,10 @@ export class UpdateProduct {
     const product = await this.productRepository.findBySlug(slug);
     if (!product) {
       throw new EntityNotFoundError('Product', slug);
+    }
+
+    if (input.categoryId) {
+      await assertCategoryIsLeaf(this.categoryRepository, input.categoryId);
     }
 
     const { marketplace, externalId } = resolveProductLink(input);
@@ -114,7 +121,7 @@ export class UpdateProduct {
     product.pros = filteredPros.length > 0 ? filteredPros : undefined;
     product.cons = filteredCons.length > 0 ? filteredCons : undefined;
     product.visible = input.visible;
-    product.categoryVertical = input.categoryVertical;
+    product.categoryId = input.categoryId;
     product.shortDescription = editorialContent.shortDescription;
     product.longDescriptionHtml = editorialContent.longDescriptionHtml;
     product.metaTitle = editorialContent.metaTitle;

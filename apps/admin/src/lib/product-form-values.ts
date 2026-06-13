@@ -11,7 +11,7 @@ export function adminProductDetailToFormValues(product: AdminProductDetail): Pro
     marketplace: product.marketplace,
     externalId: product.externalId,
     titleClean: product.titleClean,
-    ...(product.categoryVertical !== undefined ? { categoryVertical: product.categoryVertical } : {}),
+    ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
     images: product.images,
     editorialScore: product.editorialScore,
     pros: product.pros,

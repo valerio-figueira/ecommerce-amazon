@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import { SiteHeader } from '@/components/layout/SiteHeader';
+import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
 import { AffiliateDisclaimer } from '@/components/layout/AffiliateDisclaimer';
 
 import { Providers } from './providers';
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <SiteHeader />
+          <SiteHeaderShell />
           {children}
           <AffiliateDisclaimer />
         </Providers>

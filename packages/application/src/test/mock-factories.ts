@@ -23,7 +23,6 @@ export function createMockProductRepository(
     findDueForCatalogSync: vi.fn(),
     save: vi.fn(),
     saveBatch: vi.fn(),
-    listCategories: vi.fn(),
     ...overrides,
   };
 }

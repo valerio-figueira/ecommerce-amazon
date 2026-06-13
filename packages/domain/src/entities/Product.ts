@@ -24,7 +24,7 @@ export type ProductProps = {
   availability: ProductAvailability;
   rating?: number | undefined;
   reviewCount?: number | undefined;
-  categoryVertical?: string | undefined;
+  categoryId?: string | undefined;
   tags: string[];
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
@@ -55,7 +55,7 @@ export class Product {
   availability: ProductAvailability;
   rating?: number | undefined;
   reviewCount?: number | undefined;
-  categoryVertical?: string | undefined;
+  categoryId?: string | undefined;
   tags: string[];
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
@@ -83,7 +83,7 @@ export class Product {
     this.availability = props.availability;
     this.rating = props.rating;
     this.reviewCount = props.reviewCount;
-    this.categoryVertical = props.categoryVertical;
+    this.categoryId = props.categoryId;
     this.tags = props.tags;
     this.metaTitle = props.metaTitle;
     this.metaDescription = props.metaDescription;

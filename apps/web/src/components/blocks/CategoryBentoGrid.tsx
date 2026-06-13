@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 import type { CategoryBentoGridProps, CategoryBentoTile } from '@ecommerce-amazon/shared/cms';
 
-import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
 import { cn } from '@/lib/utils';
 
 type CategoryBentoGridPropsView = {
@@ -18,14 +17,11 @@ type CategoryBentoTileCardProps = {
 };
 
 function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.Element {
-  const { categorySlug, setCategorySlug } = useCategoryFilter();
-  const isActive = Boolean(tile.categorySlug && categorySlug === tile.categorySlug);
   const isInteractive = Boolean(tile.href || tile.categorySlug);
 
   const cardClassName = cn(
     'group relative block min-h-[9.5rem] overflow-hidden rounded-2xl bg-neutral-200 md:min-h-[11rem]',
     tile.size === 'large' && 'col-span-2',
-    isActive && 'ring-2 ring-[var(--primary)] ring-offset-2',
     isInteractive && 'hover:shadow-md',
   );
 
@@ -73,13 +69,9 @@ function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.
 
   if (tile.categorySlug) {
     return (
-      <button
-        type="button"
-        onClick={() => setCategorySlug(isActive ? null : tile.categorySlug ?? null)}
-        className={cn(cardClassName, 'w-full text-left')}
-      >
+      <Link href={`/categorias/${tile.categorySlug}`} className={cardClassName}>
         {content}
-      </button>
+      </Link>
     );
   }
 

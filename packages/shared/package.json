@@ -19,16 +19,20 @@
       "import": "./dist/seo/index.js"
     },
     "./admin": {
-      "types": "./dist/admin/product-schemas.d.ts",
-      "import": "./dist/admin/product-schemas.js"
+      "types": "./dist/admin/index.d.ts",
+      "import": "./dist/admin/index.js"
+    },
+    "./category/build-category-tree": {
+      "types": "./dist/category/build-category-tree.d.ts",
+      "import": "./dist/category/build-category-tree.js"
+    },
+    "./category/category-schemas": {
+      "types": "./dist/category/category-schemas.d.ts",
+      "import": "./dist/category/category-schemas.js"
     },
     "./marketplace": {
       "types": "./dist/marketplace/index.d.ts",
       "import": "./dist/marketplace/index.js"
-    },
-    "./product/category-vertical": {
-      "types": "./dist/product/category-vertical.d.ts",
-      "import": "./dist/product/category-vertical.js"
     }
   },
   "scripts": {

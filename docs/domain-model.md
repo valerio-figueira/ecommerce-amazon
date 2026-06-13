@@ -23,7 +23,7 @@ Arquivo: [`packages/domain/src/entities/Product.ts`](../packages/domain/src/enti
 | `editorialScore` | number | |
 | `availability` | `ProductAvailability` | |
 | `rating`, `reviewCount` | number? | |
-| `categoryVertical` | string? | filtro categoria |
+| `categoryId` | string? | FK categoria folha |
 | `tags` | string[] | |
 | `metaTitle`, `metaDescription`, `canonicalUrl` | string? | SEO; `canonicalUrl` = sobrescrita editorial (NULL → vitrine gera `/produtos/{slug}`) |
 | `pros`, `cons` | string[]? | editorial |
@@ -35,6 +35,12 @@ Arquivo: [`packages/domain/src/entities/Product.ts`](../packages/domain/src/enti
 - `markPriceStale()` — SLA 24h estourado
 - `shouldShowPrice` — getter; `false` quando `price.isStale`, oculta valor numérico na UI/API
 - `pullDomainEvents()` — padrão outbox em memória
+
+### `Category`
+
+Arquivo: [`packages/domain/src/entities/Category.ts`](../packages/domain/src/entities/Category.ts).
+
+Árvore hierárquica (`parentId`), slug único global, campos SEO (`seoTitle`, `descriptionHtml`) e IDs de marketplace para worker futuro.
 
 ### `PageLayout` / `PageBlock` (CMS)
 
@@ -131,7 +137,6 @@ interface ProductRepository {
   findBySlug(slug: Slug | string): Promise<Product | null>;
   findByExternalId(marketplace: Marketplace, externalId: string): Promise<Product | null>;
   findPublished(filters: ProductListFilters): Promise<{ items: Product[]; total: number }>;
-  listCategories(): Promise<ProductCategoryCount[]>;
   findByIds(ids: string[]): Promise<Product[]>;
   findDueForPriceRefresh(criteria: RefreshCriteria): Promise<Product[]>;
   findDueForCatalogSync(criteria: RefreshCriteria): Promise<Product[]>;
@@ -140,7 +145,11 @@ interface ProductRepository {
 }
 ```
 
-`ProductListFilters`: `page?`, `pageSize?`, `category?`, `marketplace?`, `sort?`.
+`ProductListFilters`: `page?`, `pageSize?`, `categoryIds?`, `marketplace?`, `sort?`.
+
+### `CategoryRepository`
+
+CRUD + `getDescendantIds`, `getAncestorChain`, contagens por subárvore. Ver [categories-hierarchy.md](./categories-hierarchy.md).
 
 ### `PageRepository`
 
@@ -200,7 +209,8 @@ Arquivo: [`packages/domain/src/gateways/index.ts`](../packages/domain/src/gatewa
 | `GetPublishedPageLayout` | `use-cases/page/` | API `GET /pages/:slug` |
 | `ListProducts` | `use-cases/product/` | API `GET /products` |
 | `GetProductBySlug` | `use-cases/product/` | API `GET /products/:slug` |
-| `ListProductCategories` | `use-cases/product/` | API `GET /categories` |
+| `ListCategoryTree` / `GetCategoryBySlug` | `use-cases/category/` | API `GET /categories`, `GET /categories/:slug` |
+| `ListAdminCategories` / `CreateCategory` / `UpdateCategory` / `DeleteCategory` | `use-cases/admin-category/` | API admin categorias |
 | `GetProductPriceHistory` | `use-cases/product/` | API price-history |
 | `GetWishlist` / `AddToWishlist` / `BuildBatchCheckoutRedirect` | `use-cases/wishlist/` | API wishlist |
 | `CreatePriceAlert` / `ConfirmPriceAlert` | `use-cases/alert/` | API alertas |

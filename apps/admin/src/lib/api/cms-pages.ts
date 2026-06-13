@@ -5,6 +5,8 @@ import { BlockType, PageStatus } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 
+import { publicCategoryTreeNodeSchema, type PublicCategoryTreeNode } from '@ecommerce-amazon/shared/category/category-schemas';
+
 import { adminFetchParsed } from './admin-fetch';
 
 const adminPageSummarySchema = z.object({
@@ -17,14 +19,22 @@ const adminPageSummarySchema = z.object({
 const adminPagesSchema = z.array(adminPageSummarySchema);
 
 const categoriesResponseSchema = z.object({
-  items: z.array(
-    z.object({
-      slug: z.string(),
-      label: z.string(),
-      count: z.number().optional(),
-    }),
-  ),
+  items: z.array(publicCategoryTreeNodeSchema),
 });
+
+function flattenPublicCategories(
+  items: PublicCategoryTreeNode[],
+  prefix = '',
+): Array<{ slug: string; label: string }> {
+  return items.flatMap((item) => {
+    const label = prefix ? `${prefix} → ${item.label}` : item.label;
+    const current = { slug: item.slug, label };
+    const children = item.subcategories
+      ? flattenPublicCategories(item.subcategories, label)
+      : [];
+    return [current, ...children];
+  });
+}
 
 export type AdminBlockInput = {
   type: BlockType;
@@ -105,5 +115,5 @@ export async function listCategories(): Promise<Array<{ slug: string; label: str
   const payload: unknown = await response.json();
   const parsed = categoriesResponseSchema.safeParse(payload);
   if (!parsed.success) return [];
-  return parsed.data.items.map(({ slug, label }) => ({ slug, label }));
+  return flattenPublicCategories(parsed.data.items);
 }

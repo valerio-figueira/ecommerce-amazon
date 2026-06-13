@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   FileStack,
+  FolderTree,
   Layers,
   LayoutDashboard,
   Newspaper,
@@ -19,6 +20,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: '/', label: 'Painel', icon: LayoutDashboard },
   { href: '/paginas', label: 'Páginas', icon: FileStack },
   { href: '/produtos', label: 'Produtos', icon: Package },
+  { href: '/categorias', label: 'Categorias', icon: FolderTree },
   { href: '/artigos', label: 'Artigos', icon: Newspaper },
   { href: '/colecoes', label: 'Coleções', icon: Layers },
   { href: '/cupons', label: 'Cupons', icon: Ticket },

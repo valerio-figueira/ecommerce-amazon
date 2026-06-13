@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import { CategoryCascadeSelect } from '@/components/categories/CategoryCascadeSelect';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { ProductImageList } from '@/components/products/ProductImageList';
 import {
@@ -14,17 +16,28 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  flattenAdminCategoriesForPicker,
+  type CategoryFlatOption,
+} from '@/lib/api/categories-utils';
 import type { ProductFormValues } from '@/lib/product-form-values';
-import { PRODUCT_CATEGORY_VERTICALS } from '@ecommerce-amazon/shared/product/category-vertical';
+import { adminCategoriesResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 export function ProductEssentialsSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
+  const [categoryOptions, setCategoryOptions] = useState<CategoryFlatOption[]>([]);
+
+  useEffect(() => {
+    void fetch('/api/admin/categories', { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) return [];
+        const payload: unknown = await response.json();
+        const parsed = adminCategoriesResponseSchema.safeParse(payload);
+        if (!parsed.success) return [];
+        return flattenAdminCategoriesForPicker(parsed.data.items);
+      })
+      .then(setCategoryOptions)
+      .catch(() => setCategoryOptions([]));
+  }, []);
 
   return (
     <CmsFormSection title="Dados essenciais">
@@ -42,37 +55,7 @@ export function ProductEssentialsSection(): React.JSX.Element {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="categoryVertical"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Categoria</FormLabel>
-            <Select
-              value={field.value ?? ''}
-              onValueChange={(value) => field.onChange(value === '' ? undefined : value)}
-            >
-              <FormControl>
-                <SelectTrigger className="sm:max-w-md">
-                  <SelectValue placeholder="Selecione a categoria vertical" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {PRODUCT_CATEGORY_VERTICALS.map((category) => (
-                  <SelectItem key={category.slug} value={category.slug}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormDescription>
-              Usada para filtros da vitrine e contexto editorial. Meta tags SEO são geradas
-              automaticamente na publicação.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <CategoryCascadeSelect options={categoryOptions} />
 
       <FormField
         control={form.control}

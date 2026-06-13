@@ -11,6 +11,7 @@ import {
   toProductDetailDto,
   toProductListItemDto,
 } from '../../presenters/product.presenter.js';
+import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
@@ -25,6 +26,7 @@ import {
   PageSlugParamsSchema,
   ProductIdParamsSchema,
   ProductSlugParamsSchema,
+  CategorySlugParamsSchema,
   RecordClickSchema,
   PriceHistoryQuerySchema,
   WishlistAddSchema,
@@ -99,8 +101,21 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
 
   app.get('/categories', async (_request, reply) => {
     try {
-      const result = await useCases.listProductCategories.execute();
+      const result = await useCases.listCategoryTree.execute();
       return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/categories/:slug', async (request, reply) => {
+    try {
+      const { slug } = CategorySlugParamsSchema.parse(request.params);
+      const category = await useCases.getCategoryBySlug.execute(slug);
+      if (!category) {
+        return reply.status(404).send({ error: 'Category not found' });
+      }
+      return reply.send(category);
     } catch (error) {
       return handleError(error, reply);
     }
@@ -157,7 +172,24 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const { slug } = ProductSlugParamsSchema.parse(request.params);
       const product = await useCases.getProductBySlug.execute(slug);
       if (!product) return reply.status(404).send({ error: 'Product not found' });
-      return reply.send(toProductDetailDto(product));
+
+      const dto = toProductDetailDto(product);
+      if (product.categoryId) {
+        const category = await container.repositories.categoryRepository.findById(
+          product.categoryId,
+        );
+        if (category) {
+          const ancestors = await container.repositories.categoryRepository.getAncestorChain(
+            category.id,
+          );
+          return reply.send({
+            ...dto,
+            category: toProductCategorySummaryDto(category, ancestors),
+          });
+        }
+      }
+
+      return reply.send(dto);
     } catch (error) {
       return handleError(error, reply);
     }

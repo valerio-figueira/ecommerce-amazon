@@ -1,3 +1,4 @@
+export * from './entities/Category.js';
 export * from './entities/Product.js';
 export * from './entities/PriceSnapshot.js';
 export * from './entities/PriceAlert.js';
@@ -14,6 +15,7 @@ export * from './events/index.js';
 export * from './events/messages.js';
 export * from './services/index.js';
 export * from './errors/DomainError.js';
+export * from './repositories/CategoryRepository.js';
 export * from './repositories/ProductRepository.js';
 export * from './repositories/PriceSnapshotRepository.js';
 export * from './repositories/PriceAlertRepository.js';

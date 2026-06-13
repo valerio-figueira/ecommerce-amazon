@@ -14,6 +14,10 @@ export const ListProductsQuerySchema = z.object({
     .transform((value) => value === 'true'),
 });
 
+export const CategorySlugParamsSchema = z.object({
+  slug: z.string().min(1),
+});
+
 export const ProductSlugParamsSchema = z.object({
   slug: z.string().min(1),
 });

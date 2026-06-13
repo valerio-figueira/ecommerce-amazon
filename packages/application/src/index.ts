@@ -27,6 +27,13 @@ export { DeletePageBlock } from './use-cases/admin-cms/DeletePageBlock.js';
 export { UpdatePageBlocksOrder } from './use-cases/admin-cms/UpdatePageBlocksOrder.js';
 export { GetAdminPageLayout } from './use-cases/admin-cms/GetAdminPageLayout.js';
 export { ListAdminPages } from './use-cases/admin-cms/ListAdminPages.js';
-export { ListProductCategories } from './use-cases/product/ListProductCategories.js';
+export { ListCategoryTree } from './use-cases/category/ListCategoryTree.js';
+export { GetCategoryBySlug } from './use-cases/category/GetCategoryBySlug.js';
+export { ListAdminCategories, CreateCategory } from './use-cases/admin-category/CreateCategory.js';
+export {
+  UpdateCategory,
+  DeleteCategory,
+  ReorderCategories,
+} from './use-cases/admin-category/UpdateCategory.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';
 export { AuthenticateOperator } from './use-cases/admin-auth/AuthenticateOperator.js';

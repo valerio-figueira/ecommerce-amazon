@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { MARKETPLACE_VALUES } from '../marketplace/constants.js';
-import { productCategoryVerticalSlugs } from '../product/category-vertical.js';
 
 export const marketplaceSchema = z.enum(MARKETPLACE_VALUES);
 
@@ -13,7 +12,7 @@ export const createProductBodySchema = z
     marketplace: marketplaceSchema,
     externalId: z.string().min(1),
     titleClean: z.string().min(3).max(200),
-    categoryVertical: z.enum(productCategoryVerticalSlugs).optional(),
+    categoryId: z.string().uuid().optional(),
     slug: z
       .string()
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
@@ -81,7 +80,7 @@ export const adminProductDetailSchema = z.object({
   marketplace: marketplaceSchema,
   externalId: z.string(),
   titleClean: z.string(),
-  categoryVertical: z.enum(productCategoryVerticalSlugs).optional(),
+  categoryId: z.string().uuid().optional(),
   images: z.array(z.string().url()),
   editorialScore: z.number().min(0).max(10),
   pros: z.array(z.string()),

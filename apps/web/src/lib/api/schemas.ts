@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+import {
+  publicCategoryTreeNodeSchema,
+  publicCategoryDetailSchema,
+  type PublicCategoryTreeNode,
+} from '@ecommerce-amazon/shared/category/category-schemas';
+
 const productPriceSchema = z.object({
   amount: z.number().nullable(),
   currency: z.string(),
@@ -29,16 +35,29 @@ export const productsPageSchema = z.object({
   pageSize: z.number(),
 });
 
+export type CategoryTreeNodeDto = PublicCategoryTreeNode;
+
 export const categorySchema = z.object({
   slug: z.string(),
   label: z.string(),
-  count: z.number(),
+  productCount: z.number().optional(),
 });
 
-export const categoriesSchema = z.array(categorySchema);
-
 export const categoriesResponseSchema = z.object({
-  items: categoriesSchema,
+  items: z.array(publicCategoryTreeNodeSchema),
+});
+
+export const categoryDetailSchema = publicCategoryDetailSchema;
+
+export const productCategorySummarySchema = z.object({
+  slug: z.string(),
+  label: z.string(),
+  breadcrumbs: z.array(
+    z.object({
+      slug: z.string(),
+      label: z.string(),
+    }),
+  ),
 });
 
 const wishlistProductSchema = z.object({
@@ -79,10 +98,12 @@ export const productDetailSchema = productListItemSchema.extend({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   canonicalUrl: z.string().optional(),
+  category: productCategorySummarySchema.optional(),
 });
 
 export type ProductListItemDto = z.infer<typeof productListItemSchema>;
 export type ProductDetailDto = z.infer<typeof productDetailSchema>;
 export type ProductsPageDto = z.infer<typeof productsPageSchema>;
 export type CategoryDto = z.infer<typeof categorySchema>;
+export type CategoryDetailDto = z.infer<typeof categoryDetailSchema>;
 export type WishlistItemDto = z.infer<typeof wishlistItemSchema>;

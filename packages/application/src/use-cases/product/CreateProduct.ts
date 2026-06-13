@@ -6,6 +6,7 @@ import {
   SnapshotSource,
   ValidationError,
   type CacheInvalidator,
+  type CategoryRepository,
   type PriceSnapshotRepository,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
@@ -22,6 +23,7 @@ import {
   resolveEditorialContentFields,
   toStoredEditorialScore,
 } from './product-form.helpers.js';
+import { assertCategoryIsLeaf } from '../category/category.helpers.js';
 
 export type CreateProductResult = {
   id: string;
@@ -31,6 +33,7 @@ export type CreateProductResult = {
 export class CreateProduct {
   constructor(
     private readonly productRepository: ProductRepository,
+    private readonly categoryRepository: CategoryRepository,
     private readonly snapshotRepository: PriceSnapshotRepository,
     private readonly cacheInvalidator: CacheInvalidator,
   ) {}
@@ -38,6 +41,10 @@ export class CreateProduct {
   async execute(input: CreateProductBody): Promise<CreateProductResult> {
     const { marketplace, externalId } = resolveProductLink(input);
     await assertExternalIdAvailable(this.productRepository, marketplace, externalId);
+
+    if (input.categoryId) {
+      await assertCategoryIsLeaf(this.categoryRepository, input.categoryId);
+    }
 
     const baseSlug = input.slug?.trim() || slugifyTitle(input.titleClean);
     if (!baseSlug) {
@@ -73,7 +80,7 @@ export class CreateProduct {
       editorialScore: toStoredEditorialScore(input.editorialScore),
       availability: parseProductAvailability(input.availability),
       tags: [],
-      ...(input.categoryVertical !== undefined ? { categoryVertical: input.categoryVertical } : {}),
+      ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
       ...(editorialContent.shortDescription !== undefined
         ? { shortDescription: editorialContent.shortDescription }
         : {}),

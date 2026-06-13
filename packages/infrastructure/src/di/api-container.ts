@@ -18,7 +18,13 @@ import {
   ListActiveCoupons,
   RecordClickEvent,
   GetPublishedPageLayout,
-  ListProductCategories,
+  ListCategoryTree,
+  GetCategoryBySlug,
+  ListAdminCategories,
+  CreateCategory,
+  UpdateCategory,
+  DeleteCategory,
+  ReorderCategories,
   GetWishlist,
   SavePageBlock,
   DeletePageBlock,
@@ -34,6 +40,7 @@ import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.j
 import { parseRedisUrl } from '../cache/redis-connection.js';
 import { createDrizzleClient } from '../persistence/drizzle/client.js';
 import { DrizzleProductRepository } from '../persistence/repositories/drizzle-product.repository.js';
+import { DrizzleCategoryRepository } from '../persistence/repositories/drizzle-category.repository.js';
 import { DrizzlePageRepository } from '../persistence/repositories/drizzle-page.repository.js';
 import {
   DrizzlePriceAlertRepository,
@@ -58,13 +65,24 @@ export function buildApiContainer(env = loadEnv()) {
   const cache = new RedisCacheStore(cacheRedis);
 
   const productRepository = new DrizzleProductRepository(db);
+  const categoryRepository = new DrizzleCategoryRepository(db);
   const pageRepository = new DrizzlePageRepository(db);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
-  const listProducts = new ListProducts(productRepository);
+  const listProducts = new ListProducts(productRepository, categoryRepository);
   const listAdminProducts = new ListAdminProducts(productRepository);
-  const createProduct = new CreateProduct(productRepository, snapshotRepository, cache);
+  const createProduct = new CreateProduct(
+    productRepository,
+    categoryRepository,
+    snapshotRepository,
+    cache,
+  );
   const getAdminProduct = new GetAdminProduct(productRepository);
-  const updateProduct = new UpdateProduct(productRepository, snapshotRepository, cache);
+  const updateProduct = new UpdateProduct(
+    productRepository,
+    categoryRepository,
+    snapshotRepository,
+    cache,
+  );
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
   const contentRepository = new DrizzleContentRepository(db);
@@ -107,7 +125,13 @@ export function buildApiContainer(env = loadEnv()) {
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
       getPublishedPageLayout: new GetPublishedPageLayout(pageRepository, cache, listProducts),
-      listProductCategories: new ListProductCategories(productRepository),
+      listCategoryTree: new ListCategoryTree(categoryRepository),
+      getCategoryBySlug: new GetCategoryBySlug(categoryRepository),
+      listAdminCategories: new ListAdminCategories(categoryRepository),
+      createCategory: new CreateCategory(categoryRepository),
+      updateCategory: new UpdateCategory(categoryRepository),
+      deleteCategory: new DeleteCategory(categoryRepository),
+      reorderCategories: new ReorderCategories(categoryRepository),
       getWishlist: new GetWishlist(wishlistRepository, productRepository),
       savePageBlock: new SavePageBlock(pageRepository, cache),
       deletePageBlock: new DeletePageBlock(pageRepository, cache),
@@ -131,6 +155,7 @@ export function buildApiContainer(env = loadEnv()) {
     repositories: {
       wishlistRepository,
       pageRepository,
+      categoryRepository,
     },
   };
 }
