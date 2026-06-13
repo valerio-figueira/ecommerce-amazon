@@ -64,6 +64,7 @@ export enum ClickOrigin {
   EMBED = 'embed',
   COMPARISON = 'comparador',
   COUPONS = 'cupons',
+  REDIRECT_GO = 'redirect_go',
 }
 
 export enum AffiliateAccountStatus {

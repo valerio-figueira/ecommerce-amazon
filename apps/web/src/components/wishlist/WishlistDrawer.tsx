@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { Button } from '@/components/ui/button';
-import { recordClick } from '@/lib/api/events';
+import { buildGoUrl } from '@/lib/go-url';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
 
@@ -62,8 +62,11 @@ export function WishlistDrawer(): React.JSX.Element | null {
                           <Button
                             size="sm"
                             onClick={() => {
-                              void recordClick(item.productId, 'listagem', sessionId);
-                              window.open(item.product.affiliateUrl, '_blank', 'noopener,noreferrer');
+                              window.open(
+                                buildGoUrl(item.product.slug, { sessionId }),
+                                '_blank',
+                                'noopener,noreferrer',
+                              );
                             }}
                           >
                             Ver oferta

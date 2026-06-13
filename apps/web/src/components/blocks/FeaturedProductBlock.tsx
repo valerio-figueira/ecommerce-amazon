@@ -9,9 +9,9 @@ import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { Button } from '@/components/ui/button';
-import { recordClick } from '@/lib/api/events';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productListItemSchema } from '@/lib/api/schemas';
+import { buildGoUrl } from '@/lib/go-url';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
 
@@ -50,8 +50,11 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
         <Button
           className="w-full"
           onClick={() => {
-            void recordClick(product.id, 'listagem', sessionId);
-            window.open(product.affiliateUrl, '_blank', 'noopener,noreferrer');
+            window.open(
+              buildGoUrl(product.slug, { blockId: block.id, sessionId }),
+              '_blank',
+              'noopener,noreferrer',
+            );
           }}
         >
           {ctaLabel}

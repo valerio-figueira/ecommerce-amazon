@@ -21,4 +21,5 @@ export * from './repositories/ContentRepository.js';
 export * from './repositories/CouponRepository.js';
 export * from './repositories/ProductComparisonRepository.js';
 export * from './repositories/PageRepository.js';
+export * from './repositories/AffiliateAccountRepository.js';
 export * from './gateways/index.js';

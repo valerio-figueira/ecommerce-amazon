@@ -19,6 +19,7 @@ import {
   SavePageBlock,
   DeletePageBlock,
   UpdatePageBlocksOrder,
+  ResolveAffiliateRedirect,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -38,6 +39,7 @@ import {
   DrizzleProductComparisonRepository,
   DrizzleClickEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
+import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -55,6 +57,7 @@ export function buildApiContainer(env = loadEnv()) {
   const couponRepository = new DrizzleCouponRepository(db);
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
+  const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
 
   const linkBuilder = new DefaultAffiliateLinkBuilder(
     env.AMAZON_AFFILIATE_TAG,
@@ -88,6 +91,11 @@ export function buildApiContainer(env = loadEnv()) {
       savePageBlock: new SavePageBlock(pageRepository, cache),
       deletePageBlock: new DeletePageBlock(pageRepository, cache),
       updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache),
+      resolveAffiliateRedirect: new ResolveAffiliateRedirect(
+        productRepository,
+        affiliateAccountRepository,
+        linkBuilder,
+      ),
     },
     repositories: {
       wishlistRepository,

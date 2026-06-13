@@ -19,6 +19,8 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `API_PORT` | `3000` | Fastify |
 | `WEB_PORT` | `3001` | Next.js |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3000` | Fetch do browser/SSR |
+| `API_INTERNAL_URL` | `http://localhost:3000` | Rewrite `/go/:slug` no Next.js |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | URLs absolutas no JSON-LD |
 | `CORS_ORIGINS` | `http://localhost:3001,...` | Origens explícitas na API |
 | `NEXT_ALLOWED_DEV_ORIGINS` | — | IP LAN para assets Next dev (ex.: `192.168.100.6`) |
 

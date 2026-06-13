@@ -15,7 +15,7 @@ export type WishlistItemEnriched = {
       currency: string;
       isStale: boolean;
     };
-    affiliateUrl: string;
+    goUrl: string;
   };
 };
 
@@ -52,7 +52,7 @@ export class GetWishlist {
             currency: product.price.currency,
             isStale: !product.shouldShowPrice,
           },
-          affiliateUrl: product.affiliateLink.url,
+          goUrl: `/go/${product.slug}`,
         },
       });
     }

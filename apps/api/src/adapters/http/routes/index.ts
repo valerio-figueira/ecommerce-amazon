@@ -18,6 +18,8 @@ import {
   ConfirmPriceAlertParamsSchema,
   CreateComparisonSchema,
   CreatePriceAlertSchema,
+  GoQuerySchema,
+  GoSlugParamsSchema,
   ListProductsQuerySchema,
   PageSlugParamsSchema,
   ProductIdParamsSchema,
@@ -51,6 +53,48 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
   const { useCases } = container;
 
   app.get('/health', async () => ({ status: 'ok' }));
+
+  app.get('/go/:slug', async (request, reply) => {
+    try {
+      const { slug } = GoSlugParamsSchema.parse(request.params);
+      const query = GoQuerySchema.parse(request.query);
+      const headerSessionId = request.headers['x-session-id'];
+      const sessionId =
+        query.sessionId ??
+        (typeof headerSessionId === 'string' && headerSessionId.length > 0
+          ? headerSessionId
+          : undefined);
+
+      const result = await useCases.resolveAffiliateRedirect.execute({
+        slug,
+        ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
+        ...(sessionId !== undefined ? { sessionId } : {}),
+        origin: 'redirect_go',
+      });
+
+      if (!result.ok) {
+        return reply.redirect('/', 307);
+      }
+
+      void useCases.recordClickEvent
+        .execute({
+          productId: result.value.productId,
+          origin: 'redirect_go',
+          ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
+          ...(sessionId !== undefined ? { sessionId } : {}),
+        })
+        .catch((error: unknown) => {
+          container.logger.error('Telemetry failed for /go redirect', {
+            slug,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        });
+
+      return reply.redirect(result.value.targetUrl, 307);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
 
   app.get('/categories', async (_request, reply) => {
     try {

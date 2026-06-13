@@ -53,9 +53,25 @@ export const ComparisonTokenParamsSchema = z.object({
 
 export const RecordClickSchema = z.object({
   productId: z.string().uuid(),
-  origin: z.enum(['listagem', 'detalhe', 'embed', 'comparador', 'cupons']),
+  origin: z.enum([
+    'listagem',
+    'detalhe',
+    'embed',
+    'comparador',
+    'cupons',
+    'redirect_go',
+  ]),
   sessionId: z.string().optional(),
   blockId: z.string().uuid().optional(),
+});
+
+export const GoSlugParamsSchema = z.object({
+  slug: z.string().min(1),
+});
+
+export const GoQuerySchema = z.object({
+  blockId: z.string().uuid().optional(),
+  sessionId: z.string().optional(),
 });
 
 export const ArticleSlugParamsSchema = z.object({

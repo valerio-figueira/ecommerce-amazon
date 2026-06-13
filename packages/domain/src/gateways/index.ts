@@ -21,9 +21,21 @@ export interface MarketplaceFetcherFactory {
   get(marketplace: Marketplace): MarketplaceFetcher;
 }
 
+export interface AffiliateTrackingParams {
+  blockId?: string;
+  sessionId?: string;
+  origin?: string;
+}
+
 export interface AffiliateLinkBuilder {
   build(marketplace: Marketplace, externalId: string): string;
   buildBatchCheckout(marketplace: Marketplace, externalIds: string[]): string;
+  buildWithTracking(
+    marketplace: Marketplace,
+    externalId: string,
+    tracking: AffiliateTrackingParams,
+    affiliateTag?: string,
+  ): string;
 }
 
 export interface EmailSender {

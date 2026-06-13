@@ -17,7 +17,7 @@ export const productListItemSchema = z.object({
   rating: z.number().optional(),
   reviewCount: z.number().optional(),
   imageUrl: z.string().optional(),
-  affiliateUrl: z.string(),
+  goUrl: z.string(),
 });
 
 export const productsPageSchema = z.object({
@@ -48,7 +48,7 @@ const wishlistProductSchema = z.object({
     currency: z.string(),
     isStale: z.boolean(),
   }),
-  affiliateUrl: z.string(),
+  goUrl: z.string(),
 });
 
 export const wishlistItemSchema = z.object({
@@ -64,7 +64,23 @@ export const wishlistResponseSchema = z.object({
   items: z.array(wishlistItemSchema),
 });
 
+export const productDetailSchema = productListItemSchema.extend({
+  titleRaw: z.string(),
+  externalId: z.string(),
+  availability: z.string(),
+  shortDescription: z.string().optional(),
+  longDescriptionHtml: z.string().optional(),
+  images: z.array(z.string()),
+  specs: z.record(z.string()),
+  pros: z.array(z.string()).optional(),
+  cons: z.array(z.string()).optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+});
+
 export type ProductListItemDto = z.infer<typeof productListItemSchema>;
+export type ProductDetailDto = z.infer<typeof productDetailSchema>;
 export type ProductsPageDto = z.infer<typeof productsPageSchema>;
 export type CategoryDto = z.infer<typeof categorySchema>;
 export type WishlistItemDto = z.infer<typeof wishlistItemSchema>;

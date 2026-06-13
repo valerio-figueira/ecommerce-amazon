@@ -155,7 +155,7 @@ export const productDeliveryItemSchema = z.object({
   slug: z.string(),
   title: z.string(),
   marketplace: z.string(),
-  affiliateUrl: z.string().url(),
+  goUrl: z.string(),
   imageUrl: z.string().url().optional(),
   price: z.object({
     amount: z.number().nullable(),

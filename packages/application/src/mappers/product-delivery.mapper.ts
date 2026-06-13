@@ -7,7 +7,7 @@ export function toProductDeliveryItem(product: Product): ProductDeliveryItem {
     slug: product.slug,
     title: product.titleClean,
     marketplace: product.marketplace,
-    affiliateUrl: product.affiliateLink.url,
+    goUrl: `/go/${product.slug}`,
     ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
     price: {
       amount: product.shouldShowPrice ? product.price.amount : null,

@@ -1,6 +1,6 @@
 'use client';
 
-import { recordClick } from '@/lib/api/events';
+import { buildGoUrl } from '@/lib/go-url';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { Heart } from 'lucide-react';
@@ -22,8 +22,7 @@ export function ProductCard({ product, className }: ProductCardProps): React.JSX
   const wishlistItem = items.find((item) => item.productId === product.id);
 
   const handleCta = (): void => {
-    void recordClick(product.id, 'listagem', sessionId);
-    window.open(product.affiliateUrl, '_blank', 'noopener,noreferrer');
+    window.open(buildGoUrl(product.slug, { sessionId }), '_blank', 'noopener,noreferrer');
   };
 
   const toggleWishlist = (): void => {

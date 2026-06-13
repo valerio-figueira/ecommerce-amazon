@@ -131,9 +131,18 @@ type ProductListItemDto = {
   rating?: number;
   reviewCount?: number;
   imageUrl?: string;       // primeira imagem
-  affiliateUrl: string;
+  goUrl: string;           // /go/{slug} — mascaramento afiliado
 };
 ```
+
+### `GET /go/:slug`
+
+Redirect **307** para URL de afiliado com tracking. Query opcional: `blockId`, `sessionId`.
+
+- Produto inexistente ou conta `pending_manual_validation` → **307** `/`
+- Dispara telemetria `redirect_go` (assíncrono, não bloqueia redirect)
+
+Ver [go-redirect-seo.md](./go-redirect-seo.md).
 
 ### `GET /products/:slug`
 
@@ -142,6 +151,8 @@ type ProductListItemDto = {
 ```typescript
 {
   titleRaw: string;
+  externalId: string;
+  availability: string;
   shortDescription?: string;
   longDescriptionHtml?: string;
   images: string[];
@@ -150,6 +161,7 @@ type ProductListItemDto = {
   cons?: string[];
   metaTitle?: string;
   metaDescription?: string;
+  canonicalUrl?: string;
 }
 ```
 
@@ -220,7 +232,7 @@ Header obrigatório para identificar sessão: `x-session-id`. Se ausente, API ge
       title: string;
       imageUrl?: string;
       price: { amount: number | null; currency: string; isStale: boolean };
-      affiliateUrl: string;
+      goUrl: string;
     };
   }>;
 }
@@ -300,14 +312,15 @@ Comparador persistido por token de compartilhamento.
 ```typescript
 {
   productId: string;
-  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons';
+  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'redirect_go';
   sessionId?: string;
+  blockId?: string;
 }
 ```
 
 **Response:** 204
 
-Persistido em `click_events`. Usado na Home com origem `listagem`.
+Persistido em `click_events`. Redirect `/go` usa origem `redirect_go` automaticamente.
 
 ---
 

@@ -9,7 +9,7 @@ export type ProductListItemDto = {
   rating?: number | undefined;
   reviewCount?: number | undefined;
   imageUrl?: string | undefined;
-  affiliateUrl: string;
+  goUrl: string;
 };
 
 export type ProductPriceDto = {
@@ -22,6 +22,8 @@ export type ProductPriceDto = {
 
 export type ProductDetailDto = ProductListItemDto & {
   titleRaw: string;
+  externalId: string;
+  availability: string;
   shortDescription?: string | undefined;
   longDescriptionHtml?: string | undefined;
   images: string[];
@@ -55,7 +57,7 @@ export function toProductListItemDto(product: Product): ProductListItemDto {
     ...(product.rating !== undefined ? { rating: product.rating } : {}),
     ...(product.reviewCount !== undefined ? { reviewCount: product.reviewCount } : {}),
     ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
-    affiliateUrl: product.affiliateLink.url,
+    goUrl: `/go/${product.slug}`,
   };
 }
 
@@ -63,6 +65,8 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
   return {
     ...toProductListItemDto(product),
     titleRaw: product.titleRaw,
+    externalId: product.externalId,
+    availability: product.availability,
     ...(product.shortDescription !== undefined
       ? { shortDescription: product.shortDescription }
       : {}),

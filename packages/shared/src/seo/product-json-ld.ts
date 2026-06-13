@@ -1,0 +1,61 @@
+export type ProductJsonLdInput = {
+  slug: string;
+  titleClean: string;
+  titleRaw: string;
+  externalId: string;
+  id: string;
+  marketplace: string;
+  images: string[];
+  metaDescription?: string | undefined;
+  availability: string;
+  shouldShowPrice: boolean;
+  price?: {
+    amount: number;
+    currency: string;
+  } | undefined;
+  siteBaseUrl: string;
+};
+
+function marketplaceBrandName(marketplace: string): string {
+  return marketplace === 'amazon_br' ? 'Amazon' : 'Shopee';
+}
+
+function schemaAvailability(availability: string): string {
+  return availability === 'in_stock'
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock';
+}
+
+export function buildProductJsonLd(product: ProductJsonLdInput): Record<string, unknown> {
+  const description = product.metaDescription ?? product.titleRaw;
+
+  const base: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.titleClean,
+    description,
+    sku: product.externalId,
+    mpn: product.id,
+    brand: {
+      '@type': 'Brand',
+      name: marketplaceBrandName(product.marketplace),
+    },
+  };
+
+  if (product.images[0] !== undefined) {
+    base['image'] = product.images[0];
+  }
+
+  if (product.shouldShowPrice && product.price !== undefined) {
+    base['offers'] = {
+      '@type': 'Offer',
+      url: `${product.siteBaseUrl}/go/${product.slug}`,
+      priceCurrency: product.price.currency,
+      price: product.price.amount,
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: schemaAvailability(product.availability),
+    };
+  }
+
+  return base;
+}
