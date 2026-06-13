@@ -8,14 +8,27 @@ type PriceDisplayProps = {
   price: ProductListItemDto['price'];
   strikethrough?: number | undefined;
   className?: string;
+  compact?: boolean;
 };
 
-export function PriceDisplay({ price, strikethrough, className }: PriceDisplayProps): React.JSX.Element {
+export function PriceDisplay({
+  price,
+  strikethrough,
+  className,
+  compact = false,
+}: PriceDisplayProps): React.JSX.Element {
+  const minHeight = compact ? 'min-h-[2rem]' : 'min-h-[48px]';
+
   if (price.isStale || price.amount === null) {
     return (
-      <div className={cn('flex min-h-[48px] flex-col justify-center', className)}>
-        <span className="inline-flex items-center justify-center gap-1.5 rounded-md bg-amber-50 px-2 py-1.5 text-xs font-medium text-amber-700">
-          <RefreshCw className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <div className={cn('flex flex-col justify-center', minHeight, className)}>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 rounded-md bg-amber-50 font-medium text-amber-700',
+            compact ? 'px-1.5 py-1 text-[10px]' : 'gap-1.5 px-2 py-1.5 text-xs',
+          )}
+        >
+          <RefreshCw className={cn('shrink-0', compact ? 'h-3 w-3' : 'h-3.5 w-3.5')} aria-hidden />
           Consultar preço atualizado
         </span>
       </div>
@@ -23,22 +36,22 @@ export function PriceDisplay({ price, strikethrough, className }: PriceDisplayPr
   }
 
   return (
-    <div className={cn('flex min-h-[48px] flex-col justify-center gap-0.5', className)}>
-      <div className="flex items-baseline gap-2">
-        <span className="text-lg font-bold">
+    <div className={cn('flex flex-col justify-center', minHeight, compact ? 'gap-0' : 'gap-0.5', className)}>
+      <div className="flex items-baseline gap-1.5">
+        <span className={cn('font-bold', compact ? 'text-sm' : 'text-lg')}>
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: price.currency }).format(
             price.amount,
           )}
         </span>
         {strikethrough !== undefined && (
-          <span className="text-sm text-neutral-400 line-through">
+          <span className={cn('text-neutral-400 line-through', compact ? 'text-[10px]' : 'text-sm')}>
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: price.currency }).format(
               strikethrough,
             )}
           </span>
         )}
       </div>
-      <p className="text-[10px] font-medium text-emerald-600">
+      <p className={cn('font-medium text-emerald-600', compact ? 'text-[9px] leading-3' : 'text-[10px]')}>
         {formatHoursSinceUpdated(price.updatedAt)}
       </p>
     </div>

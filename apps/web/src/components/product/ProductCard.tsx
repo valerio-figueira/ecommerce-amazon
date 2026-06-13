@@ -44,12 +44,15 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white p-3 shadow-sm transition-shadow hover:shadow-md',
+        'group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white p-2 shadow-sm transition-shadow hover:shadow-md',
         className,
       )}
     >
-      <div className="relative">
-        <Link href={detailHref} className="relative block aspect-square overflow-hidden rounded-2xl bg-[var(--muted)]">
+      <div className="relative shrink-0">
+        <Link
+          href={detailHref}
+          className="relative block aspect-square overflow-hidden rounded-xl bg-[var(--muted)]"
+        >
           {product.imageUrl && (
             <Image
               src={product.imageUrl}
@@ -60,30 +63,42 @@ export function ProductCard({
             />
           )}
           <ProductEditorialBadges product={product} />
+          <MarketplaceBadge
+            marketplace={product.marketplace}
+            className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-white/95 px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm"
+          />
         </Link>
         <button
           type="button"
           aria-label={saved ? 'Remover da lista' : 'Salvar na lista'}
-          className="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-2 shadow-sm"
+          className="absolute right-1.5 top-1.5 z-20 rounded-full bg-white/90 p-1.5 shadow-sm"
           onClick={toggleWishlist}
         >
-          <Heart className={cn('h-4 w-4', saved && 'fill-orange-500 text-orange-500')} />
+          <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
         </button>
       </div>
-      <div className="relative mt-3 flex flex-1 flex-col gap-1.5">
-        <MarketplaceBadge marketplace={product.marketplace} className="w-fit" />
-        <Link href={detailHref} className="line-clamp-2 min-h-[40px] text-sm font-semibold leading-snug hover:underline">
+      <div className="relative mt-2 flex min-h-0 flex-1 flex-col gap-0.5">
+        <Link
+          href={detailHref}
+          className="line-clamp-2 h-10 shrink-0 text-sm font-semibold leading-snug hover:underline"
+        >
           {product.title}
         </Link>
         {variant === 'default' && (
-          <ProductRating rating={product.rating} reviewCount={product.reviewCount} />
+          <ProductRating
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            className="shrink-0"
+          />
         )}
-        <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
-        <ProductCardActions
-          product={product}
-          sessionId={sessionId}
-          blockId={blockId}
-        />
+        <div className="mt-auto flex flex-col gap-1">
+          <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
+          <ProductCardActions
+            product={product}
+            sessionId={sessionId}
+            blockId={blockId}
+          />
+        </div>
       </div>
     </article>
   );

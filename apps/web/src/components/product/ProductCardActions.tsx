@@ -12,6 +12,7 @@ type ProductCardActionsProps = {
   sessionId?: string | undefined;
   blockId?: string | undefined;
   className?: string;
+  compact?: boolean;
 };
 
 export function ProductCardActions({
@@ -19,20 +20,25 @@ export function ProductCardActions({
   sessionId,
   blockId,
   className,
+  compact = false,
 }: ProductCardActionsProps): React.JSX.Element {
   const isStale = product.price.isStale || product.price.amount === null;
   const marketplace = marketplaceLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
+  const stackGap = compact ? 'space-y-1' : 'space-y-2';
+  const buttonClass = compact ? 'px-3 py-1.5 text-[11px]' : 'px-4 py-2.5 text-xs';
+  const primaryButtonClass = compact ? 'px-3 py-1.5 text-[11px]' : 'px-4 py-2.5 text-xs';
 
   if (isStale) {
     return (
-      <div className={cn('mt-auto space-y-2', className)}>
+      <div className={cn(stackGap, className)}>
         <AffiliateGoLink
           productId={product.id}
           slug={product.slug}
           sessionId={sessionId}
           blockId={blockId}
           variant="primary"
+          className={primaryButtonClass}
         >
           Ver preço na {marketplace}
         </AffiliateGoLink>
@@ -47,10 +53,13 @@ export function ProductCardActions({
   }
 
   return (
-    <div className={cn('mt-auto space-y-2', className)}>
+    <div className={cn(stackGap, className)}>
       <Link
         href={detailHref}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[var(--primary)] px-4 py-2.5 text-center text-xs font-semibold text-white transition-colors hover:opacity-90"
+        className={cn(
+          'inline-flex w-full items-center justify-center rounded-full bg-[var(--primary)] text-center font-semibold text-white transition-colors hover:opacity-90',
+          primaryButtonClass,
+        )}
       >
         Ver análise e ofertas
       </Link>
@@ -60,6 +69,7 @@ export function ProductCardActions({
         sessionId={sessionId}
         blockId={blockId}
         variant="outline"
+        className={buttonClass}
       >
         Ver preço na {marketplace} ↗
       </AffiliateGoLink>

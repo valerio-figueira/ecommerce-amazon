@@ -6,15 +6,19 @@ type ProductRatingProps = {
   rating?: number | undefined;
   reviewCount?: number | undefined;
   className?: string;
+  compact?: boolean;
 };
 
 export function ProductRating({
   rating,
   reviewCount,
   className,
-}: ProductRatingProps): React.JSX.Element | null {
+  compact = false,
+}: ProductRatingProps): React.JSX.Element {
+  const rowHeight = compact ? 'min-h-4' : 'min-h-[1.125rem]';
+
   if (rating === undefined) {
-    return null;
+    return <div className={cn(rowHeight, className)} aria-hidden />;
   }
 
   const formattedRating = new Intl.NumberFormat('pt-BR', {
@@ -24,15 +28,28 @@ export function ProductRating({
 
   const formattedReviews =
     reviewCount !== undefined
-      ? new Intl.NumberFormat('pt-BR').format(reviewCount)
+      ? new Intl.NumberFormat('pt-BR', compact ? { notation: 'compact' } : undefined).format(
+          reviewCount,
+        )
       : undefined;
 
   return (
-    <div className={cn('flex items-center gap-1 text-xs text-neutral-500', className)}>
-      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden />
-      <span>
+    <div
+      className={cn(
+        'flex items-center gap-0.5 text-neutral-500',
+        rowHeight,
+        compact ? 'text-[10px]' : 'text-xs',
+        className,
+      )}
+    >
+      <Star
+        className={cn('fill-amber-400 text-amber-400', compact ? 'h-3 w-3' : 'h-3.5 w-3.5')}
+        aria-hidden
+      />
+      <span className="truncate">
         {formattedRating}
-        {formattedReviews !== undefined && ` · ${formattedReviews} avaliações`}
+        {formattedReviews !== undefined &&
+          (compact ? ` · ${formattedReviews}` : ` · ${formattedReviews} avaliações`)}
       </span>
     </div>
   );
