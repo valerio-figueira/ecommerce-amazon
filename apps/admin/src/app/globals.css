@@ -588,6 +588,10 @@ body.admin-login-page {
   opacity: 0.9;
 }
 
+.cms-block-card--plain::before {
+  display: none;
+}
+
 .cms-position-badge {
   display: flex;
   align-items: center;

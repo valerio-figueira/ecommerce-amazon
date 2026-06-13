@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
@@ -53,31 +54,47 @@ export function ProductForm(): React.JSX.Element {
   return (
     <Form {...form}>
       <form
+        id="product-create-form"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
-        className="space-y-8"
       >
-        <div className="space-y-1">
-          <h2 className="text-lg font-bold text-[var(--admin-navy-deep)]">
-            Cadastrar produto no catálogo
-          </h2>
-          <p className="text-sm text-[var(--admin-text-muted)]">
-            Insira os dados manualmente. O sistema preparará o rastreamento automaticamente.
-          </p>
-        </div>
+        <section className="cms-editor-section">
+          <div className="cms-float-panel cms-vitrine-panel">
+            <div className="cms-panel-head">
+              <h2 className="cms-panel-title">Cadastro manual</h2>
+              <p className="cms-panel-meta">
+                <strong>Cadastrar produto no catálogo</strong>
+                <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                  Insira os dados manualmente. O sistema detecta marketplace e código a partir do
+                  link de afiliado e prepara o rastreamento automaticamente.
+                </span>
+              </p>
+            </div>
 
-        <div className="space-y-8 rounded-xl border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] p-4 sm:p-6">
-          <ProductLinkSection />
-          <ProductEditorialSection />
-          <ProductPriceSection />
-        </div>
+            <div className="cms-panel-actions">
+              <p className="mr-auto text-xs text-[var(--admin-text-muted)]">
+                Campos obrigatórios: link, título e marketplace identificado.
+              </p>
+              <Button type="submit" variant="primary" size="sm" disabled={form.formState.isSubmitting}>
+                <Save className="h-4 w-4" />
+                {form.formState.isSubmitting ? 'Salvando…' : 'Salvar produto no catálogo'}
+              </Button>
+            </div>
+          </div>
 
-        <div className="flex justify-end border-t border-[var(--admin-gray)] pt-4">
-          <Button type="submit" variant="primary" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? 'Salvando...' : 'Salvar produto no catálogo'}
-          </Button>
-        </div>
+          <div className="cms-float-panel cms-blocks-panel">
+            <p className="cms-blocks-panel__meta">
+              Dados do produto · <strong>3 seções</strong>
+            </p>
+
+            <div className="space-y-8">
+              <ProductLinkSection />
+              <ProductEditorialSection />
+              <ProductPriceSection />
+            </div>
+          </div>
+        </section>
       </form>
     </Form>
   );

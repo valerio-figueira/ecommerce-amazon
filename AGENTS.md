@@ -22,6 +22,7 @@ Plataforma de afiliação: **Vitrine Inteligente + Hub de Conteúdo** (Amazon BR
 | `08-testing-typescript.mdc` | Todo TypeScript |
 | `09-code-standards.mdc` | ESLint, Prettier, English code, naming |
 | `10-documentation.mdc` | Sempre — documentar entregas em `docs/` |
+| `11-admin-floating-panels.mdc` | `apps/admin/**` — painéis flutuantes, listagens sem barra azul |
 
 ## Documentação implementada
 

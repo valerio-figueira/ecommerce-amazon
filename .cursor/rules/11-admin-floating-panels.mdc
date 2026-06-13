@@ -1,0 +1,68 @@
+---
+description: Padrão UI de painéis flutuantes no apps/admin — usar em novas telas de listagem e formulário
+globs: apps/admin/**/*
+alwaysApply: false
+---
+
+# Admin — painéis flutuantes (CMS shell)
+
+Referência visual: [`/paginas/[slug]`](../apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx) e [`/produtos`](../apps/admin/src/app/(dashboard)/produtos/page.tsx).
+
+## Quando usar
+
+Toda **nova tela** do admin (listagem, editor, wizard) deve usar painéis flutuantes em vez de um único `AdminPageCard` sólido com conteúdo empilhado.
+
+## Estrutura obrigatória
+
+```tsx
+<AdminPageCard>
+  <section className="cms-editor-section">
+    {/* Painel 1 — contexto + ações primárias */}
+    <div className="cms-float-panel cms-vitrine-panel">
+      <div className="cms-panel-head">
+        <h2 className="cms-panel-title">Rótulo da seção</h2>
+        <p className="cms-panel-meta">
+          <strong>Título principal</strong>
+          <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+            Texto de apoio.
+          </span>
+        </p>
+      </div>
+      <div className="cms-panel-actions">{/* contador, CTA, Salvar */}</div>
+    </div>
+
+    {/* Painel 2 — lista ou formulário */}
+    <div className="cms-float-panel cms-blocks-panel">
+      <p className="cms-blocks-panel__meta">
+        Subtítulo · <strong>N itens</strong>
+      </p>
+      {/* conteúdo */}
+    </div>
+  </section>
+</AdminPageCard>
+```
+
+`cms-editor-section` remove fundo/borda do card pai (ver `globals.css`).
+
+## Listagens
+
+- Itens dentro de `cms-block-list`
+- Card por item: `cms-block-card cms-block-card--plain` (**sem** barra azul lateral)
+- A barra azul (`::before`) fica **apenas** no editor de blocos CMS (`cms-block-card` sem `--plain`)
+
+## Formulários
+
+- Painel superior: título + botão **Salvar** em `cms-panel-actions`
+- Painel inferior: campos agrupados com `CmsFormSection` ou seções equivalentes
+- Não usar caixa única com `border` envolvendo todo o form
+
+## CSS (não duplicar)
+
+Classes em [`apps/admin/src/app/globals.css`](../apps/admin/src/app/globals.css): `cms-editor-section`, `cms-float-panel`, `cms-vitrine-panel`, `cms-blocks-panel`, `cms-panel-head`, `cms-panel-title`, `cms-panel-meta`, `cms-panel-actions`, `cms-blocks-panel__meta`, `cms-block-list`, `cms-block-card`, `cms-block-card--plain`.
+
+## Checklist nova tela admin
+
+- [ ] `AdminPageHeader` + breadcrumbs
+- [ ] `cms-editor-section` com ≥2 painéis flutuantes (contexto + conteúdo)
+- [ ] Listagens com `cms-block-card--plain`
+- [ ] Ações primárias no painel superior, não soltas no rodapé do form
