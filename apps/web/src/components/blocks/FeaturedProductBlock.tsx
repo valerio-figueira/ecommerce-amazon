@@ -35,7 +35,7 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
     );
   }
 
-  if (!product.visible) {
+  if (product.visible === false) {
     return null;
   }
 

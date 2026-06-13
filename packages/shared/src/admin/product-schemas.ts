@@ -37,8 +37,17 @@ export const createProductBodySchema = z
     shouldShowPrice: z.boolean(),
     visible: z.boolean(),
     availability: productAvailabilitySchema,
+    canonicalUrl: z.string().max(512).default(''),
   })
   .superRefine((data, ctx) => {
+    const trimmed = data.canonicalUrl.trim();
+    if (trimmed.length > 0 && !z.string().url().safeParse(trimmed).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'URL canônica inválida',
+        path: ['canonicalUrl'],
+      });
+    }
     if (data.shouldShowPrice && data.price <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -84,6 +93,7 @@ export const adminProductDetailSchema = z.object({
   shouldShowPrice: z.boolean(),
   visible: z.boolean(),
   availability: productAvailabilitySchema,
+  canonicalUrl: z.string().url().max(512).optional(),
   createdAt: z.string(),
 });
 

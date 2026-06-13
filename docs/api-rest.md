@@ -398,7 +398,7 @@ Implementação: [`admin-product-routes.ts`](../apps/api/src/adapters/http/route
 
 ### `POST /admin/products`
 
-**Body:** `createProductBodySchema` — link de afiliado, marketplace, externalId, título, imagens, nota editorial (0–10), prós/contras, preço, `shouldShowPrice`, `visible`, disponibilidade.
+**Body:** `createProductBodySchema` — link de afiliado, marketplace, externalId, título, imagens, nota editorial (0–10), prós/contras, preço, `shouldShowPrice`, `visible`, `canonicalUrl` (opcional), disponibilidade.
 
 **Response 201:** `{ id, slug }`
 

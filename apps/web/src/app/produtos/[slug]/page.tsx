@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { resolveProductCanonicalUrl } from '@ecommerce-amazon/shared/seo';
+
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
@@ -9,6 +11,7 @@ import { apiFetchParsed } from '@/lib/api/client';
 import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
 import { marketplaceLabel } from '@/lib/format';
 import { buildGoUrl } from '@/lib/go-url';
+import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -31,12 +34,15 @@ export async function generateMetadata({
     return { title: 'Produto não encontrado' };
   }
 
+  const siteBaseUrl = getSiteBaseUrl();
+  const canonical = resolveProductCanonicalUrl(product.slug, siteBaseUrl, product.canonicalUrl);
+
   return {
     title: product.metaTitle ?? product.title,
     description: product.metaDescription ?? product.shortDescription ?? product.titleRaw,
-    ...(product.canonicalUrl !== undefined
-      ? { alternates: { canonical: product.canonicalUrl } }
-      : {}),
+    alternates: {
+      canonical,
+    },
   };
 }
 
@@ -51,8 +57,7 @@ export default async function ProductPage({
     notFound();
   }
 
-  const siteBaseUrl =
-    process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3001';
+  const siteBaseUrl = getSiteBaseUrl();
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">

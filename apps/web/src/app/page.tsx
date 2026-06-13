@@ -2,6 +2,7 @@ import { pageLayoutDeliverySchema, type PageLayoutDeliveryDto } from '@ecommerce
 
 import { PageRenderer } from '@/components/cms/PageRenderer';
 import { fetchPageLayout } from '@/lib/api/client';
+import { getSiteBaseUrl } from '@/lib/site-url';
 
 async function getHomeLayout(): Promise<PageLayoutDeliveryDto | null> {
   try {
@@ -10,6 +11,21 @@ async function getHomeLayout(): Promise<PageLayoutDeliveryDto | null> {
   } catch {
     return null;
   }
+}
+
+export async function generateMetadata(): Promise<import('next').Metadata> {
+  const layout = await getHomeLayout();
+  const siteBaseUrl = getSiteBaseUrl();
+
+  return {
+    title: layout?.seoTitle ?? layout?.title ?? 'Vitrine — Curadoria inteligente',
+    description:
+      layout?.seoDescription ??
+      'Descubra ofertas selecionadas com histórico de preços e alertas.',
+    alternates: {
+      canonical: siteBaseUrl,
+    },
+  };
 }
 
 export default async function HomePage(): Promise<React.JSX.Element> {

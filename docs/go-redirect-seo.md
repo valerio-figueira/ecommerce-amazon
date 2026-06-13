@@ -40,8 +40,17 @@ Falha (produto inexistente, conta pending): **307** para `/`.
 
 Builder: [`buildProductJsonLd`](../packages/shared/src/seo/product-json-ld.ts)
 
-- `offers.url` sempre aponta para `{SITE_URL}/go/{slug}`
+- `url` aponta para a URL canônica da página (`resolveProductCanonicalUrl`)
+- `offers.url` sempre aponta para `{SITE_URL}/go/{slug}` (CTA afiliado mascarado)
 - `offers` omitido quando `shouldShowPrice === false`
+
+## Canonical (`<link rel="canonical">`)
+
+Helper: [`resolveProductCanonicalUrl`](../packages/shared/src/seo/product-canonical.ts)
+
+- Página produto: [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx) — tag **sempre** emitida via `metadata.alternates.canonical`
+- Home: [`apps/web/src/app/page.tsx`](../apps/web/src/app/page.tsx) — canonical = `NEXT_PUBLIC_SITE_URL`
+- Override manual via `products.canonical_url` (admin) ou fallback automático `/produtos/{slug}`
 
 ## Interlinkagem
 

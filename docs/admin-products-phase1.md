@@ -10,11 +10,25 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
-- Switch **Exibir na home e vitrine?** (`visible`) — oculta produto de grids/listagens públicas e blocos dinâmicos
+- Switch **Exibir na home?** (`visible`) — oculta produto dos blocos da home
+- Campo **URL canônica** no formulário admin (`canonicalUrl`)
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
 - Migration `0007_product_visible.sql` — coluna `visible` (default `true`)
+
+## URL canônica (SEO)
+
+Utilitário: [`packages/shared/src/seo/product-canonical.ts`](../packages/shared/src/seo/product-canonical.ts)
+
+| Camada | Comportamento |
+|--------|---------------|
+| Banco | `canonical_url` varchar(512), nullable — sobrescrita manual no admin |
+| Admin | Campo opcional; vazio → vitrine gera `{NEXT_PUBLIC_SITE_URL}/produtos/{slug}` |
+| Web `/produtos/[slug]` | `generateMetadata().alternates.canonical` **sempre** preenchido |
+| JSON-LD | Campo `url` do Product aponta para a URL canônica da página |
+
+Evita punição por conteúdo duplicado quando o produto é acessado via coleções, UTMs ou rotas alternativas.
 
 ## Visibilidade na home (`visible`)
 
@@ -30,7 +44,7 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 
 - Upload de imagem (somente URLs HTTPS)
 - Enfileirar worker no create/update; `SyncCatalogBatch` ainda só atualiza produtos existentes
-- Campos SEO no formulário
+- Campos SEO (`metaTitle`, `metaDescription`) no form
 - Delete / soft-delete
 
 ## Edição (fase 2)

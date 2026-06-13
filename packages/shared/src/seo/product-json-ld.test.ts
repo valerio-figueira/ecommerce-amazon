@@ -40,4 +40,23 @@ describe('buildProductJsonLd', () => {
 
     expect(jsonLd['offers']).toBeUndefined();
   });
+
+  it('sets product page url from canonical override', () => {
+    const jsonLd = buildProductJsonLd({
+      ...baseProduct,
+      shouldShowPrice: false,
+      canonicalUrl: 'https://vitrine.local/produtos/cadeira-custom',
+    });
+
+    expect(jsonLd['url']).toBe('https://vitrine.local/produtos/cadeira-custom');
+  });
+
+  it('defaults product page url from slug when canonical is absent', () => {
+    const jsonLd = buildProductJsonLd({
+      ...baseProduct,
+      shouldShowPrice: false,
+    });
+
+    expect(jsonLd['url']).toBe('https://vitrine.local/produtos/cadeira-ergonomica-home-office');
+  });
 });

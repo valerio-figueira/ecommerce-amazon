@@ -22,5 +22,6 @@ export function adminProductDetailToFormValues(product: AdminProductDetail): Pro
     shouldShowPrice: product.shouldShowPrice,
     visible,
     availability: product.availability,
+    canonicalUrl: product.canonicalUrl ?? '',
   };
 }

@@ -1,3 +1,5 @@
+import { resolveProductCanonicalUrl } from './product-canonical.js';
+
 export type ProductJsonLdInput = {
   slug: string;
   titleClean: string;
@@ -14,6 +16,7 @@ export type ProductJsonLdInput = {
     currency: string;
   } | undefined;
   siteBaseUrl: string;
+  canonicalUrl?: string | undefined;
 };
 
 function marketplaceBrandName(marketplace: string): string {
@@ -32,6 +35,12 @@ function schemaAvailability(availability: string): string {
 export function buildProductJsonLd(product: ProductJsonLdInput): Record<string, unknown> {
   const description = product.metaDescription ?? product.titleRaw;
 
+  const pageUrl = resolveProductCanonicalUrl(
+    product.slug,
+    product.siteBaseUrl,
+    product.canonicalUrl,
+  );
+
   const base: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -39,6 +48,7 @@ export function buildProductJsonLd(product: ProductJsonLdInput): Record<string, 
     description,
     sku: product.externalId,
     mpn: product.id,
+    url: pageUrl,
     brand: {
       '@type': 'Brand',
       name: marketplaceBrandName(product.marketplace),

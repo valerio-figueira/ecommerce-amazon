@@ -74,6 +74,7 @@ export class CreateProduct {
       ...(filteredPros.length > 0 ? { pros: filteredPros } : {}),
       ...(filteredCons.length > 0 ? { cons: filteredCons } : {}),
       visible: input.visible,
+      ...(input.canonicalUrl.trim().length > 0 ? { canonicalUrl: input.canonicalUrl.trim() } : {}),
       createdAt: now,
     });
 

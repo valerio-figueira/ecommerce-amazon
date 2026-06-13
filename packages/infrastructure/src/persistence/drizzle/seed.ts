@@ -121,7 +121,7 @@ async function insertProductSeed(
         tags: ['ergonomica', 'home-office'],
         metaTitle: 'Cadeira Ergonômica Home Office | Vitrine',
         metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
-        canonicalUrl: 'https://vitrine.local/p/cadeira-ergonomica-home-office',
+        canonicalUrl: 'https://vitrine.local/produtos/cadeira-ergonomica-home-office',
         pros: ['Apoio lombar', 'Braços ajustáveis'],
         cons: ['Montagem demorada'],
         createdAt: now,

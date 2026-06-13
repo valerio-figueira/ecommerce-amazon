@@ -19,7 +19,7 @@ export const productListItemSchema = z.object({
   imageUrl: z.string().optional(),
   goUrl: z.string(),
   editorialScore: z.number(),
-  visible: z.boolean().default(true),
+  visible: z.boolean().optional(),
 });
 
 export const productsPageSchema = z.object({
