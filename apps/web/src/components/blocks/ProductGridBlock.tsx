@@ -14,10 +14,10 @@ import { productsPageSchema } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
 
 function findLinkedPillsBlock(
-  blocksById: Map<string, BlockComponentProps['block']>,
+  blocksById: Record<string, BlockComponentProps['block']>,
   gridBlockId: string,
 ): BlockComponentProps['block'] | undefined {
-  for (const candidate of blocksById.values()) {
+  for (const candidate of Object.values(blocksById)) {
     if (candidate.type !== BlockType.CATEGORY_PILLS) continue;
     const pillsProps = categoryPillsPropsSchema.parse(candidate.props);
     if (pillsProps.linkedBlockId === gridBlockId) return candidate;

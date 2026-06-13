@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 
 export function HeroSplitBlock({ block, blocksById }: BlockComponentProps): React.JSX.Element | null {
   const props = heroSplitPropsSchema.parse(block.props);
-  const left = blocksById.get(props.leftBlockId);
-  const right = blocksById.get(props.rightBlockId);
+  const left = blocksById[props.leftBlockId];
+  const right = blocksById[props.rightBlockId];
 
   if (!left || !right) return null;
 

@@ -1,16 +1,13 @@
 'use client';
 
 import { BlockType } from '@ecommerce-amazon/domain';
-import { Plus } from 'lucide-react';
+import { CheckCircle2, Layers, Plus, Save, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 import { BlockPropsDialog } from '@/components/cms/BlockPropsDialog';
 import { BlockListItem } from '@/components/cms/BlockListItem';
-import {
-  ALL_BLOCK_TYPES,
-  BLOCK_TYPE_LABELS,
-  getDefaultBlockProps,
-} from '@/components/cms/block-type-labels';
+import { ALL_BLOCK_TYPES, getDefaultBlockProps } from '@/components/cms/block-type-labels';
+import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
 import {
   normalizePositions,
   toAdminBlocks,
@@ -40,6 +37,7 @@ import {
   reorderPageBlocksClient,
 } from '@/lib/api/cms-pages-client';
 import type { PageBlockDto } from '@ecommerce-amazon/shared/cms';
+import { cn } from '@/lib/utils';
 
 type CMSBlockOrderManagerProps = {
   slug: string;
@@ -120,11 +118,13 @@ export function CMSBlockOrderManager({
     } else {
       setBlocks((current) =>
         normalizePositions(
-          current.map((block) => (block.id === saved.id ? { ...saved, position: block.position } : block)),
+          current.map((block) =>
+            block.id === saved.id ? { ...saved, position: block.position } : block,
+          ),
         ),
       );
     }
-    setStatusMessage(dialogMode === 'create' ? 'Bloco adicionado.' : 'Propriedades salvas.');
+    setStatusMessage(dialogMode === 'create' ? 'Bloco adicionado com sucesso.' : 'Propriedades atualizadas.');
     setErrorMessage(null);
   }
 
@@ -140,7 +140,7 @@ export function CMSBlockOrderManager({
       const remaining = await deletePageBlockClient(slug, deleteTarget.id);
       setBlocks(toAdminBlocks(remaining));
       setOrderDirty(false);
-      setStatusMessage('Bloco removido.');
+      setStatusMessage('Bloco removido da página.');
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Erro ao excluir bloco');
@@ -159,7 +159,7 @@ export function CMSBlockOrderManager({
       );
       setBlocks(toAdminBlocks(updated));
       setOrderDirty(false);
-      setStatusMessage('Ordem salva.');
+      setStatusMessage('Ordem publicada na vitrine.');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Erro ao salvar ordem');
     } finally {
@@ -168,15 +168,30 @@ export function CMSBlockOrderManager({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-4">
-        <div>
-          <p className="text-sm font-semibold text-[var(--admin-navy)]">{pageTitle}</p>
-          <p className="text-xs text-[var(--admin-text-muted)]">
-            {blocks.length} bloco{blocks.length === 1 ? '' : 's'} na página
+    <section className="cms-editor-section">
+      <div className="cms-float-panel cms-vitrine-panel">
+        <div className="cms-panel-head">
+          <h2 className="cms-panel-title">Vitrine</h2>
+          <p className="cms-panel-meta">
+            <strong>{pageTitle}</strong>
+            <span className="cms-panel-slug">/{slug}</span>
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        {(statusMessage || errorMessage) && (
+          <div
+            className={cn(
+              'cms-status-banner',
+              errorMessage ? 'is-error' : 'is-success',
+            )}
+            role="status"
+          >
+            {!errorMessage && <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />}
+            {errorMessage ?? statusMessage}
+          </div>
+        )}
+
+        <div className="cms-panel-actions">
           <Button type="button" variant="outline" size="sm" onClick={() => openCreateDialog(blocks.length)}>
             <Plus className="h-4 w-4" />
             Adicionar bloco
@@ -187,34 +202,26 @@ export function CMSBlockOrderManager({
             size="sm"
             disabled={!orderDirty || isSavingOrder || blocks.length === 0}
             onClick={() => void handleSaveOrder()}
+            className={cn(orderDirty && 'ring-2 ring-[var(--admin-focus-ring)] ring-offset-1')}
           >
-            {isSavingOrder ? 'Salvando…' : 'Salvar ordem'}
+            <Save className="h-4 w-4" />
+            {isSavingOrder ? 'Publicando…' : 'Salvar ordem'}
           </Button>
         </div>
       </div>
 
-      {(statusMessage || errorMessage) && (
-        <div
-          className={`rounded-md px-3 py-2 text-sm ${
-            errorMessage
-              ? 'border border-red-200 bg-red-50 text-red-700'
-              : 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-          }`}
-        >
-          {errorMessage ?? statusMessage}
-        </div>
-      )}
+      <div className="cms-float-panel cms-blocks-panel">
+        <p className="cms-blocks-panel__meta">
+          Blocos da página · <strong>{blocks.length}</strong>{' '}
+          {blocks.length === 1 ? 'item' : 'itens'}
+        </p>
 
-      <div className="space-y-2">
+        <div className="cms-block-list">
         {blocks.map((block, index) => (
-          <div key={block.id} className="space-y-2">
-            <button
-              type="button"
-              onClick={() => openCreateDialog(index)}
-              className="flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-[var(--admin-gray)] py-1.5 text-xs font-medium text-[var(--admin-text-muted)] transition-colors hover:border-[var(--admin-primary)] hover:text-[var(--admin-primary)]"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Inserir bloco aqui
+          <div key={block.id} className="space-y-1.5">
+            <button type="button" onClick={() => openCreateDialog(index)} className="cms-insert-slot">
+              <Plus className="h-3 w-3" aria-hidden />
+              Inserir aqui
             </button>
             <BlockListItem
               block={block}
@@ -234,55 +241,71 @@ export function CMSBlockOrderManager({
         ))}
 
         {blocks.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[var(--admin-gray)] bg-white p-8 text-center">
-            <p className="text-sm text-[var(--admin-text-muted)]">Nenhum bloco nesta página.</p>
+          <div className="cms-empty-state">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--admin-accent-muted)] text-[var(--admin-primary)]">
+              <Layers className="h-5 w-5" aria-hidden />
+            </div>
+            <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
+              Página sem blocos
+            </p>
+            <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--admin-text-muted)]">
+              Monte o layout editorial adicionando blocos dinâmicos, grades e conteúdo curado.
+            </p>
             <Button
               type="button"
-              variant="outline"
+              variant="primary"
               size="sm"
-              className="mt-3"
+              className="mt-4"
               onClick={() => openCreateDialog(0)}
             >
+              <Sparkles className="h-4 w-4" />
               Adicionar primeiro bloco
             </Button>
           </div>
         )}
 
         {blocks.length > 0 && (
-          <button
-            type="button"
-            onClick={() => openCreateDialog(blocks.length)}
-            className="flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-[var(--admin-gray)] py-2 text-xs font-medium text-[var(--admin-text-muted)] transition-colors hover:border-[var(--admin-primary)] hover:text-[var(--admin-primary)]"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Adicionar bloco no final
+          <button type="button" onClick={() => openCreateDialog(blocks.length)} className="cms-insert-slot mt-1">
+            <Plus className="h-3.5 w-3.5" aria-hidden />
+            Adicionar no final
           </button>
         )}
+        </div>
       </div>
 
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-        <DialogContent>
+        <DialogContent className="cms-dialog-accent max-w-xl">
           <DialogHeader>
             <DialogTitle>Escolher tipo de bloco</DialogTitle>
             <DialogDescription>
-              Posição de inserção: {insertAt ?? blocks.length}
+              Posição de inserção: <strong>{insertAt ?? blocks.length}</strong>
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {ALL_BLOCK_TYPES.map((type) => (
-              <Button
-                key={type}
-                type="button"
-                variant="outline"
-                className="h-auto justify-start px-3 py-3 text-left"
-                onClick={() => startCreateBlock(type)}
-              >
-                <span className="block font-semibold">{BLOCK_TYPE_LABELS[type]}</span>
-                <span className="block font-mono text-[10px] text-[var(--admin-text-muted)]">
-                  {type}
-                </span>
-              </Button>
-            ))}
+          <div className="cms-type-picker-grid">
+            {ALL_BLOCK_TYPES.map((type) => {
+              const meta = getBlockTypeMeta(type);
+              const Icon = meta.icon;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  className="cms-type-picker-card"
+                  onClick={() => startCreateBlock(type)}
+                >
+                  <span className="cms-type-picker-icon">
+                    <Icon className="h-4 w-4" aria-hidden />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-semibold text-[var(--admin-navy-deep)]">
+                      {meta.label}
+                    </span>
+                    <span className="mt-0.5 block font-mono text-[10px] text-[var(--admin-text-muted)]">
+                      {type}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </DialogContent>
       </Dialog>
@@ -298,22 +321,22 @@ export function CMSBlockOrderManager({
       />
 
       <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="cms-dialog-accent">
           <AlertDialogHeader>
             <AlertDialogTitle>Remover bloco?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover este bloco do site? A ordem será reindexada
+              O bloco será removido da vitrine pública. A ordem dos demais será reindexada
               automaticamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleConfirmDelete()}>
-              Excluir
+              Excluir bloco
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </section>
   );
 }

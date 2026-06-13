@@ -1,17 +1,15 @@
-'use client';
-
 import { BlockType } from '@ecommerce-amazon/domain';
-import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
+import type { PageBlockDeliveryDto, PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 import { categoryPillsPropsSchema, heroSplitPropsSchema } from '@ecommerce-amazon/shared/cms';
 
 import { CategoryFilterProvider } from '@/components/cms/CategoryFilterContext';
 import { BlockRegistry } from '@/components/cms/BlockRegistry';
 
 type PageRendererProps = {
-  layout: PageLayoutDto;
+  layout: PageLayoutDeliveryDto;
 };
 
-function collectHiddenBlockIds(blocks: PageBlockDto[]): Set<string> {
+function collectHiddenBlockIds(blocks: PageBlockDeliveryDto[]): Set<string> {
   const hidden = new Set<string>();
   for (const block of blocks) {
     if (block.type === BlockType.HERO_SPLIT) {
@@ -29,8 +27,12 @@ function collectHiddenBlockIds(blocks: PageBlockDto[]): Set<string> {
   return hidden;
 }
 
+function buildBlocksById(blocks: PageBlockDeliveryDto[]): Record<string, PageBlockDeliveryDto> {
+  return Object.fromEntries(blocks.map((block) => [block.id, block]));
+}
+
 export function PageRenderer({ layout }: PageRendererProps): React.JSX.Element {
-  const blocksById = new Map(layout.blocks.map((block) => [block.id, block]));
+  const blocksById = buildBlocksById(layout.blocks);
   const hiddenIds = collectHiddenBlockIds(layout.blocks);
   const topLevel = [...layout.blocks]
     .filter((block) => !hiddenIds.has(block.id))

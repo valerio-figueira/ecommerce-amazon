@@ -23,7 +23,8 @@ Extensão do CMS com blocos orientados a queries de catálogo, use cases Admin (
 ## Fora de escopo
 
 - Rotas REST `POST/PATCH /admin/pages/*`
-- Componente web `DynamicProductGridBlock` (registrado como `undefined` no BlockRegistry)
+- Componente web `DynamicProductGridBlock` + registro no `BlockRegistry`
+- Home (`apps/web`) busca layout com `cache: 'no-store'` para refletir edições do admin imediatamente
 - `apps/admin` UI e autenticação
 
 ## Fluxo BFF (GET /pages/:slug)

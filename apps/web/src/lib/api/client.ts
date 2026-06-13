@@ -6,6 +6,19 @@ export function getApiUrl(): string {
   return API_URL;
 }
 
+export async function fetchPageLayout(slug: string): Promise<unknown> {
+  const response = await fetch(`${API_URL}/pages/${encodeURIComponent(slug)}`, {
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error ${response.status}: /pages/${slug}`);
+  }
+
+  return response.json();
+}
+
 export async function apiFetch(
   path: string,
   init?: RequestInit & { sessionId?: string },

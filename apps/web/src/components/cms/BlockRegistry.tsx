@@ -1,12 +1,13 @@
 import type { ComponentType } from 'react';
 
 import { BlockType } from '@ecommerce-amazon/domain';
-import type { PageBlockDto } from '@ecommerce-amazon/shared/cms';
+import type { PageBlockDeliveryDto } from '@ecommerce-amazon/shared/cms';
 
 import { BannerBlock } from '@/components/blocks/BannerBlock';
 import { CategoryPillsBlock } from '@/components/blocks/CategoryPillsBlock';
 import { CouponStripBlock } from '@/components/blocks/CouponStripBlock';
 import { CuratedCollectionBlock } from '@/components/blocks/CuratedCollectionBlock';
+import { DynamicProductGridBlock } from '@/components/blocks/DynamicProductGridBlock';
 import { FeaturedProductBlock } from '@/components/blocks/FeaturedProductBlock';
 import { HeroCarouselBlock } from '@/components/blocks/HeroCarouselBlock';
 import { HeroSplitBlock } from '@/components/blocks/HeroSplitBlock';
@@ -15,8 +16,8 @@ import { RichTextBlock } from '@/components/blocks/RichTextBlock';
 import { SpacerBlock } from '@/components/blocks/SpacerBlock';
 
 export type BlockComponentProps = {
-  block: PageBlockDto;
-  blocksById: Map<string, PageBlockDto>;
+  block: PageBlockDeliveryDto;
+  blocksById: Record<string, PageBlockDeliveryDto>;
 };
 
 export const BlockRegistry: Record<
@@ -33,5 +34,5 @@ export const BlockRegistry: Record<
   [BlockType.RICH_TEXT]: RichTextBlock,
   [BlockType.BANNER]: BannerBlock,
   [BlockType.SPACER]: SpacerBlock,
-  [BlockType.DYNAMIC_PRODUCT_GRID]: undefined,
+  [BlockType.DYNAMIC_PRODUCT_GRID]: DynamicProductGridBlock,
 };

@@ -29,7 +29,7 @@ export default async function PageEditorPage({ params }: PageEditorProps): Promi
           { label: layout.title },
         ]}
       />
-      <AdminPageCard transparent>
+      <AdminPageCard>
         <CMSBlockOrderManager
           slug={slug}
           pageTitle={layout.title}

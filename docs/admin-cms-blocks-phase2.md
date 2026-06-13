@@ -100,6 +100,8 @@ npm run dev:admin  # :3002
 5. Reordenar com setas → **Salvar ordem**
 6. Excluir bloco e verificar sequência contígua após refresh
 
+Após salvar no admin, a home reflete na próxima visita (sem cache ISR de 60s). A API invalida Redis via `PageCacheInvalidator.invalidateBySlug`.
+
 Testes unitários:
 
 ```bash

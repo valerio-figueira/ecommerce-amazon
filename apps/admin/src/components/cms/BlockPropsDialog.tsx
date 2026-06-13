@@ -15,6 +15,7 @@ import {
   BLOCK_TYPE_LABELS,
   EDITABLE_BLOCK_TYPES,
 } from '@/components/cms/block-type-labels';
+import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
 import {
   BannerFormFields,
   DynamicProductGridFormFields,
@@ -110,6 +111,9 @@ export function BlockPropsDialog({
 
   if (!block) return null;
 
+  const meta = getBlockTypeMeta(block.type);
+  const TypeIcon = meta.icon;
+
   async function handleSubmit(values: BlockFormValues): Promise<void> {
     if (!block) return;
     setIsSaving(true);
@@ -156,13 +160,18 @@ export function BlockPropsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="cms-dialog-accent max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Configurar bloco: {BLOCK_TYPE_LABELS[block.type]}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2.5 text-[var(--admin-navy-deep)]">
+            <span className="cms-type-picker-icon">
+              <TypeIcon className="h-4 w-4" aria-hidden />
+            </span>
+            {BLOCK_TYPE_LABELS[block.type]}
+          </DialogTitle>
           <DialogDescription>
             {mode === 'create'
-              ? 'Defina as propriedades iniciais do novo bloco.'
-              : 'Altere as propriedades salvas no banco de dados.'}
+              ? 'Defina as propriedades iniciais do novo bloco antes de publicar na vitrine.'
+              : 'Altere as propriedades salvas. A ordem na página permanece até você salvar a ordem.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -181,9 +190,13 @@ export function BlockPropsDialog({
               {block.type === BlockType.BANNER && <BannerFormFields control={form.control} />}
               {block.type === BlockType.RICH_TEXT && <RichTextFormFields control={form.control} />}
 
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && (
+                <div className="cms-status-banner is-error" role="alert">
+                  {error}
+                </div>
+              )}
 
-              <DialogFooter>
+              <DialogFooter className="gap-2 sm:gap-0">
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancelar
                 </Button>
