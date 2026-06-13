@@ -52,6 +52,20 @@ services:
       - .:/app
     command: sh -c "npm ci && npm run db:setup"
 
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    profiles: ["web"]
+    environment:
+      NODE_ENV: development
+      WEB_PORT: ${WEB_PORT:-3001}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    ports:
+      - "${WEB_PORT:-3001}:${WEB_PORT:-3001}"
+    volumes:
+      - .:/app
+    command: sh -c "npm ci && npm run dev -w @ecommerce-amazon/web"
+
 volumes:
   postgres_data:
   redis_data:

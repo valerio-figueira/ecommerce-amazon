@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./cms": {
+      "types": "./dist/cms/block-schemas.d.ts",
+      "import": "./dist/cms/block-schemas.js"
     }
   },
   "scripts": {
@@ -16,6 +20,7 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
+    "@ecommerce-amazon/domain": "*",
     "zod": "^3.25.51"
   },
   "devDependencies": {

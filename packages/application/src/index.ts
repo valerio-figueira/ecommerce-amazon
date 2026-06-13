@@ -16,3 +16,6 @@ export { CreateComparison } from './use-cases/comparison/CreateComparison.js';
 export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToken.js';
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';
 export { RecordClickEvent } from './use-cases/events/RecordClickEvent.js';
+export { GetPublishedPageLayout } from './use-cases/page/GetPublishedPageLayout.js';
+export { ListProductCategories } from './use-cases/product/ListProductCategories.js';
+export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';

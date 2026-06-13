@@ -127,3 +127,42 @@ export function isSyncJobStatus(value: string): value is SyncJobStatus {
 export function parseSyncJobStatus(value: string): SyncJobStatus {
   return isSyncJobStatus(value) ? value : invalidEnum('sync job status', value);
 }
+
+import { BlockType, BlockVisibility, PageStatus, ProductSortField } from './cms.js';
+
+const BLOCK_TYPE_VALUES: ReadonlySet<string> = new Set(Object.values(BlockType));
+const PAGE_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(PageStatus));
+const BLOCK_VISIBILITY_VALUES: ReadonlySet<string> = new Set(Object.values(BlockVisibility));
+const PRODUCT_SORT_VALUES: ReadonlySet<string> = new Set(Object.values(ProductSortField));
+
+export function isBlockType(value: string): value is BlockType {
+  return BLOCK_TYPE_VALUES.has(value);
+}
+
+export function parseBlockType(value: string): BlockType {
+  return isBlockType(value) ? value : invalidEnum('block type', value);
+}
+
+export function isPageStatus(value: string): value is PageStatus {
+  return PAGE_STATUS_VALUES.has(value);
+}
+
+export function parsePageStatus(value: string): PageStatus {
+  return isPageStatus(value) ? value : invalidEnum('page status', value);
+}
+
+export function isBlockVisibility(value: string): value is BlockVisibility {
+  return BLOCK_VISIBILITY_VALUES.has(value);
+}
+
+export function parseBlockVisibility(value: string): BlockVisibility {
+  return isBlockVisibility(value) ? value : invalidEnum('block visibility', value);
+}
+
+export function isProductSortField(value: string): value is ProductSortField {
+  return PRODUCT_SORT_VALUES.has(value);
+}
+
+export function parseProductSortField(value: string): ProductSortField {
+  return isProductSortField(value) ? value : invalidEnum('product sort field', value);
+}

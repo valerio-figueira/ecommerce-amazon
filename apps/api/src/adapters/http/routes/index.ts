@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
 
-import { DomainError, parseMarketplace, ValidationError, type Marketplace } from '@ecommerce-amazon/domain';
+import { DomainError, parseMarketplace, parseProductSortField, ValidationError, type Marketplace } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
 import {
@@ -19,6 +19,7 @@ import {
   CreateComparisonSchema,
   CreatePriceAlertSchema,
   ListProductsQuerySchema,
+  PageSlugParamsSchema,
   ProductIdParamsSchema,
   ProductSlugParamsSchema,
   RecordClickSchema,
@@ -51,6 +52,26 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
 
   app.get('/health', async () => ({ status: 'ok' }));
 
+  app.get('/categories', async (_request, reply) => {
+    try {
+      const result = await useCases.listProductCategories.execute();
+      return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/pages/:slug', async (request, reply) => {
+    try {
+      const { slug } = PageSlugParamsSchema.parse(request.params);
+      const layout = await useCases.getPublishedPageLayout.execute(slug);
+      if (!layout) return reply.status(404).send({ error: 'Page not found' });
+      return reply.send(layout);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
   app.get('/products', async (request, reply) => {
     try {
       const query = ListProductsQuerySchema.parse(request.query);
@@ -59,12 +80,16 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         pageSize?: number;
         category?: string;
         marketplace?: Marketplace;
+        sort?: import('@ecommerce-amazon/domain').ProductSortField;
       } = {};
       if (query.page !== undefined) filters.page = query.page;
       if (query.pageSize !== undefined) filters.pageSize = query.pageSize;
       if (query.category !== undefined) filters.category = query.category;
       if (query.marketplace !== undefined) {
         filters.marketplace = parseMarketplace(query.marketplace);
+      }
+      if (query.sort !== undefined) {
+        filters.sort = parseProductSortField(query.sort);
       }
       const result = await useCases.listProducts.execute(filters);
       return reply.send({
@@ -135,8 +160,8 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
   app.get('/wishlist', async (request, reply) => {
     try {
       const sessionId = getSessionId(request);
-      const items = await container.repositories.wishlistRepository.findBySessionId(sessionId);
-      return reply.send({ items });
+      const result = await useCases.getWishlist.execute(sessionId);
+      return reply.send(result);
     } catch (error) {
       return handleError(error, reply);
     }

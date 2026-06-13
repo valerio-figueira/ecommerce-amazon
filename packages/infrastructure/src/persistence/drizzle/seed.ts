@@ -6,15 +6,18 @@ import {
   AffiliateAccountStatus,
   ArticleStatus,
   ArticleType,
+  BlockType,
   CouponStatus,
   DiscountType,
   Marketplace,
+  PageStatus,
   ProductAvailability,
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 
 import { schema } from '../drizzle/client.js';
 import { loadDotenvFromMonorepoRoot } from './load-env.js';
+import { insertPageWithBlocks } from '../repositories/drizzle-page.repository.js';
 
 const SEED_PRODUCT_AMAZON_ID = 'a1111111-1111-4111-8111-111111111111';
 const SEED_PRODUCT_SHOPEE_ID = 'a2222222-2222-4222-8222-222222222222';
@@ -23,6 +26,12 @@ const SEED_COLLECTION_ID = 'c1111111-1111-4111-8111-111111111111';
 const SEED_COUPON_ID = 'd1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_AMAZON_ID = 'e1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_SHOPEE_ID = 'e2222222-2222-4222-8222-222222222222';
+const SEED_PAGE_HOME_ID = 'f1111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_HERO_SPLIT_ID = 'f2111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 
 async function runSeed(): Promise<void> {
   loadDotenvFromMonorepoRoot();
@@ -47,30 +56,42 @@ async function runSeed(): Promise<void> {
       .limit(1);
 
     if (existing.length > 0) {
-      logger.info('Seed data already present, skipping');
-      return;
+      logger.info('Product seed data already present, skipping products');
+    } else {
+      logger.info('Inserting development seed data');
+      await insertProductSeed(db, now);
     }
 
-    logger.info('Inserting development seed data');
+    await seedHomePage(db, now, logger);
+  } finally {
+    await sql.end();
+  }
+}
 
-    await db.insert(schema.affiliateAccounts).values([
-      {
-        id: SEED_AFFILIATE_AMAZON_ID,
-        marketplace: Marketplace.AMAZON_BR,
-        affiliateTag: env.AMAZON_AFFILIATE_TAG || 'vitrine-21',
-        status: AffiliateAccountStatus.ACTIVE,
-        validatedBy: 'seed',
-        validatedAt: now,
-      },
-      {
-        id: SEED_AFFILIATE_SHOPEE_ID,
-        marketplace: Marketplace.SHOPEE_BR,
-        affiliateTag: env.SHOPEE_AFFILIATE_ID || 'vitrine-shopee',
-        status: AffiliateAccountStatus.PENDING,
-      },
-    ]);
+async function insertProductSeed(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+): Promise<void> {
+  const env = loadEnv();
 
-    await db.insert(schema.products).values([
+  await db.insert(schema.affiliateAccounts).values([
+    {
+      id: SEED_AFFILIATE_AMAZON_ID,
+      marketplace: Marketplace.AMAZON_BR,
+      affiliateTag: env.AMAZON_AFFILIATE_TAG || 'vitrine-21',
+      status: AffiliateAccountStatus.ACTIVE,
+      validatedBy: 'seed',
+      validatedAt: now,
+    },
+    {
+      id: SEED_AFFILIATE_SHOPEE_ID,
+      marketplace: Marketplace.SHOPEE_BR,
+      affiliateTag: env.SHOPEE_AFFILIATE_ID || 'vitrine-shopee',
+      status: AffiliateAccountStatus.PENDING,
+    },
+  ]);
+
+  await db.insert(schema.products).values([
       {
         id: SEED_PRODUCT_AMAZON_ID,
         marketplace: Marketplace.AMAZON_BR,
@@ -192,11 +213,108 @@ async function runSeed(): Promise<void> {
       sourceUrl: 'https://www.amazon.com.br/deals',
       lastVerifiedAt: now,
     });
+}
 
-    logger.info('Seed data inserted successfully');
-  } finally {
-    await sql.end();
+async function seedHomePage(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existingPage = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'home'))
+    .limit(1);
+
+  if (existingPage.length > 0) {
+    logger.info('Home page seed already present, skipping');
+    return;
   }
+
+  await insertPageWithBlocks(
+    db,
+    {
+      id: SEED_PAGE_HOME_ID,
+      slug: 'home',
+      title: 'Vitrine',
+      status: PageStatus.PUBLISHED,
+      seoTitle: 'Vitrine — Curadoria inteligente de produtos',
+      seoDescription: 'Descubra ofertas selecionadas com histórico de preços e alertas.',
+      publishedAt: now,
+      updatedAt: now,
+    },
+    [
+      {
+        id: SEED_BLOCK_HERO_CAROUSEL_ID,
+        type: BlockType.HERO_CAROUSEL,
+        sortOrder: 1,
+        props: {
+          slides: [
+            {
+              imageUrl: 'https://placehold.co/1200x800?text=Setup+Gamer',
+              title: 'Monte seu setup gamer completo',
+              subtitle: 'Seleção curada com os melhores custo-benefício',
+              ctaLabel: 'Ver coleção',
+              ctaHref: '/c/setup-gamer-iniciante',
+            },
+            {
+              imageUrl: 'https://placehold.co/1200x800?text=Home+Office',
+              title: 'Home office ergonômico',
+              subtitle: 'Produtos testados pela nossa curadoria',
+              ctaLabel: 'Explorar',
+              linkedProductSlug: 'cadeira-ergonomica-home-office',
+            },
+          ],
+          autoplay: true,
+          intervalMs: 6000,
+        },
+      },
+      {
+        id: SEED_BLOCK_FEATURED_ID,
+        type: BlockType.FEATURED_PRODUCT,
+        sortOrder: 2,
+        props: {
+          productSlug: 'cadeira-ergonomica-home-office',
+          showMarketplaceBadge: true,
+          ctaLabel: 'Ver na Amazon',
+        },
+      },
+      {
+        id: SEED_BLOCK_HERO_SPLIT_ID,
+        type: BlockType.HERO_SPLIT,
+        sortOrder: 0,
+        props: {
+          ratio: '2/1',
+          leftBlockId: SEED_BLOCK_HERO_CAROUSEL_ID,
+          rightBlockId: SEED_BLOCK_FEATURED_ID,
+        },
+      },
+      {
+        id: SEED_BLOCK_PILLS_ID,
+        type: BlockType.CATEGORY_PILLS,
+        sortOrder: 3,
+        props: {
+          title: 'Produtos populares',
+          categorySlugs: ['home-office', 'games', 'eletronicos'],
+          linkedBlockId: SEED_BLOCK_GRID_ID,
+        },
+      },
+      {
+        id: SEED_BLOCK_GRID_ID,
+        type: BlockType.PRODUCT_GRID,
+        sortOrder: 4,
+        props: {
+          title: 'Produtos populares',
+          categorySlug: null,
+          sort: 'editorial_score',
+          pageSize: 12,
+          columns: 4,
+        },
+      },
+    ],
+  );
+
+  logger.info('Home page CMS seed inserted');
 }
 
 runSeed().catch((error: unknown) => {

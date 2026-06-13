@@ -36,6 +36,8 @@ const envSchemaBase = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+  CORS_ORIGINS: z.string().default('http://localhost:3001'),
+  WEB_PORT: z.coerce.number().int().positive().default(3001),
 });
 
 export const envSchema = envSchemaBase.transform((data) => ({
@@ -48,6 +50,13 @@ export type Env = z.infer<typeof envSchema>;
 
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   return envSchema.parse(source);
+}
+
+export function parseCorsOrigins(origins: string): string[] {
+  return origins
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
 }
 
 export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };

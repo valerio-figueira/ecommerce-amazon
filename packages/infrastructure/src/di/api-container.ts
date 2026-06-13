@@ -13,6 +13,9 @@ import {
   GetComparisonByToken,
   ListActiveCoupons,
   RecordClickEvent,
+  GetPublishedPageLayout,
+  ListProductCategories,
+  GetWishlist,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -20,6 +23,7 @@ import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.j
 import { parseRedisUrl } from '../cache/redis-connection.js';
 import { createDrizzleClient } from '../persistence/drizzle/client.js';
 import { DrizzleProductRepository } from '../persistence/repositories/drizzle-product.repository.js';
+import { DrizzlePageRepository } from '../persistence/repositories/drizzle-page.repository.js';
 import {
   DrizzlePriceAlertRepository,
   DrizzlePriceSnapshotRepository,
@@ -39,6 +43,7 @@ export function buildApiContainer(env = loadEnv()) {
   const cache = new RedisCacheStore(cacheRedis);
 
   const productRepository = new DrizzleProductRepository(db);
+  const pageRepository = new DrizzlePageRepository(db);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
@@ -73,6 +78,9 @@ export function buildApiContainer(env = loadEnv()) {
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
+      getPublishedPageLayout: new GetPublishedPageLayout(pageRepository, cache),
+      listProductCategories: new ListProductCategories(productRepository),
+      getWishlist: new GetWishlist(wishlistRepository, productRepository),
     },
     repositories: {
       wishlistRepository,

@@ -7,9 +7,10 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build -w @ecommerce-amazon/shared && npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/application && npm run build -w @ecommerce-amazon/infrastructure && npm run build -w @ecommerce-amazon/api && npm run build -w @ecommerce-amazon/worker",
+    "build": "npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared && npm run build -w @ecommerce-amazon/application && npm run build -w @ecommerce-amazon/infrastructure && npm run build -w @ecommerce-amazon/api && npm run build -w @ecommerce-amazon/worker && npm run build -w @ecommerce-amazon/web",
     "dev:api": "turbo run dev --filter=@ecommerce-amazon/api",
     "dev:worker": "turbo run dev --filter=@ecommerce-amazon/worker",
+    "dev:web": "turbo run dev --filter=@ecommerce-amazon/web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
@@ -20,7 +21,12 @@
     "db:generate": "npm run db:generate -w @ecommerce-amazon/infrastructure",
     "db:migrate": "npm run db:migrate -w @ecommerce-amazon/infrastructure",
     "db:seed": "npm run db:seed -w @ecommerce-amazon/infrastructure",
-    "db:setup": "npm run db:setup -w @ecommerce-amazon/infrastructure"
+    "db:setup": "npm run db:setup -w @ecommerce-amazon/infrastructure",
+    "db:init": "bash scripts/init-local-postgres.sh",
+    "db:doctor": "bash scripts/db-doctor.sh",
+    "infra:up": "bash scripts/compose.sh up -d postgres redis",
+    "infra:down": "bash scripts/compose.sh down",
+    "infra:logs": "bash scripts/compose.sh logs -f postgres redis"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",

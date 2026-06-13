@@ -1,6 +1,6 @@
-import { and, desc, eq, inArray, lt, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 
-import { AlertStatus, Marketplace, PRICE_STALE_HOURS, type ProductListFilters, type ProductRepository } from '@ecommerce-amazon/domain';
+import { AlertStatus, Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -49,6 +49,11 @@ export class DrizzleProductRepository implements ProductRepository {
     }
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
+    const sortField = filters.sort ?? ProductSortField.EDITORIAL_SCORE;
+    const orderColumn =
+      sortField === ProductSortField.PRICE_UPDATED_AT
+        ? schema.products.priceUpdatedAt
+        : schema.products.editorialScore;
 
     const [items, countResult] = await Promise.all([
       this.db
@@ -57,7 +62,7 @@ export class DrizzleProductRepository implements ProductRepository {
         .where(where)
         .limit(pageSize)
         .offset(offset)
-        .orderBy(desc(schema.products.editorialScore)),
+        .orderBy(desc(orderColumn)),
       this.db
         .select({ count: sql<number>`count(*)::int` })
         .from(schema.products)
@@ -115,5 +120,20 @@ export class DrizzleProductRepository implements ProductRepository {
     for (const product of products) {
       await this.save(product);
     }
+  }
+
+  async listCategories() {
+    const rows = await this.db
+      .select({
+        slug: schema.products.categoryVertical,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(schema.products)
+      .where(isNotNull(schema.products.categoryVertical))
+      .groupBy(schema.products.categoryVertical);
+
+    return rows
+      .filter((row): row is { slug: string; count: number } => row.slug !== null)
+      .map((row) => ({ slug: row.slug, count: row.count }));
   }
 }

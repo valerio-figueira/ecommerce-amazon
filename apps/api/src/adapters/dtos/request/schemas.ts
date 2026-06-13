@@ -5,6 +5,7 @@ export const ListProductsQuerySchema = z.object({
   pageSize: z.coerce.number().int().positive().max(100).optional(),
   category: z.string().optional(),
   marketplace: z.enum(['amazon_br', 'shopee_br']).optional(),
+  sort: z.enum(['editorial_score', 'price_updated_at']).optional(),
 });
 
 export const ProductSlugParamsSchema = z.object({
@@ -66,4 +67,8 @@ export const CollectionSlugParamsSchema = z.object({
 
 export const CouponMarketplaceParamsSchema = z.object({
   marketplace: z.enum(['amazon_br', 'shopee_br']),
+});
+
+export const PageSlugParamsSchema = z.object({
+  slug: z.string().min(1),
 });

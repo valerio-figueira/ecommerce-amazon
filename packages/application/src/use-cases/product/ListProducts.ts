@@ -1,5 +1,6 @@
 import {
   PriceComplianceService,
+  ProductSortField,
   type Marketplace,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
@@ -22,6 +23,7 @@ export class ListProducts {
     pageSize?: number;
     category?: string;
     marketplace?: Marketplace;
+    sort?: ProductSortField;
   }): Promise<ListProductsResult> {
     const page = filters.page ?? 1;
     const pageSize = filters.pageSize ?? 20;

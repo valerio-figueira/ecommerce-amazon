@@ -38,6 +38,50 @@ export const syncJobTypeEnum = pgEnum('sync_job_type', [
   'coupon_verify',
 ]);
 export const syncJobStatusEnum = pgEnum('sync_job_status', ['running', 'completed', 'failed']);
+export const pageStatusEnum = pgEnum('page_status', ['draft', 'published']);
+export const blockVisibilityEnum = pgEnum('block_visibility', ['all', 'desktop', 'mobile']);
+export const blockTypeEnum = pgEnum('block_type', [
+  'hero_carousel',
+  'featured_product',
+  'product_grid',
+  'category_pills',
+  'hero_split',
+  'curated_collection',
+  'coupon_strip',
+  'rich_text',
+  'banner',
+  'spacer',
+]);
+
+export const pages = pgTable(
+  'pages',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    status: pageStatusEnum('status').notNull().default('draft'),
+    seoTitle: text('seo_title'),
+    seoDescription: text('seo_description'),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('pages_slug_status_idx').on(table.slug, table.status)],
+);
+
+export const pageBlocks = pgTable(
+  'page_blocks',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    pageId: uuid('page_id')
+      .notNull()
+      .references(() => pages.id, { onDelete: 'cascade' }),
+    type: blockTypeEnum('type').notNull(),
+    sortOrder: integer('sort_order').notNull(),
+    props: jsonb('props').$type<Record<string, unknown>>().notNull().default({}),
+    visibility: blockVisibilityEnum('visibility').notNull().default('all'),
+  },
+  (table) => [index('page_blocks_page_sort_idx').on(table.pageId, table.sortOrder)],
+);
 
 export const products = pgTable(
   'products',
