@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
 import { cn } from '@/lib/utils';
 
+const CLOSE_DELAY_MS = 150;
+
 type CategoryCatalogFlyoutProps = {
   categories: CategoryNavNode[];
 };
@@ -19,6 +21,7 @@ export function CategoryCatalogFlyout({
     categories[0]?.slug ?? null,
   );
   const containerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeRoot = categories.find((node) => node.slug === activeRootSlug) ?? categories[0];
   const children = activeRoot?.subcategories ?? [];
@@ -28,6 +31,14 @@ export function CategoryCatalogFlyout({
       setActiveRootSlug(categories[0]?.slug ?? null);
     }
   }, [categories, activeRootSlug]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -57,6 +68,21 @@ export function CategoryCatalogFlyout({
     };
   }, [open]);
 
+  function handleMouseEnter() {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setOpen(true);
+  }
+
+  function handleMouseLeave() {
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, CLOSE_DELAY_MS);
+  }
+
   if (categories.length === 0) {
     return null;
   }
@@ -65,8 +91,8 @@ export function CategoryCatalogFlyout({
     <div
       ref={containerRef}
       className="category-catalog-flyout relative hidden md:block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
@@ -86,75 +112,77 @@ export function CategoryCatalogFlyout({
 
       <div
         className={cn(
-          'category-catalog-flyout__panel transition-all duration-150',
-          open ? 'visible opacity-100' : 'invisible pointer-events-none opacity-0',
+          'category-catalog-flyout__anchor',
+          open ? 'category-catalog-flyout__anchor--open' : 'category-catalog-flyout__anchor--closed',
         )}
-        role="menu"
       >
-        <div className="category-catalog-flyout__grid">
-          <div className="category-catalog-flyout__left">
-            <p className="category-catalog-flyout__heading">Explorar</p>
-            <ul className="category-catalog-flyout__root-list">
-              {categories.map((root) => (
-                <li key={root.slug}>
-                  <button
-                    type="button"
-                    className={cn(
-                      'category-catalog-flyout__root-item',
-                      activeRoot?.slug === root.slug && 'category-catalog-flyout__root-item--active',
-                    )}
-                    onMouseEnter={() => setActiveRootSlug(root.slug)}
-                    onFocus={() => setActiveRootSlug(root.slug)}
-                  >
-                    {root.icon ? <span className="mr-1.5">{root.icon}</span> : null}
-                    {root.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="category-catalog-flyout__panel" role="menu">
+          <div className="category-catalog-flyout__grid">
+            <div className="category-catalog-flyout__left">
+              <p className="category-catalog-flyout__heading">Explorar</p>
+              <ul className="category-catalog-flyout__root-list">
+                {categories.map((root) => (
+                  <li key={root.slug}>
+                    <button
+                      type="button"
+                      className={cn(
+                        'category-catalog-flyout__root-item',
+                        activeRoot?.slug === root.slug &&
+                          'category-catalog-flyout__root-item--active',
+                      )}
+                      onMouseEnter={() => setActiveRootSlug(root.slug)}
+                      onFocus={() => setActiveRootSlug(root.slug)}
+                    >
+                      {root.icon ? <span className="mr-1.5">{root.icon}</span> : null}
+                      {root.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div className="category-catalog-flyout__right">
-            {activeRoot ? (
-              <>
-                <p className="category-catalog-flyout__heading">{activeRoot.label}</p>
-                {children.length > 0 ? (
-                  <ul className="category-catalog-flyout__child-list">
-                    {children.map((child) => (
-                      <li key={child.slug} className="category-catalog-flyout__child-group">
-                        <Link
-                          href={`/categorias/${child.slug}`}
-                          className="category-catalog-flyout__child-link"
-                          onClick={() => setOpen(false)}
-                        >
-                          {child.icon ? <span className="mr-1">{child.icon}</span> : null}
-                          {child.label}
-                        </Link>
-                        {(child.subcategories ?? []).map((grandchild) => (
+            <div className="category-catalog-flyout__right">
+              {activeRoot ? (
+                <>
+                  <p className="category-catalog-flyout__heading">{activeRoot.label}</p>
+                  {children.length > 0 ? (
+                    <ul className="category-catalog-flyout__child-list">
+                      {children.map((child) => (
+                        <li key={child.slug} className="category-catalog-flyout__child-group">
                           <Link
-                            key={grandchild.slug}
-                            href={`/categorias/${grandchild.slug}`}
-                            className="category-catalog-flyout__grandchild-link"
+                            href={`/categorias/${child.slug}`}
+                            className="category-catalog-flyout__child-link"
                             onClick={() => setOpen(false)}
                           >
-                            {grandchild.label}
+                            {child.icon ? <span className="mr-1">{child.icon}</span> : null}
+                            {child.label}
                           </Link>
-                        ))}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-neutral-500">Sem subcategorias cadastradas.</p>
-                )}
-                <Link
-                  href={`/categorias/${activeRoot.slug}`}
-                  className="category-catalog-flyout__view-all"
-                  onClick={() => setOpen(false)}
-                >
-                  Ver tudo em {activeRoot.label}
-                </Link>
-              </>
-            ) : null}
+                          {(child.subcategories ?? []).map((grandchild) => (
+                            <Link
+                              key={grandchild.slug}
+                              href={`/categorias/${grandchild.slug}`}
+                              className="category-catalog-flyout__grandchild-link"
+                              onClick={() => setOpen(false)}
+                            >
+                              {grandchild.label}
+                            </Link>
+                          ))}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-neutral-500">Sem subcategorias cadastradas.</p>
+                  )}
+                  <Link
+                    href={`/categorias/${activeRoot.slug}`}
+                    className="category-catalog-flyout__view-all"
+                    onClick={() => setOpen(false)}
+                  >
+                    Ver tudo em {activeRoot.label}
+                  </Link>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -63,11 +63,28 @@ button:disabled,
 }
 
 /* Header category catalog flyout (desktop) */
-.category-catalog-flyout__panel {
+.category-catalog-flyout__anchor {
   position: absolute;
   left: 0;
-  top: calc(100% + 0.35rem);
+  top: 100%;
   z-index: 50;
+  /* Ponte invisível entre o botão e o painel — evita fechar ao mover o mouse */
+  padding-top: 0.5rem;
+}
+
+.category-catalog-flyout__anchor--closed {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.category-catalog-flyout__anchor--open {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.category-catalog-flyout__panel {
   min-width: 28rem;
   max-width: 36rem;
   border: 1px solid #e5e5e5;
