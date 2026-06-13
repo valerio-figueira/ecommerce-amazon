@@ -1,4 +1,4 @@
-import type { Product } from '@ecommerce-amazon/domain';
+import type { CuratedCollection, Product } from '@ecommerce-amazon/domain';
 
 export type ProductListItemDto = {
   id: string;
@@ -84,12 +84,18 @@ export type AdminProductDetailDto = {
 };
 
 export function toProductPriceDto(product: Product): ProductPriceDto {
+  const shouldShowPrice = product.shouldShowPrice;
+  const updatedAt =
+    product.price.updatedAt instanceof Date
+      ? product.price.updatedAt.toISOString()
+      : String(product.price.updatedAt);
+
   return {
-    amount: product.shouldShowPrice ? product.price.amount : null,
+    amount: shouldShowPrice ? product.price.amount : null,
     currency: product.price.currency,
-    isStale: !product.shouldShowPrice,
-    updatedAt: product.price.updatedAt.toISOString(),
-    ...(product.shouldShowPrice && product.strikethroughPrice !== undefined
+    isStale: !shouldShowPrice,
+    updatedAt,
+    ...(shouldShowPrice && product.strikethroughPrice !== undefined
       ? { strikethrough: product.strikethroughPrice }
       : {}),
   };
@@ -195,5 +201,45 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     visible: product.visible,
     availability: product.availability,
     createdAt: product.createdAt.toISOString(),
+  };
+}
+
+export type CuratedCollectionDto = {
+  collection: {
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    coverImageUrl: string;
+    campaignOrigin: string;
+    utmDefaults: Record<string, string>;
+    ctaText: string;
+    updatedAt: string;
+  };
+  products: ProductListItemDto[];
+};
+
+export function toCuratedCollectionDto(
+  collection: CuratedCollection,
+  products: Product[],
+): CuratedCollectionDto {
+  const updatedAt =
+    collection.updatedAt instanceof Date
+      ? collection.updatedAt.toISOString()
+      : String(collection.updatedAt);
+
+  return {
+    collection: {
+      id: collection.id,
+      slug: collection.slug,
+      title: collection.title,
+      description: collection.description,
+      coverImageUrl: collection.coverImageUrl,
+      campaignOrigin: collection.campaignOrigin,
+      utmDefaults: collection.utmDefaults,
+      ctaText: collection.ctaText,
+      updatedAt,
+    },
+    products: products.map(toProductListItemDto),
   };
 }

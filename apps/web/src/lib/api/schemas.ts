@@ -37,6 +37,23 @@ export const productsPageSchema = z.object({
 
 export type CategoryTreeNodeDto = PublicCategoryTreeNode;
 
+export const curatedCollectionDetailSchema = z.object({
+  collection: z.object({
+    id: z.string(),
+    slug: z.string(),
+    title: z.string(),
+    description: z.string(),
+    coverImageUrl: z.string(),
+    campaignOrigin: z.string(),
+    utmDefaults: z.record(z.string(), z.string()),
+    ctaText: z.string(),
+    updatedAt: z.string(),
+  }),
+  products: z.array(productListItemSchema),
+});
+
+export type CuratedCollectionDetailDto = z.infer<typeof curatedCollectionDetailSchema>;
+
 export const categorySchema = z.object({
   slug: z.string(),
   label: z.string(),

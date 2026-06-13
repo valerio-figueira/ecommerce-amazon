@@ -25,6 +25,9 @@ export interface AffiliateTrackingParams {
   blockId?: string;
   sessionId?: string;
   origin?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }
 
 export interface AffiliateLinkBuilder {

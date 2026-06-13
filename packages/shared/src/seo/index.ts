@@ -1,4 +1,9 @@
 export {
+  buildCuratedCollectionBreadcrumbJsonLd,
+  buildCuratedCollectionJsonLd,
+  type CuratedCollectionJsonLdInput,
+} from './curated-collection-json-ld.js';
+export {
   buildCategoryBreadcrumbJsonLd,
   buildCategoryCollectionJsonLd,
   type CategoryJsonLdInput,

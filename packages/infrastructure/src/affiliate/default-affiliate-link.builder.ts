@@ -26,6 +26,7 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
       if (subTag) {
         url.searchParams.set('ascsubtag', subTag);
       }
+      this.applyUtmParams(url, tracking);
       return url.toString();
     }
 
@@ -42,6 +43,7 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
       if (tracking.sessionId) {
         url.searchParams.set('utm_content', tracking.sessionId);
       }
+      this.applyUtmParams(url, tracking);
       return url.toString();
     }
 
@@ -54,7 +56,20 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
     if (tracking.origin) {
       url.searchParams.set('utm_source', tracking.origin);
     }
+    this.applyUtmParams(url, tracking);
     return url.toString();
+  }
+
+  private applyUtmParams(url: URL, tracking: AffiliateTrackingParams): void {
+    if (tracking.utmSource) {
+      url.searchParams.set('utm_source', tracking.utmSource);
+    }
+    if (tracking.utmMedium) {
+      url.searchParams.set('utm_medium', tracking.utmMedium);
+    }
+    if (tracking.utmCampaign) {
+      url.searchParams.set('utm_campaign', tracking.utmCampaign);
+    }
   }
 
   buildBatchCheckout(marketplace: Marketplace, externalIds: string[]): string {

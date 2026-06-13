@@ -224,7 +224,7 @@ function HeroSlideCard({
                       <Input
                         {...hrefField}
                         value={readString(hrefField.value)}
-                        placeholder="/c/setup-gamer ou https://…"
+                        placeholder="/colecoes/setup-gamer ou https://…"
                       />
                     </FormControl>
                     <FormMessage />

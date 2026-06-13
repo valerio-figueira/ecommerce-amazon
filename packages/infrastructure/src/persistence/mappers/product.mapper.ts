@@ -216,7 +216,24 @@ export function mapCollection(
     utmDefaults: row.utmDefaults,
     productIds,
     ctaText: row.ctaText,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
+}
+
+export function mapCollectionToRow(collection: CuratedCollection) {
+  return {
+    id: collection.id,
+    slug: collection.slug,
+    title: collection.title,
+    description: collection.description,
+    coverImageUrl: collection.coverImageUrl,
+    campaignOrigin: collection.campaignOrigin,
+    utmDefaults: collection.utmDefaults,
+    ctaText: collection.ctaText,
+    createdAt: collection.createdAt,
+    updatedAt: collection.updatedAt,
+  };
 }
 
 export function mapComparison(

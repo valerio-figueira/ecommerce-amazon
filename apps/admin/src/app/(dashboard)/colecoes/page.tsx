@@ -1,14 +1,15 @@
-import { Layers } from 'lucide-react';
-
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { CollectionListManager } from '@/components/collections/CollectionListManager';
+import { listAdminCollections } from '@/lib/api/collections';
 
 export const metadata = {
   title: 'Coleções — Vitrine CMS',
 };
 
-export default function ColecoesPage() {
+export default async function ColecoesPage(): Promise<React.JSX.Element> {
+  const items = await listAdminCollections();
+
   return (
     <>
       <AdminPageHeader
@@ -19,11 +20,7 @@ export default function ColecoesPage() {
         ]}
       />
       <AdminPageCard transparent>
-        <AdminEmptyState
-          icon={Layers}
-          title="Coleções curadas em breve"
-          hint="Monte vitrines temáticas em /c/[slug] com produtos selecionados manualmente."
-        />
+        <CollectionListManager initialItems={items} />
       </AdminPageCard>
     </>
   );

@@ -1,5 +1,6 @@
 import { BlockType, ProductSortField, type CacheStore, type PageBlock, type PageRepository } from '@ecommerce-amazon/domain';
 import {
+  curatedCollectionPropsSchema,
   dynamicProductGridPropsSchema,
   parseBlockProps,
   type PageBlockDeliveryDto,
@@ -7,6 +8,7 @@ import {
 } from '@ecommerce-amazon/shared/cms';
 
 import { toProductDeliveryItem } from '../../mappers/product-delivery.mapper.js';
+import type { GetCuratedCollection } from '../content/GetCuratedCollection.js';
 import type { ListProducts } from '../product/ListProducts.js';
 
 function toBlockDto(block: PageBlock): PageBlockDeliveryDto {
@@ -30,7 +32,7 @@ function isPageLayoutDeliveryDto(value: unknown): value is PageLayoutDeliveryDto
 function stripRenderedData(layout: PageLayoutDeliveryDto): PageLayoutDeliveryDto {
   return {
     ...layout,
-    blocks: layout.blocks.map(({ renderedData: _renderedData, ...block }) => block),
+    blocks: layout.blocks.map(({ renderedData: _renderedData, renderedCollection: _renderedCollection, ...block }) => block),
   };
 }
 
@@ -57,6 +59,7 @@ export class GetPublishedPageLayout {
     private readonly pageRepository: PageRepository,
     private readonly cache: CacheStore,
     private readonly listProducts: ListProducts,
+    private readonly getCuratedCollection: GetCuratedCollection,
   ) {}
 
   async execute(slug: string): Promise<GetPublishedPageLayoutResult | null> {
@@ -98,6 +101,26 @@ export class GetPublishedPageLayout {
   }
 
   private async hydrateBlock(block: PageBlockDeliveryDto): Promise<PageBlockDeliveryDto> {
+    if (block.type === BlockType.CURATED_COLLECTION) {
+      const props = curatedCollectionPropsSchema.parse(block.props);
+      const result = await this.getCuratedCollection.execute(props.collectionSlug);
+      if (!result) {
+        return block;
+      }
+
+      return {
+        ...block,
+        renderedCollection: {
+          slug: result.collection.slug,
+          title: result.collection.title,
+          description: result.collection.description,
+          coverImageUrl: result.collection.coverImageUrl,
+          ctaText: result.collection.ctaText,
+        },
+        renderedData: result.products.map(toProductDeliveryItem),
+      };
+    }
+
     if (block.type !== BlockType.DYNAMIC_PRODUCT_GRID) {
       return block;
     }

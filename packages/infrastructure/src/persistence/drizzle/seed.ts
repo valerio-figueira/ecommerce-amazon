@@ -341,7 +341,7 @@ async function seedHomePage(
               title: 'Monte seu setup gamer completo',
               subtitle: 'Seleção curada com os melhores custo-benefício',
               ctaLabel: 'Ver coleção',
-              ctaHref: '/c/setup-gamer-iniciante',
+              ctaHref: '/colecoes/setup-gamer-iniciante',
             },
             {
               imageUrl: 'https://placehold.co/1200x800?text=Home+Office',
@@ -422,7 +422,7 @@ async function seedHomePage(
               subtitle: 'Seleção editorial',
               imageUrl: 'https://placehold.co/400x400?text=Top',
               size: 'large',
-              href: '/c/setup-gamer-iniciante',
+              href: '/colecoes/setup-gamer-iniciante',
             },
           ],
         },

@@ -3,6 +3,7 @@ import {
   bannerPropsSchema,
   categoryBentoGridPropsSchema,
   categoryPillsPropsSchema,
+  curatedCollectionPropsSchema,
   dynamicProductGridPropsSchema,
   featuredProductPropsSchema,
   heroCarouselPropsSchema,
@@ -53,7 +54,7 @@ export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, 
   [BlockType.CATEGORY_PILLS]: categoryPillsPropsSchema,
   [BlockType.CATEGORY_BENTO_GRID]: categoryBentoGridPropsSchema,
   [BlockType.HERO_SPLIT]: null,
-  [BlockType.CURATED_COLLECTION]: null,
+  [BlockType.CURATED_COLLECTION]: curatedCollectionPropsSchema,
   [BlockType.COUPON_STRIP]: null,
   [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
   [BlockType.RICH_TEXT]: richTextPropsSchema,
@@ -63,7 +64,6 @@ export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, 
 
 export const PHASE2_BLOCK_TYPES: BlockType[] = [
   BlockType.HERO_SPLIT,
-  BlockType.CURATED_COLLECTION,
   BlockType.COUPON_STRIP,
 ];
 

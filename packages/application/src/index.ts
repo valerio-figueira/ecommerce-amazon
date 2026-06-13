@@ -16,6 +16,16 @@ export { AddToWishlist } from './use-cases/wishlist/AddToWishlist.js';
 export { BuildBatchCheckoutRedirect } from './use-cases/wishlist/BuildBatchCheckoutRedirect.js';
 export { GetArticleWithEmbeds } from './use-cases/content/GetArticleWithEmbeds.js';
 export { GetCuratedCollection } from './use-cases/content/GetCuratedCollection.js';
+export {
+  CreateCuratedCollection,
+  ListCuratedCollections,
+  ListPublicCollections,
+  GetAdminCollection,
+} from './use-cases/admin-collection/CreateCuratedCollection.js';
+export {
+  UpdateCuratedCollection,
+  DeleteCuratedCollection,
+} from './use-cases/admin-collection/UpdateCuratedCollection.js';
 export { CreateComparison } from './use-cases/comparison/CreateComparison.js';
 export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToken.js';
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';

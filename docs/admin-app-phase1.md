@@ -78,7 +78,7 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 | `/produtos` | Listagem + link para cadastro manual |
 | `/produtos/novo` | Formulário de criação (modo híbrido) |
 | `/artigos` | Empty state — hub de conteúdo |
-| `/colecoes` | Empty state — coleções curadas |
+| `/colecoes` | CRUD coleções curadas (listagem + sheet) |
 | `/cupons` | Empty state — central de cupons |
 | `/configuracoes` | Empty state — settings |
 

@@ -20,6 +20,9 @@ export class ResolveAffiliateRedirect {
     blockId?: string | undefined;
     sessionId?: string | undefined;
     origin?: string | undefined;
+    utmSource?: string | undefined;
+    utmMedium?: string | undefined;
+    utmCampaign?: string | undefined;
   }): Promise<
     Result<
       { productId: string; targetUrl: string },
@@ -56,6 +59,9 @@ export class ResolveAffiliateRedirect {
         ...(input.blockId !== undefined ? { blockId: input.blockId } : {}),
         ...(input.sessionId !== undefined ? { sessionId: input.sessionId } : {}),
         ...(input.origin !== undefined ? { origin: input.origin } : {}),
+        ...(input.utmSource !== undefined ? { utmSource: input.utmSource } : {}),
+        ...(input.utmMedium !== undefined ? { utmMedium: input.utmMedium } : {}),
+        ...(input.utmCampaign !== undefined ? { utmCampaign: input.utmCampaign } : {}),
       },
       affiliateTag,
     );

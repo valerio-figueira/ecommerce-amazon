@@ -1,9 +1,9 @@
-import type {
-  CacheStore,
-  ContentRepository,
+import {
   CuratedCollection,
-  Product,
-  ProductRepository,
+  type CacheStore,
+  type CuratedCollectionRepository,
+  type Product,
+  type ProductRepository,
 } from '@ecommerce-amazon/domain';
 
 export type CuratedCollectionResult = {
@@ -11,21 +11,89 @@ export type CuratedCollectionResult = {
   products: Product[];
 };
 
+type CachedCollectionShell = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  coverImageUrl: string;
+  campaignOrigin: string;
+  utmDefaults: Record<string, string>;
+  ctaText: string;
+  createdAt: string;
+  updatedAt: string;
+  productIds: string[];
+};
+
+type CachedCollectionEntry = {
+  collection: CachedCollectionShell;
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-export function isCuratedCollectionResult(value: unknown): value is CuratedCollectionResult {
+function isCachedCollectionEntry(value: unknown): value is CachedCollectionEntry {
+  if (!isRecord(value) || !isRecord(value['collection'])) {
+    return false;
+  }
+
+  const collection = value['collection'];
   return (
-    isRecord(value) &&
-    isRecord(value['collection']) &&
-    Array.isArray(value['products'])
+    typeof collection['id'] === 'string' &&
+    typeof collection['slug'] === 'string' &&
+    typeof collection['updatedAt'] === 'string' &&
+    Array.isArray(collection['productIds'])
   );
+}
+
+function shellFromCollection(collection: CuratedCollection): CachedCollectionShell {
+  return {
+    id: collection.id,
+    slug: collection.slug,
+    title: collection.title,
+    description: collection.description,
+    coverImageUrl: collection.coverImageUrl,
+    campaignOrigin: collection.campaignOrigin,
+    utmDefaults: collection.utmDefaults,
+    ctaText: collection.ctaText,
+    createdAt: collection.createdAt.toISOString(),
+    updatedAt: collection.updatedAt.toISOString(),
+    productIds: collection.productIds,
+  };
+}
+
+function collectionFromShell(shell: CachedCollectionShell): CuratedCollection {
+  return CuratedCollection.create({
+    id: shell.id,
+    slug: shell.slug,
+    title: shell.title,
+    description: shell.description,
+    coverImageUrl: shell.coverImageUrl,
+    campaignOrigin: shell.campaignOrigin,
+    utmDefaults: shell.utmDefaults,
+    ctaText: shell.ctaText,
+    productIds: shell.productIds,
+    createdAt: new Date(shell.createdAt),
+    updatedAt: new Date(shell.updatedAt),
+  });
+}
+
+function orderProducts(productIds: string[], products: Product[]): Product[] {
+  const byId = new Map(products.map((product) => [String(product.id), product]));
+  return productIds
+    .map((id) => byId.get(id))
+    .filter((product): product is Product => product !== undefined);
+}
+
+/** @deprecated Use isCachedCollectionEntry — kept for backwards compatibility in tests */
+export function isCuratedCollectionResult(value: unknown): value is CuratedCollectionResult {
+  return isRecord(value) && isRecord(value['collection']) && Array.isArray(value['products']);
 }
 
 export class GetCuratedCollection {
   constructor(
-    private readonly contentRepository: ContentRepository,
+    private readonly collectionRepository: CuratedCollectionRepository,
     private readonly productRepository: ProductRepository,
     private readonly cache: CacheStore,
   ) {}
@@ -33,16 +101,23 @@ export class GetCuratedCollection {
   async execute(slug: string): Promise<CuratedCollectionResult | null> {
     const cacheKey = `vitrine:collection:slug:${slug}`;
     const cached = await this.cache.get(cacheKey);
-    if (isCuratedCollectionResult(cached)) {
-      return cached;
+
+    let shell: CachedCollectionShell | null = null;
+
+    if (isCachedCollectionEntry(cached)) {
+      shell = cached.collection;
+    } else {
+      const collection = await this.collectionRepository.findBySlug(slug);
+      if (!collection) return null;
+      shell = shellFromCollection(collection);
+      await this.cache.set(cacheKey, { collection: shell } satisfies CachedCollectionEntry, 600);
     }
 
-    const collection = await this.contentRepository.findCollectionBySlug(slug);
-    if (!collection) return null;
+    const products = await this.productRepository.findByIds(shell.productIds);
 
-    const products = await this.productRepository.findByIds(collection.productIds);
-    const result: CuratedCollectionResult = { collection, products };
-    await this.cache.set(cacheKey, result, 600);
-    return result;
+    return {
+      collection: collectionFromShell(shell),
+      products: orderProducts(shell.productIds, products),
+    };
   }
 }

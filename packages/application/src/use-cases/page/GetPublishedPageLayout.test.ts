@@ -16,6 +16,12 @@ import { createMockPageRepository, createMockProductRepository } from '../../tes
 import { ListProducts } from '../product/ListProducts.js';
 import { GetPublishedPageLayout } from './GetPublishedPageLayout.js';
 
+function createMockGetCuratedCollection() {
+  return {
+    execute: vi.fn().mockResolvedValue(null),
+  };
+}
+
 const PAGE_ID = 'f1111111-1111-4111-8111-111111111111';
 const BLOCK_DYNAMIC_ID = 'f7111111-1111-4111-8111-111111111111';
 
@@ -84,7 +90,12 @@ describe('GetPublishedPageLayout', () => {
       incrementVersion: vi.fn(),
     };
 
-    const useCase = new GetPublishedPageLayout(pageRepository, cache, listProducts);
+    const useCase = new GetPublishedPageLayout(
+      pageRepository,
+      cache,
+      listProducts,
+      createMockGetCuratedCollection(),
+    );
     const layout = await useCase.execute('home');
 
     expect(layout).not.toBeNull();
@@ -130,7 +141,12 @@ describe('GetPublishedPageLayout', () => {
       incrementVersion: vi.fn(),
     };
 
-    const useCase = new GetPublishedPageLayout(pageRepository, cache, listProducts);
+    const useCase = new GetPublishedPageLayout(
+      pageRepository,
+      cache,
+      listProducts,
+      createMockGetCuratedCollection(),
+    );
     const layout = await useCase.execute('home');
 
     expect(pageRepository.findPublishedBySlug).not.toHaveBeenCalled();

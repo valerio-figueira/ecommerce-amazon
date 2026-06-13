@@ -5,7 +5,7 @@ import { getApiUrl } from '@/lib/api/client';
 
 export async function recordClick(
   productId: string,
-  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons',
+  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção',
   sessionId?: string,
 ): Promise<void> {
   const sid = sessionId ?? getOrCreateSessionId();

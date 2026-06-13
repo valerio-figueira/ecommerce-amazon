@@ -22,7 +22,10 @@ import {
 } from '../mappers/product.mapper.js';
 
 export class DrizzleContentRepository implements ContentRepository {
-  constructor(private readonly db: DrizzleClient) {}
+  constructor(
+    private readonly db: DrizzleClient,
+    private readonly collectionRepository?: import('./drizzle-curated-collection.repository.js').DrizzleCuratedCollectionRepository,
+  ) {}
 
   async findArticleBySlug(slug: string) {
     const rows = await this.db
@@ -48,6 +51,10 @@ export class DrizzleContentRepository implements ContentRepository {
   }
 
   async findCollectionBySlug(slug: string) {
+    if (this.collectionRepository) {
+      return this.collectionRepository.findBySlug(slug);
+    }
+
     const rows = await this.db
       .select()
       .from(schema.curatedCollections)

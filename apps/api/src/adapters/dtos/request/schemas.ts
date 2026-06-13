@@ -69,6 +69,7 @@ export const RecordClickSchema = z.object({
     'embed',
     'comparador',
     'cupons',
+    'coleção',
     'redirect_go',
   ]),
   sessionId: z.string().optional(),
@@ -82,6 +83,10 @@ export const GoSlugParamsSchema = z.object({
 export const GoQuerySchema = z.object({
   blockId: z.string().uuid().optional(),
   sessionId: z.string().optional(),
+  origin: z.string().optional(),
+  utm_source: z.string().optional(),
+  utm_medium: z.string().optional(),
+  utm_campaign: z.string().optional(),
 });
 
 export const ArticleSlugParamsSchema = z.object({

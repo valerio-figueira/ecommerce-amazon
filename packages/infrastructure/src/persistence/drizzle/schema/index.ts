@@ -8,6 +8,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
   varchar,
@@ -217,20 +218,26 @@ export const curatedCollections = pgTable(
     campaignOrigin: text('campaign_origin').notNull(),
     utmDefaults: jsonb('utm_defaults').$type<Record<string, string>>().notNull().default({}),
     ctaText: text('cta_text').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex('curated_collections_slug_idx').on(table.slug)],
 );
 
-export const collectionProducts = pgTable('collection_products', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  collectionId: uuid('collection_id')
-    .notNull()
-    .references(() => curatedCollections.id, { onDelete: 'cascade' }),
-  productId: uuid('product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  sortOrder: integer('sort_order').notNull().default(0),
-});
+export const collectionProducts = pgTable(
+  'collection_products',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    collectionId: uuid('collection_id')
+      .notNull()
+      .references(() => curatedCollections.id, { onDelete: 'cascade' }),
+    productId: uuid('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').notNull().default(0),
+  },
+  (table) => [unique('collection_products_collection_product_idx').on(table.collectionId, table.productId)],
+);
 
 export const productComparisons = pgTable('product_comparisons', {
   id: uuid('id').primaryKey().defaultRandom(),

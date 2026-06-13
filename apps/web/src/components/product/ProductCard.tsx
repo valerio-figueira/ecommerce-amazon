@@ -17,6 +17,8 @@ type ProductCardProps = {
   product: ProductListItemDto;
   className?: string;
   blockId?: string | undefined;
+  clickOrigin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  utmDefaults?: Record<string, string>;
   variant?: 'default' | 'compact';
 };
 
@@ -24,6 +26,8 @@ export function ProductCard({
   product,
   className,
   blockId,
+  clickOrigin = 'listagem',
+  utmDefaults,
   variant = 'default',
 }: ProductCardProps): React.JSX.Element {
   const { addItem, removeItem, isInWishlist, items, sessionId } = useWishlist();
@@ -97,6 +101,8 @@ export function ProductCard({
             product={product}
             sessionId={sessionId}
             blockId={blockId}
+            clickOrigin={clickOrigin}
+            {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           />
         </div>
       </div>

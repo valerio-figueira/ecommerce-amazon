@@ -13,6 +13,12 @@ import {
   BuildBatchCheckoutRedirect,
   GetArticleWithEmbeds,
   GetCuratedCollection,
+  ListCuratedCollections,
+  ListPublicCollections,
+  GetAdminCollection,
+  CreateCuratedCollection,
+  UpdateCuratedCollection,
+  DeleteCuratedCollection,
   CreateComparison,
   GetComparisonByToken,
   ListActiveCoupons,
@@ -41,6 +47,7 @@ import { parseRedisUrl } from '../cache/redis-connection.js';
 import { createDrizzleClient } from '../persistence/drizzle/client.js';
 import { DrizzleProductRepository } from '../persistence/repositories/drizzle-product.repository.js';
 import { DrizzleCategoryRepository } from '../persistence/repositories/drizzle-category.repository.js';
+import { DrizzleCuratedCollectionRepository } from '../persistence/repositories/drizzle-curated-collection.repository.js';
 import { DrizzlePageRepository } from '../persistence/repositories/drizzle-page.repository.js';
 import {
   DrizzlePriceAlertRepository,
@@ -66,6 +73,7 @@ export function buildApiContainer(env = loadEnv()) {
 
   const productRepository = new DrizzleProductRepository(db);
   const categoryRepository = new DrizzleCategoryRepository(db);
+  const curatedCollectionRepository = new DrizzleCuratedCollectionRepository(db);
   const pageRepository = new DrizzlePageRepository(db);
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
   const listProducts = new ListProducts(productRepository, categoryRepository);
@@ -85,7 +93,7 @@ export function buildApiContainer(env = loadEnv()) {
   );
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
-  const contentRepository = new DrizzleContentRepository(db);
+  const contentRepository = new DrizzleContentRepository(db, curatedCollectionRepository);
   const couponRepository = new DrizzleCouponRepository(db);
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
@@ -97,6 +105,12 @@ export function buildApiContainer(env = loadEnv()) {
   const linkBuilder = new DefaultAffiliateLinkBuilder(
     env.AMAZON_AFFILIATE_TAG,
     env.SHOPEE_AFFILIATE_ID,
+  );
+
+  const getCuratedCollection = new GetCuratedCollection(
+    curatedCollectionRepository,
+    productRepository,
+    cache,
   );
 
   return {
@@ -119,12 +133,35 @@ export function buildApiContainer(env = loadEnv()) {
         linkBuilder,
       ),
       getArticleWithEmbeds: new GetArticleWithEmbeds(contentRepository, productRepository, cache),
-      getCuratedCollection: new GetCuratedCollection(contentRepository, productRepository, cache),
+      getCuratedCollection,
+      listCuratedCollections: new ListCuratedCollections(curatedCollectionRepository),
+      listPublicCollections: new ListPublicCollections(curatedCollectionRepository),
+      getAdminCollection: new GetAdminCollection(curatedCollectionRepository),
+      createCuratedCollection: new CreateCuratedCollection(
+        curatedCollectionRepository,
+        cache,
+        cache,
+      ),
+      updateCuratedCollection: new UpdateCuratedCollection(
+        curatedCollectionRepository,
+        cache,
+        cache,
+      ),
+      deleteCuratedCollection: new DeleteCuratedCollection(
+        curatedCollectionRepository,
+        cache,
+        cache,
+      ),
       createComparison: new CreateComparison(comparisonRepository),
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
-      getPublishedPageLayout: new GetPublishedPageLayout(pageRepository, cache, listProducts),
+      getPublishedPageLayout: new GetPublishedPageLayout(
+        pageRepository,
+        cache,
+        listProducts,
+        getCuratedCollection,
+      ),
       listCategoryTree: new ListCategoryTree(categoryRepository),
       getCategoryBySlug: new GetCategoryBySlug(categoryRepository),
       listAdminCategories: new ListAdminCategories(categoryRepository),

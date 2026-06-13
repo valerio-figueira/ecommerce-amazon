@@ -3,6 +3,7 @@ import {
   bannerPropsSchema,
   categoryPillsPropsSchema,
   categoryBentoGridPropsSchema,
+  curatedCollectionPropsSchema,
   dynamicProductGridPropsSchema,
   featuredProductPropsSchema,
   heroCarouselPropsSchema,
@@ -35,6 +36,7 @@ export const EDITABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.CATEGORY_PILLS,
   BlockType.CATEGORY_BENTO_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.CURATED_COLLECTION,
   BlockType.RICH_TEXT,
   BlockType.BANNER,
   BlockType.SPACER,
@@ -125,6 +127,11 @@ export function getDefaultBlockProps(type: BlockType): unknown {
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return dynamicProductGridPropsSchema.parse({
         title: 'Novo bloco editorial',
+      });
+    case BlockType.CURATED_COLLECTION:
+      return curatedCollectionPropsSchema.parse({
+        collectionSlug: 'setup-gamer-iniciante',
+        layout: 'grid',
       });
     case BlockType.SPACER:
       return spacerPropsSchema.parse({});

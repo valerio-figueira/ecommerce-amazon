@@ -60,6 +60,8 @@ export class CuratedCollection {
     readonly utmDefaults: Record<string, string>,
     readonly productIds: string[],
     readonly ctaText: string,
+    readonly createdAt: Date,
+    readonly updatedAt: Date,
   ) {}
 
   static create(props: {
@@ -72,7 +74,10 @@ export class CuratedCollection {
     utmDefaults: Record<string, string>;
     productIds: string[];
     ctaText: string;
+    createdAt?: Date;
+    updatedAt?: Date;
   }): CuratedCollection {
+    const now = new Date();
     return new CuratedCollection(
       props.id,
       toSlug(props.slug),
@@ -83,6 +88,8 @@ export class CuratedCollection {
       props.utmDefaults,
       props.productIds,
       props.ctaText,
+      props.createdAt ?? now,
+      props.updatedAt ?? now,
     );
   }
 }

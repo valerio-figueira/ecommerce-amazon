@@ -254,7 +254,7 @@ function BentoTileCard({
                     <Input
                       {...field}
                       value={readString(field.value)}
-                      placeholder="/c/setup-gamer ou https://…"
+                      placeholder="/colecoes/setup-gamer ou https://…"
                     />
                   </FormControl>
                   <FormMessage />

@@ -11,6 +11,8 @@ type ProductCardActionsProps = {
   product: ProductListItemDto;
   sessionId?: string | undefined;
   blockId?: string | undefined;
+  clickOrigin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  utmDefaults?: Record<string, string>;
   className?: string;
   compact?: boolean;
 };
@@ -19,6 +21,8 @@ export function ProductCardActions({
   product,
   sessionId,
   blockId,
+  clickOrigin = 'listagem',
+  utmDefaults,
   className,
   compact = false,
 }: ProductCardActionsProps): React.JSX.Element {
@@ -37,6 +41,8 @@ export function ProductCardActions({
           slug={product.slug}
           sessionId={sessionId}
           blockId={blockId}
+          origin={clickOrigin}
+          {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           variant="primary"
           className={primaryButtonClass}
         >
@@ -68,6 +74,8 @@ export function ProductCardActions({
         slug={product.slug}
         sessionId={sessionId}
         blockId={blockId}
+        origin={clickOrigin}
+        {...(utmDefaults !== undefined ? { utmDefaults } : {})}
         variant="outline"
         className={buttonClass}
       >

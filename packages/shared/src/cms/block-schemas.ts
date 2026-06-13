@@ -186,8 +186,19 @@ export const productDeliveryItemSchema = z.object({
   editorialScore: z.number(),
 });
 
+export const renderedCollectionSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  description: z.string(),
+  coverImageUrl: z.string(),
+  ctaText: z.string(),
+});
+
+export type RenderedCollection = z.infer<typeof renderedCollectionSchema>;
+
 export const pageBlockDeliverySchema = pageBlockDtoSchema.extend({
   renderedData: z.array(productDeliveryItemSchema).optional(),
+  renderedCollection: renderedCollectionSchema.optional(),
 });
 
 export const pageLayoutDeliverySchema = pageLayoutDtoSchema.extend({

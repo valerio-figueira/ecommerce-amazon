@@ -9,7 +9,8 @@ type AffiliateGoLinkProps = {
   slug: string;
   sessionId?: string | undefined;
   blockId?: string | undefined;
-  origin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons';
+  origin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  utmDefaults?: Record<string, string>;
   className?: string;
   children: React.ReactNode;
   variant?: 'primary' | 'outline';
@@ -21,6 +22,7 @@ export function AffiliateGoLink({
   sessionId,
   blockId,
   origin = 'listagem',
+  utmDefaults,
   className,
   children,
   variant = 'outline',
@@ -28,6 +30,8 @@ export function AffiliateGoLink({
   const href = buildGoUrl(slug, {
     ...(blockId !== undefined ? { blockId } : {}),
     ...(sessionId !== undefined ? { sessionId } : {}),
+    origin,
+    ...(utmDefaults !== undefined ? { utmDefaults } : {}),
   });
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {

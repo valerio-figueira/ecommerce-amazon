@@ -10,6 +10,7 @@ import { registerAdminRoutes } from './admin-routes.js';
 import {
   toProductDetailDto,
   toProductListItemDto,
+  toCuratedCollectionDto,
 } from '../../presenters/product.presenter.js';
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import {
@@ -72,7 +73,10 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         slug,
         ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
         ...(sessionId !== undefined ? { sessionId } : {}),
-        origin: 'redirect_go',
+        origin: query.origin ?? 'redirect_go',
+        ...(query.utm_source !== undefined ? { utmSource: query.utm_source } : {}),
+        ...(query.utm_medium !== undefined ? { utmMedium: query.utm_medium } : {}),
+        ...(query.utm_campaign !== undefined ? { utmCampaign: query.utm_campaign } : {}),
       });
 
       if (!result.ok) {
@@ -295,12 +299,21 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     }
   });
 
+  app.get('/collections', async (_request, reply) => {
+    try {
+      const result = await useCases.listPublicCollections.execute();
+      return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
   app.get('/collections/:slug', async (request, reply) => {
     try {
       const { slug } = CollectionSlugParamsSchema.parse(request.params);
       const result = await useCases.getCuratedCollection.execute(slug);
       if (!result) return reply.status(404).send({ error: 'Collection not found' });
-      return reply.send(result);
+      return reply.send(toCuratedCollectionDto(result.collection, result.products));
     } catch (error) {
       return handleError(error, reply);
     }

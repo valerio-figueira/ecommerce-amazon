@@ -130,7 +130,7 @@ export function BannerFormFields({
             <FormItem>
               <FormLabel>Para onde o banner leva?</FormLabel>
               <FormControl>
-                <Input {...field} value={readString(field.value)} placeholder="https://… ou /c/slug" />
+                <Input {...field} value={readString(field.value)} placeholder="https://… ou /colecoes/slug" />
               </FormControl>
               <FormDescription>Página interna ou link externo ao clicar no banner.</FormDescription>
               <FormMessage />

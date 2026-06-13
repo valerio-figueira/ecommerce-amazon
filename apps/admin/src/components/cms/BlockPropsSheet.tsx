@@ -20,6 +20,7 @@ import {
 import type { AdminBlock } from '@/components/cms/normalize-positions';
 import { CategoryBentoGridForm } from '@/components/cms/props-forms/CategoryBentoGridForm';
 import { CategoryPillsForm } from '@/components/cms/props-forms/CategoryPillsForm';
+import { CuratedCollectionForm } from '@/components/cms/props-forms/CuratedCollectionForm';
 import { DynamicGridForm } from '@/components/cms/props-forms/DynamicGridForm';
 import { FeaturedProductForm } from '@/components/cms/props-forms/FeaturedProductForm';
 import { HeroCarouselForm } from '@/components/cms/props-forms/HeroCarouselForm';
@@ -103,6 +104,8 @@ function BlockFormBody({
       return <ProductGridForm control={control} categories={categories} />;
     case BlockType.FEATURED_PRODUCT:
       return <FeaturedProductForm control={control} products={products} />;
+    case BlockType.CURATED_COLLECTION:
+      return <CuratedCollectionForm control={control} />;
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return <DynamicGridForm control={control} categories={categories} />;
     case BlockType.SPACER:

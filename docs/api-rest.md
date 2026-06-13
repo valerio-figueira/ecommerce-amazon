@@ -287,9 +287,27 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 
 Artigo publicado com embeds resolvidos (produtos do catálogo local).
 
+### `GET /collections`
+
+Lista resumida de coleções (picker CMS).
+
+**Response:** `{ items: [{ slug, title, coverImageUrl }] }`
+
 ### `GET /collections/:slug`
 
 Coleção curada com produtos ordenados + metadados UTM.
+
+**Response:** `CuratedCollectionDto` — `{ collection: {...}, products: ProductListItemDto[] }`
+
+### Admin — `/admin/collections`
+
+| Método | Rota | Body / response |
+|--------|------|-----------------|
+| `GET` | `/admin/collections` | `{ items: AdminCollectionSummary[] }` |
+| `GET` | `/admin/collections/:id` | `AdminCollection` |
+| `POST` | `/admin/collections` | `CreateCollectionBody` → `{ id }` |
+| `PATCH` | `/admin/collections/:id` | `UpdateCollectionBody` → `204` |
+| `DELETE` | `/admin/collections/:id` | `204` |
 
 ---
 

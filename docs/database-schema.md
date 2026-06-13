@@ -163,8 +163,8 @@ Sessão anônima via `session_id` (cookie web).
 
 | Tabela | Colunas |
 |--------|---------|
-| `curated_collections` | `slug` UNIQUE, `title`, `description`, `cover_image_url`, `campaign_origin`, `utm_defaults` jsonb, `cta_text` |
-| `collection_products` | `collection_id`, `product_id`, `sort_order` |
+| `curated_collections` | `slug` UNIQUE, `title`, `description`, `cover_image_url`, `campaign_origin`, `utm_defaults` jsonb, `cta_text`, `created_at`, `updated_at` |
+| `collection_products` | `collection_id` FK, `product_id` FK, `sort_order`; UNIQUE `(collection_id, product_id)` |
 
 ### Comparador — `product_comparisons` / `comparison_products`
 

@@ -31,6 +31,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
 | [admin-products-phase1.md](./admin-products-phase1.md) | Gestão manual de produtos, parser de URL, API admin |
 | [categories-hierarchy.md](./categories-hierarchy.md) | Árvore de categorias, SEO, admin e vitrine |
+| [curated-collections.md](./curated-collections.md) | Coleções curadas: CRUD admin, landing `/colecoes/[slug]`, bloco CMS |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 
 ### Planos e especificação (fonte)
