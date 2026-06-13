@@ -767,6 +767,42 @@ body.admin-login-page {
   border-top: 3px solid var(--admin-primary);
 }
 
+.cms-slide-card {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 42, 90, 0.1);
+  background: var(--admin-bg);
+}
+
+.cms-slide-card.is-collapsed {
+  padding-bottom: 0.75rem;
+}
+
+.cms-slide-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cms-slide-card-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.cms-slide-card-toggle {
+  height: 1.75rem;
+  width: 1.75rem;
+  color: var(--admin-text-muted);
+}
+
+.cms-slide-card-toggle:hover {
+  color: var(--admin-primary);
+  background: var(--admin-accent-muted);
+}
+
 .cms-form-section-title {
   margin: 0;
   font-size: 0.6875rem;
@@ -819,13 +855,6 @@ body.admin-login-page {
   border-color: var(--admin-primary);
   background: var(--admin-accent-muted);
   color: var(--admin-primary-hover);
-}
-
-.cms-slide-card {
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(24, 42, 90, 0.1);
-  background: var(--admin-bg);
 }
 
 .cms-category-checklist {

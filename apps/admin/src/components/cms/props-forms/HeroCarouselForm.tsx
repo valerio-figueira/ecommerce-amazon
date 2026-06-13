@@ -1,6 +1,7 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { useFormContext, useWatch, type Control } from 'react-hook-form';
 
 import type { BlockFormValues } from '@/components/cms/forms/BlockPropsForm';
@@ -30,6 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { ProductPickerOption } from '@/lib/api/cms-pages-client';
+import { cn } from '@/lib/utils';
 
 type HeroCarouselFormProps = {
   control: Control<BlockFormValues>;
@@ -60,6 +62,222 @@ function readSlideList(value: unknown): HeroSlideFormValue[] {
   return value.filter((item): item is HeroSlideFormValue => typeof item === 'object' && item !== null);
 }
 
+type HeroSlideCardProps = {
+  index: number;
+  control: Control<BlockFormValues>;
+  products: ProductPickerOption[];
+  buttonMode: ReturnType<typeof getSlideButtonMode>;
+  previewTitle: string;
+  canRemove: boolean;
+  onRemove: () => void;
+};
+
+function HeroSlideCard({
+  index,
+  control,
+  products,
+  buttonMode,
+  previewTitle,
+  canRemove,
+  onRemove,
+}: HeroSlideCardProps): React.JSX.Element {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className={cn('cms-slide-card', !isOpen && 'is-collapsed')}>
+      <div className="cms-slide-card-header">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">Slide {index + 1}</p>
+          {!isOpen && previewTitle && (
+            <p className="truncate text-xs text-[var(--admin-text-muted)]">{previewTitle}</p>
+          )}
+        </div>
+        <div className="cms-slide-card-actions">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="cms-slide-card-toggle"
+            onClick={() => setIsOpen((open) => !open)}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? `Ocultar slide ${index + 1}` : `Mostrar slide ${index + 1}`}
+            title={isOpen ? 'Ocultar' : 'Mostrar'}
+          >
+            {isOpen ? (
+              <EyeOff className="h-4 w-4" aria-hidden />
+            ) : (
+              <Eye className="h-4 w-4" aria-hidden />
+            )}
+          </Button>
+          {canRemove && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onRemove}
+              className="text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Remover
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="mt-3 space-y-3">
+          <FormField
+            control={control}
+            name={`slides.${index}.imageUrl`}
+            render={({ field: imageField }) => (
+              <FormItem>
+                <FormLabel>Imagem de fundo</FormLabel>
+                <FormControl>
+                  <Input {...imageField} value={readString(imageField.value)} />
+                </FormControl>
+                <FormDescription>Cole o link da foto (1200×800 recomendado).</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name={`slides.${index}.title`}
+            render={({ field: titleField }) => (
+              <FormItem>
+                <FormLabel>Título principal</FormLabel>
+                <FormControl>
+                  <Input {...titleField} value={readString(titleField.value)} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name={`slides.${index}.subtitle`}
+            render={({ field: subtitleField }) => (
+              <FormItem>
+                <FormLabel>Subtítulo (opcional)</FormLabel>
+                <FormControl>
+                  <Input {...subtitleField} value={readString(subtitleField.value)} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name={`slides.${index}.buttonMode`}
+            render={({ field: modeField }) => (
+              <FormItem>
+                <FormLabel>Destino do botão</FormLabel>
+                <Select
+                  value={readString(modeField.value) || 'none'}
+                  onValueChange={modeField.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">Sem botão</SelectItem>
+                    <SelectItem value="link">Link para página ou coleção</SelectItem>
+                    <SelectItem value="product">Destacar um produto</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {buttonMode === 'link' && (
+            <div className="space-y-3 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-3">
+              <FormField
+                control={control}
+                name={`slides.${index}.ctaLabel`}
+                render={({ field: labelField }) => (
+                  <FormItem>
+                    <FormLabel>Texto do botão</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...labelField}
+                        value={readString(labelField.value)}
+                        placeholder="Ex: Ver coleção"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name={`slides.${index}.ctaHref`}
+                render={({ field: hrefField }) => (
+                  <FormItem>
+                    <FormLabel>Endereço do link</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...hrefField}
+                        value={readString(hrefField.value)}
+                        placeholder="/c/setup-gamer ou https://…"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {buttonMode === 'product' && (
+            <div className="space-y-3 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-3">
+              <FormField
+                control={control}
+                name={`slides.${index}.linkedProductSlug`}
+                render={({ field: slugField }) => (
+                  <FormItem>
+                    <FormLabel>Produto em destaque</FormLabel>
+                    <FormControl>
+                      <ProductPicker
+                        products={products}
+                        value={readString(slugField.value)}
+                        onChange={slugField.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name={`slides.${index}.ctaLabel`}
+                render={({ field: labelField }) => (
+                  <FormItem>
+                    <FormLabel>Texto do botão (opcional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...labelField}
+                        value={readString(labelField.value)}
+                        placeholder="Ver produto"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HeroCarouselForm({
   control,
   products,
@@ -84,180 +302,21 @@ export function HeroCarouselForm({
     <div className="space-y-6">
       <CmsFormSection title="Slides do carrossel">
         <div className="space-y-4">
-          {slideList.map((_, index) => {
+          {slideList.map((slide, index) => {
             const buttonMode = getSlideButtonMode(readUnknownArrayItem(watchedSlides, index));
+            const previewTitle = readString(slide['title']);
 
             return (
-            <div key={`slide-${index}`} className="cms-slide-card">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
-                  Slide {index + 1}
-                </p>
-                {slideList.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeSlide(index)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Remover
-                  </Button>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                <FormField
-                  control={control}
-                  name={`slides.${index}.imageUrl`}
-                  render={({ field: imageField }) => (
-                    <FormItem>
-                      <FormLabel>Imagem de fundo</FormLabel>
-                      <FormControl>
-                        <Input {...imageField} value={readString(imageField.value)} />
-                      </FormControl>
-                      <FormDescription>
-                        Cole o link da foto (1200×800 recomendado).
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name={`slides.${index}.title`}
-                  render={({ field: titleField }) => (
-                    <FormItem>
-                      <FormLabel>Título principal</FormLabel>
-                      <FormControl>
-                        <Input {...titleField} value={readString(titleField.value)} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name={`slides.${index}.subtitle`}
-                  render={({ field: subtitleField }) => (
-                    <FormItem>
-                      <FormLabel>Subtítulo (opcional)</FormLabel>
-                      <FormControl>
-                        <Input {...subtitleField} value={readString(subtitleField.value)} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name={`slides.${index}.buttonMode`}
-                  render={({ field: modeField }) => (
-                    <FormItem>
-                      <FormLabel>Destino do botão</FormLabel>
-                      <Select
-                        value={readString(modeField.value) || 'none'}
-                        onValueChange={modeField.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sem botão</SelectItem>
-                          <SelectItem value="link">Link para página ou coleção</SelectItem>
-                          <SelectItem value="product">Destacar um produto</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {buttonMode === 'link' && (
-                  <div className="space-y-3 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-3">
-                    <FormField
-                      control={control}
-                      name={`slides.${index}.ctaLabel`}
-                      render={({ field: labelField }) => (
-                        <FormItem>
-                          <FormLabel>Texto do botão</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...labelField}
-                              value={readString(labelField.value)}
-                              placeholder="Ex: Ver coleção"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name={`slides.${index}.ctaHref`}
-                      render={({ field: hrefField }) => (
-                        <FormItem>
-                          <FormLabel>Endereço do link</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...hrefField}
-                              value={readString(hrefField.value)}
-                              placeholder="/c/setup-gamer ou https://…"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                {buttonMode === 'product' && (
-                  <div className="space-y-3 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-3">
-                    <FormField
-                      control={control}
-                      name={`slides.${index}.linkedProductSlug`}
-                      render={({ field: slugField }) => (
-                        <FormItem>
-                          <FormLabel>Produto em destaque</FormLabel>
-                          <FormControl>
-                            <ProductPicker
-                              products={products}
-                              value={readString(slugField.value)}
-                              onChange={slugField.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name={`slides.${index}.ctaLabel`}
-                      render={({ field: labelField }) => (
-                        <FormItem>
-                          <FormLabel>Texto do botão (opcional)</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...labelField}
-                              value={readString(labelField.value)}
-                              placeholder="Ver produto"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+              <HeroSlideCard
+                key={`slide-${index}`}
+                index={index}
+                control={control}
+                products={products}
+                buttonMode={buttonMode}
+                previewTitle={previewTitle}
+                canRemove={slideList.length > 1}
+                onRemove={() => removeSlide(index)}
+              />
             );
           })}
         </div>
