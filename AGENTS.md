@@ -25,7 +25,18 @@ Plataforma de afiliação: **Vitrine Inteligente + Hub de Conteúdo** (Amazon BR
 
 ## Documentação implementada
 
-Consultar **`docs/README.md`** para o índice do que já foi construído (vs. planos em `.cursor/plans/`).
+Consultar **`docs/README.md`** para o índice completo. Principais referências:
+
+| Doc | Conteúdo |
+|-----|----------|
+| [docs/plans-index.md](docs/plans-index.md) | Índice dos planos `.cursor/plans/` |
+| [docs/architecture.md](docs/architecture.md) | Clean Architecture, camadas, cache |
+| [docs/domain-model.md](docs/domain-model.md) | Entidades, enums, ports, use cases |
+| [docs/database-schema.md](docs/database-schema.md) | Tabelas Drizzle, enums, seed |
+| [docs/api-rest.md](docs/api-rest.md) | Contrato REST (rotas, Zod, DTOs) |
+| [docs/worker-pipelines.md](docs/worker-pipelines.md) | Filas BullMQ, pipelines A–D |
+| [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
+| [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 
 ## Invariantes (nunca violar)
 
