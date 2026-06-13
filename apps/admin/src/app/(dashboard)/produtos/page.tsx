@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { AdminToastOnMount } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { listAdminProducts } from '@/lib/api/admin-products';
@@ -99,9 +100,11 @@ export default async function ProdutosPage(): Promise<React.JSX.Element> {
                   {products.items.map((product) => (
                     <article key={product.id} className="cms-block-card cms-block-card--plain">
                       <div className="flex min-w-0 flex-1 items-center gap-3.5">
-                        <span className="cms-type-picker-icon shrink-0">
-                          <Package className="h-4 w-4" aria-hidden />
-                        </span>
+                        <ProductThumbnail
+                          src={product.imageUrl}
+                          alt={product.title}
+                          size="sm"
+                        />
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="cms-block-title truncate">{product.title}</p>

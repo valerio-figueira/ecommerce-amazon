@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 type ProductImageListProps = {
@@ -51,6 +52,12 @@ export function ProductImageList({ name }: ProductImageListProps): React.JSX.Ele
       ) : (
         images.map((imageUrl, index) => (
           <div key={`${name}-${index}`} className="flex items-center gap-2">
+            <ProductThumbnail
+              key={imageUrl || `empty-${index}`}
+              src={imageUrl}
+              alt={`Imagem ${index + 1}`}
+              size="xs"
+            />
             <Input
               placeholder="https://..."
               value={imageUrl}

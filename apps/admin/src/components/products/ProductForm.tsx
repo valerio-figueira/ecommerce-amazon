@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { ProductEditorialSection } from '@/components/products/ProductEditorialSection';
 import { ProductLinkSection } from '@/components/products/ProductLinkSection';
 import { ProductPriceSection } from '@/components/products/ProductPriceSection';
+import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -16,6 +17,7 @@ import {
   updateAdminProductClient,
 } from '@/lib/api/admin-products-client';
 import type { ProductFormValues } from '@/lib/product-form-values';
+import { getPrimaryImageUrl } from '@/lib/product-image';
 import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
 
 const emptyValues: ProductFormValues = {
@@ -75,6 +77,9 @@ export function ProductForm({
   });
 
   const formId = isEdit ? 'product-edit-form' : 'product-create-form';
+  const watchedImages = form.watch('images');
+  const watchedTitle = form.watch('titleClean');
+  const primaryImage = getPrimaryImageUrl(watchedImages ?? []);
 
   return (
     <Form {...form}>
@@ -86,35 +91,45 @@ export function ProductForm({
       >
         <section className="cms-editor-section">
           <div className="cms-float-panel cms-vitrine-panel">
-            <div className="cms-panel-head">
-              <h2 className="cms-panel-title">{isEdit ? 'Edição manual' : 'Cadastro manual'}</h2>
-              <p className="cms-panel-meta">
-                <strong>{isEdit ? 'Editar produto no catálogo' : 'Cadastrar produto no catálogo'}</strong>
-                {isEdit && productTitle ? (
-                  <span className="cms-panel-slug">/{slug}</span>
-                ) : null}
-                <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
-                  {isEdit
-                    ? 'Atualize título, imagens, preço e conteúdo editorial. O slug permanece o mesmo para não quebrar links.'
-                    : 'Insira os dados manualmente. O sistema detecta marketplace e código a partir do link de afiliado.'}
-                </span>
-              </p>
-            </div>
+            <div className="flex gap-4">
+              <ProductThumbnail
+                key={primaryImage ?? 'no-image'}
+                src={primaryImage}
+                alt={watchedTitle || productTitle || 'Produto'}
+                size="md"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="cms-panel-head">
+                  <h2 className="cms-panel-title">{isEdit ? 'Edição manual' : 'Cadastro manual'}</h2>
+                  <p className="cms-panel-meta">
+                    <strong>{isEdit ? 'Editar produto no catálogo' : 'Cadastrar produto no catálogo'}</strong>
+                    {isEdit && productTitle ? (
+                      <span className="cms-panel-slug">/{slug}</span>
+                    ) : null}
+                    <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                      {isEdit
+                        ? 'Atualize título, imagens, preço e conteúdo editorial. O slug permanece o mesmo para não quebrar links.'
+                        : 'Insira os dados manualmente. O sistema detecta marketplace e código a partir do link de afiliado.'}
+                    </span>
+                  </p>
+                </div>
 
-            <div className="cms-panel-actions">
-              <p className="mr-auto text-xs text-[var(--admin-text-muted)]">
-                {isEdit
-                  ? `Editando: ${productTitle ?? slug}`
-                  : 'Campos obrigatórios: link, título e marketplace identificado.'}
-              </p>
-              <Button type="submit" variant="primary" size="sm" disabled={form.formState.isSubmitting}>
-                <Save className="h-4 w-4" />
-                {form.formState.isSubmitting
-                  ? 'Salvando…'
-                  : isEdit
-                    ? 'Salvar alterações'
-                    : 'Salvar produto no catálogo'}
-              </Button>
+                <div className="cms-panel-actions">
+                  <p className="mr-auto text-xs text-[var(--admin-text-muted)]">
+                    {isEdit
+                      ? `Editando: ${productTitle ?? slug}`
+                      : 'Campos obrigatórios: link, título e marketplace identificado.'}
+                  </p>
+                  <Button type="submit" variant="primary" size="sm" disabled={form.formState.isSubmitting}>
+                    <Save className="h-4 w-4" />
+                    {form.formState.isSubmitting
+                      ? 'Salvando…'
+                      : isEdit
+                        ? 'Salvar alterações'
+                        : 'Salvar produto no catálogo'}
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 
