@@ -762,3 +762,61 @@ body.admin-login-page {
   border-top: 3px solid var(--admin-primary);
   box-shadow: 0 24px 64px rgba(24, 42, 90, 0.18);
 }
+
+.cms-props-sheet {
+  border-top: 3px solid var(--admin-primary);
+}
+
+.cms-form-section-title {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
+.cms-form-section-divider {
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(24, 42, 90, 0.08);
+}
+
+.cms-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--admin-accent-muted);
+  color: var(--admin-primary-hover);
+}
+
+.cms-limit-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--admin-gray);
+  background: var(--admin-surface);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-navy);
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.cms-limit-chip:hover {
+  border-color: color-mix(in srgb, var(--admin-primary) 35%, var(--admin-gray));
+  background: var(--admin-accent-muted);
+}
+
+.cms-limit-chip.is-active {
+  border-color: var(--admin-primary);
+  background: var(--admin-accent-muted);
+  color: var(--admin-primary-hover);
+}

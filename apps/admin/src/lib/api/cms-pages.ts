@@ -16,9 +16,14 @@ const adminPageSummarySchema = z.object({
 
 const adminPagesSchema = z.array(adminPageSummarySchema);
 
-const categorySchema = z.object({
-  slug: z.string(),
-  label: z.string(),
+const categoriesResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      slug: z.string(),
+      label: z.string(),
+      count: z.number().optional(),
+    }),
+  ),
 });
 
 export type AdminBlockInput = {
@@ -98,6 +103,7 @@ export async function listCategories(): Promise<Array<{ slug: string; label: str
     return [];
   }
   const payload: unknown = await response.json();
-  const parsed = z.array(categorySchema).safeParse(payload);
-  return parsed.success ? parsed.data : [];
+  const parsed = categoriesResponseSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return parsed.data.items.map(({ slug, label }) => ({ slug, label }));
 }

@@ -18,30 +18,32 @@ import {
 import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
 import {
   BannerFormFields,
-  DynamicProductGridFormFields,
   RichTextFormFields,
   SpacerFormFields,
   UnsupportedBlockForm,
   type BlockFormValues,
 } from '@/components/cms/forms/BlockPropsForm';
 import type { AdminBlock } from '@/components/cms/normalize-positions';
+import { translateZodError } from '@/components/cms/props-forms/dynamic-grid-form-meta';
+import { DynamicGridForm } from '@/components/cms/props-forms/DynamicGridForm';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import {
   createPageBlockClient,
   listCategoriesClient,
   updatePageBlockClient,
 } from '@/lib/api/cms-pages-client';
+import { cn } from '@/lib/utils';
 
-type BlockPropsDialogProps = {
+type BlockPropsSheetProps = {
   slug: string;
   block: AdminBlock | null;
   mode: 'create' | 'edit';
@@ -73,7 +75,18 @@ function toFormValues(props: unknown): BlockFormValues {
   return {};
 }
 
-export function BlockPropsDialog({
+function sanitizeFormValues(values: BlockFormValues): BlockFormValues {
+  const next = { ...values };
+  if (next['minDiscountPercentage'] === 0 || next['minDiscountPercentage'] === undefined) {
+    delete next['minDiscountPercentage'];
+  }
+  if (next['subtitle'] === '') {
+    delete next['subtitle'];
+  }
+  return next;
+}
+
+export function BlockPropsSheet({
   slug,
   block,
   mode,
@@ -81,7 +94,7 @@ export function BlockPropsDialog({
   open,
   onOpenChange,
   onSaved,
-}: BlockPropsDialogProps): React.JSX.Element | null {
+}: BlockPropsSheetProps): React.JSX.Element | null {
   const isEditable = block ? EDITABLE_BLOCK_TYPES.includes(block.type) : false;
 
   const schema = useMemo(
@@ -100,6 +113,7 @@ export function BlockPropsDialog({
   useEffect(() => {
     if (block && open) {
       form.reset(toFormValues(block.props));
+      setError(null);
     }
   }, [block, form, open]);
 
@@ -119,13 +133,19 @@ export function BlockPropsDialog({
     setIsSaving(true);
     setError(null);
 
+    const sanitized = sanitizeFormValues(values);
+
     let parsedValues: BlockFormValues;
     try {
-      parsedValues = schema.parse(values);
+      parsedValues = schema.parse(sanitized);
     } catch (validationError) {
       setIsSaving(false);
       if (validationError instanceof ZodError) {
-        setError(validationError.errors[0]?.message ?? 'Dados inválidos');
+        const first = validationError.errors[0];
+        const message = first
+          ? translateZodError(first.message, first.path.map(String))
+          : 'Dados inválidos';
+        setError(message);
       } else {
         setError('Dados inválidos');
       }
@@ -158,65 +178,73 @@ export function BlockPropsDialog({
     }
   }
 
+  const saveLabel =
+    block.type === BlockType.DYNAMIC_PRODUCT_GRID
+      ? 'Aplicar configurações no bloco'
+      : 'Salvar propriedades';
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="cms-dialog-accent max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2.5 text-[var(--admin-navy-deep)]">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="cms-props-sheet flex w-full flex-col p-0 sm:max-w-lg">
+        <SheetHeader className="shrink-0 border-b border-[var(--admin-gray)] px-6 py-5">
+          <SheetTitle className="flex items-center gap-2.5">
             <span className="cms-type-picker-icon">
               <TypeIcon className="h-4 w-4" aria-hidden />
             </span>
             {BLOCK_TYPE_LABELS[block.type]}
-          </DialogTitle>
-          <DialogDescription>
+          </SheetTitle>
+          <SheetDescription>
             {mode === 'create'
               ? 'Defina as propriedades iniciais do novo bloco antes de publicar na vitrine.'
               : 'Altere as propriedades salvas. A ordem na página permanece até você salvar a ordem.'}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         {isEditable ? (
           <Form {...form}>
             <form
-              className="space-y-4"
+              className="flex min-h-0 flex-1 flex-col"
               onSubmit={(event) => {
                 void form.handleSubmit(handleSubmit)(event);
               }}
             >
-              {block.type === BlockType.DYNAMIC_PRODUCT_GRID && (
-                <DynamicProductGridFormFields control={form.control} categories={categories} />
-              )}
-              {block.type === BlockType.SPACER && <SpacerFormFields control={form.control} />}
-              {block.type === BlockType.BANNER && <BannerFormFields control={form.control} />}
-              {block.type === BlockType.RICH_TEXT && <RichTextFormFields control={form.control} />}
+              <div className="flex-1 overflow-y-auto px-6 py-5">
+                {block.type === BlockType.DYNAMIC_PRODUCT_GRID && (
+                  <DynamicGridForm control={form.control} categories={categories} />
+                )}
+                {block.type === BlockType.SPACER && <SpacerFormFields control={form.control} />}
+                {block.type === BlockType.BANNER && <BannerFormFields control={form.control} />}
+                {block.type === BlockType.RICH_TEXT && <RichTextFormFields control={form.control} />}
+              </div>
 
-              {error && (
-                <div className="cms-status-banner is-error" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <DialogFooter className="gap-2 sm:gap-0">
+              <SheetFooter className="shrink-0 flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+                {error && (
+                  <div className={cn('cms-status-banner is-error w-full sm:order-first sm:mr-auto sm:max-w-[60%]')} role="alert">
+                    {error}
+                  </div>
+                )}
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancelar
                 </Button>
                 <Button type="submit" variant="primary" disabled={isSaving}>
-                  {isSaving ? 'Salvando…' : 'Salvar propriedades'}
+                  {isSaving ? 'Salvando…' : saveLabel}
                 </Button>
-              </DialogFooter>
+              </SheetFooter>
             </form>
           </Form>
         ) : (
-          <div className="space-y-4">
-            <UnsupportedBlockForm props={block.props} />
-            <DialogFooter>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <UnsupportedBlockForm props={block.props} />
+            </div>
+            <SheetFooter className="shrink-0 px-6 py-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Fechar
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

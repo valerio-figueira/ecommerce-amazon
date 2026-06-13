@@ -97,6 +97,20 @@ export function FormControl({
   );
 }
 
+export function FormDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>): React.JSX.Element {
+  const { formDescriptionId } = useFormField();
+  return (
+    <p
+      id={formDescriptionId}
+      className={cn('text-xs text-[var(--admin-text-muted)]', className)}
+      {...props}
+    />
+  );
+}
+
 export function FormMessage({
   className,
   children,

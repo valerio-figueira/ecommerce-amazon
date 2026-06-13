@@ -4,7 +4,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import { CheckCircle2, Layers, Plus, Save, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
-import { BlockPropsDialog } from '@/components/cms/BlockPropsDialog';
+import { BlockPropsSheet } from '@/components/cms/BlockPropsSheet';
 import { BlockListItem } from '@/components/cms/BlockListItem';
 import { ALL_BLOCK_TYPES, getDefaultBlockProps } from '@/components/cms/block-type-labels';
 import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
@@ -310,7 +310,7 @@ export function CMSBlockOrderManager({
         </DialogContent>
       </Dialog>
 
-      <BlockPropsDialog
+      <BlockPropsSheet
         slug={slug}
         block={editingBlock}
         mode={dialogMode}

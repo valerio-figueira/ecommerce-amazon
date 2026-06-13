@@ -6,10 +6,21 @@ import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 
 import type { AdminBlockInput, UpdateAdminBlockInput } from '@/lib/api/cms-pages';
 
-const categorySchema = z.object({
-  slug: z.string(),
-  label: z.string(),
+const categoriesResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      slug: z.string(),
+      label: z.string(),
+      count: z.number().optional(),
+    }),
+  ),
 });
+
+function parseCategoriesPayload(payload: unknown): Array<{ slug: string; label: string }> {
+  const parsed = categoriesResponseSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return parsed.data.items.map(({ slug, label }) => ({ slug, label }));
+}
 
 function readErrorMessage(payload: unknown): string {
   if (typeof payload === 'object' && payload !== null && 'error' in payload) {
@@ -99,8 +110,7 @@ export async function listCategoriesClient(): Promise<Array<{ slug: string; labe
   const response = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
-  const parsed = z.array(categorySchema).safeParse(payload);
-  return parsed.success ? parsed.data : [];
+  return parseCategoriesPayload(payload);
 }
 
 export type { BlockType };
