@@ -2,6 +2,8 @@ export { GetProductBySlug } from './use-cases/product/GetProductBySlug.js';
 export { ListProducts } from './use-cases/product/ListProducts.js';
 export { GetProductPriceHistory } from './use-cases/product/GetProductPriceHistory.js';
 export { CreateProduct } from './use-cases/product/CreateProduct.js';
+export { GetAdminProduct } from './use-cases/product/GetAdminProduct.js';
+export { UpdateProduct } from './use-cases/product/UpdateProduct.js';
 export { UpdatePricesBatch } from './use-cases/sync/UpdatePricesBatch.js';
 export { SyncCatalogBatch } from './use-cases/sync/SyncCatalogBatch.js';
 export { RunHygienePipeline } from './use-cases/sync/RunHygienePipeline.js';

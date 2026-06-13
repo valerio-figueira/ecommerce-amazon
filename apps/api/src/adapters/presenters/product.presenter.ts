@@ -57,6 +57,24 @@ export type AdminProductListResponseDto = {
   pageSize: number;
 };
 
+export type AdminProductDetailDto = {
+  id: string;
+  slug: string;
+  affiliateLink: string;
+  marketplace: string;
+  externalId: string;
+  titleClean: string;
+  images: string[];
+  editorialScore: number;
+  pros: string[];
+  cons: string[];
+  price: number;
+  strikethroughPrice?: number | undefined;
+  shouldShowPrice: boolean;
+  availability: string;
+  createdAt: string;
+};
+
 export function toProductPriceDto(product: Product): ProductPriceDto {
   return {
     amount: product.shouldShowPrice ? product.price.amount : null,
@@ -137,5 +155,27 @@ export function toAdminProductListResponseDto(
     total: result.total,
     page: result.page,
     pageSize: result.pageSize,
+  };
+}
+
+export function toAdminProductDetailDto(product: Product): AdminProductDetailDto {
+  return {
+    id: product.id,
+    slug: product.slug,
+    affiliateLink: product.affiliateLink.url,
+    marketplace: product.marketplace,
+    externalId: product.externalId,
+    titleClean: product.titleClean,
+    images: product.images,
+    editorialScore: product.editorialScore / 10,
+    pros: product.pros ?? [],
+    cons: product.cons ?? [],
+    price: product.price.amount,
+    ...(product.strikethroughPrice !== undefined
+      ? { strikethroughPrice: product.strikethroughPrice }
+      : {}),
+    shouldShowPrice: !product.price.isStale,
+    availability: product.availability,
+    createdAt: product.createdAt.toISOString(),
   };
 }

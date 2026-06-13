@@ -60,6 +60,41 @@ export const createProductBodySchema = z
 
 export type CreateProductBody = z.infer<typeof createProductBodySchema>;
 
+export const updateProductBodySchema = createProductBodySchema;
+export type UpdateProductBody = z.infer<typeof updateProductBodySchema>;
+
+export const adminProductSlugParamsSchema = z.object({
+  slug: z.string().min(1),
+});
+
+export const adminProductDetailSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  affiliateLink: z.string().url(),
+  marketplace: marketplaceSchema,
+  externalId: z.string(),
+  titleClean: z.string(),
+  images: z.array(z.string().url()),
+  editorialScore: z.number().min(0).max(10),
+  pros: z.array(z.string()),
+  cons: z.array(z.string()),
+  price: z.number().min(0),
+  strikethroughPrice: z.number().min(0).optional(),
+  shouldShowPrice: z.boolean(),
+  availability: productAvailabilitySchema,
+  createdAt: z.string(),
+});
+
+export type AdminProductDetail = z.infer<typeof adminProductDetailSchema>;
+
+export const createProductResponseSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+});
+
+export const updateProductResponseSchema = createProductResponseSchema;
+export type UpdateProductResponse = z.infer<typeof updateProductResponseSchema>;
+
 export const adminProductPriceSchema = z.object({
   amount: z.number().nullable(),
   currency: z.string(),
@@ -87,11 +122,6 @@ export const adminProductListResponseSchema = z.object({
   total: z.number(),
   page: z.number(),
   pageSize: z.number(),
-});
-
-export const createProductResponseSchema = z.object({
-  id: z.string().uuid(),
-  slug: z.string(),
 });
 
 export type AdminProductListItem = z.infer<typeof adminProductListItemSchema>;

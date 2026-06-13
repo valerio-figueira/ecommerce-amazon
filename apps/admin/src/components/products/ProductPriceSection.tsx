@@ -20,10 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import type { z } from 'zod';
-import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
-
-type ProductFormValues = z.input<typeof createProductBodySchema>;
+import type { ProductFormValues } from '@/lib/product-form-values';
 
 export function ProductPriceSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();

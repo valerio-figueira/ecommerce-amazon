@@ -18,7 +18,7 @@ export default function NovoProdutoPage(): React.JSX.Element {
         ]}
       />
       <AdminPageCard>
-        <ProductForm />
+        <ProductForm mode="create" />
       </AdminPageCard>
     </>
   );

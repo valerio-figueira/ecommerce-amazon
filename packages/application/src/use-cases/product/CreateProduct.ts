@@ -1,21 +1,26 @@
 import { randomUUID } from 'node:crypto';
 
 import {
-  AffiliateLink,
-  ConflictError,
-  Price,
   PriceSnapshot,
   Product,
-  ProductAvailability,
   SnapshotSource,
   ValidationError,
-  parseMarketplace,
   type CacheInvalidator,
   type PriceSnapshotRepository,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import type { CreateProductBody } from '@ecommerce-amazon/shared/admin';
-import { parseMarketplaceProductUrl, slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
+import { slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
+
+import {
+  assertExternalIdAvailable,
+  buildPriceFromForm,
+  createAffiliateLink,
+  filterNonEmptyStrings,
+  parseProductAvailability,
+  resolveProductLink,
+  toStoredEditorialScore,
+} from './product-form.helpers.js';
 
 export type CreateProductResult = {
   id: string;
@@ -30,29 +35,8 @@ export class CreateProduct {
   ) {}
 
   async execute(input: CreateProductBody): Promise<CreateProductResult> {
-    const marketplace = parseMarketplace(input.marketplace);
-    let externalId = input.externalId.trim();
-
-    const parsedFromUrl = parseMarketplaceProductUrl(input.affiliateLink);
-    if (parsedFromUrl) {
-      if (parsedFromUrl.marketplace !== input.marketplace) {
-        throw new ValidationError('Marketplace does not match affiliate link');
-      }
-      if (!externalId) {
-        externalId = parsedFromUrl.externalId;
-      } else if (externalId !== parsedFromUrl.externalId) {
-        throw new ValidationError('External ID does not match affiliate link');
-      }
-    }
-
-    if (!externalId) {
-      throw new ValidationError('External ID is required');
-    }
-
-    const duplicate = await this.productRepository.findByExternalId(marketplace, externalId);
-    if (duplicate) {
-      throw new ConflictError('Product already exists for this marketplace and external ID');
-    }
+    const { marketplace, externalId } = resolveProductLink(input);
+    await assertExternalIdAvailable(this.productRepository, marketplace, externalId);
 
     const baseSlug = input.slug?.trim() || slugifyTitle(input.titleClean);
     if (!baseSlug) {
@@ -61,22 +45,14 @@ export class CreateProduct {
     const slug = await this.resolveUniqueSlug(baseSlug);
 
     const now = new Date();
-    const priceIsStale = !input.shouldShowPrice;
-    const price = Price.create({
-      amount: input.price,
-      currency: 'BRL',
-      updatedAt: now,
-      isStale: priceIsStale,
-    });
+    const price = buildPriceFromForm(input, { updatedAt: now });
+    const affiliateLink = createAffiliateLink(input);
 
-    const affiliateLink = AffiliateLink.create(input.affiliateLink, input.marketplace);
-
-    const filteredPros = input.pros.map((item) => item.trim()).filter((item) => item.length > 0);
-    const filteredCons = input.cons.map((item) => item.trim()).filter((item) => item.length > 0);
-    const filteredImages = input.images.filter((url) => url.trim().length > 0);
+    const filteredPros = filterNonEmptyStrings(input.pros);
+    const filteredCons = filterNonEmptyStrings(input.cons);
+    const filteredImages = filterNonEmptyStrings(input.images);
 
     const productId = randomUUID();
-    const editorialScoreStored = Math.round(input.editorialScore * 10);
 
     const product = Product.create({
       id: productId,
@@ -92,7 +68,7 @@ export class CreateProduct {
       affiliateLink,
       images: filteredImages,
       specsNormalized: {},
-      editorialScore: editorialScoreStored,
+      editorialScore: toStoredEditorialScore(input.editorialScore),
       availability: parseProductAvailability(input.availability),
       tags: [],
       ...(filteredPros.length > 0 ? { pros: filteredPros } : {}),
@@ -130,16 +106,5 @@ export class CreateProduct {
     }
 
     return candidate;
-  }
-}
-
-function parseProductAvailability(value: string): ProductAvailability {
-  switch (value) {
-    case 'in_stock':
-      return ProductAvailability.IN_STOCK;
-    case 'out_of_stock':
-      return ProductAvailability.OUT_OF_STOCK;
-    default:
-      return ProductAvailability.UNKNOWN;
   }
 }

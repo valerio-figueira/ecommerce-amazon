@@ -1,9 +1,14 @@
 import {
+  adminProductDetailSchema,
   adminProductListResponseSchema,
   createProductResponseSchema,
+  updateProductResponseSchema,
+  type AdminProductDetail,
   type AdminProductListResponse,
   type CreateProductBody,
   type CreateProductResponse,
+  type UpdateProductBody,
+  type UpdateProductResponse,
 } from '@ecommerce-amazon/shared/admin';
 
 import { adminFetchParsed } from './admin-fetch';
@@ -27,9 +32,27 @@ export async function listAdminProducts(
   return adminFetchParsed(path, adminProductListResponseSchema);
 }
 
+export async function getAdminProduct(slug: string): Promise<AdminProductDetail> {
+  return adminFetchParsed(
+    `/admin/products/${encodeURIComponent(slug)}`,
+    adminProductDetailSchema,
+  );
+}
+
 export async function createAdminProduct(body: CreateProductBody): Promise<CreateProductResponse> {
   return adminFetchParsed('/admin/products', createProductResponseSchema, {
     method: 'POST',
     body,
   });
+}
+
+export async function updateAdminProduct(
+  slug: string,
+  body: UpdateProductBody,
+): Promise<UpdateProductResponse> {
+  return adminFetchParsed(
+    `/admin/products/${encodeURIComponent(slug)}`,
+    updateProductResponseSchema,
+    { method: 'PATCH', body },
+  );
 }

@@ -1,10 +1,16 @@
 import {
+  adminProductDetailSchema,
   adminProductListResponseSchema,
   createProductBodySchema,
   createProductResponseSchema,
+  updateProductBodySchema,
+  updateProductResponseSchema,
+  type AdminProductDetail,
   type AdminProductListResponse,
   type CreateProductBody,
   type CreateProductResponse,
+  type UpdateProductBody,
+  type UpdateProductResponse,
 } from '@ecommerce-amazon/shared/admin';
 
 export type ListAdminProductsClientParams = {
@@ -40,6 +46,26 @@ export async function listAdminProductsClient(
   return adminProductListResponseSchema.parse(data);
 }
 
+export async function getAdminProductClient(slug: string): Promise<AdminProductDetail> {
+  const response = await fetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    const payload: unknown = await response.json().catch(() => null);
+    const message =
+      typeof payload === 'object' &&
+      payload !== null &&
+      'error' in payload &&
+      typeof payload.error === 'string'
+        ? payload.error
+        : `Request failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  const data: unknown = await response.json();
+  return adminProductDetailSchema.parse(data);
+}
+
 export async function createAdminProductClient(
   body: CreateProductBody,
 ): Promise<CreateProductResponse> {
@@ -64,4 +90,31 @@ export async function createAdminProductClient(
 
   const data: unknown = await response.json();
   return createProductResponseSchema.parse(data);
+}
+
+export async function updateAdminProductClient(
+  slug: string,
+  body: UpdateProductBody,
+): Promise<UpdateProductResponse> {
+  const parsedBody = updateProductBodySchema.parse(body);
+  const response = await fetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(parsedBody),
+  });
+
+  if (!response.ok) {
+    const payload: unknown = await response.json().catch(() => null);
+    const message =
+      typeof payload === 'object' &&
+      payload !== null &&
+      'error' in payload &&
+      typeof payload.error === 'string'
+        ? payload.error
+        : `Request failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  const data: unknown = await response.json();
+  return updateProductResponseSchema.parse(data);
 }

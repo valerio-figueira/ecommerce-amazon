@@ -5,10 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { z } from 'zod';
-import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
-
-type ProductFormValues = z.input<typeof createProductBodySchema>;
+import type { ProductFormValues } from '@/lib/product-form-values';
 
 type ProductImageListProps = {
   name: 'images';

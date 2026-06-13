@@ -1,4 +1,4 @@
-import { Package, Plus } from 'lucide-react';
+import { ChevronRight, Package, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -123,6 +123,13 @@ export default async function ProdutosPage(): Promise<React.JSX.Element> {
                           </p>
                         </div>
                       </div>
+
+                      <Button asChild variant="primary" size="sm" className="shrink-0">
+                        <Link href={`/produtos/${product.slug}`}>
+                          Editar
+                          <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+                        </Link>
+                      </Button>
                     </article>
                   ))}
                 </div>

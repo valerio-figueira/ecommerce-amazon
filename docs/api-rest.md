@@ -404,6 +404,16 @@ Implementação: [`admin-product-routes.ts`](../apps/api/src/adapters/http/route
 
 **Response 409:** produto duplicado (`marketplace` + `externalId`).
 
+### `GET /admin/products/:slug`
+
+**Response 200:** `adminProductDetailSchema` — payload completo para o formulário de edição (preço bruto, `shouldShowPrice`, nota 0–10).
+
+### `PATCH /admin/products/:slug`
+
+**Body:** `updateProductBodySchema` (mesmo contrato do create). Marketplace e `externalId` devem permanecer iguais ao registro.
+
+**Response 200:** `{ id, slug }`
+
 ---
 
 ## Schemas de request (referência)

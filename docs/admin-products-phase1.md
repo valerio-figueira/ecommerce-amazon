@@ -14,13 +14,18 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
 
-## Fora de escopo (fase 2)
+## Fora de escopo (fase 3)
 
-- Edição (`PATCH /admin/products/:slug`)
 - Upload de imagem (somente URLs HTTPS)
-- Enfileirar worker no create; `SyncCatalogBatch` ainda só atualiza produtos existentes
+- Enfileirar worker no create/update; `SyncCatalogBatch` ainda só atualiza produtos existentes
 - Campos SEO no formulário
 - Delete / soft-delete
+
+## Edição (fase 2)
+
+- Rota admin: `GET /admin/products/:slug`, `PATCH /admin/products/:slug`
+- Tela: `/produtos/[slug]` com `ProductForm` em modo `edit`
+- Slug imutável na edição (links públicos preservados)
 
 ## Modo híbrido manual vs worker
 

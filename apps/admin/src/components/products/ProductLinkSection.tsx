@@ -21,18 +21,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { adminMarketplaceLabel } from '@/lib/product-admin-format';
-import type { z } from 'zod';
-import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
-
-type ProductFormValues = z.input<typeof createProductBodySchema>;
+import type { ProductFormValues } from '@/lib/product-form-values';
 import { parseMarketplaceProductUrl } from '@ecommerce-amazon/shared/marketplace';
 
-export function ProductLinkSection(): React.JSX.Element {
+export function ProductLinkSection({
+  lockIdentity = false,
+}: {
+  lockIdentity?: boolean;
+}): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
-  const [linkDetected, setLinkDetected] = useState(false);
+  const [linkDetected, setLinkDetected] = useState(lockIdentity);
 
   const handleAffiliateLinkChange = (url: string): void => {
     form.setValue('affiliateLink', url, { shouldDirty: true, shouldValidate: true });
+
+    if (lockIdentity) {
+      return;
+    }
 
     const parsed = parseMarketplaceProductUrl(url);
     if (parsed) {
@@ -61,7 +66,9 @@ export function ProductLinkSection(): React.JSX.Element {
               />
             </FormControl>
             <FormDescription>
-              O sistema detecta automaticamente o parceiro e o código do produto.
+              {lockIdentity
+                ? 'Atualize o link de afiliado (tag). Marketplace e código do produto não podem ser alterados.'
+                : 'O sistema detecta automaticamente o parceiro e o código do produto.'}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -78,7 +85,7 @@ export function ProductLinkSection(): React.JSX.Element {
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
-                disabled={linkDetected}
+                disabled={linkDetected || lockIdentity}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -107,7 +114,7 @@ export function ProductLinkSection(): React.JSX.Element {
               <FormControl>
                 <Input
                   {...field}
-                  disabled={linkDetected}
+                  disabled={linkDetected || lockIdentity}
                   placeholder="Detectado automaticamente"
                   className="font-mono"
                 />

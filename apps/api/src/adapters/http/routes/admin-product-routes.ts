@@ -12,10 +12,15 @@ import {
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
   adminListProductsQuerySchema,
+  adminProductSlugParamsSchema,
   createProductBodySchema,
+  updateProductBodySchema,
 } from '@ecommerce-amazon/shared/admin';
 
-import { toAdminProductListResponseDto } from '../../presenters/product.presenter.js';
+import {
+  toAdminProductDetailDto,
+  toAdminProductListResponseDto,
+} from '../../presenters/product.presenter.js';
 
 function handleAdminProductError(error: unknown, reply: FastifyReply) {
   if (error instanceof ZodError) {
@@ -66,6 +71,27 @@ export async function registerAdminProductRoutes(
       const body = createProductBodySchema.parse(request.body);
       const result = await useCases.createProduct.execute(body);
       return reply.status(201).send(result);
+    } catch (error) {
+      return handleAdminProductError(error, reply);
+    }
+  });
+
+  app.get('/admin/products/:slug', async (request, reply) => {
+    try {
+      const params = adminProductSlugParamsSchema.parse(request.params);
+      const product = await useCases.getAdminProduct.execute({ slug: params.slug });
+      return reply.send(toAdminProductDetailDto(product));
+    } catch (error) {
+      return handleAdminProductError(error, reply);
+    }
+  });
+
+  app.patch('/admin/products/:slug', async (request, reply) => {
+    try {
+      const params = adminProductSlugParamsSchema.parse(request.params);
+      const body = updateProductBodySchema.parse(request.body);
+      const result = await useCases.updateProduct.execute(params.slug, body);
+      return reply.send(result);
     } catch (error) {
       return handleAdminProductError(error, reply);
     }
