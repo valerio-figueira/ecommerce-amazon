@@ -48,10 +48,26 @@ Builder: [`buildProductJsonLd`](../packages/shared/src/seo/product-json-ld.ts)
 
 Helper: [`resolveProductCanonicalUrl`](../packages/shared/src/seo/product-canonical.ts)
 
+### 1. Banco — como nasce
+
+- Coluna `products.canonical_url`: `varchar(512)`, **nullable**, sem valor no cadastro admin
+- `CreateProduct` **não** envia `canonicalUrl` → PostgreSQL grava `NULL`
+- Override editorial só via SQL / Drizzle Studio (cenários avançados de SEO)
+
+### 2. Frontend — como se preenche sozinho
+
+Na renderização de `/produtos/[slug]`, o Next.js aplica:
+
+```
+SE canonical_url no banco ≠ NULL  →  usa a URL do banco (exceção)
+SENÃO                           →  {NEXT_PUBLIC_SITE_URL}/produtos/{slug} (padrão)
+```
+
+Implementação: `generateMetadata` e JSON-LD chamam `resolveProductCanonicalUrl(slug, siteBaseUrl, product.canonicalUrl)`.
+
 - Página produto: [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx) — tag **sempre** emitida via `metadata.alternates.canonical`
 - Home: [`apps/web/src/app/page.tsx`](../apps/web/src/app/page.tsx) — canonical = `NEXT_PUBLIC_SITE_URL`
-- Produto: hierarquia **Editorial Override** — `products.canonical_url` quando preenchido; senão `{SITE_URL}/produtos/{slug}` gerado no Next.js
-- Admin: sem input no formulário; override apenas via banco (Drizzle Studio / SQL)
+- Admin: sem input no formulário; operador leigo nunca vê o campo
 
 ## Interlinkagem
 
