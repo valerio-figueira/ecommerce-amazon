@@ -1,6 +1,10 @@
 'use client';
 
+import useEmblaCarousel from 'embla-carousel-react';
 import { useQuery } from '@tanstack/react-query';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { BlockType } from '@ecommerce-amazon/domain';
 import { categoryPillsPropsSchema, productGridPropsSchema } from '@ecommerce-amazon/shared/cms';
@@ -13,6 +17,8 @@ import { apiFetchParsed } from '@/lib/api/client';
 import { productsPageSchema } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
 
+const DEFAULT_CATALOG_SLUG = 'home-office';
+
 function findLinkedPillsBlock(
   blocksById: Record<string, BlockComponentProps['block']>,
   gridBlockId: string,
@@ -23,6 +29,21 @@ function findLinkedPillsBlock(
     if (pillsProps.linkedBlockId === gridBlockId) return candidate;
   }
   return undefined;
+}
+
+function resolveCatalogHref(
+  catalogHref: string | undefined,
+  activeCategory: string | undefined,
+): string {
+  if (catalogHref) {
+    return catalogHref;
+  }
+
+  if (activeCategory) {
+    return `/categorias/${activeCategory}`;
+  }
+
+  return `/categorias/${DEFAULT_CATALOG_SLUG}`;
 }
 
 export function ProductGridBlock({
@@ -50,6 +71,39 @@ export function ProductGridBlock({
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
   });
 
+  const catalogHref = useMemo(
+    () => resolveCatalogHref(props.catalogHref, activeCategory),
+    [props.catalogHref, activeCategory],
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'start',
+    containScroll: 'trimSnaps',
+    dragFree: true,
+  });
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    onSelect();
+  }, [emblaApi, onSelect]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit();
+  }, [emblaApi, data?.items.length, activeCategory]);
+
+  const slideCount = isLoading ? props.pageSize : (data?.items.length ?? 0);
+
   return (
     <section>
       <div
@@ -58,7 +112,15 @@ export function ProductGridBlock({
           linkedPillsProps && 'md:flex-row md:items-start md:justify-between',
         )}
       >
-        <h2 className="shrink-0 text-2xl font-bold md:text-3xl">{props.title}</h2>
+        <div className="min-w-0 flex-1 space-y-2">
+          <h2 className="text-2xl font-bold md:text-3xl">{props.title}</h2>
+          <Link
+            href={catalogHref}
+            className="inline-flex text-sm font-semibold text-neutral-600 transition-colors hover:text-neutral-900"
+          >
+            {props.catalogCtaLabel}
+          </Link>
+        </div>
         {linkedPillsProps && (
           <CategoryPillsRow
             categorySlugs={linkedPillsProps.categorySlugs}
@@ -67,24 +129,60 @@ export function ProductGridBlock({
           />
         )}
       </div>
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {Array.from({ length: props.pageSize }).map((_, i) => (
-            <div key={i} className="aspect-square animate-pulse rounded-2xl bg-neutral-200" />
-          ))}
-        </div>
-      ) : (
-        <div
+
+      <div className="relative px-1 md:px-10">
+        <button
+          type="button"
+          aria-label="Produtos anteriores"
+          onClick={() => emblaApi?.scrollPrev()}
+          disabled={!canScrollPrev}
           className={cn(
-            'grid gap-4',
-            props.columns === 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2',
+            'absolute left-0 top-[38%] z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-white hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
           )}
         >
-          {data?.items.map((product) => (
-            <ProductCard key={product.id} product={product} blockId={block.id} />
-          ))}
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        <div ref={emblaRef} className="overflow-hidden">
+          <div className="flex touch-pan-y gap-4">
+            {isLoading
+              ? Array.from({ length: Math.min(props.pageSize, 8) }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]"
+                  >
+                    <div className="aspect-[4/5] animate-pulse rounded-2xl bg-neutral-200" />
+                  </div>
+                ))
+              : data?.items.map((product) => (
+                  <div
+                    key={product.id}
+                    className="min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]"
+                  >
+                    <ProductCard product={product} blockId={block.id} className="h-full" />
+                  </div>
+                ))}
+          </div>
         </div>
-      )}
+
+        <button
+          type="button"
+          aria-label="Próximos produtos"
+          onClick={() => emblaApi?.scrollNext()}
+          disabled={!canScrollNext}
+          className={cn(
+            'absolute right-0 top-[38%] z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-white hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
+          )}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+
+        {!isLoading && slideCount > 0 && (
+          <p className="mt-3 text-center text-xs text-neutral-400 md:hidden">
+            Arraste para ver mais produtos
+          </p>
+        )}
+      </div>
     </section>
   );
 }

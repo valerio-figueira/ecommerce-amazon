@@ -130,8 +130,9 @@ export function getDefaultBlockProps(type: BlockType): unknown {
       });
     case BlockType.CURATED_COLLECTION:
       return curatedCollectionPropsSchema.parse({
-        collectionSlug: 'setup-gamer-iniciante',
-        layout: 'grid',
+        collectionSlugs: ['setup-gamer-iniciante', 'home-office-essencial', 'perifericos-premium'],
+        autoplay: true,
+        intervalMs: 8000,
       });
     case BlockType.SPACER:
       return spacerPropsSchema.parse({});

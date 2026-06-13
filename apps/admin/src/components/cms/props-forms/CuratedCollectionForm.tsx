@@ -13,21 +13,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { publicCollectionsResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 type CuratedCollectionFormProps = {
   control: Control<BlockFormValues>;
 };
 
-function readString(value: unknown): string {
-  return typeof value === 'string' ? value : '';
+function readStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function readBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback;
 }
 
 export function CuratedCollectionForm({
@@ -53,61 +51,83 @@ export function CuratedCollectionForm({
 
   return (
     <div className="space-y-6">
-      <CmsFormSection title="Coleção curada">
+      <CmsFormSection title="Carrossel de coleções">
         <FormField
           control={control}
-          name="collectionSlug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Qual coleção exibir?</FormLabel>
-              <Select value={readString(field.value)} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Escolha uma coleção" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
+          name="collectionSlugs"
+          render={({ field }) => {
+            const selected = readStringArray(field.value);
+
+            const toggleSlug = (slug: string, checked: boolean): void => {
+              if (checked) {
+                field.onChange([...selected, slug]);
+                return;
+              }
+
+              field.onChange(selected.filter((value) => value !== slug));
+            };
+
+            return (
+              <FormItem>
+                <FormLabel>Quais coleções exibir?</FormLabel>
+                <FormDescription>
+                  Selecione uma ou mais coleções. A ordem segue a seleção. O bloco exibe um
+                  carrossel editorial na home.
+                </FormDescription>
+                <div className="space-y-3 rounded-lg border border-neutral-200 p-3">
                   {collections.length === 0 ? (
-                    <SelectItem value="__empty__" disabled>
-                      Nenhuma coleção cadastrada
-                    </SelectItem>
+                    <p className="text-sm text-neutral-500">Nenhuma coleção cadastrada.</p>
                   ) : (
-                    collections.map((collection) => (
-                      <SelectItem key={collection.slug} value={collection.slug}>
-                        {collection.title}
-                      </SelectItem>
-                    ))
+                    collections.map((collection) => {
+                      const checked = selected.includes(collection.slug);
+
+                      return (
+                        <label
+                          key={collection.slug}
+                          className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-neutral-50"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(event) =>
+                              toggleSlug(collection.slug, event.target.checked)
+                            }
+                            className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                          />
+                          <span className="space-y-0.5">
+                            <span className="block text-sm font-medium">{collection.title}</span>
+                            <span className="block text-xs text-neutral-500">/{collection.slug}</span>
+                          </span>
+                        </label>
+                      );
+                    })
                   )}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                A coleção aparece na home com preview dos produtos e link para /colecoes/[slug].
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
       </CmsFormSection>
 
-      <CmsFormSection title="Layout" className="cms-form-section-divider">
+      <CmsFormSection title="Comportamento" className="cms-form-section-divider">
         <FormField
           control={control}
-          name="layout"
+          name="autoplay"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Como exibir os produtos?</FormLabel>
-              <Select value={readString(field.value) || 'grid'} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="grid">Grade com capa e CTA</SelectItem>
-                  <SelectItem value="carousel">Carrossel horizontal</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
+            <FormItem className="flex items-center justify-between gap-4 rounded-lg border border-neutral-200 p-3">
+              <div className="space-y-1">
+                <FormLabel>Avançar automaticamente</FormLabel>
+                <FormDescription>
+                  Troca de slide a cada 8 segundos quando há mais de uma coleção.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={readBoolean(field.value, true)}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

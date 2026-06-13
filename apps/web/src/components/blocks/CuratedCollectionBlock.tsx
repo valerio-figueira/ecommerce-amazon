@@ -1,97 +1,113 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { curatedCollectionPropsSchema } from '@ecommerce-amazon/shared/cms';
+import {
+  curatedCollectionPropsSchema,
+  type RenderedCollectionSlide,
+} from '@ecommerce-amazon/shared/cms';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
-import { ProductCard } from '@/components/product/ProductCard';
+import { CuratedCollectionSlide } from '@/components/blocks/CuratedCollectionSlide';
 import { mapDeliveryProductToListItem } from '@/lib/cms/map-delivery-product';
+
+function resolveSlides(block: BlockComponentProps['block']): RenderedCollectionSlide[] {
+  if (block.renderedCollections && block.renderedCollections.length > 0) {
+    return block.renderedCollections;
+  }
+
+  if (block.renderedCollection) {
+    return [
+      {
+        collection: block.renderedCollection,
+        products: block.renderedData ?? [],
+      },
+    ];
+  }
+
+  return [];
+}
 
 export function CuratedCollectionBlock({ block }: BlockComponentProps): React.JSX.Element {
   const props = curatedCollectionPropsSchema.parse(block.props);
-  const collection = block.renderedCollection;
-  const products = (block.renderedData ?? []).map(mapDeliveryProductToListItem);
-  const previewProducts = products.slice(0, props.layout === 'carousel' ? products.length : 4);
-  const collectionHref = `/colecoes/${props.collectionSlug}`;
+  const slides = useMemo(() => resolveSlides(block), [block]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: slides.length > 1 });
+  const [index, setIndex] = useState(0);
 
-  if (!collection) {
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    onSelect();
+  }, [emblaApi, onSelect]);
+
+  useEffect(() => {
+    if (!props.autoplay || !emblaApi || slides.length <= 1) return;
+    const timer = setInterval(() => emblaApi.scrollNext(), props.intervalMs);
+    return () => clearInterval(timer);
+  }, [emblaApi, props.autoplay, props.intervalMs, slides.length]);
+
+  if (slides.length === 0) {
     return (
       <section className="rounded-[var(--radius)] bg-white p-4 text-sm text-neutral-600">
-        Coleção <strong>{props.collectionSlug}</strong> não encontrada.
-      </section>
-    );
-  }
-
-  if (props.layout === 'carousel') {
-    return (
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold md:text-3xl">{collection.title}</h2>
-            <p className="mt-1 line-clamp-2 text-sm text-neutral-600">{collection.description}</p>
-          </div>
-          <Link
-            href={collectionHref}
-            className="shrink-0 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
-          >
-            {collection.ctaText}
-          </Link>
-        </div>
-        <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2">
-          {previewProducts.map((product, index) => (
-            <div key={product.id} className="relative w-56 shrink-0">
-              <div className="absolute -left-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-neutral-900 text-[10px] font-bold text-white">
-                {index + 1}
-              </div>
-              <ProductCard product={product} blockId={block.id} clickOrigin="coleção" variant="compact" />
-            </div>
-          ))}
-        </div>
+        Nenhuma coleção encontrada para{' '}
+        <strong>{props.collectionSlugs.join(', ')}</strong>.
       </section>
     );
   }
 
   return (
-    <section className="overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-neutral-900 text-white">
-      <div className="grid md:grid-cols-2">
-        <div className="relative min-h-[220px] md:min-h-[320px]">
-          <Image
-            src={collection.coverImageUrl}
-            alt={collection.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-8 bg-neutral-300" aria-hidden />
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500">
+            Coleções
+          </h2>
         </div>
-        <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">
-            Coleção curada
-          </p>
-          <h2 className="text-2xl font-bold md:text-3xl">{collection.title}</h2>
-          <p className="text-sm leading-relaxed text-neutral-300 md:text-base">
-            {collection.description}
-          </p>
-          {previewProducts.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              {previewProducts.slice(0, 2).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  blockId={block.id}
-                  clickOrigin="coleção"
-                  variant="compact"
-                />
-              ))}
+
+        {slides.length > 1 && (
+          <div className="flex items-center gap-2">
+            <span className="hidden text-xs tabular-nums text-neutral-400 sm:inline">
+              {index + 1}/{slides.length}
+            </span>
+            <button
+              type="button"
+              aria-label="Coleção anterior"
+              onClick={() => emblaApi?.scrollPrev()}
+              className="rounded-full border border-neutral-200 p-2 text-neutral-600 transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 active:scale-95"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Próxima coleção"
+              onClick={() => emblaApi?.scrollNext()}
+              className="rounded-full border border-neutral-200 p-2 text-neutral-600 transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 active:scale-95"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div ref={emblaRef} className="overflow-hidden">
+        <div className="flex touch-pan-y">
+          {slides.map((slide) => (
+            <div key={slide.collection.slug} className="min-w-0 flex-[0_0_100%]">
+              <CuratedCollectionSlide
+                collection={slide.collection}
+                products={slide.products.map(mapDeliveryProductToListItem)}
+                blockId={block.id}
+              />
             </div>
-          )}
-          <Link
-            href={collectionHref}
-            className="mt-2 inline-flex w-fit rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 hover:bg-neutral-100"
-          >
-            {collection.ctaText}
-          </Link>
+          ))}
         </div>
       </div>
     </section>

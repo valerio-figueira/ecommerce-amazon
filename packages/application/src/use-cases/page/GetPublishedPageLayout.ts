@@ -32,7 +32,14 @@ function isPageLayoutDeliveryDto(value: unknown): value is PageLayoutDeliveryDto
 function stripRenderedData(layout: PageLayoutDeliveryDto): PageLayoutDeliveryDto {
   return {
     ...layout,
-    blocks: layout.blocks.map(({ renderedData: _renderedData, renderedCollection: _renderedCollection, ...block }) => block),
+    blocks: layout.blocks.map(
+      ({
+        renderedData: _renderedData,
+        renderedCollection: _renderedCollection,
+        renderedCollections: _renderedCollections,
+        ...block
+      }) => block,
+    ),
   };
 }
 
@@ -103,21 +110,35 @@ export class GetPublishedPageLayout {
   private async hydrateBlock(block: PageBlockDeliveryDto): Promise<PageBlockDeliveryDto> {
     if (block.type === BlockType.CURATED_COLLECTION) {
       const props = curatedCollectionPropsSchema.parse(block.props);
-      const result = await this.getCuratedCollection.execute(props.collectionSlug);
-      if (!result) {
+      const slides = (
+        await Promise.all(
+          props.collectionSlugs.map(async (slug) => {
+            const result = await this.getCuratedCollection.execute(slug);
+            if (!result) {
+              return null;
+            }
+
+            return {
+              collection: {
+                slug: result.collection.slug,
+                title: result.collection.title,
+                description: result.collection.description,
+                coverImageUrl: result.collection.coverImageUrl,
+                ctaText: result.collection.ctaText,
+              },
+              products: result.products.map(toProductDeliveryItem),
+            };
+          }),
+        )
+      ).filter((slide): slide is NonNullable<typeof slide> => slide !== null);
+
+      if (slides.length === 0) {
         return block;
       }
 
       return {
         ...block,
-        renderedCollection: {
-          slug: result.collection.slug,
-          title: result.collection.title,
-          description: result.collection.description,
-          coverImageUrl: result.collection.coverImageUrl,
-          ctaText: result.collection.ctaText,
-        },
-        renderedData: result.products.map(toProductDeliveryItem),
+        renderedCollections: slides,
       };
     }
 

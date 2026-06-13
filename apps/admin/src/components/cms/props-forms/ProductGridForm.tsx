@@ -133,6 +133,27 @@ export function ProductGridForm({
             </FormItem>
           )}
         />
+        <FormField
+          control={control}
+          name="catalogHref"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Link do catálogo completo</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={readString(field.value)}
+                  placeholder="/categorias/home-office"
+                />
+              </FormControl>
+              <FormDescription>
+                Destino do botão &quot;Ver catálogo completo&quot;. Se vazio, usa a categoria
+                ativa ou `/categorias/home-office`.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </CmsFormSection>
 
       <CmsFormSection title="Ordenação e layout" className="cms-form-section-divider">
@@ -188,6 +209,10 @@ export function ProductGridForm({
                     ))}
                   </div>
                 </FormControl>
+                <FormDescription>
+                  Legado CMS — a home exibe carrossel horizontal; este campo não altera o layout
+                  público.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             );

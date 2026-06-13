@@ -160,16 +160,22 @@ Fonte: [`block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts).
 
 ### `product_grid`
 
+Carrossel horizontal na home (padrão Gold) — sem paginação que quebra o scroll vertical.
+
 ```typescript
 {
   title: string;
   categorySlug?: string | null;
   marketplace?: 'amazon_br' | 'shopee_br';
   sort: 'editorial_score' | 'price_updated_at';  // default editorial_score
-  pageSize: number;    // 4–24, default 12
-  columns: 2 | 4;    // default 4
+  pageSize: number;    // 4–24, default 12 — quantidade de cards no slide
+  columns: 2 | 4;    // legado CMS; layout público é sempre carrossel
+  catalogHref?: string;       // default: /categorias/{categoria ativa ou home-office}
+  catalogCtaLabel?: string;   // default: "Ver catálogo completo ➔"
 }
 ```
+
+UX: setas discretas no desktop, swipe/arraste no mobile, link editorial para `/categorias/[slug]`.
 
 ### `category_pills`
 

@@ -6,7 +6,6 @@ import {
   buildCuratedCollectionJsonLd,
 } from '@ecommerce-amazon/shared/seo';
 
-import { AffiliateDisclaimer } from '@/components/layout/AffiliateDisclaimer';
 import { ProductCard } from '@/components/product/ProductCard';
 import { fetchCuratedCollection } from '@/lib/api/collections';
 import { getSiteBaseUrl } from '@/lib/site-url';
@@ -123,8 +122,6 @@ export default async function CuratedCollectionPage({
           ))}
         </div>
       </section>
-
-      <AffiliateDisclaimer />
     </main>
   );
 }

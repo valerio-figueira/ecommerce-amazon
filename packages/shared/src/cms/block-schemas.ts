@@ -31,6 +31,8 @@ export const productGridPropsSchema = z.object({
   sort: z.enum(['editorial_score', 'price_updated_at']).default('editorial_score'),
   pageSize: z.number().int().min(4).max(24).default(12),
   columns: z.union([z.literal(2), z.literal(4)]).default(4),
+  catalogHref: z.string().min(1).optional(),
+  catalogCtaLabel: z.string().min(1).default('Ver catálogo completo ➔'),
 });
 
 export const categoryPillsPropsSchema = z.object({
@@ -61,10 +63,35 @@ export const heroSplitPropsSchema = z.object({
   rightBlockId: z.string().uuid(),
 });
 
-export const curatedCollectionPropsSchema = z.object({
-  collectionSlug: z.string().min(1),
-  layout: z.enum(['carousel', 'grid']).default('grid'),
+const curatedCollectionPropsBaseSchema = z.object({
+  collectionSlug: z.string().min(1).optional(),
+  collectionSlugs: z.array(z.string().min(1)).min(1).max(8).optional(),
+  layout: z.enum(['carousel', 'grid']).optional(),
+  autoplay: z.boolean().default(true),
+  intervalMs: z.number().int().min(3000).max(30000).default(8000),
 });
+
+export const curatedCollectionPropsSchema = curatedCollectionPropsBaseSchema
+  .superRefine((data, ctx) => {
+    const hasSlugs = (data.collectionSlugs?.length ?? 0) > 0;
+    const hasSlug = Boolean(data.collectionSlug);
+
+    if (!hasSlugs && !hasSlug) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Informe ao menos uma coleção',
+        path: ['collectionSlugs'],
+      });
+    }
+  })
+  .transform((data) => ({
+    collectionSlugs:
+      data.collectionSlugs && data.collectionSlugs.length > 0
+        ? data.collectionSlugs
+        : [data.collectionSlug as string],
+    autoplay: data.autoplay,
+    intervalMs: data.intervalMs,
+  }));
 
 export const couponStripPropsSchema = z.object({
   marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),
@@ -194,11 +221,18 @@ export const renderedCollectionSchema = z.object({
   ctaText: z.string(),
 });
 
+export const renderedCollectionSlideSchema = z.object({
+  collection: renderedCollectionSchema,
+  products: z.array(productDeliveryItemSchema),
+});
+
 export type RenderedCollection = z.infer<typeof renderedCollectionSchema>;
+export type RenderedCollectionSlide = z.infer<typeof renderedCollectionSlideSchema>;
 
 export const pageBlockDeliverySchema = pageBlockDtoSchema.extend({
   renderedData: z.array(productDeliveryItemSchema).optional(),
   renderedCollection: renderedCollectionSchema.optional(),
+  renderedCollections: z.array(renderedCollectionSlideSchema).optional(),
 });
 
 export const pageLayoutDeliverySchema = pageLayoutDtoSchema.extend({

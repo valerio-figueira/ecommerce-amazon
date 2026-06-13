@@ -22,8 +22,12 @@ import { BcryptPasswordHasher } from '../../auth/bcrypt-password.hasher.js';
 
 const SEED_PRODUCT_AMAZON_ID = 'a1111111-1111-4111-8111-111111111111';
 const SEED_PRODUCT_SHOPEE_ID = 'a2222222-2222-4222-8222-222222222222';
+const SEED_PRODUCT_TECLADO_ID = 'a3333333-3333-4333-8333-333333333333';
+const SEED_PRODUCT_MOUSE_ID = 'a4444444-4444-4444-8444-444444444444';
 const SEED_ARTICLE_ID = 'b1111111-1111-4111-8111-111111111111';
 const SEED_COLLECTION_ID = 'c1111111-1111-4111-8111-111111111111';
+const SEED_COLLECTION_HOME_OFFICE_ID = 'c2222222-2222-4222-8222-222222222222';
+const SEED_COLLECTION_PERIFERICOS_ID = 'c3333333-3333-4333-8333-333333333333';
 const SEED_COUPON_ID = 'd1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_AMAZON_ID = 'e1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_SHOPEE_ID = 'e2222222-2222-4222-8222-222222222222';
@@ -35,12 +39,30 @@ const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_COLLECTION_ID = 'f9111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
 const SEED_CATEGORY_HOME_OFFICE_ID = 'a0111111-1111-4111-8111-111111111111';
 const SEED_CATEGORY_GAMES_ID = 'a0222222-2222-4222-8222-222222222222';
 const SEED_CATEGORY_ELETRONICOS_ID = 'a0333333-3333-4333-8333-333333333333';
 const SEED_CATEGORY_PERIFERICOS_ID = 'a0444444-4444-4444-8444-444444444444';
 const SEED_CATEGORY_TECLADOS_ID = 'a0555555-5555-4555-8555-555555555555';
+
+const PEXELS = {
+  gamingCover:
+    'https://images.pexels.com/photos/7775642/pexels-photo-7775642.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  homeOfficeCover:
+    'https://images.pexels.com/photos/667838/pexels-photo-667838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  peripheralsCover:
+    'https://images.pexels.com/photos/4523952/pexels-photo-4523952.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  chair:
+    'https://images.pexels.com/photos/1957482/pexels-photo-1957482.jpeg?auto=compress&cs=tinysrgb&w=800',
+  headset:
+    'https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=800',
+  keyboard:
+    'https://images.pexels.com/photos/2115257/pexels-photo-2115257.jpeg?auto=compress&cs=tinysrgb&w=800',
+  mouse:
+    'https://images.pexels.com/photos/399161/pexels-photo-399161.jpeg?auto=compress&cs=tinysrgb&w=800',
+} as const;
 
 async function runSeed(): Promise<void> {
   loadDotenvFromMonorepoRoot();
@@ -74,6 +96,8 @@ async function runSeed(): Promise<void> {
     }
 
     await seedHomePage(db, now, logger);
+    await seedCollections(db, now, logger);
+    await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
   } finally {
     await sql.end();
@@ -118,7 +142,7 @@ async function insertProductSeed(
         stalePrice: false,
         priceUpdatedAt: now,
         affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED001',
-        images: ['https://placehold.co/600x600?text=Cadeira'],
+        images: [PEXELS.chair],
         specsNormalized: { material: 'Mesh', peso_maximo: '120kg' },
         editorialScore: 85,
         availability: ProductAvailability.IN_STOCK,
@@ -145,7 +169,7 @@ async function insertProductSeed(
         stalePrice: false,
         priceUpdatedAt: now,
         affiliateDeepLink: 'https://shopee.com.br/headset-gamer-seed',
-        images: ['https://placehold.co/600x600?text=Headset'],
+        images: [PEXELS.headset],
         specsNormalized: { conexao: 'USB', surround: '7.1' },
         editorialScore: 78,
         availability: ProductAvailability.IN_STOCK,
@@ -198,10 +222,12 @@ async function insertProductSeed(
       slug: 'setup-gamer-iniciante',
       title: 'Setup gamer para iniciantes',
       description: 'Seleção curada para montar seu primeiro setup.',
-      coverImageUrl: 'https://placehold.co/1200x630?text=Setup+Gamer',
+      coverImageUrl: PEXELS.gamingCover,
       campaignOrigin: 'pinterest',
       utmDefaults: { utm_source: 'pinterest', utm_medium: 'social', utm_campaign: 'setup-gamer' },
       ctaText: 'Ver ofertas do setup',
+      createdAt: now,
+      updatedAt: now,
     });
 
     await db.insert(schema.collectionProducts).values([
@@ -446,6 +472,7 @@ async function seedHomePage(
           sort: 'editorial_score',
           pageSize: 12,
           columns: 4,
+          catalogHref: '/categorias/home-office',
         },
       },
       {
@@ -461,10 +488,239 @@ async function seedHomePage(
           limit: 8,
         },
       },
+      {
+        id: SEED_BLOCK_COLLECTION_ID,
+        type: BlockType.CURATED_COLLECTION,
+        sortOrder: 7,
+        props: {
+          collectionSlugs: [
+            'setup-gamer-iniciante',
+            'home-office-essencial',
+            'perifericos-premium',
+          ],
+          autoplay: true,
+          intervalMs: 8000,
+        },
+      },
     ],
   );
 
   logger.info('Home page CMS seed inserted');
+}
+
+async function seedCollections(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  await db
+    .update(schema.products)
+    .set({ images: [PEXELS.chair] })
+    .where(eq(schema.products.slug, 'cadeira-ergonomica-home-office'));
+
+  await db
+    .update(schema.products)
+    .set({ images: [PEXELS.headset] })
+    .where(eq(schema.products.slug, 'headset-gamer-7-1'));
+
+  await db
+    .update(schema.curatedCollections)
+    .set({
+      coverImageUrl: PEXELS.gamingCover,
+      updatedAt: now,
+    })
+    .where(eq(schema.curatedCollections.slug, 'setup-gamer-iniciante'));
+
+  const extraProducts = [
+    {
+      id: SEED_PRODUCT_TECLADO_ID,
+      marketplace: Marketplace.AMAZON_BR,
+      externalId: 'B0SEED003',
+      slug: 'teclado-mecanico-rgb',
+      titleClean: 'Teclado Mecânico RGB',
+      titleRaw: 'Teclado Mecânico RGB Switch Blue',
+      shortDescription: 'Teclado mecânico compacto com iluminação RGB.',
+      priceAmount: '329.90',
+      currency: 'BRL',
+      stalePrice: false,
+      priceUpdatedAt: now,
+      affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED003',
+      images: [PEXELS.keyboard],
+      specsNormalized: { switches: 'Blue', layout: 'ABNT2' },
+      editorialScore: 82,
+      availability: ProductAvailability.IN_STOCK,
+      rating: '4.50',
+      reviewCount: 74,
+      categoryId: SEED_CATEGORY_GAMES_ID,
+      tags: ['teclado', 'mecanico'],
+      createdAt: now,
+    },
+    {
+      id: SEED_PRODUCT_MOUSE_ID,
+      marketplace: Marketplace.SHOPEE_BR,
+      externalId: 'SHOPEE-SEED-004',
+      slug: 'mouse-gamer-sem-fio',
+      titleClean: 'Mouse Gamer Sem Fio',
+      titleRaw: 'Mouse Gamer Sem Fio 16000 DPI',
+      shortDescription: 'Mouse leve com sensor de alta precisão e bateria longa.',
+      priceAmount: '189.90',
+      currency: 'BRL',
+      stalePrice: false,
+      priceUpdatedAt: now,
+      affiliateDeepLink: 'https://shopee.com.br/mouse-gamer-seed',
+      images: [PEXELS.mouse],
+      specsNormalized: { dpi: '16000', conexao: '2.4GHz' },
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      rating: '4.70',
+      reviewCount: 112,
+      categoryId: SEED_CATEGORY_GAMES_ID,
+      tags: ['mouse', 'gamer'],
+      createdAt: now,
+    },
+  ] as const;
+
+  for (const product of extraProducts) {
+    const existing = await db
+      .select({ id: schema.products.id })
+      .from(schema.products)
+      .where(eq(schema.products.slug, product.slug))
+      .limit(1);
+
+    if (existing.length === 0) {
+      await db.insert(schema.products).values(product);
+      logger.info(`Collection seed product inserted: ${product.slug}`);
+    }
+  }
+
+  const extraCollections = [
+    {
+      id: SEED_COLLECTION_HOME_OFFICE_ID,
+      slug: 'home-office-essencial',
+      title: 'Home office essencial',
+      description: 'Conforto e produtividade para o dia a dia em casa.',
+      coverImageUrl: PEXELS.homeOfficeCover,
+      campaignOrigin: 'editorial',
+      utmDefaults: {
+        utm_source: 'vitrine',
+        utm_medium: 'home',
+        utm_campaign: 'home-office-essencial',
+      },
+      ctaText: 'Ver seleção home office',
+      products: [
+        { productId: SEED_PRODUCT_AMAZON_ID, sortOrder: 0 },
+        { productId: SEED_PRODUCT_TECLADO_ID, sortOrder: 1 },
+      ],
+    },
+    {
+      id: SEED_COLLECTION_PERIFERICOS_ID,
+      slug: 'perifericos-premium',
+      title: 'Periféricos premium',
+      description: 'Teclado, mouse e áudio para elevar seu setup.',
+      coverImageUrl: PEXELS.peripheralsCover,
+      campaignOrigin: 'editorial',
+      utmDefaults: {
+        utm_source: 'vitrine',
+        utm_medium: 'home',
+        utm_campaign: 'perifericos-premium',
+      },
+      ctaText: 'Explorar periféricos',
+      products: [
+        { productId: SEED_PRODUCT_TECLADO_ID, sortOrder: 0 },
+        { productId: SEED_PRODUCT_MOUSE_ID, sortOrder: 1 },
+        { productId: SEED_PRODUCT_SHOPEE_ID, sortOrder: 2 },
+      ],
+    },
+  ] as const;
+
+  for (const collection of extraCollections) {
+    const existing = await db
+      .select({ id: schema.curatedCollections.id })
+      .from(schema.curatedCollections)
+      .where(eq(schema.curatedCollections.slug, collection.slug))
+      .limit(1);
+
+    if (existing.length > 0) {
+      continue;
+    }
+
+    const { products, ...collectionRow } = collection;
+    await db.insert(schema.curatedCollections).values({
+      ...collectionRow,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.insert(schema.collectionProducts).values(
+      products.map((pivot) => ({
+        collectionId: collection.id,
+        productId: pivot.productId,
+        sortOrder: pivot.sortOrder,
+      })),
+    );
+    logger.info(`Collection seed inserted: ${collection.slug}`);
+  }
+}
+
+async function ensureCuratedCollectionHomeBlock(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const homePage = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'home'))
+    .limit(1);
+
+  if (homePage.length === 0) {
+    return;
+  }
+
+  const pageId = homePage[0]!.id;
+
+  const curatedBlocks = await db
+    .select({
+      id: schema.pageBlocks.id,
+      type: schema.pageBlocks.type,
+      props: schema.pageBlocks.props,
+    })
+    .from(schema.pageBlocks)
+    .where(eq(schema.pageBlocks.pageId, pageId));
+
+  const carouselProps = {
+    collectionSlugs: ['setup-gamer-iniciante', 'home-office-essencial', 'perifericos-premium'],
+    autoplay: true,
+    intervalMs: 8000,
+  };
+
+  const seedBlock = curatedBlocks.find((row) => row.id === SEED_BLOCK_COLLECTION_ID);
+  if (seedBlock) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ props: carouselProps })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_COLLECTION_ID));
+    logger.info('Curated collection block props refreshed on home page');
+    return;
+  }
+
+  const legacyBlock = curatedBlocks.find((row) => row.type === BlockType.CURATED_COLLECTION);
+  if (legacyBlock) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ props: carouselProps })
+      .where(eq(schema.pageBlocks.id, legacyBlock.id));
+    logger.info('Legacy curated collection block upgraded to carousel on home page');
+    return;
+  }
+
+  await db.insert(schema.pageBlocks).values({
+    id: SEED_BLOCK_COLLECTION_ID,
+    pageId,
+    type: BlockType.CURATED_COLLECTION,
+    sortOrder: 7,
+    props: carouselProps,
+  });
+
+  logger.info('Curated collection block added to home page');
 }
 
 async function seedOperator(

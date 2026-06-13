@@ -10,10 +10,30 @@ Plano de referência: [`.cursor/plans/coleções_curadas_gold_77f63d0e.plan.md`]
 - API pública `GET /collections` (picker CMS) e `GET /collections/:slug` (DTO apresentado)
 - API admin `/admin/collections` (list, get, create, patch, delete)
 - Landing pública `/colecoes/[slug]` com header editorial, grid numerado e JSON-LD
-- Bloco CMS `curated_collection` com hidratação `renderedData` + `renderedCollection`
-- Form CMS `CuratedCollectionForm` (select de coleção + layout grid/carousel)
+- Bloco CMS `curated_collection` com hidratação `renderedCollections` (carrossel de coleções)
+- Form CMS `CuratedCollectionForm` (multi-select de coleções + autoplay)
 - Telemetria `ClickOrigin.COLLECTION` (`coleção`) e UTM via query em `/go/:slug`
 - Migração `0009_curated_collections_constraints.sql` (`created_at`, `updated_at`, unique pivot)
+- **`CollectionProductCard`** no bloco home — card editorial full-bleed (imagem + overlay + CTA pill)
+
+## UX — card na home vs landing
+
+| Contexto | Componente | Conteúdo |
+|----------|------------|----------|
+| Bloco `curated_collection` (home) | `CollectionProductCard` + `CuratedCollectionSlide` | Carrossel de coleções; cada slide com capa, 2 produtos overlay, CTA da coleção |
+| Página `/colecoes/[slug]` | `ProductCard` | Grid completo com preço, análise e wishlist |
+
+### Props do bloco CMS
+
+```ts
+{
+  collectionSlugs: string[]; // 1–8 slugs, ordem editorial
+  autoplay?: boolean;      // default true
+  intervalMs?: number;     // default 8000
+}
+```
+
+Legado `collectionSlug` + `layout` ainda são aceitos na validação Zod (migrados para `collectionSlugs`).
 
 ## Fora de escopo
 
@@ -49,6 +69,8 @@ sequenceDiagram
 | Admin | `apps/admin/src/components/collections/` |
 | Web landing | `apps/web/src/app/colecoes/[slug]/page.tsx` |
 | Web bloco | `apps/web/src/components/blocks/CuratedCollectionBlock.tsx` |
+| Slide | `apps/web/src/components/blocks/CuratedCollectionSlide.tsx` |
+| Card home | `apps/web/src/components/product/CollectionProductCard.tsx` |
 
 ## API
 
