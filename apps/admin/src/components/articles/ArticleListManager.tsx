@@ -74,6 +74,9 @@ export function ArticleListManager({
           <Button asChild variant="outline">
             <Link href="/artigos/categorias">Categorias</Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href="/auto-links">Auto-Links</Link>
+          </Button>
           <Button asChild>
             <Link href="/artigos/novo">
               <Plus className="mr-1 h-4 w-4" />

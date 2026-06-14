@@ -16,6 +16,8 @@
 | `/colecoes/[slug]` | Landing coleção curada numerada + JSON-LD | `curated-collections.md` |
 | `/go/[slug]` | Rewrite → API `GET /go/:slug` (307 afiliado) | `go-redirect-seo.md` |
 
+**Admin:** `/auto-links` — CRUD keywords SEO (`auto-links-admin.md`)
+
 **Pendentes no MVP:** `/comparador`, hub `/artigos` (índice), central `/cupons`, wishlist dedicada, alertas UI.
 
 ---
@@ -124,6 +126,7 @@ Grid 3 slots: (1) coleção ou artigo hero 2×2, (2) produto oferta 1×1, (3) to
 | Entrega | Detalhe |
 |---------|---------|
 | API admin | `GET/POST/PATCH/DELETE /admin/auto-links` |
+| UI admin | `/auto-links` — listagem, busca, CRUD Sheet, toggle `is_active` |
 | Parser | `injectInternalLinks` com priority, maxMatches, zonas protegidas |
 | Cache | Redis `vitrine:seo:auto-links` + invalidação nas mutações |
 | Vitrine | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB) |
@@ -326,7 +329,7 @@ Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketpla
 | Alertas email em produção (Resend) | Alta |
 | `DELETE /price-alerts/:token` (LGPD) | Média |
 | Draft/preview/publish CMS | Média |
-| Admin CRUD `auto_links` | Média | ✅ API — UI pendente |
+| Admin CRUD `auto_links` | Média | ✅ API + UI `/auto-links` |
 | Gate manual conta afiliado antes de escala | Negócio |
 | PA-API Amazon homologada | Infra |
 | Worker auto-mapeamento browse node → categoria | Worker |

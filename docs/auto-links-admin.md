@@ -2,9 +2,11 @@
 
 Gestão de keywords para interlinkagem automática em artigos editoriais. A injeção ocorre **em runtime** na vitrine — o HTML do artigo no banco permanece intacto.
 
-Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](../.cursor/plans/auto-links_admin_api_41238b7c.plan.md).
+Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](../.cursor/plans/auto-links_admin_api_41238b7c.plan.md), UI: [`.cursor/plans/auto-links_admin_ui_b60bf533.plan.md`](../.cursor/plans/auto-links_admin_ui_b60bf533.plan.md).
 
 ## O quê foi entregue
+
+### Backend
 
 - Entidade `AutoLink` com `AutoLinkId` branded e validações de domínio
 - Port `AutoLinkRepository` completo (CRUD + listagem paginada + ativos ordenados)
@@ -14,10 +16,19 @@ Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](..
 - Cache Redis `vitrine:seo:auto-links` (TTL 1h) com invalidação nas mutações
 - Parser `injectInternalLinks` com sort defensivo, `maxMatches`, zonas protegidas (`<a>`, `<h1>`–`<h6>`, `<img>`)
 
+### UI admin (`apps/admin`)
+
+- Rota **`/auto-links`** com item na sidebar (ícone Link2)
+- Listagem paginada com busca por keyword/URL
+- CRUD via Sheet lateral (`AutoLinkFormSheet`)
+- Toggle **`is_active`** inline na listagem (PATCH imediato)
+- BFF Next.js: `/api/admin/auto-links` e `/api/admin/auto-links/[id]`
+- Atalho em **Artigos** → botão "Auto-Links"
+
 ## Fora de escopo
 
-- UI admin (`/auto-links` no `apps/admin`) — fase seguinte
-- BFF Next.js proxy no admin
+- Preview ao vivo do parser no admin
+- Importação em massa (CSV/JSON)
 - Migration UNIQUE em `keyword` (validação no use case)
 
 ## Como funciona
@@ -61,6 +72,9 @@ flowchart LR
 | Cache key | `packages/shared/src/seo/auto-links-cache.ts` |
 | Schemas admin | `packages/shared/src/admin/auto-link-schemas.ts` |
 | API admin | `apps/api/src/adapters/http/routes/admin-auto-link-routes.ts` |
+| Admin UI | `apps/admin/src/app/(dashboard)/auto-links/page.tsx` |
+| Admin BFF | `apps/admin/src/app/api/admin/auto-links/` |
+| Admin components | `apps/admin/src/components/auto-links/` |
 | Vitrine | `apps/web/src/components/articles/ArticleBody.tsx` |
 
 ## API
@@ -89,6 +103,7 @@ Cache Redis: `vitrine:seo:auto-links`, TTL 3600s.
 ```bash
 npm run db:migrate && npm run db:seed
 npm run dev:api    # :3000
+npm run dev:admin  # :3002
 npm run dev:web    # :3001
 
 # Login admin
@@ -110,9 +125,19 @@ curl http://localhost:3000/seo/auto-links | jq
 
 # Vitrine
 open http://localhost:3001/artigos/guia-cadeira-ergonomica
+
+# UI admin
+open http://localhost:3002/auto-links
 ```
 
-Testes unitários:
+Checklist UI:
+
+1. Login → sidebar **Auto-Links**
+2. Criar keyword + URL interna
+3. Toggle inativo na listagem
+4. Buscar por keyword
+5. Editar e excluir com confirmação
+6. Keyword duplicada → toast de erro
 
 ```bash
 npm test -- --run AutoLink auto-links link-parser
@@ -120,6 +145,6 @@ npm test -- --run AutoLink auto-links link-parser
 
 ## Próximos passos
 
-- Tela admin `/auto-links` com tabela, busca e toggle `is_active`
-- BFF proxy em `apps/admin/src/app/api/admin/auto-links/**`
-- CRUD visual integrado ao hub de conteúdo
+- Preview ao vivo do `injectInternalLinks` no admin
+- Importação em massa de keywords
+- Picker visual de URLs internas (produto/categoria/artigo)

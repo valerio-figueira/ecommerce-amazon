@@ -42,7 +42,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
-| [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD admin auto-links, parser SEO |
+| [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 | [docs/llm-context-01-project-architecture.md](docs/llm-context-01-project-architecture.md) | Síntese LLM: visão, arquitetura, invariantes |
 | [docs/llm-context-02-domain-schema-interfaces.md](docs/llm-context-02-domain-schema-interfaces.md) | Síntese LLM: domínio, schema, interfaces |
