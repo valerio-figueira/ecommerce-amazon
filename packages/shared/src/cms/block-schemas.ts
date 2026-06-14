@@ -141,15 +141,7 @@ const bentoHubMixSlot1BaseSchema = z.object({
   coverImageUrl: z.string().url().optional(),
 });
 
-export const bentoHubMixSlot1Schema = bentoHubMixSlot1BaseSchema.superRefine((data, ctx) => {
-  if (data.contentType === 'article' && !data.coverImageUrl) {
-    ctx.addIssue({
-      code: 'custom',
-      message: 'Informe uma imagem de capa para artigos',
-      path: ['coverImageUrl'],
-    });
-  }
-});
+export const bentoHubMixSlot1Schema = bentoHubMixSlot1BaseSchema;
 
 export const bentoHubMixSlot2Schema = z.object({
   productId: z.string().uuid(),

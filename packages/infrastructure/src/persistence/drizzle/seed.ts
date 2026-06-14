@@ -14,6 +14,7 @@ import {
   ProductAvailability,
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
+import { SEO_KEYWORD_MAP } from '@ecommerce-amazon/shared/seo';
 
 import { schema } from '../drizzle/client.js';
 import { loadDotenvFromMonorepoRoot } from './load-env.js';
@@ -128,6 +129,7 @@ async function runSeed(): Promise<void> {
     await ensureBentoHubMixHomeBlock(db, logger);
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
+    await seedAutoLinks(db, logger);
   } finally {
     await sql.end();
   }
@@ -229,14 +231,19 @@ async function insertProductSeed(
       id: SEED_ARTICLE_ID,
       slug: 'guia-cadeira-ergonomica',
       title: 'Guia completo: como escolher cadeira ergonômica',
-      body: '<p>Conteúdo editorial com embed dinâmico de produto abaixo.</p>',
+      excerpt:
+        'Aprenda critérios essenciais para escolher uma cadeira ergonômica ideal para home office.',
+      coverImageUrl: PEXELS.homeOfficeCover,
+      body: '<p>Conteúdo editorial com embed dinâmico de produto abaixo.</p><p>[[product:cadeira-ergonomica-home-office]]</p>',
       type: ArticleType.GUIDE,
       status: ArticleStatus.PUBLISHED,
-      seo: {
-        title: 'Guia de cadeira ergonômica',
-        description: 'Aprenda a escolher a cadeira ideal para home office.',
-      },
+      authorId: SEED_OPERATOR_ID,
+      seoTitle: 'Guia de cadeira ergonômica',
+      seoDescription: 'Aprenda a escolher a cadeira ideal para home office.',
+      seo: {},
       publishedAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
 
     await db.insert(schema.contentProductEmbeds).values({
@@ -959,6 +966,29 @@ async function seedOperator(
   });
 
   logger.info('Operator seed inserted', { email: env.ADMIN_SEED_EMAIL });
+}
+
+async function seedAutoLinks(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db.select({ id: schema.autoLinks.id }).from(schema.autoLinks).limit(1);
+  if (existing.length > 0) {
+    logger.info('Auto links already seeded, skipping');
+    return;
+  }
+
+  await db.insert(schema.autoLinks).values(
+    SEO_KEYWORD_MAP.map((item, index) => ({
+      keyword: item.keyword,
+      targetUrl: item.targetUrl,
+      maxMatches: item.maxMatches ?? 1,
+      priority: index,
+      isActive: true,
+    })),
+  );
+
+  logger.info('Auto links seed inserted', { count: SEO_KEYWORD_MAP.length });
 }
 
 runSeed().catch((error: unknown) => {

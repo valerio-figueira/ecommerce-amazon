@@ -38,6 +38,11 @@ import {
   GetAdminPageLayout,
   ListAdminPages,
   ListAdminArticles,
+  CreateArticle,
+  GetAdminArticle,
+  UpdateArticle,
+  DeleteArticle,
+  ListActiveAutoLinks,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
 } from '@ecommerce-amazon/application';
@@ -63,6 +68,7 @@ import {
 } from '../persistence/repositories/drizzle-content.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
+import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
 import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
 import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
 
@@ -100,6 +106,7 @@ export function buildApiContainer(env = loadEnv()) {
   const clickRepository = new DrizzleClickEventRepository(db);
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
+  const autoLinkRepository = new DrizzleAutoLinkRepository(db);
   const passwordHasher = new BcryptPasswordHasher();
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
 
@@ -133,7 +140,11 @@ export function buildApiContainer(env = loadEnv()) {
         productRepository,
         linkBuilder,
       ),
-      getArticleWithEmbeds: new GetArticleWithEmbeds(contentRepository, productRepository, cache),
+      getArticleWithEmbeds: new GetArticleWithEmbeds(
+        contentRepository,
+        operatorRepository,
+        cache,
+      ),
       getCuratedCollection,
       listCuratedCollections: new ListCuratedCollections(curatedCollectionRepository),
       listPublicCollections: new ListPublicCollections(curatedCollectionRepository),
@@ -181,6 +192,11 @@ export function buildApiContainer(env = loadEnv()) {
       getAdminPageLayout: new GetAdminPageLayout(pageRepository),
       listAdminPages: new ListAdminPages(pageRepository),
       listAdminArticles: new ListAdminArticles(contentRepository),
+      createArticle: new CreateArticle(contentRepository, cache),
+      getAdminArticle: new GetAdminArticle(contentRepository),
+      updateArticle: new UpdateArticle(contentRepository, cache),
+      deleteArticle: new DeleteArticle(contentRepository, cache),
+      listActiveAutoLinks: new ListActiveAutoLinks(autoLinkRepository, cache),
       resolveAffiliateRedirect: new ResolveAffiliateRedirect(
         productRepository,
         affiliateAccountRepository,

@@ -59,16 +59,15 @@ describe('bentoHubMixPropsSchema', () => {
     expect(parsed.slot3.contentType).toBe('category');
   });
 
-  it('requires cover image for article slot1', () => {
-    expect(() =>
-      bentoHubMixPropsSchema.parse({
-        ...validCollectionSlot,
-        slot1: {
-          contentType: 'article',
-          entityId: 'b1111111-1111-4111-8111-111111111111',
-        },
-      }),
-    ).toThrow();
+  it('allows article slot1 without cover image override', () => {
+    const parsed = bentoHubMixPropsSchema.parse({
+      ...validCollectionSlot,
+      slot1: {
+        contentType: 'article',
+        entityId: 'b1111111-1111-4111-8111-111111111111',
+      },
+    });
+    expect(parsed.slot1.contentType).toBe('article');
   });
 
   it('rejects more than 3 products in slot3', () => {

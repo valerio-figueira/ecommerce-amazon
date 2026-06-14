@@ -1,14 +1,15 @@
-import { Newspaper } from 'lucide-react';
-
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { ArticleListManager } from '@/components/articles/ArticleListManager';
+import { listAdminArticles } from '@/lib/api/articles';
 
 export const metadata = {
   title: 'Artigos — Vitrine CMS',
 };
 
-export default function ArtigosPage() {
+export default async function ArtigosPage() {
+  const items = await listAdminArticles();
+
   return (
     <>
       <AdminPageHeader
@@ -18,12 +19,8 @@ export default function ArtigosPage() {
           { label: 'Artigos' },
         ]}
       />
-      <AdminPageCard transparent>
-        <AdminEmptyState
-          icon={Newspaper}
-          title="Hub de conteúdo em breve"
-          hint="Guides, reviews e comparativos editoriais serão criados aqui com embeds dinâmicos de produtos."
-        />
+      <AdminPageCard>
+        <ArticleListManager initialItems={items} />
       </AdminPageCard>
     </>
   );

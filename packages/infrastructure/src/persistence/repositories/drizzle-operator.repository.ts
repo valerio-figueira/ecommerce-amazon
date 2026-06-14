@@ -29,6 +29,23 @@ export class DrizzleOperatorRepository implements OperatorRepository {
     const row = rows[0];
     if (!row) return null;
 
+    return this.mapRow(row);
+  }
+
+  async findById(id: string): Promise<Operator | null> {
+    const rows = await this.db
+      .select()
+      .from(schema.operators)
+      .where(eq(schema.operators.id, id))
+      .limit(1);
+
+    const row = rows[0];
+    if (!row) return null;
+
+    return this.mapRow(row);
+  }
+
+  private mapRow(row: typeof schema.operators.$inferSelect): Operator {
     return new Operator(
       row.id,
       row.email,

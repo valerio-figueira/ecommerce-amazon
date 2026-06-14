@@ -13,6 +13,7 @@ import {
   toCuratedCollectionDto,
 } from '../../presenters/product.presenter.js';
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
+import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
 import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
@@ -293,6 +294,15 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const { slug } = ArticleSlugParamsSchema.parse(request.params);
       const result = await useCases.getArticleWithEmbeds.execute(slug);
       if (!result) return reply.status(404).send({ error: 'Article not found' });
+      return reply.send(toArticlePublicDetailDto(result.article, result.authorName));
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/seo/auto-links', async (_request, reply) => {
+    try {
+      const result = await useCases.listActiveAutoLinks.execute();
       return reply.send(result);
     } catch (error) {
       return handleError(error, reply);

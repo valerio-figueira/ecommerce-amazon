@@ -190,7 +190,7 @@ export async function listAdminCollectionsClient(): Promise<AdminCollectionPicke
 }
 
 export async function listAdminArticlesClient(): Promise<AdminArticlePickerOption[]> {
-  const response = await fetch('/api/admin/articles', { cache: 'no-store' });
+  const response = await fetch('/api/admin/articles?picker=true', { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   const parsed = adminArticlesResponseSchema.safeParse(payload);

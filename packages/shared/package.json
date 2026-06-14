@@ -37,6 +37,10 @@
     "./marketplace": {
       "types": "./dist/marketplace/index.d.ts",
       "import": "./dist/marketplace/index.js"
+    },
+    "./content": {
+      "types": "./dist/content/index.d.ts",
+      "import": "./dist/content/index.js"
     }
   },
   "scripts": {

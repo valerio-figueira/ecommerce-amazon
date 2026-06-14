@@ -1,4 +1,5 @@
 import type { ContentArticle, CuratedCollection } from '../entities/ContentArticle.js';
+import type { ArticleStatus } from '../enums/index.js';
 
 export type ArticleSummary = {
   id: string;
@@ -6,9 +7,23 @@ export type ArticleSummary = {
   title: string;
 };
 
+export type AdminArticleSummary = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  status: ArticleStatus;
+  coverImageUrl: string | null;
+  updatedAt: Date;
+};
+
 export interface ContentRepository {
   findArticleBySlug(slug: string): Promise<ContentArticle | null>;
   findArticleById(id: string): Promise<ContentArticle | null>;
   listPublishedSummaries(): Promise<ArticleSummary[]>;
+  listAdminSummaries(status?: ArticleStatus): Promise<AdminArticleSummary[]>;
+  saveArticle(article: ContentArticle): Promise<void>;
+  deleteArticle(id: string): Promise<void>;
+  slugExists(slug: string, excludeId?: string): Promise<boolean>;
   findCollectionBySlug(slug: string): Promise<CuratedCollection | null>;
 }

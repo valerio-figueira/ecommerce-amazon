@@ -261,13 +261,16 @@ export class GetPublishedPageLayout {
     }
 
     const article = await this.contentRepository.findArticleById(slot.entityId);
-    if (!article || !slot.coverImageUrl) return null;
+    if (!article) return null;
+
+    const coverImageUrl = slot.coverImageUrl ?? article.coverImageUrl;
+    if (!coverImageUrl) return null;
 
     return {
       href: `/artigos/${article.slug}`,
       title: slot.title ?? article.title,
       ...(slot.subtitle !== undefined ? { subtitle: slot.subtitle } : {}),
-      coverImageUrl: slot.coverImageUrl,
+      coverImageUrl,
       contentType: 'article',
     };
   }

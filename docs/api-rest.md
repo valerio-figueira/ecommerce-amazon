@@ -285,7 +285,15 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 
 ### `GET /articles/:slug`
 
-Artigo publicado com embeds resolvidos (produtos do catálogo local).
+Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` permanecem no HTML; a vitrine resolve embeds e auto-links.
+
+**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `authorName`, `publishedAt`
+
+### `GET /seo/auto-links`
+
+Keywords ativas para interlinking contextual (cache 1 h).
+
+**Response:** `{ items: [{ keyword, targetUrl, maxMatches }] }`
 
 ### `GET /collections`
 
@@ -308,6 +316,16 @@ Coleção curada com produtos ordenados + metadados UTM.
 | `POST` | `/admin/collections` | `CreateCollectionBody` → `{ id }` |
 | `PATCH` | `/admin/collections/:id` | `UpdateCollectionBody` → `204` |
 | `DELETE` | `/admin/collections/:id` | `204` |
+
+### Admin — `/admin/articles`
+
+| Método | Rota | Body / response |
+|--------|------|-----------------|
+| `GET` | `/admin/articles` | `{ items: AdminArticleSummary[] }` — query `?status=` ou `?picker=true` |
+| `GET` | `/admin/articles/:id` | `AdminArticleDetail` |
+| `POST` | `/admin/articles` | `CreateArticleBody` → `{ id }` |
+| `PATCH` | `/admin/articles/:id` | `UpdateArticleBody` → `204` |
+| `DELETE` | `/admin/articles/:id` | `204` |
 
 ---
 

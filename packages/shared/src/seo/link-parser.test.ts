@@ -3,33 +3,28 @@ import { describe, expect, it } from 'vitest';
 import { injectInternalLinks } from './link-parser.js';
 
 describe('injectInternalLinks', () => {
-  it('links the first occurrence of a keyword only once', () => {
+  it('links keyword occurrences up to maxMatches', () => {
     const html =
-      '<p>A cadeira ergonômica ideal e outra cadeira ergonômica extra.</p>';
+      'A cadeira ergonômica é essencial. Outra cadeira ergonômica também ajuda no home office.';
     const result = injectInternalLinks(html, [
-      {
-        keyword: 'cadeira ergonômica',
-        targetUrl: '/produtos/cadeira-ergonomica-home-office',
-      },
+      { keyword: 'cadeira ergonômica', targetUrl: '/produtos/cadeira', maxMatches: +2 },
+      { keyword: 'home office', targetUrl: '/categorias/home-office', maxMatches: 1 },
     ]);
 
-    expect(result).toContain(
-      '<a href="/produtos/cadeira-ergonomica-home-office" class="seo-internal-link">cadeira ergonômica</a>',
-    );
-    expect(result.match(/seo-internal-link/g)?.length).toBe(1);
+    expect(result.match(/text-emerald-600/g)?.length).toBe(3);
+    expect(result).toContain('href="/produtos/cadeira"');
+    expect(result).toContain('href="/categorias/home-office"');
   });
 
-  it('does not replace keywords already inside anchor tags', () => {
+  it('skips keywords inside existing anchor tags', () => {
     const html =
-      '<p>Já linkado: <a href="/x">cadeira ergonômica</a> e cadeira ergonômica solta.</p>';
+      '<a href="/existente">cadeira ergonômica</a> e cadeira ergonômica solta.';
     const result = injectInternalLinks(html, [
-      {
-        keyword: 'cadeira ergonômica',
-        targetUrl: '/produtos/cadeira-ergonomica-home-office',
-      },
+      { keyword: 'cadeira ergonômica', targetUrl: '/produtos/cadeira', maxMatches: 2 },
     ]);
 
-    expect(result.match(/seo-internal-link/g)?.length).toBe(1);
-    expect(result).toContain('<a href="/x">cadeira ergonômica</a>');
+    expect(result).toContain('<a href="/existente">cadeira ergonômica</a>');
+    expect(result).toContain('href="/produtos/cadeira"');
+    expect(result.match(/href="\/produtos\/cadeira"/g)?.length).toBe(1);
   });
 });

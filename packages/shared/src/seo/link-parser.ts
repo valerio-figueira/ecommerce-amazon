@@ -1,18 +1,25 @@
 export type SeoKeywordMap = {
   keyword: string;
   targetUrl: string;
+  maxMatches?: number;
 };
 
 const ANCHOR_SEGMENT_REGEX = /(<a\b[^>]*>[\s\S]*?<\/a>)/gi;
+const LINK_CLASS = 'text-emerald-600 underline font-medium hover:text-emerald-700';
 
-function linkFirstKeywordOccurrence(segment: string, item: SeoKeywordMap): string {
+function linkKeywordOccurrences(segment: string, item: SeoKeywordMap): string {
   const escapedKeyword = item.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`\\b(${escapedKeyword})\\b`, 'i');
+  const regex = new RegExp(`\\b(${escapedKeyword})\\b`, 'gi');
+  const maxMatches = item.maxMatches ?? 1;
+  let matchCount = 0;
 
-  return segment.replace(
-    regex,
-    `<a href="${item.targetUrl}" class="seo-internal-link">$1</a>`,
-  );
+  return segment.replace(regex, (match) => {
+    if (matchCount >= maxMatches) {
+      return match;
+    }
+    matchCount += 1;
+    return `<a href="${item.targetUrl}" class="${LINK_CLASS}">${match}</a>`;
+  });
 }
 
 export function injectInternalLinks(
@@ -29,7 +36,7 @@ export function injectInternalLinks(
 
       let segment = part;
       for (const item of keywords) {
-        segment = linkFirstKeywordOccurrence(segment, item);
+        segment = linkKeywordOccurrences(segment, item);
       }
       return segment;
     })

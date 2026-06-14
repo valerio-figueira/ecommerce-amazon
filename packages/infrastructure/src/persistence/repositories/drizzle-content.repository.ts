@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { asc, and, count, eq, inArray, ne } from 'drizzle-orm';
 
 import {
   ArticleStatus,
@@ -11,6 +11,7 @@ import {
   Marketplace,
   type SyncJobLog,
 } from '@ecommerce-amazon/domain';
+import { extractProductSlugsFromBody } from '@ecommerce-amazon/shared/content';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -20,6 +21,7 @@ import {
   mapComparison,
   mapCouponRow,
   mapCouponToRow,
+  mapArticleToRow,
 } from '../mappers/product.mapper.js';
 
 export class DrizzleContentRepository implements ContentRepository {
@@ -85,6 +87,97 @@ export class DrizzleContentRepository implements ContentRepository {
       .where(eq(schema.contentArticles.status, ArticleStatus.PUBLISHED));
 
     return rows;
+  }
+
+  async listAdminSummaries(status?: ArticleStatus) {
+    const baseQuery = this.db
+      .select({
+        id: schema.contentArticles.id,
+        slug: schema.contentArticles.slug,
+        title: schema.contentArticles.title,
+        excerpt: schema.contentArticles.excerpt,
+        status: schema.contentArticles.status,
+        coverImageUrl: schema.contentArticles.coverImageUrl,
+        updatedAt: schema.contentArticles.updatedAt,
+      })
+      .from(schema.contentArticles);
+
+    const rows = await (status
+      ? baseQuery.where(eq(schema.contentArticles.status, status))
+      : baseQuery
+    ).orderBy(asc(schema.contentArticles.updatedAt));
+
+    return rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      excerpt: row.excerpt,
+      status: row.status as ArticleStatus,
+      coverImageUrl: row.coverImageUrl,
+      updatedAt: row.updatedAt,
+    }));
+  }
+
+  async saveArticle(article: import('@ecommerce-amazon/domain').ContentArticle): Promise<void> {
+    const slugs = extractProductSlugsFromBody(article.body);
+    const productRows =
+      slugs.length > 0
+        ? await this.db
+            .select({ id: schema.products.id, slug: schema.products.slug })
+            .from(schema.products)
+            .where(inArray(schema.products.slug, slugs))
+        : [];
+
+    const slugToId = new Map(productRows.map((row) => [row.slug, row.id]));
+    const embeds = slugs
+      .map((slug, index) => {
+        const productId = slugToId.get(slug);
+        if (!productId) return null;
+        return { productId, position: index + 1, variant: 'inline' as const };
+      })
+      .filter((embed): embed is { productId: string; position: number; variant: 'inline' } =>
+        embed !== null,
+      );
+
+    await this.db.transaction(async (tx) => {
+      await tx
+        .insert(schema.contentArticles)
+        .values(mapArticleToRow(article))
+        .onConflictDoUpdate({
+          target: schema.contentArticles.id,
+          set: mapArticleToRow(article),
+        });
+
+      await tx
+        .delete(schema.contentProductEmbeds)
+        .where(eq(schema.contentProductEmbeds.articleId, article.id));
+
+      for (const embed of embeds) {
+        await tx.insert(schema.contentProductEmbeds).values({
+          articleId: article.id,
+          productId: embed.productId,
+          position: embed.position,
+          variant: embed.variant,
+        });
+      }
+    });
+  }
+
+  async deleteArticle(id: string): Promise<void> {
+    await this.db.delete(schema.contentArticles).where(eq(schema.contentArticles.id, id));
+  }
+
+  async slugExists(slug: string, excludeId?: string): Promise<boolean> {
+    const condition = excludeId
+      ? and(eq(schema.contentArticles.slug, slug), ne(schema.contentArticles.id, excludeId))
+      : eq(schema.contentArticles.slug, slug);
+
+    const rows = await this.db
+      .select({ count: count() })
+      .from(schema.contentArticles)
+      .where(condition);
+
+    return (rows[0]?.count ?? 0) > 0;
   }
 
   async findCollectionBySlug(slug: string) {

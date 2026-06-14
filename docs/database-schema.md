@@ -156,8 +156,16 @@ Sessão anônima via `session_id` (cookie web).
 
 | Tabela | Colunas |
 |--------|---------|
-| `content_articles` | `slug` UNIQUE, `title`, `body`, `type`, `status`, `seo` jsonb, `published_at` |
+| `content_articles` | `slug` UNIQUE, `title`, `excerpt`, `cover_image_url`, `body`, `type`, `status`, `author_id`, `seo_title`, `seo_description`, `seo` jsonb, `published_at`, `created_at`, `updated_at` |
 | `content_product_embeds` | `article_id`, `product_id`, `position`, `variant` (`inline` \| `highlight` \| `comparison`) |
+
+### SEO — `auto_links`
+
+| Tabela | Colunas |
+|--------|---------|
+| `auto_links` | `keyword`, `target_url`, `max_matches`, `priority`, `is_active`, `created_at`, `updated_at` |
+
+Seed inicial migra `SEO_KEYWORD_MAP` estático.
 
 ### Coleções — `curated_collections` / `collection_products`
 

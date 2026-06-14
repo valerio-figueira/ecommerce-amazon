@@ -16,6 +16,15 @@ export { AddToWishlist } from './use-cases/wishlist/AddToWishlist.js';
 export { BuildBatchCheckoutRedirect } from './use-cases/wishlist/BuildBatchCheckoutRedirect.js';
 export { GetArticleWithEmbeds } from './use-cases/content/GetArticleWithEmbeds.js';
 export { ListAdminArticles } from './use-cases/content/ListAdminArticles.js';
+export {
+  CreateArticle,
+  GetAdminArticle,
+} from './use-cases/admin-article/CreateArticle.js';
+export {
+  UpdateArticle,
+  DeleteArticle,
+} from './use-cases/admin-article/UpdateArticle.js';
+export { ListActiveAutoLinks } from './use-cases/seo/ListActiveAutoLinks.js';
 export { GetCuratedCollection } from './use-cases/content/GetCuratedCollection.js';
 export {
   CreateCuratedCollection,

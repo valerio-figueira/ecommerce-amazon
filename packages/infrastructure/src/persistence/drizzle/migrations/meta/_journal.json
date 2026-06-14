@@ -78,6 +78,20 @@
       "when": 1718985600000,
       "tag": "0010_bento_hub_mix",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1719072000000,
+      "tag": "0011_content_articles_enhanced",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1719158400000,
+      "tag": "0012_auto_links",
+      "breakpoints": true
     }
   ]
 }

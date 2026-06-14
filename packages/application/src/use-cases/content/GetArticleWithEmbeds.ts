@@ -1,15 +1,14 @@
 import {
+  ArticleStatus,
   ContentArticle,
   type CacheStore,
   type ContentRepository,
-  type Product,
-  type ProductRepository,
+  type OperatorRepository,
 } from '@ecommerce-amazon/domain';
-import { injectInternalLinks, SEO_KEYWORD_MAP } from '@ecommerce-amazon/shared/seo';
 
 export type ArticleWithEmbedsResult = {
   article: ContentArticle;
-  products: Product[];
+  authorName: string | null;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -17,17 +16,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isArticleWithEmbedsResult(value: unknown): value is ArticleWithEmbedsResult {
-  return (
-    isRecord(value) &&
-    isRecord(value['article']) &&
-    Array.isArray(value['products'])
-  );
+  return isRecord(value) && isRecord(value['article']);
 }
 
 export class GetArticleWithEmbeds {
   constructor(
     private readonly contentRepository: ContentRepository,
-    private readonly productRepository: ProductRepository,
+    private readonly operatorRepository: OperatorRepository,
     private readonly cache: CacheStore,
   ) {}
 
@@ -39,24 +34,15 @@ export class GetArticleWithEmbeds {
     }
 
     const article = await this.contentRepository.findArticleBySlug(slug);
-    if (!article) return null;
+    if (!article || article.status !== ArticleStatus.PUBLISHED) return null;
 
-    const linkedArticle = ContentArticle.create({
-      id: article.id,
-      slug: article.slug,
-      title: article.title,
-      body: injectInternalLinks(article.body, SEO_KEYWORD_MAP),
-      type: article.type,
-      status: article.status,
-      seo: article.seo,
-      embeds: article.embeds,
-      ...(article.publishedAt !== undefined ? { publishedAt: article.publishedAt } : {}),
-    });
+    let authorName: string | null = null;
+    if (article.authorId) {
+      const operator = await this.operatorRepository.findById(article.authorId);
+      authorName = operator?.name ?? null;
+    }
 
-    const products = await this.productRepository.findByIds(
-      linkedArticle.embeds.map((e) => e.productId),
-    );
-    const result: ArticleWithEmbedsResult = { article: linkedArticle, products };
+    const result: ArticleWithEmbedsResult = { article, authorName };
     await this.cache.set(cacheKey, result, 900);
     return result;
   }

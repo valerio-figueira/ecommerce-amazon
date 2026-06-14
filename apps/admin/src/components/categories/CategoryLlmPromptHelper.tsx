@@ -46,12 +46,12 @@ export function CategoryLlmPromptHelper({
     () =>
       buildCategorySeoLlmPrompt({
         label,
-        parentPathLabel,
+        parentPathLabel: parentPathLabel ?? null,
         autoSeoTitle,
         autoSeoDescription,
-        seoTitle,
-        seoDescription,
-        descriptionHtml,
+        ...(seoTitle !== undefined ? { seoTitle } : {}),
+        ...(seoDescription !== undefined ? { seoDescription } : {}),
+        ...(descriptionHtml !== undefined ? { descriptionHtml } : {}),
       }),
     [
       autoSeoDescription,

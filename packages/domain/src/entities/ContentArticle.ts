@@ -12,39 +12,97 @@ export class ContentArticle {
     readonly id: string,
     readonly slug: Slug,
     readonly title: string,
+    readonly excerpt: string,
+    readonly coverImageUrl: string | null,
     readonly body: string,
     readonly type: ArticleType,
     readonly status: ArticleStatus,
+    readonly authorId: string | null,
+    readonly seoTitle: string | null,
+    readonly seoDescription: string | null,
     readonly seo: {
       metaTitle?: string;
       metaDescription?: string;
       canonical?: string;
     },
     readonly embeds: ContentProductEmbed[],
-    readonly publishedAt?: Date,
+    readonly publishedAt: Date | null,
+    readonly createdAt: Date,
+    readonly updatedAt: Date,
   ) {}
 
   static create(props: {
     id: string;
     slug: string;
     title: string;
+    excerpt?: string;
+    coverImageUrl?: string | null;
     body: string;
     type: ArticleType;
     status: ArticleStatus;
-    seo: ContentArticle['seo'];
+    authorId?: string | null;
+    seoTitle?: string | null;
+    seoDescription?: string | null;
+    seo?: ContentArticle['seo'];
     embeds: ContentProductEmbed[];
-    publishedAt?: Date;
+    publishedAt?: Date | null;
+    createdAt?: Date;
+    updatedAt?: Date;
   }): ContentArticle {
+    const now = new Date();
     return new ContentArticle(
       props.id,
       toSlug(props.slug),
       props.title,
+      props.excerpt ?? '',
+      props.coverImageUrl ?? null,
       props.body,
       props.type,
       props.status,
-      props.seo,
+      props.authorId ?? null,
+      props.seoTitle ?? null,
+      props.seoDescription ?? null,
+      props.seo ?? {},
       props.embeds,
-      props.publishedAt,
+      props.publishedAt ?? null,
+      props.createdAt ?? now,
+      props.updatedAt ?? now,
+    );
+  }
+}
+
+export class AutoLink {
+  constructor(
+    readonly id: string,
+    readonly keyword: string,
+    readonly targetUrl: string,
+    readonly maxMatches: number,
+    readonly priority: number,
+    readonly isActive: boolean,
+    readonly createdAt: Date,
+    readonly updatedAt: Date,
+  ) {}
+
+  static create(props: {
+    id: string;
+    keyword: string;
+    targetUrl: string;
+    maxMatches?: number;
+    priority?: number;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+  }): AutoLink {
+    const now = new Date();
+    return new AutoLink(
+      props.id,
+      props.keyword,
+      props.targetUrl,
+      props.maxMatches ?? 1,
+      props.priority ?? 0,
+      props.isActive ?? true,
+      props.createdAt ?? now,
+      props.updatedAt ?? now,
     );
   }
 }

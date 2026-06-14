@@ -187,13 +187,35 @@ export const contentArticles = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     slug: text('slug').notNull(),
     title: text('title').notNull(),
+    excerpt: text('excerpt').notNull().default(''),
+    coverImageUrl: varchar('cover_image_url', { length: 255 }),
     body: text('body').notNull(),
     type: articleTypeEnum('type').notNull(),
     status: articleStatusEnum('status').notNull().default('draft'),
+    authorId: uuid('author_id'),
+    seoTitle: text('seo_title'),
+    seoDescription: text('seo_description'),
     seo: jsonb('seo').$type<Record<string, string>>().notNull().default({}),
     publishedAt: timestamp('published_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex('content_articles_slug_idx').on(table.slug)],
+);
+
+export const autoLinks = pgTable(
+  'auto_links',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    keyword: varchar('keyword', { length: 120 }).notNull(),
+    targetUrl: varchar('target_url', { length: 255 }).notNull(),
+    maxMatches: integer('max_matches').notNull().default(1),
+    priority: integer('priority').notNull().default(0),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('auto_links_active_priority_idx').on(table.isActive, table.priority)],
 );
 
 export const contentProductEmbeds = pgTable('content_product_embeds', {

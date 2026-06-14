@@ -21,6 +21,7 @@ export * from './repositories/PriceSnapshotRepository.js';
 export * from './repositories/PriceAlertRepository.js';
 export * from './repositories/WishlistRepository.js';
 export * from './repositories/ContentRepository.js';
+export * from './repositories/AutoLinkRepository.js';
 export * from './repositories/CuratedCollectionRepository.js';
 export * from './repositories/CouponRepository.js';
 export * from './repositories/ProductComparisonRepository.js';

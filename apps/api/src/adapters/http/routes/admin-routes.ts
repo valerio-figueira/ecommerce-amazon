@@ -39,6 +39,7 @@ import { registerAdminCmsRoutes } from './admin-cms-routes.js';
 import { registerAdminCategoryRoutes } from './admin-category-routes.js';
 import { registerAdminCollectionRoutes } from './admin-collection-routes.js';
 import { registerAdminProductRoutes } from './admin-product-routes.js';
+import { registerAdminArticleRoutes } from './admin-article-routes.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
@@ -96,19 +97,11 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
     return reply.send(request.adminOperator);
   });
 
-  app.get('/admin/articles', async (_request, reply) => {
-    try {
-      const result = await useCases.listAdminArticles.execute();
-      return reply.send(result);
-    } catch (error) {
-      return handleAdminError(error, reply);
-    }
-  });
-
   await registerAdminCmsRoutes(app, container);
   await registerAdminCategoryRoutes(app, container);
   await registerAdminCollectionRoutes(app, container);
   await registerAdminProductRoutes(app, container);
+  await registerAdminArticleRoutes(app, container);
 }
 
 declare module 'fastify' {

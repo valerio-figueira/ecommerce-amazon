@@ -187,19 +187,44 @@ export function mapArticle(
     id: row.id,
     slug: row.slug,
     title: row.title,
+    excerpt: row.excerpt,
+    coverImageUrl: row.coverImageUrl,
     body: row.body,
     type: parseArticleType(row.type),
     status: parseArticleStatus(row.status),
+    authorId: row.authorId,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
     seo: row.seo,
     embeds: embeds.map((e) => ({
       productId: e.productId,
       position: e.position,
       variant: parseContentEmbedVariant(e.variant),
     })),
-    ...(row.publishedAt !== null && row.publishedAt !== undefined
-      ? { publishedAt: row.publishedAt }
-      : {}),
+    publishedAt: row.publishedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
+}
+
+export function mapArticleToRow(article: ContentArticle) {
+  return {
+    id: article.id,
+    slug: article.slug,
+    title: article.title,
+    excerpt: article.excerpt,
+    coverImageUrl: article.coverImageUrl,
+    body: article.body,
+    type: article.type,
+    status: article.status,
+    authorId: article.authorId,
+    seoTitle: article.seoTitle,
+    seoDescription: article.seoDescription,
+    seo: article.seo,
+    publishedAt: article.publishedAt,
+    createdAt: article.createdAt,
+    updatedAt: article.updatedAt,
+  };
 }
 
 export function mapCollection(
