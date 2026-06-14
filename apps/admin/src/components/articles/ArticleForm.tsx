@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 import { ArticleEditor } from '@/components/articles/ArticleEditor';
+import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
+import { ArticleLlmPromptHelper } from '@/components/articles/ArticleLlmPromptHelper';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
@@ -143,7 +145,10 @@ export function ArticleForm({
         <CmsFormSection title="Identidade">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="article-title">Título</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-title">Título</Label>
+                <ArticleFieldHint text="Título principal do artigo na vitrine e no Google. Máx. 150 caracteres; gera o slug automaticamente até você editá-lo." />
+              </div>
               <Input
                 id="article-title"
                 value={title}
@@ -151,7 +156,10 @@ export function ArticleForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="article-slug">Slug</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-slug">Slug</Label>
+                <ArticleFieldHint text="URL amigável em kebab-case (ex.: guia-cadeira-ergonomica). Página pública: /artigos/{slug}. Evite alterar após publicar." />
+              </div>
               <Input
                 id="article-slug"
                 value={slug}
@@ -162,7 +170,10 @@ export function ArticleForm({
               />
             </div>
             <div className="space-y-2">
-              <Label>Tipo</Label>
+              <div className="flex items-center gap-2">
+                <Label>Tipo</Label>
+                <ArticleFieldHint text="Guia, review, comparativo ou lookbook/social. Influencia o tom sugerido no prompt de IA e a expectativa do leitor." />
+              </div>
               <Select
                 value={type}
                 onValueChange={(value) => setType(articleTypeSchema.parse(value))}
@@ -180,7 +191,10 @@ export function ArticleForm({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Status</Label>
+              <div className="flex items-center gap-2">
+                <Label>Status</Label>
+                <ArticleFieldHint text="Rascunho fica só no admin. Publicado aparece em /artigos/{slug} e no picker do bloco Bento Hub Mix." />
+              </div>
               <Select
                 value={status}
                 onValueChange={(value) => setStatus(articleStatusSchema.parse(value))}
@@ -203,7 +217,10 @@ export function ArticleForm({
         <CmsFormSection title="Capa e resumo">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="article-cover">URL da capa</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-cover">URL da capa</Label>
+                <ArticleFieldHint text="Banner horizontal (16:9 ou 21:9) no topo da página e no bloco Bento quando não houver override no CMS." />
+              </div>
               <Input
                 id="article-cover"
                 value={coverImageUrl}
@@ -212,7 +229,10 @@ export function ArticleForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="article-excerpt">Resumo</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-excerpt">Resumo</Label>
+                <ArticleFieldHint text="1–3 frases para listagens, Open Graph e introdução. Se vazio, a vitrine usa trecho do corpo." />
+              </div>
               <Textarea
                 id="article-excerpt"
                 value={excerpt}
@@ -226,7 +246,10 @@ export function ArticleForm({
         <CmsFormSection title="SEO">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <Label htmlFor="article-seo-title">Título SEO</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-seo-title">Título SEO</Label>
+                <ArticleFieldHint text="Título da aba e do Google. Ideal ≤ 60 caracteres visíveis; se vazio, usa o título do artigo." />
+              </div>
               <Input
                 id="article-seo-title"
                 value={seoTitle}
@@ -234,7 +257,10 @@ export function ArticleForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="article-seo-description">Descrição SEO</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="article-seo-description">Descrição SEO</Label>
+                <ArticleFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres com curadoria e comparação de preços, sem urgência falsa." />
+              </div>
               <Textarea
                 id="article-seo-description"
                 value={seoDescription}
@@ -246,6 +272,24 @@ export function ArticleForm({
         </CmsFormSection>
 
         <CmsFormSection title="Conteúdo">
+          <div className="mb-3 flex items-center gap-2">
+            <p className="text-sm text-[var(--admin-text-muted)]">
+              Editor rico com embeds via <code className="text-xs">/produto</code> ou shortcode{' '}
+              <code className="text-xs">[[product:slug]]</code>.
+            </p>
+            <ArticleFieldHint text="Digite /produto no editor ou use o botão para inserir cards de afiliado. A vitrine resolve preços do catálogo local em tempo real." />
+            <ArticleLlmPromptHelper
+              title={title}
+              slug={slug}
+              excerpt={excerpt}
+              coverImageUrl={coverImageUrl}
+              body={body}
+              type={type}
+              status={status}
+              seoTitle={seoTitle}
+              seoDescription={seoDescription}
+            />
+          </div>
           <ArticleEditor value={body} onChange={setBody} />
         </CmsFormSection>
       </div>

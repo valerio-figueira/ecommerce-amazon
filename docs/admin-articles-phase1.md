@@ -34,6 +34,7 @@ flowchart LR
 | UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx` |
 | Editor TipTap | `apps/admin/src/components/articles/ArticleEditor.tsx` |
 | Extensão embed | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts` |
+| Dicas de campo + prompt IA | `ArticleFieldHint.tsx`, `ArticleLlmPromptHelper.tsx`, `lib/article-llm-prompt.ts` |
 | BFF | `apps/admin/src/app/api/admin/articles/**` |
 | API | `apps/api/src/adapters/http/routes/admin-article-routes.ts` |
 | Use cases | `packages/application/src/use-cases/admin-article/` |
