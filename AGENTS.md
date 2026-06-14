@@ -43,6 +43,9 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
+| [docs/llm-context-01-project-architecture.md](docs/llm-context-01-project-architecture.md) | Síntese LLM: visão, arquitetura, invariantes |
+| [docs/llm-context-02-domain-schema-interfaces.md](docs/llm-context-02-domain-schema-interfaces.md) | Síntese LLM: domínio, schema, interfaces |
+| [docs/llm-context-03-implemented-features.md](docs/llm-context-03-implemented-features.md) | Síntese LLM: features, API, planos executados |
 
 ## Invariantes (nunca violar)
 

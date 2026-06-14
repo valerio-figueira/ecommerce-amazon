@@ -39,6 +39,16 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [articles-public-rendering.md](./articles-public-rendering.md) | Vitrine `/artigos/[slug]`, auto-linking, ProductCard embed |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 
+### Contexto para LLMs (síntese)
+
+Documentação condensada para análise e contexto de outra LLM — cobre arquitetura, domínio, features implementadas e planos executados.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [llm-context-01-project-architecture.md](./llm-context-01-project-architecture.md) | Visão, monorepo, Clean Architecture, invariantes de negócio, cache, worker |
+| [llm-context-02-domain-schema-interfaces.md](./llm-context-02-domain-schema-interfaces.md) | Entidades, enums, ports, tabelas DB, BlockType, DTOs, schemas shared |
+| [llm-context-03-implemented-features.md](./llm-context-03-implemented-features.md) | CMS/admin/artigos/categorias/SEO implementados, API REST, planos completed, gaps MVP |
+
 ### Planos e especificação (fonte)
 
 | Documento | Conteúdo |
