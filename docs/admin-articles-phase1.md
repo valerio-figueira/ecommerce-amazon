@@ -26,6 +26,14 @@ flowchart LR
 3. Ao salvar, o repositório extrai shortcodes e sincroniza `content_product_embeds`.
 4. `authorId` é definido server-side a partir do JWT (`adminOperator.id`).
 
+## Editor de conteúdo
+
+- **Toolbar:** H2/H3, negrito, itálico, riscado, listas e botão Produto; estados ativos refletem a formatação no cursor.
+- **Modo Visual:** TipTap WYSIWYG com chips de embed e comando `/produto` (somente neste modo).
+- **Modo Código HTML:** textarea monoespaçada com HTML e shortcodes `[[product:slug]]`; toolbar desabilitada.
+- **Sincronização:** ao alternar abas, Visual → `serializeArticleBody(getHTML())`; HTML → Visual usa `preprocessBodyForEditor` + `setContent`.
+- Contrato de persistência em `ProductEmbedExtension.ts` (`serializeArticleBody` / `preprocessBodyForEditor`).
+
 ## Arquivos-chave
 
 | Camada | Path |
@@ -33,6 +41,7 @@ flowchart LR
 | UI listagem | `apps/admin/src/components/articles/ArticleListManager.tsx` |
 | UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx` |
 | Editor TipTap | `apps/admin/src/components/articles/ArticleEditor.tsx` |
+| Toolbar + modo HTML | `apps/admin/src/components/articles/ArticleEditorToolbar.tsx`, `ArticleEditorModeTabs.tsx`, `useEditorToolbarState.ts` |
 | Extensão embed | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts` |
 | Dicas de campo + prompt IA | `ArticleFieldHint.tsx`, `ArticleLlmPromptHelper.tsx`, `lib/article-llm-prompt.ts` |
 | BFF | `apps/admin/src/app/api/admin/articles/**` |
@@ -61,8 +70,9 @@ npm run dev -w @ecommerce-amazon/admin
 
 1. Login em `http://localhost:3002/login`
 2. Abrir `/artigos` → criar artigo
-3. No editor, digitar `/produto` ou usar o botão → inserir produto
-4. Publicar e abrir na vitrine: `/artigos/{slug}`
+3. No editor, digitar `/produto` ou usar o botão na toolbar → inserir produto
+4. Alternar **Código HTML** → editar shortcodes manualmente → voltar **Visual** e conferir embed
+5. Publicar e abrir na vitrine: `/artigos/{slug}`
 
 ## Próximos passos
 
