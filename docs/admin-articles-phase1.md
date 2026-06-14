@@ -22,7 +22,8 @@ flowchart LR
 ```
 
 1. Operador cria/edita em `/artigos`, `/artigos/novo`, `/artigos/[id]`.
-2. Editor TipTap serializa embeds como `[[product:slug]]` no campo `body`.
+2. Formulário em **layout two-pane** (estilo php-app/notícias): painel principal (título, slug, resumo, editor) + sidebar sticky (Publicar, Capa, SEO, Metadados).
+3. Editor TipTap serializa embeds como `[[product:slug]]` no campo `body`.
 3. Ao salvar, o repositório extrai shortcodes e sincroniza `content_product_embeds`.
 4. `authorId` é definido server-side a partir do JWT (`adminOperator.id`).
 
@@ -39,7 +40,7 @@ flowchart LR
 | Camada | Path |
 |--------|------|
 | UI listagem | `apps/admin/src/components/articles/ArticleListManager.tsx` |
-| UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx` |
+| UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx`, `ArticleMetaBox.tsx` |
 | Editor TipTap | `apps/admin/src/components/articles/ArticleEditor.tsx` |
 | Toolbar + modo HTML | `apps/admin/src/components/articles/ArticleEditorToolbar.tsx`, `ArticleEditorModeTabs.tsx`, `useEditorToolbarState.ts` |
 | Extensão embed | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts` |

@@ -46,6 +46,8 @@ export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
             status: article.status,
             seoTitle: article.seoTitle ?? '',
             seoDescription: article.seoDescription ?? '',
+            createdAt: article.createdAt,
+            updatedAt: article.updatedAt,
           }}
         />
       </AdminPageCard>
