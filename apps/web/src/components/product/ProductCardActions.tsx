@@ -33,17 +33,17 @@ export function ProductCardActions({
   const marketplace = marketplaceLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
   const stackGap = editorial
-    ? 'flex w-44 shrink-0 flex-col gap-2 self-end sm:self-auto'
+    ? 'flex w-52 shrink-0 flex-col gap-2.5 self-end sm:self-auto'
     : compact
       ? 'space-y-1'
       : 'space-y-2';
   const buttonClass = editorial
-    ? 'px-4 py-2 text-xs'
+    ? 'px-5 py-2.5 text-sm'
     : compact
       ? 'px-3 py-1.5 text-[11px]'
       : 'px-4 py-2.5 text-xs';
   const primaryButtonClass = editorial
-    ? 'px-4 py-2 text-xs'
+    ? 'px-5 py-2.5 text-sm'
     : compact
       ? 'px-3 py-1.5 text-[11px]'
       : 'px-4 py-2.5 text-xs';
@@ -68,7 +68,7 @@ export function ProductCardActions({
           href={detailHref}
           className={cn(
             'text-xs font-medium text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline',
-            editorial ? 'text-center' : 'block text-center',
+            editorial ? 'text-center text-sm' : 'block text-center',
           )}
         >
           Ver análise
