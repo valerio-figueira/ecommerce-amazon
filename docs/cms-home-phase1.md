@@ -116,7 +116,7 @@ type PageBlockDto = {
 | BlockType | Componente React | Props schema | Dados dinâmicos |
 |-----------|------------------|--------------|-----------------|
 | `hero_split` | `HeroSplitBlock` | `heroSplitPropsSchema` | Compõe blocos por ID |
-| `hero_carousel` | `HeroCarouselBlock` | `heroCarouselPropsSchema` | Estático (slides) |
+| `hero_carousel` | `HeroCarouselBlock` | `heroCarouselPropsSchema` | Estático (slides); top-level ou filho de `hero_split` |
 | `featured_product` | `FeaturedProductBlock` | `featuredProductPropsSchema` | `GET /products/:slug` |
 | `category_pills` | `CategoryPillsBlock` | `categoryPillsPropsSchema` | `GET /categories` + context |
 | `product_grid` | `ProductGridBlock` | `productGridPropsSchema` | `GET /products?...` |
@@ -146,6 +146,8 @@ Fonte: [`block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts).
   intervalMs: number;      // default 5000
 }
 ```
+
+Renderização: `aspect-[2/1]` (`md:aspect-[5/2]`) define altura quando o bloco é top-level; dentro de `hero_split`, preenche o container pai via `h-full`.
 
 ### `featured_product`
 
