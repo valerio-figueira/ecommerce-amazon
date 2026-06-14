@@ -8,6 +8,7 @@ import { ArticleEditor } from '@/components/articles/ArticleEditor';
 import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
 import { ArticleLlmPromptHelper } from '@/components/articles/ArticleLlmPromptHelper';
 import { ArticleMetaBox } from '@/components/articles/ArticleMetaBox';
+import { ArticleSeoCharCounter } from '@/components/articles/ArticleSeoCharCounter';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
@@ -48,6 +49,9 @@ type ArticleFormProps = {
     updatedAt?: string;
   };
 };
+
+const SEO_TITLE_GOOGLE_LIMIT = 60;
+const SEO_DESCRIPTION_GOOGLE_LIMIT = 160;
 
 const ARTICLE_TYPES = [
   { value: ArticleType.GUIDE, label: 'Guia' },
@@ -315,9 +319,12 @@ export function ArticleForm({
           <ArticleMetaBox title="SEO">
             <div className="space-y-3">
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="article-seo-title">Título SEO</Label>
-                  <ArticleFieldHint text="Título da aba e do Google. Ideal ≤ 60 caracteres visíveis; se vazio, usa o título do artigo." />
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Label htmlFor="article-seo-title">Título SEO</Label>
+                    <ArticleFieldHint text="Título da aba e do Google. Ideal ≤ 60 caracteres visíveis; se vazio, usa o título do artigo." />
+                  </div>
+                  <ArticleSeoCharCounter value={seoTitle} limit={SEO_TITLE_GOOGLE_LIMIT} />
                 </div>
                 <Input
                   id="article-seo-title"
@@ -326,9 +333,15 @@ export function ArticleForm({
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="article-seo-description">Descrição SEO</Label>
-                  <ArticleFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres com curadoria e comparação de preços, sem urgência falsa." />
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Label htmlFor="article-seo-description">Descrição SEO</Label>
+                    <ArticleFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres com curadoria e comparação de preços, sem urgência falsa." />
+                  </div>
+                  <ArticleSeoCharCounter
+                    value={seoDescription}
+                    limit={SEO_DESCRIPTION_GOOGLE_LIMIT}
+                  />
                 </div>
                 <Textarea
                   id="article-seo-description"

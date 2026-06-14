@@ -32,6 +32,7 @@ flowchart LR
 - **Toolbar:** H2/H3, negrito, itálico, riscado, listas e botão Produto; estados ativos refletem a formatação no cursor.
 - **Modo Visual:** TipTap WYSIWYG com chips de embed e comando `/produto` (somente neste modo).
 - **Modo Código HTML:** textarea monoespaçada com HTML e shortcodes `[[product:slug]]`; toolbar desabilitada.
+- **SEO na sidebar:** contadores dinâmicos `N / 60` (título) e `N / 160` (descrição), com aviso quando excede o limite visível no Google.
 - **Sincronização:** ao alternar abas, Visual → `serializeArticleBody(getHTML())`; HTML → Visual usa `preprocessBodyForEditor` + `setContent`.
 - Contrato de persistência em `ProductEmbedExtension.ts` (`serializeArticleBody` / `preprocessBodyForEditor`).
 
