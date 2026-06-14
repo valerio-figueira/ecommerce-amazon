@@ -4,6 +4,7 @@ export * from './entities/Product.js';
 export * from './entities/PriceSnapshot.js';
 export * from './entities/PriceAlert.js';
 export * from './entities/WishlistItem.js';
+export * from './entities/AutoLink.js';
 export * from './entities/ContentArticle.js';
 export * from './entities/Coupon.js';
 export * from './entities/PageLayout.js';

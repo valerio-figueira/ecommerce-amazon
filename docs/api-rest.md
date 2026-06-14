@@ -344,6 +344,19 @@ Coleção curada com produtos ordenados + metadados UTM.
 
 `CreateArticleBody` / `UpdateArticleBody` incluem `categoryId` opcional.
 
+### Admin — `/admin/auto-links`
+
+Doc: [auto-links-admin.md](./auto-links-admin.md).
+
+| Método | Rota | Body / query | Resposta |
+|--------|------|--------------|----------|
+| `GET` | `/admin/auto-links` | `?page=&limit=&search=` | `AdminAutoLinkListResponse` |
+| `POST` | `/admin/auto-links` | `CreateAutoLinkBody` | 201 `{ id }` |
+| `PATCH` | `/admin/auto-links/:id` | `UpdateAutoLinkBody` (parcial) | 204 |
+| `DELETE` | `/admin/auto-links/:id` | — | 204 |
+
+Mutações invalidam cache Redis `vitrine:seo:auto-links`. Keyword duplicada → 409.
+
 ---
 
 ## Cupons

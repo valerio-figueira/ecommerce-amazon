@@ -2,10 +2,26 @@ export type SeoKeywordMap = {
   keyword: string;
   targetUrl: string;
   maxMatches?: number;
+  priority?: number;
 };
 
-const ANCHOR_SEGMENT_REGEX = /(<a\b[^>]*>[\s\S]*?<\/a>)/gi;
+const PROTECTED_SEGMENT_REGEX =
+  /(<a\b[^>]*>[\s\S]*?<\/a>|<h[1-6]\b[^>]*>[\s\S]*?<\/h[1-6]>|<img\b[^>]*\/?>)/gi;
 const LINK_CLASS = 'text-emerald-600 underline font-medium hover:text-emerald-700';
+
+function isProtectedSegment(segment: string): boolean {
+  return /^<(a|h[1-6]|img)\b/i.test(segment);
+}
+
+function sortKeywords(keywords: SeoKeywordMap[]): SeoKeywordMap[] {
+  return [...keywords].sort((a, b) => {
+    const priorityDiff = (b.priority ?? 0) - (a.priority ?? 0);
+    if (priorityDiff !== 0) {
+      return priorityDiff;
+    }
+    return b.keyword.length - a.keyword.length;
+  });
+}
 
 function linkKeywordOccurrences(segment: string, item: SeoKeywordMap): string {
   const escapedKeyword = item.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,19 +42,20 @@ export function injectInternalLinks(
   htmlContent: string,
   keywords: SeoKeywordMap[],
 ): string {
-  const parts = htmlContent.split(ANCHOR_SEGMENT_REGEX);
+  const sortedKeywords = sortKeywords(keywords);
+  let result = htmlContent;
 
-  return parts
-    .map((part) => {
-      if (/^<a\b/i.test(part)) {
-        return part;
-      }
+  for (const item of sortedKeywords) {
+    const parts = result.split(PROTECTED_SEGMENT_REGEX);
+    result = parts
+      .map((part) => {
+        if (isProtectedSegment(part)) {
+          return part;
+        }
+        return linkKeywordOccurrences(part, item);
+      })
+      .join('');
+  }
 
-      let segment = part;
-      for (const item of keywords) {
-        segment = linkKeywordOccurrences(segment, item);
-      }
-      return segment;
-    })
-    .join('');
+  return result;
 }

@@ -133,6 +133,7 @@ export const autoLinkItemSchema = z.object({
   keyword: z.string(),
   targetUrl: z.string(),
   maxMatches: z.number().int().positive(),
+  priority: z.number().int().optional(),
 });
 
 export const autoLinksResponseSchema = z.object({

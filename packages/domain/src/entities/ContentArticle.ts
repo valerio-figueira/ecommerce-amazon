@@ -74,42 +74,6 @@ export class ContentArticle {
   }
 }
 
-export class AutoLink {
-  constructor(
-    readonly id: string,
-    readonly keyword: string,
-    readonly targetUrl: string,
-    readonly maxMatches: number,
-    readonly priority: number,
-    readonly isActive: boolean,
-    readonly createdAt: Date,
-    readonly updatedAt: Date,
-  ) {}
-
-  static create(props: {
-    id: string;
-    keyword: string;
-    targetUrl: string;
-    maxMatches?: number;
-    priority?: number;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-  }): AutoLink {
-    const now = new Date();
-    return new AutoLink(
-      props.id,
-      props.keyword,
-      props.targetUrl,
-      props.maxMatches ?? 1,
-      props.priority ?? 0,
-      props.isActive ?? true,
-      props.createdAt ?? now,
-      props.updatedAt ?? now,
-    );
-  }
-}
-
 export class CuratedCollection {
   constructor(
     readonly id: string,

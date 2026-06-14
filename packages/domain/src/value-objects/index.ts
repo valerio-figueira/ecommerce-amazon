@@ -1,6 +1,7 @@
 import { DomainError } from '../errors/DomainError.js';
 
 export type ProductId = string & { readonly __brand: 'ProductId' };
+export type AutoLinkId = string & { readonly __brand: 'AutoLinkId' };
 export type Slug = string & { readonly __brand: 'Slug' };
 
 const UUID_REGEX =
@@ -14,6 +15,17 @@ export function isProductId(value: string): value is ProductId {
 export function toProductId(id: string): ProductId {
   if (!isProductId(id)) {
     throw new DomainError('Invalid product id', 'INVALID_PRODUCT_ID');
+  }
+  return id;
+}
+
+export function isAutoLinkId(value: string): value is AutoLinkId {
+  return UUID_REGEX.test(value);
+}
+
+export function toAutoLinkId(id: string): AutoLinkId {
+  if (!isAutoLinkId(id)) {
+    throw new DomainError('Invalid auto link id', 'INVALID_AUTO_LINK_ID');
   }
   return id;
 }

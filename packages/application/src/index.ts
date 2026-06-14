@@ -32,6 +32,10 @@ export {
   DeleteArticle,
 } from './use-cases/admin-article/UpdateArticle.js';
 export { ListActiveAutoLinks } from './use-cases/seo/ListActiveAutoLinks.js';
+export { CreateAutoLink } from './use-cases/auto-links/CreateAutoLink.js';
+export { UpdateAutoLink } from './use-cases/auto-links/UpdateAutoLink.js';
+export { DeleteAutoLink } from './use-cases/auto-links/DeleteAutoLink.js';
+export { ListAutoLinksAdmin } from './use-cases/auto-links/ListAutoLinksAdmin.js';
 export { GetCuratedCollection } from './use-cases/content/GetCuratedCollection.js';
 export {
   CreateCuratedCollection,

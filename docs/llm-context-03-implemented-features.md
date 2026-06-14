@@ -119,6 +119,15 @@ Grid 3 slots: (1) coleção ou artigo hero 2×2, (2) produto oferta 1×1, (3) to
 | Vitrine | Pills cascata home, sidebar categoria, header flyout/drawer |
 | Produto | `CategoryCascadeSelect` → folha obrigatória |
 
+### Auto-Links SEO (`auto-links-admin.md`) ✅
+
+| Entrega | Detalhe |
+|---------|---------|
+| API admin | `GET/POST/PATCH/DELETE /admin/auto-links` |
+| Parser | `injectInternalLinks` com priority, maxMatches, zonas protegidas |
+| Cache | Redis `vitrine:seo:auto-links` + invalidação nas mutações |
+| Vitrine | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB) |
+
 ---
 
 ## Artigos — pipeline completo
@@ -242,12 +251,12 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 | Artigos | `GET/POST/PATCH/DELETE /admin/articles` |
 | Categorias artigo | `GET/POST/PATCH/DELETE /admin/article-categories` |
 | Coleções | `GET/POST/PATCH/DELETE /admin/collections` |
+| Auto-links | `GET/POST/PATCH/DELETE /admin/auto-links` |
 
 **Rotas planejadas NÃO implementadas:**
 - `DELETE /price-alerts/:token`
 - `GET /coupons/:marketplace`
 - `POST /admin/pages/:slug/publish`
-- CRUD admin `auto_links`
 
 Contrato completo: `docs/api-rest.md`.
 
@@ -317,7 +326,7 @@ Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketpla
 | Alertas email em produção (Resend) | Alta |
 | `DELETE /price-alerts/:token` (LGPD) | Média |
 | Draft/preview/publish CMS | Média |
-| Admin CRUD `auto_links` | Média |
+| Admin CRUD `auto_links` | Média | ✅ API — UI pendente |
 | Gate manual conta afiliado antes de escala | Negócio |
 | PA-API Amazon homologada | Infra |
 | Worker auto-mapeamento browse node → categoria | Worker |
