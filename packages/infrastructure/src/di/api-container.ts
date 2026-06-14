@@ -37,6 +37,7 @@ import {
   UpdatePageBlocksOrder,
   GetAdminPageLayout,
   ListAdminPages,
+  ListAdminArticles,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
 } from '@ecommerce-amazon/application';
@@ -161,6 +162,10 @@ export function buildApiContainer(env = loadEnv()) {
         cache,
         listProducts,
         getCuratedCollection,
+        curatedCollectionRepository,
+        contentRepository,
+        productRepository,
+        categoryRepository,
       ),
       listCategoryTree: new ListCategoryTree(categoryRepository),
       getCategoryBySlug: new GetCategoryBySlug(categoryRepository),
@@ -175,6 +180,7 @@ export function buildApiContainer(env = loadEnv()) {
       updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache),
       getAdminPageLayout: new GetAdminPageLayout(pageRepository),
       listAdminPages: new ListAdminPages(pageRepository),
+      listAdminArticles: new ListAdminArticles(contentRepository),
       resolveAffiliateRedirect: new ResolveAffiliateRedirect(
         productRepository,
         affiliateAccountRepository,

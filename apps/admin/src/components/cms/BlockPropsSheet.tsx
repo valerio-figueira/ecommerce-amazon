@@ -22,6 +22,7 @@ import { CategoryBentoGridForm } from '@/components/cms/props-forms/CategoryBent
 import { CategoryPillsForm } from '@/components/cms/props-forms/CategoryPillsForm';
 import { CuratedCollectionForm } from '@/components/cms/props-forms/CuratedCollectionForm';
 import { DynamicGridForm } from '@/components/cms/props-forms/DynamicGridForm';
+import { BentoHubMixForm } from '@/components/cms/props-forms/BentoHubMixForm';
 import { FeaturedProductForm } from '@/components/cms/props-forms/FeaturedProductForm';
 import { HeroCarouselForm } from '@/components/cms/props-forms/HeroCarouselForm';
 import { ProductGridForm } from '@/components/cms/props-forms/ProductGridForm';
@@ -44,9 +45,13 @@ import {
 } from '@/components/ui/sheet';
 import {
   createPageBlockClient,
+  listAdminArticlesClient,
+  listAdminCollectionsClient,
   listCategoriesClient,
   listProductsClient,
   updatePageBlockClient,
+  type AdminArticlePickerOption,
+  type AdminCollectionPickerOption,
   type ProductPickerOption,
 } from '@/lib/api/cms-pages-client';
 
@@ -66,24 +71,32 @@ const CATEGORY_BLOCK_TYPES = new Set<BlockType>([
   BlockType.CATEGORY_PILLS,
   BlockType.CATEGORY_BENTO_GRID,
   BlockType.PRODUCT_GRID,
+  BlockType.BENTO_HUB_MIX,
 ]);
 
 const PRODUCT_BLOCK_TYPES = new Set<BlockType>([
   BlockType.HERO_CAROUSEL,
   BlockType.FEATURED_PRODUCT,
+  BlockType.BENTO_HUB_MIX,
 ]);
+
+const BENTO_HUB_MIX_BLOCK_TYPES = new Set<BlockType>([BlockType.BENTO_HUB_MIX]);
 
 function BlockFormBody({
   block,
   control,
   categories,
   products,
+  collections,
+  articles,
   pageBlocks,
 }: {
   block: AdminBlock;
   control: ReturnType<typeof useForm<BlockFormValues>>['control'];
   categories: Array<{ slug: string; label: string }>;
   products: ProductPickerOption[];
+  collections: AdminCollectionPickerOption[];
+  articles: AdminArticlePickerOption[];
   pageBlocks: AdminBlock[];
 }): React.JSX.Element {
   switch (block.type) {
@@ -108,6 +121,16 @@ function BlockFormBody({
       return <CuratedCollectionForm control={control} />;
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return <DynamicGridForm control={control} categories={categories} />;
+    case BlockType.BENTO_HUB_MIX:
+      return (
+        <BentoHubMixForm
+          control={control}
+          collections={collections}
+          articles={articles}
+          products={products}
+          categories={categories}
+        />
+      );
     case BlockType.SPACER:
       return <SpacerFormFields control={control} />;
     case BlockType.BANNER:
@@ -143,6 +166,8 @@ export function BlockPropsSheet({
 
   const [categories, setCategories] = useState<Array<{ slug: string; label: string }>>([]);
   const [products, setProducts] = useState<ProductPickerOption[]>([]);
+  const [collections, setCollections] = useState<AdminCollectionPickerOption[]>([]);
+  const [articles, setArticles] = useState<AdminArticlePickerOption[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -158,6 +183,10 @@ export function BlockPropsSheet({
     }
     if (PRODUCT_BLOCK_TYPES.has(block.type)) {
       void listProductsClient({ pageSize: 50 }).then(setProducts);
+    }
+    if (BENTO_HUB_MIX_BLOCK_TYPES.has(block.type)) {
+      void listAdminCollectionsClient().then(setCollections).catch(() => setCollections([]));
+      void listAdminArticlesClient().then(setArticles).catch(() => setArticles([]));
     }
   }, [block, open]);
 
@@ -221,13 +250,19 @@ export function BlockPropsSheet({
     block.type === BlockType.CATEGORY_PILLS ||
     block.type === BlockType.CATEGORY_BENTO_GRID ||
     block.type === BlockType.PRODUCT_GRID ||
-    block.type === BlockType.FEATURED_PRODUCT
+    block.type === BlockType.FEATURED_PRODUCT ||
+    block.type === BlockType.BENTO_HUB_MIX
       ? 'Aplicar configurações no bloco'
       : 'Salvar propriedades';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="cms-props-sheet flex w-full flex-col p-0 sm:max-w-lg">
+      <SheetContent
+        side="right"
+        className={`cms-props-sheet flex w-full flex-col p-0 ${
+          block.type === BlockType.BENTO_HUB_MIX ? 'sm:max-w-xl' : 'sm:max-w-lg'
+        }`}
+      >
         <SheetHeader className="shrink-0 border-b border-[var(--admin-gray)] px-6 py-5">
           <SheetTitle className="flex items-center gap-2.5">
             <span className="cms-type-picker-icon">
@@ -256,6 +291,8 @@ export function BlockPropsSheet({
                   control={form.control}
                   categories={categories}
                   products={products}
+                  collections={collections}
+                  articles={articles}
                   pageBlocks={pageBlocks}
                 />
               </div>

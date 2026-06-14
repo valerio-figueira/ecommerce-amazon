@@ -133,6 +133,46 @@ export const dynamicProductGridPropsSchema = z.object({
 /** @deprecated Use dynamicProductGridPropsSchema */
 export const DynamicProductGridPropsSchema = dynamicProductGridPropsSchema;
 
+const bentoHubMixSlot1BaseSchema = z.object({
+  contentType: z.enum(['collection', 'article']),
+  entityId: z.string().uuid(),
+  title: z.string().min(1).optional(),
+  subtitle: z.string().optional(),
+  coverImageUrl: z.string().url().optional(),
+});
+
+export const bentoHubMixSlot1Schema = bentoHubMixSlot1BaseSchema.superRefine((data, ctx) => {
+  if (data.contentType === 'article' && !data.coverImageUrl) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Informe uma imagem de capa para artigos',
+      path: ['coverImageUrl'],
+    });
+  }
+});
+
+export const bentoHubMixSlot2Schema = z.object({
+  productId: z.string().uuid(),
+});
+
+export const bentoHubMixSlot3Schema = z.discriminatedUnion('contentType', [
+  z.object({
+    contentType: z.literal('category'),
+    categorySlug: z.string().min(1),
+    listTitle: z.string().optional(),
+  }),
+  z.object({
+    contentType: z.literal('products'),
+    productIds: z.array(z.string().uuid()).min(1).max(3),
+  }),
+]);
+
+export const bentoHubMixPropsSchema = z.object({
+  slot1: bentoHubMixSlot1Schema,
+  slot2: bentoHubMixSlot2Schema,
+  slot3: bentoHubMixSlot3Schema,
+});
+
 export type HeroCarouselProps = z.infer<typeof heroCarouselPropsSchema>;
 export type FeaturedProductProps = z.infer<typeof featuredProductPropsSchema>;
 export type ProductGridProps = z.infer<typeof productGridPropsSchema>;
@@ -146,6 +186,10 @@ export type RichTextProps = z.infer<typeof richTextPropsSchema>;
 export type BannerProps = z.infer<typeof bannerPropsSchema>;
 export type SpacerProps = z.infer<typeof spacerPropsSchema>;
 export type DynamicProductGridProps = z.infer<typeof dynamicProductGridPropsSchema>;
+export type BentoHubMixSlot1Props = z.infer<typeof bentoHubMixSlot1Schema>;
+export type BentoHubMixSlot2Props = z.infer<typeof bentoHubMixSlot2Schema>;
+export type BentoHubMixSlot3Props = z.infer<typeof bentoHubMixSlot3Schema>;
+export type BentoHubMixProps = z.infer<typeof bentoHubMixPropsSchema>;
 
 export type BlockPropsMap = {
   [BlockType.HERO_CAROUSEL]: HeroCarouselProps;
@@ -160,6 +204,7 @@ export type BlockPropsMap = {
   [BlockType.BANNER]: BannerProps;
   [BlockType.SPACER]: SpacerProps;
   [BlockType.DYNAMIC_PRODUCT_GRID]: DynamicProductGridProps;
+  [BlockType.BENTO_HUB_MIX]: BentoHubMixProps;
 };
 
 export const BlockPropsResolver: Record<BlockType, z.ZodType<unknown>> = {
@@ -175,6 +220,7 @@ export const BlockPropsResolver: Record<BlockType, z.ZodType<unknown>> = {
   [BlockType.BANNER]: bannerPropsSchema,
   [BlockType.SPACER]: spacerPropsSchema,
   [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
+  [BlockType.BENTO_HUB_MIX]: bentoHubMixPropsSchema,
 };
 
 const blockPropsSchemas = BlockPropsResolver;
@@ -236,10 +282,36 @@ export const renderedCollectionSlideSchema = z.object({
 export type RenderedCollection = z.infer<typeof renderedCollectionSchema>;
 export type RenderedCollectionSlide = z.infer<typeof renderedCollectionSlideSchema>;
 
+export const bentoHubMixRenderedSlot1Schema = z.object({
+  href: z.string(),
+  title: z.string(),
+  subtitle: z.string().optional(),
+  coverImageUrl: z.string().url(),
+  contentType: z.enum(['collection', 'article']),
+});
+
+export const bentoHubMixRenderedSlot3Schema = z.object({
+  mode: z.enum(['category', 'products']),
+  categoryHref: z.string().optional(),
+  categoryTitle: z.string().optional(),
+  products: z.array(productDeliveryItemSchema).max(3),
+});
+
+export const bentoHubMixRenderedSchema = z.object({
+  slot1: bentoHubMixRenderedSlot1Schema.nullable(),
+  slot2: productDeliveryItemSchema.nullable(),
+  slot3: bentoHubMixRenderedSlot3Schema.nullable(),
+});
+
+export type BentoHubMixRenderedSlot1 = z.infer<typeof bentoHubMixRenderedSlot1Schema>;
+export type BentoHubMixRenderedSlot3 = z.infer<typeof bentoHubMixRenderedSlot3Schema>;
+export type BentoHubMixRendered = z.infer<typeof bentoHubMixRenderedSchema>;
+
 export const pageBlockDeliverySchema = pageBlockDtoSchema.extend({
   renderedData: z.array(productDeliveryItemSchema).optional(),
   renderedCollection: renderedCollectionSchema.optional(),
   renderedCollections: z.array(renderedCollectionSlideSchema).optional(),
+  renderedBentoHubMix: bentoHubMixRenderedSchema.optional(),
 });
 
 export const pageLayoutDeliverySchema = pageLayoutDtoSchema.extend({

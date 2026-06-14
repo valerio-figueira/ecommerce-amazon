@@ -96,6 +96,15 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
     return reply.send(request.adminOperator);
   });
 
+  app.get('/admin/articles', async (_request, reply) => {
+    try {
+      const result = await useCases.listAdminArticles.execute();
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminError(error, reply);
+    }
+  });
+
   await registerAdminCmsRoutes(app, container);
   await registerAdminCategoryRoutes(app, container);
   await registerAdminCollectionRoutes(app, container);

@@ -41,6 +41,9 @@ export type BlockFormValues = {
   html?: string;
   align?: string;
   size?: string;
+  slot1?: Record<string, unknown>;
+  slot2?: Record<string, unknown>;
+  slot3?: Record<string, unknown>;
   [key: string]: unknown;
 };
 

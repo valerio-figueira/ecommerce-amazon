@@ -1,6 +1,7 @@
 import { BlockType } from '@ecommerce-amazon/domain';
 import {
   bannerPropsSchema,
+  bentoHubMixPropsSchema,
   categoryBentoGridPropsSchema,
   categoryPillsPropsSchema,
   curatedCollectionPropsSchema,
@@ -57,6 +58,7 @@ export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, 
   [BlockType.CURATED_COLLECTION]: curatedCollectionPropsSchema,
   [BlockType.COUPON_STRIP]: null,
   [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
+  [BlockType.BENTO_HUB_MIX]: bentoHubMixPropsSchema,
   [BlockType.RICH_TEXT]: richTextPropsSchema,
   [BlockType.BANNER]: bannerPropsSchema,
   [BlockType.SPACER]: spacerPropsSchema,
@@ -113,6 +115,29 @@ export function normalizeFormValues(type: BlockType, props: unknown): Record<str
 
   if (type === BlockType.PRODUCT_GRID && base['categorySlug'] === null) {
     return { ...base, categorySlug: undefined };
+  }
+
+  if (type === BlockType.BENTO_HUB_MIX) {
+    const slot1 = isRecord(base['slot1']) ? base['slot1'] : {};
+    const slot2 = isRecord(base['slot2']) ? base['slot2'] : {};
+    const slot3 = isRecord(base['slot3']) ? base['slot3'] : {};
+    return {
+      slot1: {
+        contentType: slot1['contentType'] ?? 'collection',
+        entityId: slot1['entityId'] ?? '',
+        ...slot1,
+      },
+      slot2: {
+        productId: slot2['productId'] ?? '',
+        ...slot2,
+      },
+      slot3: {
+        contentType: slot3['contentType'] ?? 'category',
+        categorySlug: slot3['categorySlug'] ?? '',
+        productIds: Array.isArray(slot3['productIds']) ? slot3['productIds'] : [],
+        ...slot3,
+      },
+    };
   }
 
   return base;
@@ -190,7 +215,33 @@ export function sanitizeFormValues(
     delete next['ctaLabel'];
   }
 
+  if (type === BlockType.BENTO_HUB_MIX) {
+    sanitizeBentoHubMixValues(next);
+  }
+
   return next;
+}
+
+function sanitizeBentoHubMixValues(values: Record<string, unknown>): void {
+  const slot1 = isRecord(values['slot1']) ? { ...values['slot1'] } : null;
+  if (slot1) {
+    if (slot1['title'] === '') delete slot1['title'];
+    if (slot1['subtitle'] === '') delete slot1['subtitle'];
+    if (slot1['coverImageUrl'] === '') delete slot1['coverImageUrl'];
+    values['slot1'] = slot1;
+  }
+
+  const slot3 = isRecord(values['slot3']) ? { ...values['slot3'] } : null;
+  if (slot3) {
+    if (slot3['listTitle'] === '') delete slot3['listTitle'];
+    if (slot3['contentType'] === 'category') {
+      delete slot3['productIds'];
+    } else if (slot3['contentType'] === 'products') {
+      delete slot3['categorySlug'];
+      delete slot3['listTitle'];
+    }
+    values['slot3'] = slot3;
+  }
 }
 
 export const INTERVAL_MS_OPTIONS = [

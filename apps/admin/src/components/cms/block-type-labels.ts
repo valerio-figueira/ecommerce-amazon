@@ -1,6 +1,7 @@
 import { BlockType } from '@ecommerce-amazon/domain';
 import {
   bannerPropsSchema,
+  bentoHubMixPropsSchema,
   categoryPillsPropsSchema,
   categoryBentoGridPropsSchema,
   curatedCollectionPropsSchema,
@@ -27,6 +28,7 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   [BlockType.BANNER]: 'Banner',
   [BlockType.SPACER]: 'Espaçador',
   [BlockType.DYNAMIC_PRODUCT_GRID]: 'Ofertas Relâmpago',
+  [BlockType.BENTO_HUB_MIX]: 'Hub Bento Mix',
 };
 
 export const EDITABLE_BLOCK_TYPES: BlockType[] = [
@@ -36,6 +38,7 @@ export const EDITABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.CATEGORY_PILLS,
   BlockType.CATEGORY_BENTO_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.BENTO_HUB_MIX,
   BlockType.CURATED_COLLECTION,
   BlockType.RICH_TEXT,
   BlockType.BANNER,
@@ -50,6 +53,7 @@ export const ADDABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.HERO_SPLIT,
   BlockType.FEATURED_PRODUCT,
   BlockType.CATEGORY_BENTO_GRID,
+  BlockType.BENTO_HUB_MIX,
   BlockType.CATEGORY_PILLS,
   BlockType.PRODUCT_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
@@ -63,12 +67,19 @@ export const ADDABLE_BLOCK_TYPES: BlockType[] = [
 /** @deprecated Prefer ADDABLE_BLOCK_TYPES */
 export const ALL_BLOCK_TYPES: BlockType[] = ADDABLE_BLOCK_TYPES;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 export function getBlockDisplayTitle(type: BlockType, props: unknown): string {
-  if (typeof props === 'object' && props !== null && 'title' in props) {
-    const titleValue = Reflect.get(props, 'title');
-    if (typeof titleValue === 'string' && titleValue.trim().length > 0) {
-      return titleValue;
+  if (type === BlockType.BENTO_HUB_MIX && isRecord(props)) {
+    const slot1 = props['slot1'];
+    if (isRecord(slot1) && typeof slot1['title'] === 'string' && slot1['title'].trim().length > 0) {
+      return slot1['title'];
     }
+  }
+  if (isRecord(props) && typeof props['title'] === 'string' && props['title'].trim().length > 0) {
+    return props['title'];
   }
   return BLOCK_TYPE_LABELS[type];
 }
@@ -149,6 +160,23 @@ export function getDefaultBlockProps(type: BlockType): unknown {
     case BlockType.RICH_TEXT:
       return richTextPropsSchema.parse({
         html: '<p>Conteúdo editorial</p>',
+      });
+    case BlockType.BENTO_HUB_MIX:
+      return bentoHubMixPropsSchema.parse({
+        slot1: {
+          contentType: 'collection',
+          entityId: '00000000-0000-4000-8000-000000000001',
+          title: 'Destaque editorial',
+          subtitle: 'Coleção ou artigo em evidência',
+        },
+        slot2: {
+          productId: '00000000-0000-4000-8000-000000000002',
+        },
+        slot3: {
+          contentType: 'category',
+          categorySlug: 'games',
+          listTitle: 'Top Games',
+        },
       });
     default:
       return {};

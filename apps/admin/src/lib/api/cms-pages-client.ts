@@ -4,6 +4,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 import { publicCategoryTreeNodeSchema, type PublicCategoryTreeNode } from '@ecommerce-amazon/shared/category/category-schemas';
+import { adminCollectionsResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 import type { AdminBlockInput, UpdateAdminBlockInput } from '@/lib/api/cms-pages';
 
@@ -46,6 +47,25 @@ const adminProductsPageSchema = z.object({
 });
 
 export type ProductPickerOption = z.infer<typeof productListItemSchema>;
+
+const adminArticleSummarySchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+});
+
+const adminArticlesResponseSchema = z.object({
+  items: z.array(adminArticleSummarySchema),
+});
+
+export type AdminArticlePickerOption = z.infer<typeof adminArticleSummarySchema>;
+
+export type AdminCollectionPickerOption = {
+  id: string;
+  slug: string;
+  title: string;
+  coverImageUrl: string;
+};
 
 function readErrorMessage(payload: unknown): string {
   if (typeof payload === 'object' && payload !== null && 'error' in payload) {
@@ -153,6 +173,29 @@ export async function listProductsClient(
     title: item.title,
     marketplace: item.marketplace,
   }));
+}
+
+export async function listAdminCollectionsClient(): Promise<AdminCollectionPickerOption[]> {
+  const response = await fetch('/api/admin/collections', { cache: 'no-store' });
+  if (!response.ok) return [];
+  const payload: unknown = await response.json();
+  const parsed = adminCollectionsResponseSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return parsed.data.items.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    title: item.title,
+    coverImageUrl: item.coverImageUrl,
+  }));
+}
+
+export async function listAdminArticlesClient(): Promise<AdminArticlePickerOption[]> {
+  const response = await fetch('/api/admin/articles', { cache: 'no-store' });
+  if (!response.ok) return [];
+  const payload: unknown = await response.json();
+  const parsed = adminArticlesResponseSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return parsed.data.items;
 }
 
 export type { BlockType };

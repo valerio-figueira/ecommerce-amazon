@@ -4,6 +4,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import type { PageBlockDeliveryDto } from '@ecommerce-amazon/shared/cms';
 
 import { BannerBlock } from '@/components/blocks/BannerBlock';
+import { BentoHubMixBlock } from '@/components/blocks/BentoHubMixBlock';
 import { CategoryBentoGridBlock } from '@/components/blocks/CategoryBentoGridBlock';
 import { CategoryPillsBlock } from '@/components/blocks/CategoryPillsBlock';
 import { CouponStripBlock } from '@/components/blocks/CouponStripBlock';
@@ -37,4 +38,5 @@ export const BlockRegistry: Record<
   [BlockType.BANNER]: BannerBlock,
   [BlockType.SPACER]: SpacerBlock,
   [BlockType.DYNAMIC_PRODUCT_GRID]: DynamicProductGridBlock,
+  [BlockType.BENTO_HUB_MIX]: BentoHubMixBlock,
 };

@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 
 import {
+  ArticleStatus,
   CouponStatus,
   type ContentRepository,
   type CouponRepository,
@@ -48,6 +49,42 @@ export class DrizzleContentRepository implements ContentRepository {
         variant: e.variant,
       })),
     );
+  }
+
+  async findArticleById(id: string) {
+    const rows = await this.db
+      .select()
+      .from(schema.contentArticles)
+      .where(eq(schema.contentArticles.id, id));
+    const row = rows[0];
+    if (!row) return null;
+
+    const embeds = await this.db
+      .select()
+      .from(schema.contentProductEmbeds)
+      .where(eq(schema.contentProductEmbeds.articleId, row.id));
+
+    return mapArticle(
+      row,
+      embeds.map((e) => ({
+        productId: e.productId,
+        position: e.position,
+        variant: e.variant,
+      })),
+    );
+  }
+
+  async listPublishedSummaries() {
+    const rows = await this.db
+      .select({
+        id: schema.contentArticles.id,
+        slug: schema.contentArticles.slug,
+        title: schema.contentArticles.title,
+      })
+      .from(schema.contentArticles)
+      .where(eq(schema.contentArticles.status, ArticleStatus.PUBLISHED));
+
+    return rows;
   }
 
   async findCollectionBySlug(slug: string) {

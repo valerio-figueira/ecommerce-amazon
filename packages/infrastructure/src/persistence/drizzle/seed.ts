@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -40,7 +40,25 @@ const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_COLLECTION_ID = 'f9111111-1111-4111-8111-111111111111';
+const SEED_BLOCK_BENTO_HUB_MIX_ID = 'fa111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
+
+const BENTO_HUB_MIX_BLOCK_PROPS = {
+  slot1: {
+    contentType: 'collection',
+    entityId: SEED_COLLECTION_ID,
+    title: 'Setup gamer para começar',
+    subtitle: 'Coleção curada com os melhores custo-benefício',
+  },
+  slot2: {
+    productId: SEED_PRODUCT_SHOPEE_ID,
+  },
+  slot3: {
+    contentType: 'category',
+    categorySlug: 'games',
+    listTitle: 'Top Games',
+  },
+} as const;
 
 const FLASH_DEALS_BLOCK_PROPS = {
   title: 'Ofertas Relâmpago',
@@ -107,6 +125,7 @@ async function runSeed(): Promise<void> {
     await seedHomePage(db, now, logger);
     await ensureFlashDealsHomeLayout(db, logger);
     await seedCollections(db, now, logger);
+    await ensureBentoHubMixHomeBlock(db, logger);
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
   } finally {
@@ -765,6 +784,89 @@ async function seedCollections(
     );
     logger.info(`Collection seed inserted: ${collection.slug}`);
   }
+}
+
+async function ensureBentoHubMixHomeBlock(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  await db.execute(
+    sql`ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'bento_hub_mix'`,
+  );
+
+  const homePage = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'home'))
+    .limit(1);
+
+  if (homePage.length === 0) {
+    return;
+  }
+
+  const pageId = homePage[0]!.id;
+  const blocks = await db
+    .select({
+      id: schema.pageBlocks.id,
+      type: schema.pageBlocks.type,
+      sortOrder: schema.pageBlocks.sortOrder,
+    })
+    .from(schema.pageBlocks)
+    .where(eq(schema.pageBlocks.pageId, pageId));
+
+  const existing = blocks.find((row) => row.id === SEED_BLOCK_BENTO_HUB_MIX_ID);
+  if (existing) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ props: BENTO_HUB_MIX_BLOCK_PROPS })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_BENTO_HUB_MIX_ID));
+    logger.info('Bento hub mix block props refreshed on home page');
+    return;
+  }
+
+  const legacy = blocks.find((row) => row.type === BlockType.BENTO_HUB_MIX);
+  if (legacy) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ props: BENTO_HUB_MIX_BLOCK_PROPS, sortOrder: 3 })
+      .where(eq(schema.pageBlocks.id, legacy.id));
+    logger.info('Legacy bento hub mix block upgraded on home page');
+    return;
+  }
+
+  const pills = blocks.find((row) => row.id === SEED_BLOCK_PILLS_ID);
+  if (pills) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 4 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_PILLS_ID));
+  }
+
+  const grid = blocks.find((row) => row.id === SEED_BLOCK_GRID_ID);
+  if (grid) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 5 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_GRID_ID));
+  }
+
+  const collection = blocks.find((row) => row.id === SEED_BLOCK_COLLECTION_ID);
+  if (collection) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 6 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_COLLECTION_ID));
+  }
+
+  await db.insert(schema.pageBlocks).values({
+    id: SEED_BLOCK_BENTO_HUB_MIX_ID,
+    pageId,
+    type: BlockType.BENTO_HUB_MIX,
+    sortOrder: 3,
+    props: BENTO_HUB_MIX_BLOCK_PROPS,
+  });
+
+  logger.info('Bento hub mix block added to home page');
 }
 
 async function ensureCuratedCollectionHomeBlock(

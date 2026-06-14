@@ -28,6 +28,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [cms-category-bento-grid.md](./cms-category-bento-grid.md) | Bloco `category_bento_grid`: grade bento de categorias |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |
+| [cms-bento-hub-mix.md](./cms-bento-hub-mix.md) | Bloco `bento_hub_mix`: grid assimétrico 3 slots, BFF hydration, admin preview |
 | [go-redirect-seo.md](./go-redirect-seo.md) | Redirect `/go`, JSON-LD produto, interlinkagem SEO |
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
 | [admin-products-phase1.md](./admin-products-phase1.md) | Gestão manual de produtos, parser de URL, API admin |

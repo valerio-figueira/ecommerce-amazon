@@ -83,6 +83,11 @@ export const BLOCK_TYPE_META: Record<BlockType, BlockTypeMeta> = {
     icon: Sparkles,
     accentClass: 'bg-sky-100 text-sky-900',
   },
+  [BlockType.BENTO_HUB_MIX]: {
+    label: BLOCK_TYPE_LABELS[BlockType.BENTO_HUB_MIX],
+    icon: LayoutPanelLeft,
+    accentClass: 'bg-violet-100 text-violet-900',
+  },
 };
 
 export function getBlockTypeMeta(type: BlockType): BlockTypeMeta {

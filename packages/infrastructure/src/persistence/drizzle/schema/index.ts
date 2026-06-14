@@ -63,6 +63,7 @@ export const blockTypeEnum = pgEnum('block_type', [
   'banner',
   'spacer',
   'dynamic_product_grid',
+  'bento_hub_mix',
 ]);
 
 export const pages = pgTable(

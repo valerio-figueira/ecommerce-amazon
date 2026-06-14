@@ -11,6 +11,7 @@ export enum BlockType {
   BANNER = 'banner',
   SPACER = 'spacer',
   DYNAMIC_PRODUCT_GRID = 'dynamic_product_grid',
+  BENTO_HUB_MIX = 'bento_hub_mix',
 }
 
 export enum PageStatus {

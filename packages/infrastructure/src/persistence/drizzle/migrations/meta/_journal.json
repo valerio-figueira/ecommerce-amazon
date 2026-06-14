@@ -71,6 +71,13 @@
       "when": 1718899200000,
       "tag": "0009_curated_collections_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1718985600000,
+      "tag": "0010_bento_hub_mix",
+      "breakpoints": true
     }
   ]
 }
