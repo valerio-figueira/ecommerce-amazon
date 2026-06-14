@@ -35,6 +35,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [categories-hierarchy.md](./categories-hierarchy.md) | Árvore de categorias, SEO, admin e vitrine |
 | [curated-collections.md](./curated-collections.md) | Coleções curadas: CRUD admin, landing `/colecoes/[slug]`, bloco CMS |
 | [admin-articles-phase1.md](./admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes `[[product:slug]]` |
+| [articles-taxonomy-phase2.md](./articles-taxonomy-phase2.md) | Categorias de artigos, perfil de autor, relacionados na vitrine |
 | [articles-public-rendering.md](./articles-public-rendering.md) | Vitrine `/artigos/[slug]`, auto-linking, ProductCard embed |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 

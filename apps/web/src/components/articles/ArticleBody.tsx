@@ -52,14 +52,6 @@ type ArticleHeroProps = {
 };
 
 export function ArticleHero({ article }: ArticleHeroProps): React.JSX.Element {
-  const publishedLabel = article.publishedAt
-    ? new Date(article.publishedAt).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      })
-    : null;
-
   return (
     <header className="mb-10 space-y-4">
       {article.coverImageUrl ? (
@@ -79,10 +71,6 @@ export function ArticleHero({ article }: ArticleHeroProps): React.JSX.Element {
         {article.excerpt ? (
           <p className="text-lg text-neutral-600">{article.excerpt}</p>
         ) : null}
-        <p className="text-sm text-neutral-500">
-          {article.authorName ? `${article.authorName}` : 'Redação Vitrine'}
-          {publishedLabel ? ` · ${publishedLabel}` : ''}
-        </p>
       </div>
     </header>
   );

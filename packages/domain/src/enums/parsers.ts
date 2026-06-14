@@ -10,6 +10,7 @@ import {
   SnapshotSource,
   SyncJobStatus,
   SyncJobType,
+  OperatorRole,
 } from './index.js';
 import type { Currency } from '../value-objects/index.js';
 
@@ -23,6 +24,7 @@ const ARTICLE_TYPE_VALUES: ReadonlySet<string> = new Set(Object.values(ArticleTy
 const ARTICLE_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(ArticleStatus));
 const SYNC_JOB_TYPE_VALUES: ReadonlySet<string> = new Set(Object.values(SyncJobType));
 const SYNC_JOB_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(SyncJobStatus));
+const OPERATOR_ROLE_VALUES: ReadonlySet<string> = new Set(Object.values(OperatorRole));
 const CURRENCY_VALUES: ReadonlySet<string> = new Set(['BRL', 'USD']);
 const EMBED_VARIANT_VALUES: ReadonlySet<string> = new Set(['inline', 'highlight', 'comparison']);
 
@@ -126,6 +128,14 @@ export function isSyncJobStatus(value: string): value is SyncJobStatus {
 
 export function parseSyncJobStatus(value: string): SyncJobStatus {
   return isSyncJobStatus(value) ? value : invalidEnum('sync job status', value);
+}
+
+export function isOperatorRole(value: string): value is OperatorRole {
+  return OPERATOR_ROLE_VALUES.has(value);
+}
+
+export function parseOperatorRole(value: string): OperatorRole {
+  return isOperatorRole(value) ? value : invalidEnum('operator role', value);
 }
 
 import { BlockType, BlockVisibility, PageStatus, ProductSortField } from './cms.js';

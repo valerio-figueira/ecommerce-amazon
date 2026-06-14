@@ -156,8 +156,16 @@ Sessão anônima via `session_id` (cookie web).
 
 | Tabela | Colunas |
 |--------|---------|
-| `content_articles` | `slug` UNIQUE, `title`, `excerpt`, `cover_image_url`, `body`, `type`, `status`, `author_id`, `seo_title`, `seo_description`, `seo` jsonb, `published_at`, `created_at`, `updated_at` |
+| `content_articles` | `slug` UNIQUE, `title`, `excerpt`, `cover_image_url`, `body`, `type`, `status`, `author_id` FK → `operators`, `category_id` FK → `article_categories`, `seo_title`, `seo_description`, `seo` jsonb, `published_at`, `created_at`, `updated_at` |
 | `content_product_embeds` | `article_id`, `product_id`, `position`, `variant` (`inline` \| `highlight` \| `comparison`) |
+
+### Taxonomia editorial — `article_categories`
+
+| Tabela | Colunas |
+|--------|---------|
+| `article_categories` | `id` UUID PK, `name` varchar(120), `slug` varchar(100) UNIQUE, `created_at`, `updated_at` |
+
+Migration: [`0013_article_taxonomy_authors.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0013_article_taxonomy_authors.sql).
 
 ### SEO — `auto_links`
 
@@ -207,7 +215,7 @@ INDEX `(block_id)`.
 |--------|-----|
 | `sync_job_logs` | auditoria pipelines worker |
 | `affiliate_accounts` | tag afiliado por marketplace; `status` inclui `pending_manual_validation` |
-| `operators` | operadores CMS; enum `operator_status` (`active`, `disabled`); email único |
+| `operators` | operadores CMS; `email` único, `avatar_url`, `bio` varchar(250), `role` enum (`admin`, `editor`), `status` enum (`active`, `disabled`) |
 
 Migration: [`0004_operators.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql).
 

@@ -17,11 +17,23 @@ export type AdminArticleSummary = {
   updatedAt: Date;
 };
 
+export type ArticlePublicSummary = {
+  slug: string;
+  title: string;
+  coverImageUrl: string | null;
+  publishedAt: Date | null;
+};
+
 export interface ContentRepository {
   findArticleBySlug(slug: string): Promise<ContentArticle | null>;
   findArticleById(id: string): Promise<ContentArticle | null>;
   listPublishedSummaries(): Promise<ArticleSummary[]>;
   listAdminSummaries(status?: ArticleStatus): Promise<AdminArticleSummary[]>;
+  findRelatedPublishedByCategory(
+    categoryId: string,
+    excludeArticleId: string,
+    limit: number,
+  ): Promise<ArticlePublicSummary[]>;
   saveArticle(article: ContentArticle): Promise<void>;
   deleteArticle(id: string): Promise<void>;
   slugExists(slug: string, excludeId?: string): Promise<boolean>;

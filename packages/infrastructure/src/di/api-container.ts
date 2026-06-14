@@ -45,6 +45,10 @@ import {
   ListActiveAutoLinks,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
+  CreateArticleCategory,
+  ListArticleCategories,
+  UpdateArticleCategory,
+  DeleteArticleCategory,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -66,6 +70,7 @@ import {
   DrizzleProductComparisonRepository,
   DrizzleClickEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
+import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
@@ -106,6 +111,7 @@ export function buildApiContainer(env = loadEnv()) {
   const clickRepository = new DrizzleClickEventRepository(db);
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
+  const articleCategoryRepository = new DrizzleArticleCategoryRepository(db);
   const autoLinkRepository = new DrizzleAutoLinkRepository(db);
   const passwordHasher = new BcryptPasswordHasher();
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
@@ -143,6 +149,7 @@ export function buildApiContainer(env = loadEnv()) {
       getArticleWithEmbeds: new GetArticleWithEmbeds(
         contentRepository,
         operatorRepository,
+        articleCategoryRepository,
         cache,
       ),
       getCuratedCollection,
@@ -207,6 +214,10 @@ export function buildApiContainer(env = loadEnv()) {
         passwordHasher,
         authTokenService,
       ),
+      listArticleCategories: new ListArticleCategories(articleCategoryRepository),
+      createArticleCategory: new CreateArticleCategory(articleCategoryRepository),
+      updateArticleCategory: new UpdateArticleCategory(articleCategoryRepository),
+      deleteArticleCategory: new DeleteArticleCategory(articleCategoryRepository),
     },
     services: {
       authTokenService,

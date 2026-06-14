@@ -1,27 +1,27 @@
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { ArticleForm } from '@/components/articles/ArticleForm';
+import { ArticleCategoryListManager } from '@/components/article-categories/ArticleCategoryListManager';
 import { listArticleCategories } from '@/lib/api/article-categories';
 
 export const metadata = {
-  title: 'Novo artigo — Vitrine CMS',
+  title: 'Categorias de artigos — Vitrine CMS',
 };
 
-export default async function NovoArtigoPage(): Promise<React.JSX.Element> {
-  const categories = await listArticleCategories();
+export default async function ArtigoCategoriasPage(): Promise<React.JSX.Element> {
+  const items = await listArticleCategories();
 
   return (
     <>
       <AdminPageHeader
-        title="Novo artigo"
+        title="Categorias de artigos"
         breadcrumbs={[
           { label: 'Painel', href: '/' },
           { label: 'Artigos', href: '/artigos' },
-          { label: 'Novo' },
+          { label: 'Categorias' },
         ]}
       />
-      <AdminPageCard>
-        <ArticleForm mode="create" categories={categories} />
+      <AdminPageCard transparent>
+        <ArticleCategoryListManager initialItems={items} />
       </AdminPageCard>
     </>
   );

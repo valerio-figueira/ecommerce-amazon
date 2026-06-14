@@ -43,6 +43,9 @@ const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_COLLECTION_ID = 'f9111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_BENTO_HUB_MIX_ID = 'fa111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
+const SEED_ARTICLE_CATEGORY_GUIAS_ID = 'ac111111-1111-4111-8111-111111111111';
+const SEED_ARTICLE_CATEGORY_REVIEWS_ID = 'ac222222-2222-4222-8222-222222222222';
+const SEED_ARTICLE_CATEGORY_COMPARATIVOS_ID = 'ac333333-3333-4333-8333-333333333333';
 
 const BENTO_HUB_MIX_BLOCK_PROPS = {
   slot1: {
@@ -90,6 +93,8 @@ const PEXELS = {
     'https://images.pexels.com/photos/2115257/pexels-photo-2115257.jpeg?auto=compress&cs=tinysrgb&w=800',
   mouse:
     'https://images.pexels.com/photos/399161/pexels-photo-399161.jpeg?auto=compress&cs=tinysrgb&w=800',
+  authorAvatar:
+    'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200',
 } as const;
 
 async function runSeed(): Promise<void> {
@@ -109,6 +114,7 @@ async function runSeed(): Promise<void> {
 
   try {
     await seedCategories(db, now, logger);
+    await seedArticleCategories(db, now, logger);
 
     const existing = await db
       .select({ id: schema.products.id })
@@ -238,6 +244,7 @@ async function insertProductSeed(
       type: ArticleType.GUIDE,
       status: ArticleStatus.PUBLISHED,
       authorId: SEED_OPERATOR_ID,
+      categoryId: SEED_ARTICLE_CATEGORY_GUIAS_ID,
       seoTitle: 'Guia de cadeira ergonômica',
       seoDescription: 'Aprenda a escolher a cadeira ideal para home office.',
       seo: {},
@@ -938,6 +945,49 @@ async function ensureCuratedCollectionHomeBlock(
   logger.info('Curated collection block added to home page');
 }
 
+async function seedArticleCategories(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.articleCategories.id })
+    .from(schema.articleCategories)
+    .where(eq(schema.articleCategories.id, SEED_ARTICLE_CATEGORY_GUIAS_ID))
+    .limit(1);
+
+  if (existing.length > 0) {
+    logger.info('Article categories seed data already present, skipping');
+    return;
+  }
+
+  await db.insert(schema.articleCategories).values([
+    {
+      id: SEED_ARTICLE_CATEGORY_GUIAS_ID,
+      name: 'Guias',
+      slug: 'guias',
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_ARTICLE_CATEGORY_REVIEWS_ID,
+      name: 'Reviews',
+      slug: 'reviews',
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: SEED_ARTICLE_CATEGORY_COMPARATIVOS_ID,
+      name: 'Comparativos',
+      slug: 'comparativos',
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
+
+  logger.info('Article categories seed inserted');
+}
+
 async function seedOperator(
   db: ReturnType<typeof drizzle<typeof schema>>,
   logger: ReturnType<typeof createConsoleLogger>,
@@ -950,7 +1000,16 @@ async function seedOperator(
     .limit(1);
 
   if (existing.length > 0) {
-    logger.info('Operator seed data already present, skipping operator');
+    await db
+      .update(schema.operators)
+      .set({
+        avatarUrl: PEXELS.authorAvatar,
+        bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
+        role: 'admin',
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.operators.id, SEED_OPERATOR_ID));
+    logger.info('Operator seed profile updated', { email: env.ADMIN_SEED_EMAIL });
     return;
   }
 
@@ -962,6 +1021,9 @@ async function seedOperator(
     email: env.ADMIN_SEED_EMAIL.toLowerCase(),
     passwordHash,
     name: 'Administrador Vitrine',
+    avatarUrl: PEXELS.authorAvatar,
+    bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
+    role: 'admin',
     status: 'active',
   });
 

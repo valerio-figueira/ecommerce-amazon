@@ -80,4 +80,9 @@ export enum OperatorStatus {
   DISABLED = 'disabled',
 }
 
+export enum OperatorRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+}
+
 export { BlockType, PageStatus, BlockVisibility, ProductSortField } from './cms.js';

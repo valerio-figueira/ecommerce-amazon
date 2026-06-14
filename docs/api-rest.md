@@ -287,7 +287,7 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 
 Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` permanecem no HTML; a vitrine resolve embeds e auto-links.
 
-**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `authorName`, `publishedAt`
+**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `author` (`{ name, avatarUrl, bio }`), `category` (`{ name, slug }`), `relatedArticles` (até 3), `publishedAt`
 
 ### `GET /seo/auto-links`
 
@@ -326,6 +326,17 @@ Coleção curada com produtos ordenados + metadados UTM.
 | `POST` | `/admin/articles` | `CreateArticleBody` → `{ id }` |
 | `PATCH` | `/admin/articles/:id` | `UpdateArticleBody` → `204` |
 | `DELETE` | `/admin/articles/:id` | `204` |
+
+### Admin — `/admin/article-categories`
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/admin/article-categories` | `{ items: ArticleCategorySummary[] }` |
+| `POST` | `/admin/article-categories` | `CreateArticleCategoryBody` → `{ id }` |
+| `PATCH` | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204` |
+| `DELETE` | `/admin/article-categories/:id` | `204` (409 se categoria tiver artigos) |
+
+`CreateArticleBody` / `UpdateArticleBody` incluem `categoryId` opcional.
 
 ---
 

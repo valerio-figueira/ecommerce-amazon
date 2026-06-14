@@ -294,7 +294,7 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const { slug } = ArticleSlugParamsSchema.parse(request.params);
       const result = await useCases.getArticleWithEmbeds.execute(slug);
       if (!result) return reply.status(404).send({ error: 'Article not found' });
-      return reply.send(toArticlePublicDetailDto(result.article, result.authorName));
+      return reply.send(toArticlePublicDetailDto(result));
     } catch (error) {
       return handleError(error, reply);
     }

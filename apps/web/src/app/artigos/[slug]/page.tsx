@@ -6,7 +6,10 @@ import {
   autoLinksResponseSchema,
 } from '@ecommerce-amazon/shared/admin';
 
+import { ArticleAuthorBox } from '@/components/articles/ArticleAuthorBox';
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
+import { ArticleMetadataHeader } from '@/components/articles/ArticleMetadataHeader';
+import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
 import { getSiteBaseUrl } from '@/lib/site-url';
@@ -88,15 +91,21 @@ export default async function ArtigoPage({
   const slugs = extractProductSlugsFromBody(article.body);
   const productsBySlug = await getProductsBySlug(slugs);
 
+  const authorName = article.author?.name ?? 'Vitrine';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: article.title,
     description: article.excerpt,
     datePublished: article.publishedAt,
-    author: article.authorName
-      ? { '@type': 'Person', name: article.authorName }
+    author: article.author
+      ? {
+          '@type': 'Person',
+          name: authorName,
+          ...(article.author.avatarUrl ? { image: article.author.avatarUrl } : {}),
+        }
       : { '@type': 'Organization', name: 'Vitrine' },
+    ...(article.category ? { articleSection: article.category.name } : {}),
     ...(article.coverImageUrl ? { image: [article.coverImageUrl] } : {}),
   };
 
@@ -107,11 +116,14 @@ export default async function ArtigoPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ArticleHero article={article} />
+      <ArticleMetadataHeader article={article} />
       <ArticleBody
         article={article}
         autoLinks={autoLinks.items}
         productsBySlug={productsBySlug}
       />
+      {article.author ? <ArticleAuthorBox author={article.author} /> : null}
+      <ArticleRelatedGrid articles={article.relatedArticles} />
     </main>
   );
 }

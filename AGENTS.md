@@ -39,6 +39,9 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
+| [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
+| [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
+| [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 
 ## Invariantes (nunca violar)

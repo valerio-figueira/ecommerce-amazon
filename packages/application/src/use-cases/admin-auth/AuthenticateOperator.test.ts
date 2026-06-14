@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   AuthenticationError,
   Operator,
+  OperatorRole,
   OperatorStatus,
 } from '@ecommerce-amazon/domain';
 
@@ -14,6 +15,9 @@ describe('AuthenticateOperator', () => {
     'admin@vitrine.local',
     'hashed-password',
     'Admin Vitrine',
+    null,
+    null,
+    OperatorRole.ADMIN,
     OperatorStatus.ACTIVE,
     new Date(),
     new Date(),
@@ -97,6 +101,9 @@ describe('AuthenticateOperator', () => {
       'disabled@vitrine.local',
       'hashed-password',
       'Disabled',
+      null,
+      null,
+      OperatorRole.ADMIN,
       OperatorStatus.DISABLED,
       new Date(),
       new Date(),

@@ -46,6 +46,8 @@ export class UpdateArticle {
       type: input.type ?? existing.type,
       status: nextStatus,
       authorId: existing.authorId,
+      categoryId:
+        input.categoryId !== undefined ? input.categoryId : existing.categoryId,
       seoTitle: input.seoTitle !== undefined ? input.seoTitle : existing.seoTitle,
       seoDescription:
         input.seoDescription !== undefined ? input.seoDescription : existing.seoDescription,

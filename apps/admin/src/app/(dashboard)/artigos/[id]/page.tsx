@@ -4,6 +4,7 @@ import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { ArticleForm } from '@/components/articles/ArticleForm';
 import { getAdminArticle } from '@/lib/api/articles';
+import { listArticleCategories } from '@/lib/api/article-categories';
 
 type EditArtigoPageProps = {
   params: Promise<{ id: string }>;
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: EditArtigoPageProps) {
 
 export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
   const { id } = await params;
-  const article = await getAdminArticle(id);
+  const [article, categories] = await Promise.all([getAdminArticle(id), listArticleCategories()]);
   if (!article) notFound();
 
   return (
@@ -36,6 +37,7 @@ export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
         <ArticleForm
           mode="edit"
           articleId={article.id}
+          categories={categories}
           initialValues={{
             slug: article.slug,
             title: article.title,
@@ -46,6 +48,7 @@ export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
             status: article.status,
             seoTitle: article.seoTitle ?? '',
             seoDescription: article.seoDescription ?? '',
+            categoryId: article.categoryId,
             createdAt: article.createdAt,
             updatedAt: article.updatedAt,
           }}

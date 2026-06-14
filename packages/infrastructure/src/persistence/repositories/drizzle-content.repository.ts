@@ -1,4 +1,4 @@
-import { asc, and, count, eq, inArray, ne } from 'drizzle-orm';
+import { asc, and, count, desc, eq, inArray, ne } from 'drizzle-orm';
 
 import {
   ArticleStatus,
@@ -87,6 +87,37 @@ export class DrizzleContentRepository implements ContentRepository {
       .where(eq(schema.contentArticles.status, ArticleStatus.PUBLISHED));
 
     return rows;
+  }
+
+  async findRelatedPublishedByCategory(
+    categoryId: string,
+    excludeArticleId: string,
+    limit: number,
+  ) {
+    const rows = await this.db
+      .select({
+        slug: schema.contentArticles.slug,
+        title: schema.contentArticles.title,
+        coverImageUrl: schema.contentArticles.coverImageUrl,
+        publishedAt: schema.contentArticles.publishedAt,
+      })
+      .from(schema.contentArticles)
+      .where(
+        and(
+          eq(schema.contentArticles.status, ArticleStatus.PUBLISHED),
+          eq(schema.contentArticles.categoryId, categoryId),
+          ne(schema.contentArticles.id, excludeArticleId),
+        ),
+      )
+      .orderBy(desc(schema.contentArticles.publishedAt))
+      .limit(limit);
+
+    return rows.map((row) => ({
+      slug: row.slug,
+      title: row.title,
+      coverImageUrl: row.coverImageUrl,
+      publishedAt: row.publishedAt,
+    }));
   }
 
   async listAdminSummaries(status?: ArticleStatus) {

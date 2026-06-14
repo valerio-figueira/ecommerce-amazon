@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import {
   Operator,
   OperatorStatus,
+  parseOperatorRole,
   type OperatorRepository,
 } from '@ecommerce-amazon/domain';
 
@@ -51,6 +52,9 @@ export class DrizzleOperatorRepository implements OperatorRepository {
       row.email,
       row.passwordHash,
       row.name,
+      row.avatarUrl,
+      row.bio,
+      parseOperatorRole(row.role),
       parseOperatorStatus(row.status),
       row.createdAt,
       row.updatedAt,

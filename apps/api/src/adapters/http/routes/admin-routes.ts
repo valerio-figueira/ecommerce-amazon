@@ -40,6 +40,7 @@ import { registerAdminCategoryRoutes } from './admin-category-routes.js';
 import { registerAdminCollectionRoutes } from './admin-collection-routes.js';
 import { registerAdminProductRoutes } from './admin-product-routes.js';
 import { registerAdminArticleRoutes } from './admin-article-routes.js';
+import { registerAdminArticleCategoryRoutes } from './admin-article-category-routes.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
@@ -102,6 +103,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   await registerAdminCollectionRoutes(app, container);
   await registerAdminProductRoutes(app, container);
   await registerAdminArticleRoutes(app, container);
+  await registerAdminArticleCategoryRoutes(app, container);
 }
 
 declare module 'fastify' {

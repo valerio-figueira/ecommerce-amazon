@@ -71,6 +71,9 @@ export function ArticleListManager({
           <span className="text-sm text-[var(--admin-text-muted)]">
             <strong>{items.length}</strong> artigo{items.length === 1 ? '' : 's'}
           </span>
+          <Button asChild variant="outline">
+            <Link href="/artigos/categorias">Categorias</Link>
+          </Button>
           <Button asChild>
             <Link href="/artigos/novo">
               <Plus className="mr-1 h-4 w-4" />

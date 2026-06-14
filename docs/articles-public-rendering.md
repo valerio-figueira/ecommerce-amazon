@@ -74,3 +74,5 @@ Verificar:
 
 - Índice `/artigos` com `GET /articles`
 - Admin para gerenciar `auto_links`
+
+Ver também [articles-taxonomy-phase2.md](./articles-taxonomy-phase2.md) — categorias, author box e artigos relacionados.

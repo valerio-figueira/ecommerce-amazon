@@ -14,9 +14,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+import { articleCategories } from './article-categories.js';
 import { categories } from './categories.js';
 
-export { categories };
+export { articleCategories, categories };
 
 export const marketplaceEnum = pgEnum('marketplace', [
   'amazon_br',
@@ -192,7 +193,10 @@ export const contentArticles = pgTable(
     body: text('body').notNull(),
     type: articleTypeEnum('type').notNull(),
     status: articleStatusEnum('status').notNull().default('draft'),
-    authorId: uuid('author_id'),
+    authorId: uuid('author_id').references(() => operators.id, { onDelete: 'set null' }),
+    categoryId: uuid('category_id').references(() => articleCategories.id, {
+      onDelete: 'set null',
+    }),
     seoTitle: text('seo_title'),
     seoDescription: text('seo_description'),
     seo: jsonb('seo').$type<Record<string, string>>().notNull().default({}),
@@ -330,12 +334,16 @@ export const affiliateAccounts = pgTable('affiliate_accounts', {
 });
 
 export const operatorStatusEnum = pgEnum('operator_status', ['active', 'disabled']);
+export const operatorRoleEnum = pgEnum('operator_role', ['admin', 'editor']);
 
 export const operators = pgTable('operators', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
+  avatarUrl: text('avatar_url'),
+  bio: varchar('bio', { length: 250 }),
+  role: operatorRoleEnum('role').notNull().default('admin'),
   status: operatorStatusEnum('status').notNull().default('active'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

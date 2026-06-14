@@ -29,12 +29,14 @@ import {
   articleStatusSchema,
   articleTypeSchema,
   createArticleBodySchema,
+  type ArticleCategorySummary,
 } from '@ecommerce-amazon/shared/admin';
 import { slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
 
 type ArticleFormProps = {
   mode: 'create' | 'edit';
   articleId?: string;
+  categories: ArticleCategorySummary[];
   initialValues?: {
     slug: string;
     title: string;
@@ -45,6 +47,7 @@ type ArticleFormProps = {
     status: ArticleStatus;
     seoTitle: string;
     seoDescription: string;
+    categoryId: string | null;
     createdAt?: string;
     updatedAt?: string;
   };
@@ -76,6 +79,7 @@ function formatArticleDate(iso: string | undefined): string {
 export function ArticleForm({
   mode,
   articleId,
+  categories,
   initialValues,
 }: ArticleFormProps): React.JSX.Element {
   const router = useRouter();
@@ -94,6 +98,7 @@ export function ArticleForm({
   );
   const [seoTitle, setSeoTitle] = useState(initialValues?.seoTitle ?? '');
   const [seoDescription, setSeoDescription] = useState(initialValues?.seoDescription ?? '');
+  const [categoryId, setCategoryId] = useState<string | null>(initialValues?.categoryId ?? null);
   const [saving, setSaving] = useState(false);
 
   function handleTitleChange(value: string): void {
@@ -116,6 +121,7 @@ export function ArticleForm({
         status,
         seoTitle: seoTitle.trim() === '' ? null : seoTitle.trim(),
         seoDescription: seoDescription.trim() === '' ? null : seoDescription.trim(),
+        categoryId,
       });
 
       if (isEdit) {
@@ -280,6 +286,29 @@ export function ArticleForm({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="mb-3 space-y-2">
+              <Label htmlFor="article-category">Categoria</Label>
+              <Select
+                value={categoryId ?? '__none__'}
+                onValueChange={(value) => setCategoryId(value === '__none__' ? null : value)}
+              >
+                <SelectTrigger id="article-category">
+                  <SelectValue placeholder="Sem categoria" />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  <SelectItem value="__none__">Sem categoria</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="article-form-text">
+                Usada no badge da vitrine e para sugerir artigos relacionados.
+              </p>
             </div>
 
             <Button type="submit" variant="primary" className="w-full" disabled={saving}>

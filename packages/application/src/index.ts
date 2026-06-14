@@ -15,6 +15,12 @@ export { ProcessTriggeredAlerts } from './use-cases/alert/ProcessTriggeredAlerts
 export { AddToWishlist } from './use-cases/wishlist/AddToWishlist.js';
 export { BuildBatchCheckoutRedirect } from './use-cases/wishlist/BuildBatchCheckoutRedirect.js';
 export { GetArticleWithEmbeds } from './use-cases/content/GetArticleWithEmbeds.js';
+export type {
+  ArticleWithEmbedsResult,
+  ArticleAuthorPublic,
+  ArticleCategoryPublic,
+  ArticleRelatedSummary,
+} from './use-cases/content/GetArticleWithEmbeds.js';
 export { ListAdminArticles } from './use-cases/content/ListAdminArticles.js';
 export {
   CreateArticle,
@@ -50,6 +56,12 @@ export { ListAdminPages } from './use-cases/admin-cms/ListAdminPages.js';
 export { ListCategoryTree } from './use-cases/category/ListCategoryTree.js';
 export { GetCategoryBySlug } from './use-cases/category/GetCategoryBySlug.js';
 export { ListAdminCategories, CreateCategory } from './use-cases/admin-category/CreateCategory.js';
+export {
+  CreateArticleCategory,
+  ListArticleCategories,
+  UpdateArticleCategory,
+  DeleteArticleCategory,
+} from './use-cases/admin-article-category/CreateArticleCategory.js';
 export {
   UpdateCategory,
   DeleteCategory,
