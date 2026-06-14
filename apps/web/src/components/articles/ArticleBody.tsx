@@ -4,14 +4,14 @@ import { injectInternalLinks } from '@ecommerce-amazon/shared/seo';
 import { parseArticleShortcodes } from '@ecommerce-amazon/shared/content';
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 import type { AutoLinksResponse } from '@ecommerce-amazon/shared/admin';
-import type { ProductListItemDto } from '@/lib/api/types';
+import type { ProductDetailDto } from '@/lib/api/schemas';
 
 import { ArticleProductEmbed } from './ArticleProductEmbed';
 
 type ArticleBodyProps = {
   article: ArticlePublicDetail;
   autoLinks: AutoLinksResponse['items'];
-  productsBySlug: Record<string, ProductListItemDto | null>;
+  productsBySlug: Record<string, ProductDetailDto | null>;
 };
 
 export function ArticleBody({
@@ -23,29 +23,27 @@ export function ArticleBody({
   const segments = parseArticleShortcodes(linkedHtml);
 
   return (
-    <div className="space-y-6">
+    <article className="prose prose-neutral max-w-none">
       {segments.map((segment, index) => {
         if (segment.type === 'html') {
           if (segment.html.trim() === '') return null;
           return (
-            <div
-              key={`html-${index}`}
-              className="prose prose-neutral max-w-none"
-              dangerouslySetInnerHTML={{ __html: segment.html }}
-            />
+            <div key={`html-${index}`} dangerouslySetInnerHTML={{ __html: segment.html }} />
           );
         }
 
         const product = productsBySlug[segment.slug] ?? null;
         return (
-          <ArticleProductEmbed
+          <aside
             key={`product-${segment.slug}-${index}`}
-            slug={segment.slug}
-            product={product}
-          />
+            className="not-prose my-8"
+            aria-label="Produto recomendado"
+          >
+            <ArticleProductEmbed slug={segment.slug} product={product} />
+          </aside>
         );
       })}
-    </div>
+    </article>
   );
 }
 

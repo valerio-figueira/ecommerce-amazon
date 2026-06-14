@@ -8,8 +8,7 @@ import {
 
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
 import { apiFetchParsed } from '@/lib/api/client';
-import { productListItemSchema } from '@/lib/api/schemas';
-import type { ProductListItemDto } from '@/lib/api/types';
+import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -32,13 +31,13 @@ async function getAutoLinks() {
   }
 }
 
-async function getProductsBySlug(slugs: string[]): Promise<Record<string, ProductListItemDto | null>> {
+async function getProductsBySlug(slugs: string[]): Promise<Record<string, ProductDetailDto | null>> {
   const entries = await Promise.all(
     slugs.map(async (productSlug) => {
       try {
         const product = await apiFetchParsed(
           `/products/${productSlug}`,
-          productListItemSchema,
+          productDetailSchema,
         );
         return [productSlug, product] as const;
       } catch {

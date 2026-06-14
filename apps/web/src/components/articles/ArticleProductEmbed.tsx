@@ -1,11 +1,11 @@
 'use client';
 
 import { ProductCard } from '@/components/product/ProductCard';
-import type { ProductListItemDto } from '@/lib/api/types';
+import type { ProductDetailDto } from '@/lib/api/schemas';
 
 type ArticleProductEmbedProps = {
   slug: string;
-  product: ProductListItemDto | null;
+  product: ProductDetailDto | null;
 };
 
 export function ArticleProductEmbed({
@@ -21,9 +21,15 @@ export function ArticleProductEmbed({
   }
 
   return (
-    <div className="space-y-2">
-      <ProductCard product={product} variant="compact" clickOrigin="embed" />
-      <p className="text-xs text-neutral-500">
+    <div>
+      <ProductCard
+        product={product}
+        variant="editorial"
+        clickOrigin="embed"
+        pros={product.pros}
+        cons={product.cons}
+      />
+      <p className="mt-2 text-xs text-neutral-500">
         Links de afiliado: ao clicar em &quot;Ver preço&quot;, você será direcionado ao marketplace
         parceiro. Podemos receber comissão sem custo extra para você.
       </p>
