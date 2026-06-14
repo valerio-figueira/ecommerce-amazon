@@ -59,6 +59,13 @@ export class DrizzleProductRepository implements ProductRepository {
     if (filters.visibleOnly) {
       conditions.push(eq(schema.products.visible, true));
     }
+    if (filters.freshPriceOnly) {
+      const staleThreshold = new Date(Date.now() - PRICE_STALE_HOURS * 60 * 60 * 1000);
+      conditions.push(eq(schema.products.stalePrice, false));
+      conditions.push(gte(schema.products.priceUpdatedAt, staleThreshold));
+    }
+
+    const discountPercentSql = sql`(((${schema.products.priceStrikethrough})::numeric - (${schema.products.priceAmount})::numeric) / (${schema.products.priceStrikethrough})::numeric * 100)`;
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
     const sortField = filters.sort ?? ProductSortField.EDITORIAL_SCORE;
@@ -72,6 +79,8 @@ export class DrizzleProductRepository implements ProductRepository {
           return asc(schema.products.priceAmount);
         case ProductSortField.PRICE_DESC:
           return desc(schema.products.priceAmount);
+        case ProductSortField.DISCOUNT_PERCENT_DESC:
+          return desc(discountPercentSql);
         case ProductSortField.EDITORIAL_SCORE:
         default:
           return desc(schema.products.editorialScore);

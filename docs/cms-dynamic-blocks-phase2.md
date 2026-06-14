@@ -51,7 +51,7 @@ flowchart LR
 | `subtitle` | string? | |
 | `categoryVertical` | string? | ex.: `home-office` |
 | `minDiscountPercentage` | number 0–100? | requer `price_strikethrough` no produto |
-| `sortBy` | enum | default `editorial_score` |
+| `sortBy` | enum | default `editorial_score`; inclui `discount_percent_desc` para ofertas |
 | `limit` | int 1–24 | default 8 |
 
 ## Use cases Admin

@@ -20,6 +20,10 @@ export const PRIMARY_SORT_BY_OPTIONS: SortByOption[] = [
     label: '🏆 Recomendações dos Especialistas (Melhor Nota)',
   },
   {
+    value: 'discount_percent_desc',
+    label: '⚡ Maior Desconto Primeiro (Ofertas Relâmpago)',
+  },
+  {
     value: 'created_at',
     label: '📅 Produtos Adicionados Recentemente',
   },

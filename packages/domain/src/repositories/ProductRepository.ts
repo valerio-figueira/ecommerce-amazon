@@ -11,6 +11,7 @@ export type ProductListFilters = {
   sort?: ProductSortField;
   minDiscountPercentage?: number;
   visibleOnly?: boolean;
+  freshPriceOnly?: boolean;
 };
 
 export interface ProductRepository {

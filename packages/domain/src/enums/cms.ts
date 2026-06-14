@@ -30,4 +30,5 @@ export enum ProductSortField {
   CREATED_AT = 'created_at',
   PRICE_ASC = 'price_asc',
   PRICE_DESC = 'price_desc',
+  DISCOUNT_PERCENT_DESC = 'discount_percent_desc',
 }

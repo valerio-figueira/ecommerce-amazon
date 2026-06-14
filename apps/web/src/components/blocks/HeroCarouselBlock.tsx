@@ -32,7 +32,7 @@ export function HeroCarouselBlock({ block }: BlockComponentProps): React.JSX.Ele
   }, [emblaApi, props.autoplay, props.intervalMs]);
 
   return (
-    <div className="relative aspect-[2/1] h-full min-h-[200px] w-full overflow-hidden rounded-[var(--radius)] bg-neutral-900 text-white md:aspect-[5/2]">
+    <div className="relative aspect-[2/1] w-full overflow-hidden rounded-[var(--radius)] bg-neutral-900 text-white md:aspect-[5/2]">
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
         <div className="flex h-full">
           {props.slides.map((slide) => (

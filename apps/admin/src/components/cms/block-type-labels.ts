@@ -26,7 +26,7 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   [BlockType.RICH_TEXT]: 'Texto Rico',
   [BlockType.BANNER]: 'Banner',
   [BlockType.SPACER]: 'Espaçador',
-  [BlockType.DYNAMIC_PRODUCT_GRID]: 'Grade Dinâmica',
+  [BlockType.DYNAMIC_PRODUCT_GRID]: 'Ofertas Relâmpago',
 };
 
 export const EDITABLE_BLOCK_TYPES: BlockType[] = [
@@ -126,7 +126,11 @@ export function getDefaultBlockProps(type: BlockType): unknown {
       });
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return dynamicProductGridPropsSchema.parse({
-        title: 'Novo bloco editorial',
+        title: 'Ofertas Relâmpago',
+        subtitle: 'Maiores descontos detectados nas últimas horas',
+        minDiscountPercentage: 30,
+        sortBy: 'discount_percent_desc',
+        limit: 12,
       });
     case BlockType.CURATED_COLLECTION:
       return curatedCollectionPropsSchema.parse({

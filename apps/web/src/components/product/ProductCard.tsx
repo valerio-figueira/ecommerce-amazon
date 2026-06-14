@@ -11,6 +11,7 @@ import { ProductCardActions } from '@/components/product/ProductCardActions';
 import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
 import { ProductRating } from '@/components/product/ProductRating';
 import type { ProductListItemDto } from '@/lib/api/types';
+import { computeDiscountPercent } from '@/lib/discount';
 import { cn } from '@/lib/utils';
 
 type ProductCardProps = {
@@ -19,7 +20,9 @@ type ProductCardProps = {
   blockId?: string | undefined;
   clickOrigin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
   utmDefaults?: Record<string, string>;
+  /** Smaller card footprint via shorter image + tighter layout; typography stays default. */
   variant?: 'default' | 'compact';
+  emphasizeDiscount?: boolean;
 };
 
 export function ProductCard({
@@ -29,11 +32,17 @@ export function ProductCard({
   clickOrigin = 'listagem',
   utmDefaults,
   variant = 'default',
+  emphasizeDiscount = false,
 }: ProductCardProps): React.JSX.Element {
   const { addItem, removeItem, isInWishlist, items, sessionId } = useWishlist();
   const saved = isInWishlist(product.id);
   const wishlistItem = items.find((item) => item.productId === product.id);
   const detailHref = `/produtos/${product.slug}`;
+  const isCompact = variant === 'compact';
+  const discountPercent = emphasizeDiscount
+    ? computeDiscountPercent(product.price.amount, product.price.strikethrough)
+    : null;
+  const showDiscountBadge = discountPercent !== null && !product.price.isStale;
 
   const toggleWishlist = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
@@ -48,14 +57,18 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        'group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white p-2 shadow-sm transition-shadow hover:shadow-md',
+        'group relative flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white p-2 shadow-sm transition-shadow hover:shadow-md',
+        !isCompact && 'h-full',
         className,
       )}
     >
       <div className="relative shrink-0">
         <Link
           href={detailHref}
-          className="relative block aspect-square overflow-hidden rounded-xl bg-[var(--muted)]"
+          className={cn(
+            'relative block overflow-hidden rounded-xl bg-[var(--muted)]',
+            isCompact ? 'aspect-[4/3]' : 'aspect-square',
+          )}
         >
           {product.imageUrl && (
             <Image
@@ -63,10 +76,20 @@ export function ProductCard({
               alt={product.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(max-width:768px) 50vw, 25vw"
+              sizes={
+                isCompact
+                  ? '(max-width:768px) 40vw, 18vw'
+                  : '(max-width:768px) 50vw, 25vw'
+              }
             />
           )}
-          <ProductEditorialBadges product={product} />
+          {showDiscountBadge ? (
+            <span className="absolute left-2 top-2 z-10 rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+              −{discountPercent}%
+            </span>
+          ) : (
+            <ProductEditorialBadges product={product} />
+          )}
           <MarketplaceBadge
             marketplace={product.marketplace}
             className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-white/95 px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm"
@@ -84,18 +107,12 @@ export function ProductCard({
       <div className="relative mt-2 flex min-h-0 flex-1 flex-col gap-0.5">
         <Link
           href={detailHref}
-          className="line-clamp-2 h-10 shrink-0 text-sm font-semibold leading-snug hover:underline"
+          className="line-clamp-2 shrink-0 text-sm font-semibold leading-snug hover:underline"
         >
           {product.title}
         </Link>
-        {variant === 'default' && (
-          <ProductRating
-            rating={product.rating}
-            reviewCount={product.reviewCount}
-            className="shrink-0"
-          />
-        )}
-        <div className="mt-auto flex flex-col gap-1">
+        <ProductRating rating={product.rating} reviewCount={product.reviewCount} className="shrink-0" />
+        <div className="flex flex-col gap-1">
           <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
           <ProductCardActions
             product={product}

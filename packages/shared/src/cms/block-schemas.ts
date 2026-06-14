@@ -119,7 +119,13 @@ export const dynamicProductGridPropsSchema = z.object({
   categoryVertical: z.string().optional(),
   minDiscountPercentage: z.number().min(0).max(100).optional(),
   sortBy: z
-    .enum(['editorial_score', 'created_at', 'price_asc', 'price_desc'])
+    .enum([
+      'editorial_score',
+      'created_at',
+      'price_asc',
+      'price_desc',
+      'discount_percent_desc',
+    ])
     .default('editorial_score'),
   limit: z.number().int().min(1).max(24).default(8),
 });
@@ -209,6 +215,7 @@ export const productDeliveryItemSchema = z.object({
     currency: z.string(),
     isStale: z.boolean(),
     shouldShowPrice: z.boolean(),
+    strikethrough: z.number().optional(),
   }),
   editorialScore: z.number(),
 });

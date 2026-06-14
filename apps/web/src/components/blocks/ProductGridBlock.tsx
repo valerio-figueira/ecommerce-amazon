@@ -1,10 +1,8 @@
 'use client';
 
-import useEmblaCarousel from 'embla-carousel-react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { BlockType } from '@ecommerce-amazon/domain';
 import { categoryPillsPropsSchema, productGridPropsSchema } from '@ecommerce-amazon/shared/cms';
@@ -12,7 +10,7 @@ import { categoryPillsPropsSchema, productGridPropsSchema } from '@ecommerce-ama
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { CategoryPillsRow } from '@/components/blocks/CategoryPillsRow';
 import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
-import { ProductCard } from '@/components/product/ProductCard';
+import { ProductCarousel } from '@/components/product/ProductCarousel';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productsPageSchema } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
@@ -76,39 +74,6 @@ export function ProductGridBlock({
     [props.catalogHref, activeCategory],
   );
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    containScroll: 'trimSnaps',
-    dragFree: true,
-  });
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-    onSelect();
-  }, [emblaApi, onSelect]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.reInit();
-  }, [emblaApi, data?.items.length, activeCategory]);
-
-  const slideCount = isLoading ? props.pageSize : (data?.items.length ?? 0);
-  const showCarouselNav = slideCount > 1;
-
-  const carouselNavButtonClass = cn(
-    'hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
-  );
-
   return (
     <section>
       <div
@@ -135,59 +100,12 @@ export function ProductGridBlock({
         )}
       </div>
 
-      <div className={cn('flex items-center', showCarouselNav && 'md:-mx-2 md:gap-2')}>
-        {showCarouselNav && (
-          <button
-            type="button"
-            aria-label="Produtos anteriores"
-            onClick={() => emblaApi?.scrollPrev()}
-            disabled={!canScrollPrev}
-            className={carouselNavButtonClass}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-        )}
-
-        <div ref={emblaRef} className="min-w-0 flex-1 overflow-hidden">
-          <div className="flex touch-pan-y gap-4">
-            {isLoading
-              ? Array.from({ length: Math.min(props.pageSize, 8) }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]"
-                  >
-                    <div className="aspect-[4/5] animate-pulse rounded-2xl bg-neutral-200" />
-                  </div>
-                ))
-              : data?.items.map((product) => (
-                  <div
-                    key={product.id}
-                    className="min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]"
-                  >
-                    <ProductCard product={product} blockId={block.id} className="h-full" />
-                  </div>
-                ))}
-          </div>
-        </div>
-
-        {showCarouselNav && (
-          <button
-            type="button"
-            aria-label="Próximos produtos"
-            onClick={() => emblaApi?.scrollNext()}
-            disabled={!canScrollNext}
-            className={carouselNavButtonClass}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {!isLoading && slideCount > 0 && (
-        <p className="mt-3 text-center text-xs text-neutral-400 md:hidden">
-          Arraste para ver mais produtos
-        </p>
-      )}
+      <ProductCarousel
+        products={data?.items ?? []}
+        blockId={block.id}
+        isLoading={isLoading}
+        skeletonCount={props.pageSize}
+      />
     </section>
   );
 }

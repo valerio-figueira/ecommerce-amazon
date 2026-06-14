@@ -44,7 +44,12 @@ function stripRenderedData(layout: PageLayoutDeliveryDto): PageLayoutDeliveryDto
 }
 
 function mapDynamicGridSortBy(
-  sortBy: 'editorial_score' | 'created_at' | 'price_asc' | 'price_desc',
+  sortBy:
+    | 'editorial_score'
+    | 'created_at'
+    | 'price_asc'
+    | 'price_desc'
+    | 'discount_percent_desc',
 ): ProductSortField {
   switch (sortBy) {
     case 'created_at':
@@ -53,6 +58,8 @@ function mapDynamicGridSortBy(
       return ProductSortField.PRICE_ASC;
     case 'price_desc':
       return ProductSortField.PRICE_DESC;
+    case 'discount_percent_desc':
+      return ProductSortField.DISCOUNT_PERCENT_DESC;
     case 'editorial_score':
     default:
       return ProductSortField.EDITORIAL_SCORE;
@@ -154,6 +161,7 @@ export class GetPublishedPageLayout {
       category?: string;
       minDiscountPercentage?: number;
       visibleOnly?: boolean;
+      freshPriceOnly?: boolean;
     } = {
       page: 1,
       pageSize: props.limit,
@@ -165,6 +173,7 @@ export class GetPublishedPageLayout {
     }
     if (props.minDiscountPercentage !== undefined) {
       listFilters.minDiscountPercentage = props.minDiscountPercentage;
+      listFilters.freshPriceOnly = true;
     }
     listFilters.visibleOnly = true;
 
@@ -172,7 +181,9 @@ export class GetPublishedPageLayout {
 
     return {
       ...block,
-      renderedData: items.map(toProductDeliveryItem),
+      renderedData: items
+        .filter((product) => product.shouldShowPrice)
+        .map(toProductDeliveryItem),
     };
   }
 }

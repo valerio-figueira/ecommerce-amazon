@@ -16,6 +16,9 @@ export function mapDeliveryProductToListItem(item: ProductDeliveryItem): Product
       currency: item.price.currency,
       isStale: item.price.isStale,
       updatedAt: item.price.isStale ? '' : new Date().toISOString(),
+      ...(item.price.strikethrough !== undefined
+        ? { strikethrough: item.price.strikethrough }
+        : {}),
     },
   };
 }

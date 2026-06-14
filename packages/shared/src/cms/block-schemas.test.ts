@@ -18,13 +18,13 @@ describe('dynamicProductGridPropsSchema', () => {
       subtitle: 'Curadoria',
       categoryVertical: 'home-office',
       minDiscountPercentage: 20,
-      sortBy: 'price_desc',
+      sortBy: 'discount_percent_desc',
       limit: 12,
     });
 
     expect(parsed.categoryVertical).toBe('home-office');
     expect(parsed.minDiscountPercentage).toBe(20);
-    expect(parsed.sortBy).toBe('price_desc');
+    expect(parsed.sortBy).toBe('discount_percent_desc');
     expect(parsed.limit).toBe(12);
   });
 

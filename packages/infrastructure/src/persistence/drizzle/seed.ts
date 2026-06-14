@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -41,6 +41,15 @@ const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_DYNAMIC_GRID_ID = 'f7111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_COLLECTION_ID = 'f9111111-1111-4111-8111-111111111111';
 const SEED_OPERATOR_ID = '90111111-1111-4111-8111-111111111111';
+
+const FLASH_DEALS_BLOCK_PROPS = {
+  title: 'Ofertas Relâmpago',
+  subtitle:
+    'Maiores descontos detectados nas últimas horas — confira antes que o preço suba',
+  minDiscountPercentage: 30,
+  sortBy: 'discount_percent_desc',
+  limit: 12,
+} as const;
 const SEED_CATEGORY_HOME_OFFICE_ID = 'a0111111-1111-4111-8111-111111111111';
 const SEED_CATEGORY_GAMES_ID = 'a0222222-2222-4222-8222-222222222222';
 const SEED_CATEGORY_ELETRONICOS_ID = 'a0333333-3333-4333-8333-333333333333';
@@ -96,6 +105,7 @@ async function runSeed(): Promise<void> {
     }
 
     await seedHomePage(db, now, logger);
+    await ensureFlashDealsHomeLayout(db, logger);
     await seedCollections(db, now, logger);
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
@@ -137,7 +147,7 @@ async function insertProductSeed(
         titleRaw: 'Cadeira Ergonômica Home Office Pro',
         shortDescription: 'Cadeira com apoio lombar ajustável para longas jornadas.',
         priceAmount: '899.90',
-        priceStrikethrough: '1099.90',
+        priceStrikethrough: '1299.90',
         currency: 'BRL',
         stalePrice: false,
         priceUpdatedAt: now,
@@ -359,7 +369,7 @@ async function seedHomePage(
       {
         id: SEED_BLOCK_HERO_CAROUSEL_ID,
         type: BlockType.HERO_CAROUSEL,
-        sortOrder: 1,
+        sortOrder: 0,
         props: {
           slides: [
             {
@@ -382,29 +392,15 @@ async function seedHomePage(
         },
       },
       {
-        id: SEED_BLOCK_FEATURED_ID,
-        type: BlockType.FEATURED_PRODUCT,
-        sortOrder: 2,
-        props: {
-          productSlug: 'cadeira-ergonomica-home-office',
-          showMarketplaceBadge: true,
-          ctaLabel: 'Ver na Amazon',
-        },
-      },
-      {
-        id: SEED_BLOCK_HERO_SPLIT_ID,
-        type: BlockType.HERO_SPLIT,
-        sortOrder: 0,
-        props: {
-          ratio: '2/1',
-          leftBlockId: SEED_BLOCK_HERO_CAROUSEL_ID,
-          rightBlockId: SEED_BLOCK_FEATURED_ID,
-        },
+        id: SEED_BLOCK_DYNAMIC_GRID_ID,
+        type: BlockType.DYNAMIC_PRODUCT_GRID,
+        sortOrder: 1,
+        props: FLASH_DEALS_BLOCK_PROPS,
       },
       {
         id: SEED_BLOCK_BENTO_ID,
         type: BlockType.CATEGORY_BENTO_GRID,
-        sortOrder: 3,
+        sortOrder: 2,
         props: {
           title: 'Categorias populares',
           tiles: [
@@ -456,7 +452,7 @@ async function seedHomePage(
       {
         id: SEED_BLOCK_PILLS_ID,
         type: BlockType.CATEGORY_PILLS,
-        sortOrder: 4,
+        sortOrder: 3,
         props: {
           categorySlugs: ['home-office', 'games', 'eletronicos'],
           linkedBlockId: SEED_BLOCK_GRID_ID,
@@ -465,7 +461,7 @@ async function seedHomePage(
       {
         id: SEED_BLOCK_GRID_ID,
         type: BlockType.PRODUCT_GRID,
-        sortOrder: 5,
+        sortOrder: 4,
         props: {
           title: 'Produtos populares',
           categorySlug: null,
@@ -476,22 +472,9 @@ async function seedHomePage(
         },
       },
       {
-        id: SEED_BLOCK_DYNAMIC_GRID_ID,
-        type: BlockType.DYNAMIC_PRODUCT_GRID,
-        sortOrder: 6,
-        props: {
-          title: 'Ofertas home office',
-          subtitle: 'Seleção dinâmica por curadoria',
-          categoryVertical: 'home-office',
-          minDiscountPercentage: 10,
-          sortBy: 'editorial_score',
-          limit: 8,
-        },
-      },
-      {
         id: SEED_BLOCK_COLLECTION_ID,
         type: BlockType.CURATED_COLLECTION,
-        sortOrder: 7,
+        sortOrder: 5,
         props: {
           collectionSlugs: [
             'setup-gamer-iniciante',
@@ -508,6 +491,117 @@ async function seedHomePage(
   logger.info('Home page CMS seed inserted');
 }
 
+async function ensureFlashDealsHomeLayout(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const homePage = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'home'))
+    .limit(1);
+
+  if (homePage.length === 0) {
+    return;
+  }
+
+  const pageId = homePage[0]!.id;
+
+  await db
+    .delete(schema.pageBlocks)
+    .where(
+      and(
+        eq(schema.pageBlocks.pageId, pageId),
+        inArray(schema.pageBlocks.type, [BlockType.HERO_SPLIT, BlockType.FEATURED_PRODUCT]),
+      ),
+    );
+
+  const blocks = await db
+    .select({
+      id: schema.pageBlocks.id,
+      type: schema.pageBlocks.type,
+      sortOrder: schema.pageBlocks.sortOrder,
+    })
+    .from(schema.pageBlocks)
+    .where(eq(schema.pageBlocks.pageId, pageId));
+
+  const heroCarousel = blocks.find((row) => row.id === SEED_BLOCK_HERO_CAROUSEL_ID);
+  if (heroCarousel) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 0 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_HERO_CAROUSEL_ID));
+  }
+
+  const flashDealsBlock = blocks.find((row) => row.id === SEED_BLOCK_DYNAMIC_GRID_ID);
+  if (flashDealsBlock) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 1, props: FLASH_DEALS_BLOCK_PROPS })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_DYNAMIC_GRID_ID));
+  } else {
+    const legacyDynamic = blocks.find((row) => row.type === BlockType.DYNAMIC_PRODUCT_GRID);
+    if (legacyDynamic) {
+      await db
+        .update(schema.pageBlocks)
+        .set({ sortOrder: 1, props: FLASH_DEALS_BLOCK_PROPS })
+        .where(eq(schema.pageBlocks.id, legacyDynamic.id));
+    } else {
+      await db.insert(schema.pageBlocks).values({
+        id: SEED_BLOCK_DYNAMIC_GRID_ID,
+        pageId,
+        type: BlockType.DYNAMIC_PRODUCT_GRID,
+        sortOrder: 1,
+        props: FLASH_DEALS_BLOCK_PROPS,
+      });
+    }
+  }
+
+  const duplicateDynamicIds = blocks
+    .filter(
+      (row) =>
+        row.type === BlockType.DYNAMIC_PRODUCT_GRID && row.id !== SEED_BLOCK_DYNAMIC_GRID_ID,
+    )
+    .map((row) => row.id);
+
+  if (duplicateDynamicIds.length > 0) {
+    await db
+      .delete(schema.pageBlocks)
+      .where(
+        and(
+          eq(schema.pageBlocks.pageId, pageId),
+          inArray(schema.pageBlocks.id, duplicateDynamicIds),
+        ),
+      );
+  }
+
+  const bento = blocks.find((row) => row.id === SEED_BLOCK_BENTO_ID);
+  if (bento) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 2 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_BENTO_ID));
+  }
+
+  const grid = blocks.find((row) => row.id === SEED_BLOCK_GRID_ID);
+  if (grid) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 4 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_GRID_ID));
+  }
+
+  const collection = blocks.find((row) => row.id === SEED_BLOCK_COLLECTION_ID);
+  if (collection) {
+    await db
+      .update(schema.pageBlocks)
+      .set({ sortOrder: 5 })
+      .where(eq(schema.pageBlocks.id, SEED_BLOCK_COLLECTION_ID));
+  }
+
+  logger.info('Home page layout upgraded to flash deals carousel');
+}
+
 async function seedCollections(
   db: ReturnType<typeof drizzle<typeof schema>>,
   now: Date,
@@ -515,12 +609,12 @@ async function seedCollections(
 ): Promise<void> {
   await db
     .update(schema.products)
-    .set({ images: [PEXELS.chair] })
+    .set({ images: [PEXELS.chair], priceStrikethrough: '1299.90' })
     .where(eq(schema.products.slug, 'cadeira-ergonomica-home-office'));
 
   await db
     .update(schema.products)
-    .set({ images: [PEXELS.headset] })
+    .set({ images: [PEXELS.headset], priceStrikethrough: '399.90' })
     .where(eq(schema.products.slug, 'headset-gamer-7-1'));
 
   await db
@@ -546,6 +640,7 @@ async function seedCollections(
       titleRaw: 'Teclado Mecânico RGB Switch Blue',
       shortDescription: 'Teclado mecânico compacto com iluminação RGB.',
       priceAmount: '329.90',
+      priceStrikethrough: '499.90',
       currency: 'BRL',
       stalePrice: false,
       priceUpdatedAt: now,
@@ -569,6 +664,7 @@ async function seedCollections(
       titleRaw: 'Mouse Gamer Sem Fio 16000 DPI',
       shortDescription: 'Mouse leve com sensor de alta precisão e bateria longa.',
       priceAmount: '189.90',
+      priceStrikethrough: '319.90',
       currency: 'BRL',
       stalePrice: false,
       priceUpdatedAt: now,
@@ -583,7 +679,7 @@ async function seedCollections(
       tags: ['mouse', 'gamer'],
       createdAt: now,
     },
-  ] as const;
+  ] ;
 
   for (const product of extraProducts) {
     const existing = await db
@@ -595,6 +691,11 @@ async function seedCollections(
     if (existing.length === 0) {
       await db.insert(schema.products).values(product);
       logger.info(`Collection seed product inserted: ${product.slug}`);
+    } else if (product.priceStrikethrough !== undefined) {
+      await db
+        .update(schema.products)
+        .set({ priceStrikethrough: product.priceStrikethrough })
+        .where(eq(schema.products.slug, product.slug));
     }
   }
 
