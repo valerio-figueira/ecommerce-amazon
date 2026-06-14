@@ -103,6 +103,11 @@ export function ProductGridBlock({
   }, [emblaApi, data?.items.length, activeCategory]);
 
   const slideCount = isLoading ? props.pageSize : (data?.items.length ?? 0);
+  const showCarouselNav = slideCount > 1;
+
+  const carouselNavButtonClass = cn(
+    'hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
+  );
 
   return (
     <section>
@@ -130,20 +135,20 @@ export function ProductGridBlock({
         )}
       </div>
 
-      <div className="relative px-1 md:px-10">
-        <button
-          type="button"
-          aria-label="Produtos anteriores"
-          onClick={() => emblaApi?.scrollPrev()}
-          disabled={!canScrollPrev}
-          className={cn(
-            'absolute left-0 top-[38%] z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-white hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
-          )}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
+      <div className={cn('flex items-center', showCarouselNav && 'md:-mx-2 md:gap-2')}>
+        {showCarouselNav && (
+          <button
+            type="button"
+            aria-label="Produtos anteriores"
+            onClick={() => emblaApi?.scrollPrev()}
+            disabled={!canScrollPrev}
+            className={carouselNavButtonClass}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+        )}
 
-        <div ref={emblaRef} className="overflow-hidden">
+        <div ref={emblaRef} className="min-w-0 flex-1 overflow-hidden">
           <div className="flex touch-pan-y gap-4">
             {isLoading
               ? Array.from({ length: Math.min(props.pageSize, 8) }).map((_, index) => (
@@ -165,24 +170,24 @@ export function ProductGridBlock({
           </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Próximos produtos"
-          onClick={() => emblaApi?.scrollNext()}
-          disabled={!canScrollNext}
-          className={cn(
-            'absolute right-0 top-[38%] z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/95 text-neutral-600 shadow-sm transition-all hover:border-neutral-300 hover:bg-white hover:text-neutral-900 active:scale-95 disabled:pointer-events-none disabled:opacity-30 md:flex',
-          )}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-
-        {!isLoading && slideCount > 0 && (
-          <p className="mt-3 text-center text-xs text-neutral-400 md:hidden">
-            Arraste para ver mais produtos
-          </p>
+        {showCarouselNav && (
+          <button
+            type="button"
+            aria-label="Próximos produtos"
+            onClick={() => emblaApi?.scrollNext()}
+            disabled={!canScrollNext}
+            className={carouselNavButtonClass}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         )}
       </div>
+
+      {!isLoading && slideCount > 0 && (
+        <p className="mt-3 text-center text-xs text-neutral-400 md:hidden">
+          Arraste para ver mais produtos
+        </p>
+      )}
     </section>
   );
 }
