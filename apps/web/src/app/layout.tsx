@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
-import { AffiliateDisclaimer } from '@/components/layout/AffiliateDisclaimer';
+import { Footer } from '@/components/layout/Footer';
 
 import { Providers } from './providers';
 import './globals.css';
@@ -30,9 +30,11 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <SiteHeaderShell />
-          {children}
-          <AffiliateDisclaimer />
+          <div className="flex min-h-screen flex-col">
+            <SiteHeaderShell />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
