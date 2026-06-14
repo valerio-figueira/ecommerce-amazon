@@ -22,7 +22,7 @@ export function ArticlePostFooter({
       {article.category ? (
         <p>
           <Link
-            href={`/artigos/categoria/${article.category.slug}`}
+            href={`/artigos?categoria=${encodeURIComponent(article.category.slug)}`}
             className="text-base text-neutral-500 underline decoration-neutral-300 underline-offset-[3px] transition hover:text-neutral-800"
           >
             #{article.category.slug}

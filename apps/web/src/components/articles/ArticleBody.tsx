@@ -19,7 +19,15 @@ export function ArticleBody({
   autoLinks,
   productsBySlug,
 }: ArticleBodyProps): React.JSX.Element {
-  const linkedHtml = injectInternalLinks(article.body, autoLinks);
+  const linkedHtml = injectInternalLinks(
+    article.body,
+    autoLinks.map((item) => ({
+      keyword: item.keyword,
+      targetUrl: item.targetUrl,
+      maxMatches: item.maxMatches,
+      ...(item.priority !== undefined ? { priority: item.priority } : {}),
+    })),
+  );
   const segments = parseArticleShortcodes(linkedHtml);
 
   return (

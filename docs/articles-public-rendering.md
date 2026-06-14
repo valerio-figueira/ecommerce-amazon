@@ -72,7 +72,10 @@ Verificar:
 
 ## Próximos passos
 
-- Índice `/artigos` com `GET /articles`
-- Admin para gerenciar `auto_links`
+- Admin para gerenciar `auto_links` (entregue — ver [auto-links-admin.md](./auto-links-admin.md))
+
+## Índice público `/artigos`
+
+Listagem em `apps/web/src/app/artigos/page.tsx` com busca (`?q=`), filtro por categoria (`?categoria=`) e paginação. Consome `GET /articles` e `GET /article-categories`. Links de categoria em artigos redirecionam para o índice filtrado; `/artigos/categoria/[slug]` redireciona para `/artigos?categoria={slug}`.
 
 Ver também [articles-taxonomy-phase2.md](./articles-taxonomy-phase2.md) — categorias, author box e artigos relacionados.

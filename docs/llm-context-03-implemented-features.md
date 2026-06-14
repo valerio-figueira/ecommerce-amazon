@@ -11,14 +11,15 @@
 | `/` | Home CMS-driven via `PageRenderer` + `GET /pages/home` | `cms-home-phase1.md` |
 | `/produtos/[slug]` | Detalhe produto, JSON-LD, canonical, wishlist, CTA `/go` | `go-redirect-seo.md` |
 | `/categorias/[slug]` | Listagem SEO com sidebar árvore, breadcrumbs, grid | `categories-hierarchy.md` |
+| `/artigos` | Índice do blog: busca, filtros por categoria, paginação | `articles-public-rendering.md` |
 | `/artigos/[slug]` | Artigo editorial: prose, auto-links, embeds ProductCard | `articles-public-rendering.md` |
-| `/artigos/categoria/[slug]` | Listagem artigos por categoria editorial | `articles-taxonomy-phase2.md` |
+| `/artigos/categoria/[slug]` | Redireciona para `/artigos?categoria={slug}` | `articles-taxonomy-phase2.md` |
 | `/colecoes/[slug]` | Landing coleção curada numerada + JSON-LD | `curated-collections.md` |
 | `/go/[slug]` | Rewrite → API `GET /go/:slug` (307 afiliado) | `go-redirect-seo.md` |
 
 **Admin:** `/auto-links` — CRUD keywords SEO (`auto-links-admin.md`)
 
-**Pendentes no MVP:** `/comparador`, hub `/artigos` (índice), central `/cupons`, wishlist dedicada, alertas UI.
+**Pendentes no MVP:** `/comparador`, central `/cupons`, wishlist dedicada, alertas UI.
 
 ---
 
@@ -205,7 +206,8 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 | GET | `/products/:slug` | Detalhe produto |
 | GET | `/products/:id/price-history` | Snapshots; query `days` |
 | GET | `/go/:slug` | 307 redirect afiliado |
-| GET | `/articles` | Lista por categoria editorial |
+| GET | `/articles` | Lista publicada com `category`, `search`, `page`, `limit` |
+| GET | `/article-categories` | Categorias editoriais com artigos publicados |
 | GET | `/articles/:slug` | Artigo publicado |
 | GET | `/seo/auto-links` | Keywords interlinkagem |
 | GET | `/collections` | Picker CMS |
@@ -325,7 +327,7 @@ Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketpla
 |------|------------|
 | Página comparador web (`/comparador/[token]`) | Alta |
 | Central de cupons web | Alta |
-| Hub `/artigos` (índice + filtros) | Alta |
+| Hub `/artigos` (índice + filtros) | ✅ Entregue |
 | Alertas email em produção (Resend) | Alta |
 | `DELETE /price-alerts/:token` (LGPD) | Média |
 | Draft/preview/publish CMS | Média |

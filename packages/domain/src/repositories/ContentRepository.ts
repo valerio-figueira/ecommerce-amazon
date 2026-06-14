@@ -24,6 +24,27 @@ export type ArticlePublicSummary = {
   publishedAt: Date | null;
 };
 
+export type PublishedArticleListItem = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  coverImageUrl: string | null;
+  publishedAt: Date | null;
+  category: { name: string; slug: string } | null;
+};
+
+export type ListPublishedArticlesOptions = {
+  categorySlug?: string;
+  search?: string;
+  page: number;
+  limit: number;
+};
+
+export type PublishedArticleCategoryOption = {
+  name: string;
+  slug: string;
+};
+
 export interface ContentRepository {
   findArticleBySlug(slug: string): Promise<ContentArticle | null>;
   findArticleById(id: string): Promise<ContentArticle | null>;
@@ -35,6 +56,10 @@ export interface ContentRepository {
     limit: number,
   ): Promise<ArticlePublicSummary[]>;
   listPublishedByCategorySlug(categorySlug: string): Promise<ArticlePublicSummary[]>;
+  listPublishedArticles(
+    options: ListPublishedArticlesOptions,
+  ): Promise<{ items: PublishedArticleListItem[]; total: number }>;
+  listPublishedArticleCategories(): Promise<PublishedArticleCategoryOption[]>;
   saveArticle(article: ContentArticle): Promise<void>;
   deleteArticle(id: string): Promise<void>;
   slugExists(slug: string, excludeId?: string): Promise<boolean>;

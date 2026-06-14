@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import type { ArticleRelatedSummary } from '@ecommerce-amazon/shared/admin';
+import type { ArticleRelatedSummary, PublishedArticleListItem } from '@ecommerce-amazon/shared/admin';
 
 type ArticleCardProps = {
-  article: ArticleRelatedSummary;
+  article: ArticleRelatedSummary | PublishedArticleListItem;
+  showExcerpt?: boolean;
 };
 
 function formatPublishedDate(iso: string | null): string | null {
@@ -16,8 +17,16 @@ function formatPublishedDate(iso: string | null): string | null {
   });
 }
 
-export function ArticleCard({ article }: ArticleCardProps): React.JSX.Element {
+function hasExcerpt(
+  article: ArticleRelatedSummary | PublishedArticleListItem,
+): article is PublishedArticleListItem {
+  return 'excerpt' in article;
+}
+
+export function ArticleCard({ article, showExcerpt = false }: ArticleCardProps): React.JSX.Element {
   const publishedLabel = formatPublishedDate(article.publishedAt);
+  const excerpt = showExcerpt && hasExcerpt(article) ? article.excerpt : null;
+  const category = hasExcerpt(article) ? article.category : null;
 
   return (
     <Link
@@ -40,11 +49,19 @@ export function ArticleCard({ article }: ArticleCardProps): React.JSX.Element {
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
+        {category ? (
+          <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            {category.name}
+          </span>
+        ) : null}
         <h3 className="line-clamp-2 text-base font-semibold text-neutral-900 group-hover:text-neutral-700">
           {article.title}
         </h3>
+        {excerpt ? (
+          <p className="line-clamp-2 text-sm leading-relaxed text-neutral-600">{excerpt}</p>
+        ) : null}
         {publishedLabel ? (
-          <p className="text-xs text-neutral-500">{publishedLabel}</p>
+          <p className="mt-auto text-xs text-neutral-500">{publishedLabel}</p>
         ) : null}
       </div>
     </Link>

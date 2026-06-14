@@ -112,6 +112,37 @@ export const listArticlesByCategoryQuerySchema = z.object({
   category: articleSlugSchema,
 });
 
+export const listPublishedArticlesQuerySchema = z.object({
+  category: articleSlugSchema.optional(),
+  search: z.string().trim().max(100).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(12),
+});
+
+export type ListPublishedArticlesQuery = z.infer<typeof listPublishedArticlesQuerySchema>;
+
+export const publishedArticleListItemSchema = articleRelatedSummarySchema.extend({
+  excerpt: z.string(),
+  category: articleCategoryPublicSchema.nullable(),
+});
+
+export type PublishedArticleListItem = z.infer<typeof publishedArticleListItemSchema>;
+
+export const publishedArticlesListResponseSchema = z.object({
+  items: z.array(publishedArticleListItemSchema),
+  total: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  limit: z.number().int().positive(),
+});
+
+export type PublishedArticlesListResponse = z.infer<typeof publishedArticlesListResponseSchema>;
+
+export const publicArticleCategoriesResponseSchema = z.object({
+  items: z.array(articleCategoryPublicSchema),
+});
+
+export type PublicArticleCategoriesResponse = z.infer<typeof publicArticleCategoriesResponseSchema>;
+
 export const articlePublicDetailSchema = z.object({
   slug: articleSlugSchema,
   title: z.string(),

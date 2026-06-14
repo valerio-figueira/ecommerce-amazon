@@ -283,11 +283,21 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 
 ## Conteúdo
 
-### `GET /articles?category={slug}`
+### `GET /articles`
 
-Lista artigos **publicados** de uma categoria editorial.
+Lista artigos **publicados** com filtros opcionais.
 
-**Response:** `{ category: { name, slug }, items: ArticleRelatedSummary[] }`
+**Query:** `category` (slug editorial), `search` (título/resumo), `page` (default 1), `limit` (default 12, máx. 50)
+
+**Response:** `{ items: PublishedArticleListItem[], total, page, limit }` — cada item inclui `excerpt` e `category` nullable.
+
+**Legado:** `GET /articles?category={slug}` sem demais query params mantém resposta `{ category, items }` (usado por integrações antigas).
+
+### `GET /article-categories`
+
+Categorias editoriais com ao menos um artigo publicado.
+
+**Response:** `{ items: [{ name, slug }] }`
 
 ### `GET /articles/:slug`
 

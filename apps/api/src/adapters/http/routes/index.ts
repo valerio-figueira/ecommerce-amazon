@@ -14,7 +14,7 @@ import {
 } from '../../presenters/product.presenter.js';
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
-import { listArticlesByCategoryQuerySchema } from '@ecommerce-amazon/shared/admin';
+import { listArticlesByCategoryQuerySchema, listPublishedArticlesQuerySchema } from '@ecommerce-amazon/shared/admin';
 import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
@@ -292,10 +292,36 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
 
   app.get('/articles', async (request, reply) => {
     try {
-      const query = request.query as { category?: string };
-      const { category } = listArticlesByCategoryQuerySchema.parse({ category: query.category });
-      const result = await useCases.listPublishedArticlesByCategory.execute(category);
-      if (!result) return reply.status(404).send({ error: 'Category not found' });
+      const query = request.query as {
+        category?: string;
+        search?: string;
+        page?: string;
+        limit?: string;
+      };
+
+      if (query.category && !query.search && !query.page && !query.limit) {
+        const { category } = listArticlesByCategoryQuerySchema.parse({ category: query.category });
+        const result = await useCases.listPublishedArticlesByCategory.execute(category);
+        if (!result) return reply.status(404).send({ error: 'Category not found' });
+        return reply.send(result);
+      }
+
+      const parsed = listPublishedArticlesQuerySchema.parse(query);
+      const result = await useCases.listPublishedArticles.execute({
+        ...(parsed.category !== undefined ? { categorySlug: parsed.category } : {}),
+        ...(parsed.search !== undefined ? { search: parsed.search } : {}),
+        page: parsed.page,
+        limit: parsed.limit,
+      });
+      return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/article-categories', async (_request, reply) => {
+    try {
+      const result = await useCases.listPublicArticleCategories.execute();
       return reply.send(result);
     } catch (error) {
       return handleError(error, reply);

@@ -1,4 +1,4 @@
-import { asc, and, count, desc, eq, inArray, ne } from 'drizzle-orm';
+import { asc, and, count, desc, eq, ilike, inArray, ne, or } from 'drizzle-orm';
 
 import {
   ArticleStatus,
@@ -147,6 +147,99 @@ export class DrizzleContentRepository implements ContentRepository {
       coverImageUrl: row.coverImageUrl,
       publishedAt: row.publishedAt,
     }));
+  }
+
+  private buildPublishedArticlesWhere(categorySlug?: string, search?: string) {
+    const conditions = [eq(schema.contentArticles.status, ArticleStatus.PUBLISHED)];
+
+    if (categorySlug) {
+      conditions.push(eq(schema.articleCategories.slug, categorySlug));
+    }
+
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
+      const pattern = `%${trimmedSearch}%`;
+      conditions.push(
+        or(
+          ilike(schema.contentArticles.title, pattern),
+          ilike(schema.contentArticles.excerpt, pattern),
+        )!,
+      );
+    }
+
+    return and(...conditions);
+  }
+
+  async listPublishedArticles(options: {
+    categorySlug?: string;
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
+    const whereClause = this.buildPublishedArticlesWhere(options.categorySlug, options.search);
+    const offset = (options.page - 1) * options.limit;
+
+    const [rows, totalRows] = await Promise.all([
+      this.db
+        .select({
+          slug: schema.contentArticles.slug,
+          title: schema.contentArticles.title,
+          excerpt: schema.contentArticles.excerpt,
+          coverImageUrl: schema.contentArticles.coverImageUrl,
+          publishedAt: schema.contentArticles.publishedAt,
+          categoryName: schema.articleCategories.name,
+          categorySlug: schema.articleCategories.slug,
+        })
+        .from(schema.contentArticles)
+        .leftJoin(
+          schema.articleCategories,
+          eq(schema.contentArticles.categoryId, schema.articleCategories.id),
+        )
+        .where(whereClause)
+        .orderBy(desc(schema.contentArticles.publishedAt))
+        .limit(options.limit)
+        .offset(offset),
+      this.db
+        .select({ total: count() })
+        .from(schema.contentArticles)
+        .leftJoin(
+          schema.articleCategories,
+          eq(schema.contentArticles.categoryId, schema.articleCategories.id),
+        )
+        .where(whereClause),
+    ]);
+
+    return {
+      items: rows.map((row) => ({
+        slug: row.slug,
+        title: row.title,
+        excerpt: row.excerpt,
+        coverImageUrl: row.coverImageUrl,
+        publishedAt: row.publishedAt,
+        category:
+          row.categoryName && row.categorySlug
+            ? { name: row.categoryName, slug: row.categorySlug }
+            : null,
+      })),
+      total: Number(totalRows[0]?.total ?? 0),
+    };
+  }
+
+  async listPublishedArticleCategories() {
+    const rows = await this.db
+      .selectDistinct({
+        name: schema.articleCategories.name,
+        slug: schema.articleCategories.slug,
+      })
+      .from(schema.articleCategories)
+      .innerJoin(
+        schema.contentArticles,
+        eq(schema.contentArticles.categoryId, schema.articleCategories.id),
+      )
+      .where(eq(schema.contentArticles.status, ArticleStatus.PUBLISHED))
+      .orderBy(asc(schema.articleCategories.name));
+
+    return rows;
   }
 
   async listAdminSummaries(status?: ArticleStatus) {

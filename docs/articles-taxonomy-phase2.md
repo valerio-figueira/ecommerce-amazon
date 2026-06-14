@@ -88,4 +88,4 @@ npm run dev -w @ecommerce-amazon/web
 
 - Tags N:N para artigos
 - Perfil do operador editável em `/configuracoes`
-- Índice público `/artigos` com filtros por categoria
+- Índice público `/artigos` com busca, categorias e paginação

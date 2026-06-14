@@ -10,8 +10,7 @@ import { WishlistDrawer } from '@/components/wishlist/WishlistDrawer';
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
 
 const EDITORIAL_LINKS = [
-  { href: '/artigos/guia-cadeira-ergonomica', label: 'Artigos' },
-  { href: '#', label: 'Cupons' },
+  { href: '/artigos', label: 'Artigos' },
   { href: '#', label: 'Sobre' },
 ];
 

@@ -16,6 +16,8 @@ export { AddToWishlist } from './use-cases/wishlist/AddToWishlist.js';
 export { BuildBatchCheckoutRedirect } from './use-cases/wishlist/BuildBatchCheckoutRedirect.js';
 export { GetArticleWithEmbeds } from './use-cases/content/GetArticleWithEmbeds.js';
 export { ListPublishedArticlesByCategory } from './use-cases/content/ListPublishedArticlesByCategory.js';
+export { ListPublishedArticles } from './use-cases/content/ListPublishedArticles.js';
+export { ListPublicArticleCategories } from './use-cases/content/ListPublicArticleCategories.js';
 export type {
   ArticleWithEmbedsResult,
   ArticleAuthorPublic,
