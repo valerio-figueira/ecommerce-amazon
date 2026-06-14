@@ -283,6 +283,12 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 
 ## Conteúdo
 
+### `GET /articles?category={slug}`
+
+Lista artigos **publicados** de uma categoria editorial.
+
+**Response:** `{ category: { name, slug }, items: ArticleRelatedSummary[] }`
+
 ### `GET /articles/:slug`
 
 Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` permanecem no HTML; a vitrine resolve embeds e auto-links.

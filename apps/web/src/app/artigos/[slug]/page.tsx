@@ -6,9 +6,8 @@ import {
   autoLinksResponseSchema,
 } from '@ecommerce-amazon/shared/admin';
 
-import { ArticleAuthorBox } from '@/components/articles/ArticleAuthorBox';
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
-import { ArticleMetadataHeader } from '@/components/articles/ArticleMetadataHeader';
+import { ArticlePostFooter } from '@/components/articles/ArticlePostFooter';
 import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
@@ -116,13 +115,12 @@ export default async function ArtigoPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ArticleHero article={article} />
-      <ArticleMetadataHeader article={article} />
       <ArticleBody
         article={article}
         autoLinks={autoLinks.items}
         productsBySlug={productsBySlug}
       />
-      {article.author ? <ArticleAuthorBox author={article.author} /> : null}
+      <ArticlePostFooter article={article} />
       <ArticleRelatedGrid articles={article.relatedArticles} />
     </main>
   );

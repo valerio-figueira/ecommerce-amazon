@@ -29,10 +29,6 @@ export function ArticleProductEmbed({
         pros={product.pros}
         cons={product.cons}
       />
-      <p className="mt-2 text-xs text-neutral-500">
-        Links de afiliado: ao clicar em &quot;Ver preço&quot;, você será direcionado ao marketplace
-        parceiro. Podemos receber comissão sem custo extra para você.
-      </p>
     </div>
   );
 }

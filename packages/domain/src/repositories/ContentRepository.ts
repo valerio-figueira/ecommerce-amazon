@@ -34,6 +34,7 @@ export interface ContentRepository {
     excludeArticleId: string,
     limit: number,
   ): Promise<ArticlePublicSummary[]>;
+  listPublishedByCategorySlug(categorySlug: string): Promise<ArticlePublicSummary[]>;
   saveArticle(article: ContentArticle): Promise<void>;
   deleteArticle(id: string): Promise<void>;
   slugExists(slug: string, excludeId?: string): Promise<boolean>;

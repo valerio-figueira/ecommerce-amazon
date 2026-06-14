@@ -120,6 +120,35 @@ export class DrizzleContentRepository implements ContentRepository {
     }));
   }
 
+  async listPublishedByCategorySlug(categorySlug: string) {
+    const rows = await this.db
+      .select({
+        slug: schema.contentArticles.slug,
+        title: schema.contentArticles.title,
+        coverImageUrl: schema.contentArticles.coverImageUrl,
+        publishedAt: schema.contentArticles.publishedAt,
+      })
+      .from(schema.contentArticles)
+      .innerJoin(
+        schema.articleCategories,
+        eq(schema.contentArticles.categoryId, schema.articleCategories.id),
+      )
+      .where(
+        and(
+          eq(schema.contentArticles.status, ArticleStatus.PUBLISHED),
+          eq(schema.articleCategories.slug, categorySlug),
+        ),
+      )
+      .orderBy(desc(schema.contentArticles.publishedAt));
+
+    return rows.map((row) => ({
+      slug: row.slug,
+      title: row.title,
+      coverImageUrl: row.coverImageUrl,
+      publishedAt: row.publishedAt,
+    }));
+  }
+
   async listAdminSummaries(status?: ArticleStatus) {
     const baseQuery = this.db
       .select({

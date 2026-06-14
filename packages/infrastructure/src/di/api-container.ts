@@ -12,6 +12,7 @@ import {
   AddToWishlist,
   BuildBatchCheckoutRedirect,
   GetArticleWithEmbeds,
+  ListPublishedArticlesByCategory,
   GetCuratedCollection,
   ListCuratedCollections,
   ListPublicCollections,
@@ -151,6 +152,10 @@ export function buildApiContainer(env = loadEnv()) {
         operatorRepository,
         articleCategoryRepository,
         cache,
+      ),
+      listPublishedArticlesByCategory: new ListPublishedArticlesByCategory(
+        contentRepository,
+        articleCategoryRepository,
       ),
       getCuratedCollection,
       listCuratedCollections: new ListCuratedCollections(curatedCollectionRepository),

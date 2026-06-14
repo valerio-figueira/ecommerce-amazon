@@ -15,6 +15,7 @@ export { ProcessTriggeredAlerts } from './use-cases/alert/ProcessTriggeredAlerts
 export { AddToWishlist } from './use-cases/wishlist/AddToWishlist.js';
 export { BuildBatchCheckoutRedirect } from './use-cases/wishlist/BuildBatchCheckoutRedirect.js';
 export { GetArticleWithEmbeds } from './use-cases/content/GetArticleWithEmbeds.js';
+export { ListPublishedArticlesByCategory } from './use-cases/content/ListPublishedArticlesByCategory.js';
 export type {
   ArticleWithEmbedsResult,
   ArticleAuthorPublic,

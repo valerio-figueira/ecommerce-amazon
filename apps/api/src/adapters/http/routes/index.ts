@@ -14,6 +14,7 @@ import {
 } from '../../presenters/product.presenter.js';
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
+import { listArticlesByCategoryQuerySchema } from '@ecommerce-amazon/shared/admin';
 import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
@@ -283,6 +284,18 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         sessionId,
         marketplace: parseMarketplace(body.marketplace),
       });
+      return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/articles', async (request, reply) => {
+    try {
+      const query = request.query as { category?: string };
+      const { category } = listArticlesByCategoryQuerySchema.parse({ category: query.category });
+      const result = await useCases.listPublishedArticlesByCategory.execute(category);
+      if (!result) return reply.status(404).send({ error: 'Category not found' });
       return reply.send(result);
     } catch (error) {
       return handleError(error, reply);

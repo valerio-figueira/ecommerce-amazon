@@ -101,6 +101,17 @@ export const articleRelatedSummarySchema = z.object({
 
 export type ArticleRelatedSummary = z.infer<typeof articleRelatedSummarySchema>;
 
+export const articlesByCategoryResponseSchema = z.object({
+  category: articleCategoryPublicSchema,
+  items: z.array(articleRelatedSummarySchema),
+});
+
+export type ArticlesByCategoryResponse = z.infer<typeof articlesByCategoryResponseSchema>;
+
+export const listArticlesByCategoryQuerySchema = z.object({
+  category: articleSlugSchema,
+});
+
 export const articlePublicDetailSchema = z.object({
   slug: articleSlugSchema,
   title: z.string(),

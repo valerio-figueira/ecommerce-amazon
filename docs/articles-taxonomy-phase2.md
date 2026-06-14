@@ -24,7 +24,7 @@ flowchart LR
 1. Operador gerencia categorias em `/artigos/categorias` (CRUD via Sheet).
 2. Ao criar artigo, `author_id` é definido server-side pelo JWT; categoria é opcional no formulário.
 3. `GET /articles/:slug` retorna `author`, `category` e até 3 `relatedArticles` da mesma `category_id`.
-4. A vitrine renderiza badge, byline com avatar, author box e grid de cards.
+4. A vitrine renderiza hero + corpo; rodapé minimal (`ArticlePostFooter`) com `#categoria` linkável, data e autor; listagem em `/artigos/categoria/[slug]`.
 
 ## Schema (migration `0013`)
 
@@ -47,7 +47,7 @@ flowchart LR
 | API admin | `apps/api/src/adapters/http/routes/admin-article-category-routes.ts` |
 | Schemas | `packages/shared/src/admin/article-category-schemas.ts`, `article-schemas.ts` |
 | Admin UI | `apps/admin/src/components/article-categories/`, `ArticleForm.tsx` |
-| Web | `ArticleMetadataHeader.tsx`, `ArticleAuthorBox.tsx`, `ArticleRelatedGrid.tsx` |
+| Web | `ArticlePostFooter.tsx`, `ArticleRelatedGrid.tsx` |
 
 ## API
 
