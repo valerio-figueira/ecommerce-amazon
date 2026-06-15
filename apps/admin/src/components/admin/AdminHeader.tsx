@@ -10,9 +10,13 @@ import type { AdminSession } from '@/lib/auth/session';
 
 export function AdminHeader({
   session,
+  avatarUrl,
+  isManagedAvatar,
   onOpenMobileNav,
 }: {
   session: AdminSession;
+  avatarUrl?: string | null;
+  isManagedAvatar?: boolean;
   onOpenMobileNav: () => void;
 }) {
   const { title, breadcrumbs } = useAdminLayout();
@@ -42,7 +46,11 @@ export function AdminHeader({
         <AdminBreadcrumbs items={breadcrumbs} />
       </div>
 
-      <AdminUserMenu session={session} />
+      <AdminUserMenu
+        session={session}
+        avatarUrl={avatarUrl ?? null}
+        isManagedAvatar={isManagedAvatar ?? false}
+      />
     </header>
   );
 }

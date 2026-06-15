@@ -88,3 +88,6 @@ export interface PasswordHasher {
   hash(plain: string): Promise<string>;
   verify(plain: string, hash: string): Promise<boolean>;
 }
+
+export type { ObjectStorage, StoredObject } from './object-storage.js';
+export { ADMIN_AVATAR_KEY_PREFIX } from './object-storage.js';

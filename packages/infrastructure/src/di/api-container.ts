@@ -57,6 +57,10 @@ import {
   ListArticleCategories,
   UpdateArticleCategory,
   DeleteArticleCategory,
+  GetOperatorProfile,
+  UpdateOperatorProfile,
+  UploadOperatorAvatar,
+  RemoveOperatorAvatar,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -88,6 +92,7 @@ import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-o
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
 import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
 import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
+import { createObjectStorage } from '../storage/object-storage.factory.js';
 
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -132,6 +137,8 @@ export function buildApiContainer(env = loadEnv()) {
   const autoLinkRepository = new DrizzleAutoLinkRepository(db);
   const passwordHasher = new BcryptPasswordHasher();
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
+  const objectStorage = createObjectStorage(env);
+  const isManagedAvatarUrl = (url: string) => objectStorage.isManagedUrl(url);
 
   const linkBuilder = new DefaultAffiliateLinkBuilder(
     env.AMAZON_AFFILIATE_TAG,
@@ -258,9 +265,18 @@ export function buildApiContainer(env = loadEnv()) {
         cache,
         webRevalidator,
       ),
+      getOperatorProfile: new GetOperatorProfile(operatorRepository, isManagedAvatarUrl),
+      updateOperatorProfile: new UpdateOperatorProfile(
+        operatorRepository,
+        authTokenService,
+        isManagedAvatarUrl,
+      ),
+      uploadOperatorAvatar: new UploadOperatorAvatar(operatorRepository, objectStorage),
+      removeOperatorAvatar: new RemoveOperatorAvatar(operatorRepository, objectStorage),
     },
     services: {
       authTokenService,
+      objectStorage,
     },
     repositories: {
       wishlistRepository,

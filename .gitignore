@@ -28,6 +28,9 @@ coverage/
 packages/*/src/**/*.js
 packages/*/src/**/*.d.ts
 apps/*/src/**/*.js
+
+# Local object storage (filesystem driver)
+uploads/
 apps/*/src/**/*.d.ts
 
 # Linters & formatters

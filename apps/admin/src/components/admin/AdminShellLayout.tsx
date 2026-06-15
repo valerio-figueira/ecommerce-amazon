@@ -13,11 +13,15 @@ const SIDEBAR_STORAGE_KEY = 'vitrine-admin-sidebar-collapsed';
 
 export function AdminShellLayout({
   session,
+  avatarUrl,
+  isManagedAvatar,
   initialTitle,
   initialBreadcrumbs = [],
   children,
 }: {
   session: AdminSession;
+  avatarUrl?: string | null;
+  isManagedAvatar?: boolean;
   initialTitle: string;
   initialBreadcrumbs?: AdminBreadcrumb[];
   children: ReactNode;
@@ -59,6 +63,8 @@ export function AdminShellLayout({
 
         <AdminHeader
           session={session}
+          avatarUrl={avatarUrl ?? null}
+          isManagedAvatar={isManagedAvatar ?? false}
           onOpenMobileNav={() => setMobileOpen(true)}
         />
 

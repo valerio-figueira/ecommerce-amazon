@@ -40,6 +40,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
+| [docs/admin-profile-phase1.md](docs/admin-profile-phase1.md) | Perfil operador, avatar upload, storage plugável |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |

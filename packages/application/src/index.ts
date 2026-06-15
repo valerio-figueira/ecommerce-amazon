@@ -78,3 +78,26 @@ export {
 } from './use-cases/admin-category/UpdateCategory.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';
 export { AuthenticateOperator } from './use-cases/admin-auth/AuthenticateOperator.js';
+export { GetOperatorProfile } from './use-cases/admin-profile/GetOperatorProfile.js';
+export type { OperatorProfileDto } from './use-cases/admin-profile/GetOperatorProfile.js';
+export { UpdateOperatorProfile } from './use-cases/admin-profile/UpdateOperatorProfile.js';
+export type {
+  UpdateOperatorProfileInput,
+  UpdateOperatorProfileResult,
+} from './use-cases/admin-profile/UpdateOperatorProfile.js';
+export { UploadOperatorAvatar } from './use-cases/admin-profile/UploadOperatorAvatar.js';
+export type {
+  UploadOperatorAvatarInput,
+  UploadOperatorAvatarResult,
+} from './use-cases/admin-profile/UploadOperatorAvatar.js';
+export { RemoveOperatorAvatar } from './use-cases/admin-profile/RemoveOperatorAvatar.js';
+export type {
+  RemoveOperatorAvatarInput,
+  RemoveOperatorAvatarResult,
+} from './use-cases/admin-profile/RemoveOperatorAvatar.js';
+export {
+  validateAvatarImage,
+  mimeToAvatarExtension,
+  AVATAR_MAX_BYTES,
+} from './use-cases/admin-profile/validate-avatar-image.js';
+export { buildAvatarObjectKey } from './use-cases/admin-profile/build-avatar-object-key.js';

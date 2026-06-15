@@ -53,6 +53,15 @@ const envSchemaBase = z.object({
   ADMIN_SEED_PASSWORD: z.string().min(8).default('vitrine-admin'),
   REVALIDATE_SECRET: z.string().default(''),
   WEB_PUBLIC_URL: z.string().url().optional(),
+  STORAGE_DRIVER: z.enum(['filesystem', 's3', 'gcs']).default('filesystem'),
+  STORAGE_PUBLIC_BASE_URL: z.string().url().optional(),
+  STORAGE_LOCAL_ROOT: z.string().default('./uploads'),
+  AWS_S3_BUCKET: z.string().default(''),
+  AWS_S3_REGION: z.string().default('us-east-1'),
+  AWS_ACCESS_KEY_ID: z.string().default(''),
+  AWS_SECRET_ACCESS_KEY: z.string().default(''),
+  GCS_BUCKET: z.string().default(''),
+  GCS_PROJECT_ID: z.string().default(''),
 });
 
 export const envSchema = envSchemaBase.transform((data) => ({

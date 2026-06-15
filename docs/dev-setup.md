@@ -30,6 +30,11 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `REVALIDATE_SECRET` | (vazio desliga) | Secret compartilhado API → `POST /api/revalidate` no web |
 | `WEB_PUBLIC_URL` | `http://localhost:${WEB_PORT}` | Base URL da vitrine para revalidação on-demand |
 | `NEXT_ALLOWED_DEV_ORIGINS` | — | IP LAN para assets Next dev (ex.: `192.168.100.6`) |
+| `STORAGE_DRIVER` | `filesystem` | Upload de avatar: `filesystem` \| `s3` \| `gcs` |
+| `STORAGE_PUBLIC_BASE_URL` | `http://localhost:3000/uploads` | URL pública dos objetos (dev filesystem) |
+| `STORAGE_LOCAL_ROOT` | `./uploads` | Pasta local quando `STORAGE_DRIVER=filesystem` |
+
+Ver [admin-profile-phase1.md](./admin-profile-phase1.md) para S3/GCS.
 
 ## Infraestrutura (Postgres + Redis)
 

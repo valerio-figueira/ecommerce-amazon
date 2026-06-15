@@ -6,11 +6,15 @@ import type { AdminBreadcrumb } from '@/lib/navigation';
 
 export function AdminShell({
   session,
+  avatarUrl,
+  isManagedAvatar,
   initialTitle,
   initialBreadcrumbs = [],
   children,
 }: {
   session: AdminSession;
+  avatarUrl?: string | null;
+  isManagedAvatar?: boolean;
   initialTitle: string;
   initialBreadcrumbs?: AdminBreadcrumb[];
   children: ReactNode;
@@ -18,6 +22,8 @@ export function AdminShell({
   return (
     <AdminShellLayout
       session={session}
+      avatarUrl={avatarUrl ?? null}
+      isManagedAvatar={isManagedAvatar ?? false}
       initialTitle={initialTitle}
       initialBreadcrumbs={initialBreadcrumbs}
     >

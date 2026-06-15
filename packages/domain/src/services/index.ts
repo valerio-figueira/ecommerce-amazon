@@ -53,3 +53,9 @@ export type RefreshCriteria = {
   limit?: number;
   onlyStale?: boolean;
 };
+
+export {
+  ADMIN_AVATAR_KEY_REGEX,
+  extractManagedKeyFromUrl,
+  isManagedAvatarKey,
+} from './avatar-storage.js';

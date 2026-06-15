@@ -1157,3 +1157,197 @@ body.admin-login-page {
     border-top: 1px solid color-mix(in srgb, var(--admin-gray) 60%, transparent);
   }
 }
+
+/* Profile page */
+.admin-profile-page-card.admin-page-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.admin-profile-page {
+  width: 100%;
+}
+
+.admin-profile-layout {
+  overflow: hidden;
+  border: 1px solid var(--admin-gray);
+  border-radius: 12px;
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow-sm, 0 1px 2px rgb(15 23 42 / 0.06));
+}
+
+.admin-profile-page-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .admin-profile-page-grid {
+    grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr);
+  }
+}
+
+.admin-profile-photo-column {
+  padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .admin-profile-photo-column {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+  }
+}
+
+.admin-profile-form-column {
+  padding: 1.5rem;
+  background: var(--admin-surface);
+}
+
+@media (min-width: 1024px) {
+  .admin-profile-form-column {
+    border-left: 1px solid var(--admin-gray);
+  }
+}
+
+.admin-profile-photo-heading {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
+.admin-profile-avatar-ring {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.admin-profile-avatar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--admin-primary) 18%, white), color-mix(in srgb, var(--admin-navy) 10%, white));
+  padding: 4px;
+}
+
+.admin-profile-photo-preview {
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.admin-profile-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-navy));
+  color: white;
+}
+
+.admin-profile-avatar-placeholder-letter {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.admin-profile-sublabel {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--admin-navy);
+}
+
+.admin-profile-file-input {
+  display: block;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.admin-profile-micro-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-profile-photo-actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-profile-status {
+  min-height: 1.25rem;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.admin-profile-status.is-visible {
+  opacity: 1;
+}
+
+.admin-profile-status.is-error {
+  color: #b42318;
+}
+
+.admin-profile-block + .admin-profile-block {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-gray) 70%, transparent);
+}
+
+.admin-profile-block-title {
+  margin: 0 0 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
+.admin-profile-input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.admin-profile-input-group .admin-profile-input-addon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border: 1px solid var(--admin-gray);
+  border-right: 0;
+  border-radius: 0.5rem 0 0 0.5rem;
+  background: var(--admin-bg);
+}
+
+.admin-profile-input-group input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.admin-profile-form-actions {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-gray) 70%, transparent);
+}
+
+.admin-profile-crop-wrap .reactEasyCrop_Container {
+  border-radius: 0.5rem;
+}

@@ -449,6 +449,34 @@ Rotas `/admin/*` (exceto login/logout) exigem header `Authorization: Bearer <JWT
 
 ---
 
+## Admin — perfil do operador
+
+Implementação: [`admin-profile-routes.ts`](../apps/api/src/adapters/http/routes/admin-profile-routes.ts). Doc: [admin-profile-phase1.md](./admin-profile-phase1.md).
+
+Todas as rotas exigem `Authorization: Bearer <token>`.
+
+### `GET /admin/profile`
+
+**Response 200:** `OperatorProfile` — `{ id, email, name, avatarUrl, bio, role, status, isManagedAvatar }`
+
+### `PATCH /admin/profile`
+
+**Body:** `{ name: string (1–120), bio?: string | null (≤250) }`
+
+**Response 200:** `{ operator: OperatorProfile, token: string }` — JWT atualizado quando o nome muda.
+
+### `POST /admin/profile/avatar`
+
+**Body:** `multipart/form-data`, campo `avatar` (imagem ≤5 MiB; JPG/PNG/GIF/WebP)
+
+**Response 200:** `{ avatarUrl: string, isManagedAvatar: true }`
+
+### `DELETE /admin/profile/avatar`
+
+**Response 200:** `{ avatarUrl: null, isManagedAvatar: false }`
+
+---
+
 ## Admin — páginas e blocos CMS
 
 Implementação: [`admin-cms-routes.ts`](../apps/api/src/adapters/http/routes/admin-cms-routes.ts). Doc: [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md).
