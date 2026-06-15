@@ -132,6 +132,17 @@ Grid 3 slots: (1) coleção ou artigo hero 2×2, (2) produto oferta 1×1, (3) to
 | Cache | Redis `vitrine:seo:auto-links` + invalidação nas mutações |
 | Vitrine | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB) |
 
+### Content Clusters Hub & Spoke (`content-clusters-hub-spoke.md`) ✅
+
+| Entrega | Detalhe |
+|---------|---------|
+| Schema | `content_clusters` + `content_articles.cluster_id` (migration `0016`) |
+| API admin | `GET/POST/PATCH/DELETE /admin/content-clusters`; artigos com `clusterId` |
+| UI admin | `/content-clusters` — CRUD Sheet, picker de pilar; seletor de cluster no `ArticleForm` |
+| API pública | `GET /articles/:slug` → campo `cluster` (role, members, pilarArticle) |
+| Vitrine | `ArticleSeoAnchor` (só pilar), `ArticleClusterCarousel`, JSON-LD `ItemList` |
+| Seed | Cluster demo "Especial Cadeira Ergonômica" + 2 satélites |
+
 ---
 
 ## Artigos — pipeline completo

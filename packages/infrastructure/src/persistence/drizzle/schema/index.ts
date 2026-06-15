@@ -16,8 +16,9 @@ import {
 
 import { articleCategories } from './article-categories.js';
 import { categories } from './categories.js';
+import { contentClusters } from './content-clusters.js';
 
-export { articleCategories, categories };
+export { articleCategories, categories, contentClusters };
 
 export const marketplaceEnum = pgEnum('marketplace', [
   'amazon_br',
@@ -197,6 +198,7 @@ export const contentArticles = pgTable(
     categoryId: uuid('category_id').references(() => articleCategories.id, {
       onDelete: 'set null',
     }),
+    clusterId: uuid('cluster_id').references(() => contentClusters.id, { onDelete: 'set null' }),
     seoTitle: text('seo_title'),
     seoDescription: text('seo_description'),
     seo: jsonb('seo').$type<Record<string, string>>().notNull().default({}),
@@ -204,7 +206,10 @@ export const contentArticles = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex('content_articles_slug_idx').on(table.slug)],
+  (table) => [
+    uniqueIndex('content_articles_slug_idx').on(table.slug),
+    index('content_articles_cluster_id_idx').on(table.clusterId),
+  ],
 );
 
 export const autoLinks = pgTable(

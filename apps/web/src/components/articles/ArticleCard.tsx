@@ -16,9 +16,10 @@ import { recordEngagement } from '@/lib/api/engagement';
 import { setAttribution } from '@/lib/attribution/context';
 
 type ArticleCardProps = {
-  article: ArticleRelatedSummary | PublishedArticleListItem;
+  article: ArticleRelatedSummary | PublishedArticleListItem | (ArticleRelatedSummary & { excerpt?: string });
   showExcerpt?: boolean;
   engagementPlacement?: EngagementPlacementValue;
+  isCurrent?: boolean;
 };
 
 function formatPublishedDate(iso: string | null): string | null {
@@ -40,11 +41,17 @@ export function ArticleCard({
   article,
   showExcerpt = false,
   engagementPlacement = ClickPlacement.ARTICLE_LISTING,
+  isCurrent = false,
 }: ArticleCardProps): React.JSX.Element {
   const pathname = usePathname();
   const { sessionId } = useWishlist();
   const publishedLabel = formatPublishedDate(article.publishedAt);
-  const excerpt = showExcerpt && hasExcerpt(article) ? article.excerpt : null;
+  const excerpt =
+    showExcerpt && 'excerpt' in article && typeof article.excerpt === 'string'
+      ? article.excerpt
+      : showExcerpt && hasExcerpt(article)
+        ? article.excerpt
+        : null;
   const category = hasExcerpt(article) ? article.category : null;
   const articleHref = `/artigos/${article.slug}`;
 
@@ -68,6 +75,7 @@ export function ArticleCard({
       href={articleHref}
       onClick={handleClick}
       className="group flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white transition hover:border-neutral-300"
+      {...(isCurrent ? { 'aria-current': 'page' as const } : {})}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
         {article.coverImageUrl ? (

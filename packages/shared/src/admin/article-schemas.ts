@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
 
 import { productPublicDetailSchema } from './product-schemas.js';
+import { articleClusterPublicSchema } from './content-cluster-schemas.js';
 
 const articleSlugSchema = z
   .string()
@@ -43,6 +44,7 @@ export const adminArticleDetailSchema = z.object({
   seoDescription: z.string().trim().max(500).nullable(),
   authorId: z.string().uuid().nullable(),
   categoryId: z.string().uuid().nullable(),
+  clusterId: z.string().uuid().nullable(),
   publishedAt: z.string().datetime().nullable(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -61,6 +63,7 @@ export const createArticleBodySchema = z.object({
   seoTitle: z.string().trim().max(200).nullable().optional(),
   seoDescription: z.string().trim().max(500).nullable().optional(),
   categoryId: z.string().uuid().nullable().optional(),
+  clusterId: z.string().uuid().nullable().optional(),
 });
 
 export type CreateArticleBody = z.infer<typeof createArticleBodySchema>;
@@ -161,6 +164,7 @@ export const articlePublicDetailSchema = z.object({
   relatedArticles: z.array(articleRelatedSummarySchema),
   publishedAt: z.string().datetime().nullable(),
   embeddedProducts: z.record(z.string(), productPublicDetailSchema.nullable()),
+  cluster: articleClusterPublicSchema.nullable().default(null),
 });
 
 export type ArticlePublicDetail = z.infer<typeof articlePublicDetailSchema>;

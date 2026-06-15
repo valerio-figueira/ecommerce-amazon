@@ -1,6 +1,7 @@
 export * from './product-schemas.js';
 export * from './category-schemas.js';
 export * from './collection-schemas.js';
+export * from './content-cluster-schemas.js';
 export * from './article-schemas.js';
 export * from './article-category-schemas.js';
 export * from './auto-link-schemas.js';

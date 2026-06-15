@@ -59,6 +59,11 @@ import {
   ListArticleCategories,
   UpdateArticleCategory,
   DeleteArticleCategory,
+  CreateContentCluster,
+  ListContentClustersAdmin,
+  GetContentClusterAdmin,
+  UpdateContentCluster,
+  DeleteContentCluster,
   GetOperatorProfile,
   UpdateOperatorProfile,
   UploadOperatorAvatar,
@@ -104,6 +109,7 @@ import {
 } from '../persistence/repositories/drizzle-content.repository.js';
 import type { ClickEventRepository, EngagementEventRepository } from '@ecommerce-amazon/domain';
 import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
+import { DrizzleContentClusterRepository } from '../persistence/repositories/drizzle-content-cluster.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
@@ -184,6 +190,7 @@ export function buildApiContainer(env = loadEnv()) {
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
   const articleCategoryRepository = new DrizzleArticleCategoryRepository(db);
+  const contentClusterRepository = new DrizzleContentClusterRepository(db);
   const autoLinkRepository = new DrizzleAutoLinkRepository(db);
   const passwordHasher = new BcryptPasswordHasher();
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
@@ -226,6 +233,7 @@ export function buildApiContainer(env = loadEnv()) {
         operatorRepository,
         articleCategoryRepository,
         productRepository,
+        contentClusterRepository,
         cache,
       ),
       listPublishedArticlesByCategory: new ListPublishedArticlesByCategory(
@@ -285,9 +293,9 @@ export function buildApiContainer(env = loadEnv()) {
       getAdminPageLayout: new GetAdminPageLayout(pageRepository),
       listAdminPages: new ListAdminPages(pageRepository),
       listAdminArticles: new ListAdminArticles(contentRepository),
-      createArticle: new CreateArticle(contentRepository, cache, webRevalidator),
+      createArticle: new CreateArticle(contentRepository, contentClusterRepository, cache, webRevalidator),
       getAdminArticle: new GetAdminArticle(contentRepository),
-      updateArticle: new UpdateArticle(contentRepository, cache, webRevalidator),
+      updateArticle: new UpdateArticle(contentRepository, contentClusterRepository, cache, webRevalidator),
       deleteArticle: new DeleteArticle(contentRepository, cache, webRevalidator),
       listActiveAutoLinks: new ListActiveAutoLinks(autoLinkRepository, cache),
       createAutoLink: new CreateAutoLink(autoLinkRepository, cache, webRevalidator),
@@ -320,6 +328,25 @@ export function buildApiContainer(env = loadEnv()) {
       ),
       deleteArticleCategory: new DeleteArticleCategory(
         articleCategoryRepository,
+        cache,
+        webRevalidator,
+      ),
+      createContentCluster: new CreateContentCluster(
+        contentClusterRepository,
+        contentRepository,
+        cache,
+        webRevalidator,
+      ),
+      listContentClustersAdmin: new ListContentClustersAdmin(contentClusterRepository),
+      getContentClusterAdmin: new GetContentClusterAdmin(contentClusterRepository),
+      updateContentCluster: new UpdateContentCluster(
+        contentClusterRepository,
+        contentRepository,
+        cache,
+        webRevalidator,
+      ),
+      deleteContentCluster: new DeleteContentCluster(
+        contentClusterRepository,
         cache,
         webRevalidator,
       ),

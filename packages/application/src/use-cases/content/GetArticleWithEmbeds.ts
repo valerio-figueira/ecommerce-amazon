@@ -5,12 +5,18 @@ import {
   type Product,
   type CacheStore,
   type ArticleCategoryRepository,
+  type ContentClusterRepository,
   type ContentRepository,
   type OperatorRepository,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import { extractAllEmbedSlugsFromBody } from '@ecommerce-amazon/shared/content';
 import { articlePublicCacheKey } from '@ecommerce-amazon/shared/cache';
+
+import {
+  resolveArticleClusterPublic,
+  type ArticleClusterPublic,
+} from '../content-cluster/build-article-cluster-public.js';
 
 export type ArticleAuthorPublic = {
   name: string;
@@ -37,6 +43,7 @@ export type ArticleWithEmbedsResult = {
   category: ArticleCategoryPublic | null;
   relatedArticles: ArticleRelatedSummary[];
   embeddedProducts: Record<string, Product | null>;
+  cluster: ArticleClusterPublic | null;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -44,7 +51,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isArticleWithEmbedsResult(value: unknown): value is ArticleWithEmbedsResult {
-  return isRecord(value) && isRecord(value['article']);
+  return isRecord(value) && isRecord(value['article']) && 'cluster' in value;
 }
 
 export class GetArticleWithEmbeds {
@@ -53,6 +60,7 @@ export class GetArticleWithEmbeds {
     private readonly operatorRepository: OperatorRepository,
     private readonly articleCategoryRepository: ArticleCategoryRepository,
     private readonly productRepository: ProductRepository,
+    private readonly contentClusterRepository: ContentClusterRepository,
     private readonly cache: CacheStore,
     private readonly compliance = new PriceComplianceService(),
   ) {}
@@ -61,7 +69,10 @@ export class GetArticleWithEmbeds {
     const cacheKey = articlePublicCacheKey(slug);
     const cached = await this.cache.get(cacheKey);
     if (isArticleWithEmbedsResult(cached)) {
-      return cached;
+      return {
+        ...cached,
+        cluster: cached.cluster ?? null,
+      };
     }
 
     const article = await this.contentRepository.findArticleBySlug(slug);
@@ -114,12 +125,19 @@ export class GetArticleWithEmbeds {
     );
     const embeddedProducts = Object.fromEntries(productResults);
 
+    const cluster = await resolveArticleClusterPublic(
+      this.contentClusterRepository,
+      article.id,
+      article.clusterId,
+    );
+
     const result: ArticleWithEmbedsResult = {
       article,
       author,
       category,
       relatedArticles,
       embeddedProducts,
+      cluster,
     };
     await this.cache.set(cacheKey, result, 900);
     return result;

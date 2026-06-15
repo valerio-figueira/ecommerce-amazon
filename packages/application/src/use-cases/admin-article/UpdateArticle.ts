@@ -1,8 +1,10 @@
 import {
   ArticleStatus,
   ContentArticle,
+  ConflictError,
   EntityNotFoundError,
   type CacheStore,
+  type ContentClusterRepository,
   type ContentRepository,
   type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
@@ -12,11 +14,13 @@ import {
   buildArticlePublicPaths,
   invalidateArticlePublicCache,
 } from '../../cache/public-cache.helpers.js';
+import { invalidateClusterArticleCaches } from '../content-cluster/content-cluster.helpers.js';
 import { assertUniqueArticleSlug } from './article.helpers.js';
 
 export class UpdateArticle {
   constructor(
     private readonly contentRepository: ContentRepository,
+    private readonly contentClusterRepository: ContentClusterRepository,
     private readonly cache: CacheStore,
     private readonly webRevalidator: PublicWebRevalidator,
   ) {}
@@ -29,6 +33,18 @@ export class UpdateArticle {
 
     if (input.slug && input.slug !== existing.slug) {
       await assertUniqueArticleSlug(this.contentRepository, input.slug, id);
+    }
+
+    const nextClusterId =
+      input.clusterId !== undefined ? input.clusterId : existing.clusterId;
+
+    if (input.clusterId === null) {
+      const pilarCluster = await this.contentClusterRepository.findByPilarArticleId(existing.id);
+      if (pilarCluster) {
+        throw new ConflictError(
+          'Cannot remove cluster from pillar article. Change the cluster pillar first.',
+        );
+      }
     }
 
     const now = new Date();
@@ -54,6 +70,7 @@ export class UpdateArticle {
       authorId: existing.authorId,
       categoryId:
         input.categoryId !== undefined ? input.categoryId : existing.categoryId,
+      clusterId: nextClusterId,
       seoTitle: input.seoTitle !== undefined ? input.seoTitle : existing.seoTitle,
       seoDescription:
         input.seoDescription !== undefined ? input.seoDescription : existing.seoDescription,
@@ -67,9 +84,20 @@ export class UpdateArticle {
     await this.contentRepository.saveArticle(article);
     await invalidateArticlePublicCache(this.cache, [existing.slug, article.slug]);
 
-    const slugsToRevalidate = [...new Set([existing.slug, article.slug])];
+    const clusterIds = [...new Set([existing.clusterId, article.clusterId].filter(Boolean))] as string[];
+    const slugsToRevalidate = new Set<string>([String(existing.slug), String(article.slug)]);
+
+    for (const clusterId of clusterIds) {
+      const clusterSlugs = await invalidateClusterArticleCaches(
+        this.contentClusterRepository,
+        this.cache,
+        clusterId,
+      );
+      clusterSlugs.forEach((slug) => slugsToRevalidate.add(slug));
+    }
+
     await this.webRevalidator.revalidate({
-      paths: buildArticlePublicPaths(slugsToRevalidate, { includeListing: true }),
+      paths: buildArticlePublicPaths([...slugsToRevalidate], { includeListing: true }),
     });
   }
 }

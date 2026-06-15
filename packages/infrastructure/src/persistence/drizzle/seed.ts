@@ -26,6 +26,9 @@ const SEED_PRODUCT_SHOPEE_ID = 'a2222222-2222-4222-8222-222222222222';
 const SEED_PRODUCT_TECLADO_ID = 'a3333333-3333-4333-8333-333333333333';
 const SEED_PRODUCT_MOUSE_ID = 'a4444444-4444-4444-8444-444444444444';
 const SEED_ARTICLE_ID = 'b1111111-1111-4111-8111-111111111111';
+const SEED_ARTICLE_SPOKE_1_ID = 'b2222222-2222-4222-8222-222222222222';
+const SEED_ARTICLE_SPOKE_2_ID = 'b3333333-3333-4333-8333-333333333333';
+const SEED_CONTENT_CLUSTER_ID = 'cc111111-1111-4111-8111-111111111111';
 const SEED_COLLECTION_ID = 'c1111111-1111-4111-8111-111111111111';
 const SEED_COLLECTION_HOME_OFFICE_ID = 'c2222222-2222-4222-8222-222222222222';
 const SEED_COLLECTION_PERIFERICOS_ID = 'c3333333-3333-4333-8333-333333333333';
@@ -136,6 +139,7 @@ async function runSeed(): Promise<void> {
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
     await seedAutoLinks(db, logger);
+    await seedContentClusters(db, now, logger);
   } finally {
     await sql.end();
   }
@@ -1051,6 +1055,102 @@ async function seedAutoLinks(
   );
 
   logger.info('Auto links seed inserted', { count: SEO_KEYWORD_MAP.length });
+}
+
+async function seedContentClusters(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const pilar = await db
+    .select({ id: schema.contentArticles.id })
+    .from(schema.contentArticles)
+    .where(eq(schema.contentArticles.id, SEED_ARTICLE_ID))
+    .limit(1);
+
+  if (pilar.length === 0) {
+    logger.info('Pillar article missing, skipping content cluster seed');
+    return;
+  }
+
+  const existingCluster = await db
+    .select({ id: schema.contentClusters.id })
+    .from(schema.contentClusters)
+    .where(eq(schema.contentClusters.id, SEED_CONTENT_CLUSTER_ID))
+    .limit(1);
+
+  if (existingCluster.length > 0) {
+    logger.info('Content cluster seed already present, skipping');
+    return;
+  }
+
+  const spokePublishedAt1 = new Date(now);
+  spokePublishedAt1.setDate(spokePublishedAt1.getDate() - 14);
+  const spokePublishedAt2 = new Date(now);
+  spokePublishedAt2.setDate(spokePublishedAt2.getDate() - 7);
+
+  await db.insert(schema.contentArticles).values([
+    {
+      id: SEED_ARTICLE_SPOKE_1_ID,
+      slug: 'ajuste-lombar-cadeira-ergonomica',
+      title: 'Ajuste lombar: o que observar na cadeira ergonômica',
+      excerpt: 'Entenda como o suporte lombar correto reduz fadiga em jornadas longas de home office.',
+      coverImageUrl: PEXELS.chair,
+      body: '<p>Conteúdo satélite sobre ajuste lombar e ergonomia.</p>',
+      type: ArticleType.GUIDE,
+      status: ArticleStatus.PUBLISHED,
+      authorId: SEED_OPERATOR_ID,
+      categoryId: SEED_ARTICLE_CATEGORY_GUIAS_ID,
+      seoTitle: 'Ajuste lombar em cadeiras ergonômicas',
+      seoDescription: 'Guia rápido sobre suporte lombar.',
+      seo: {},
+      publishedAt: spokePublishedAt1,
+      createdAt: spokePublishedAt1,
+      updatedAt: spokePublishedAt1,
+    },
+    {
+      id: SEED_ARTICLE_SPOKE_2_ID,
+      slug: 'cadeira-ergonomica-vs-gamer',
+      title: 'Cadeira ergonômica vs gamer: qual escolher?',
+      excerpt: 'Comparativo editorial entre cadeiras ergonômicas e gamer para uso diário.',
+      coverImageUrl: PEXELS.homeOfficeCover,
+      body: '<p>Conteúdo satélite comparando perfis de uso e conforto.</p>',
+      type: ArticleType.COMPARISON,
+      status: ArticleStatus.PUBLISHED,
+      authorId: SEED_OPERATOR_ID,
+      categoryId: SEED_ARTICLE_CATEGORY_COMPARATIVOS_ID,
+      seoTitle: 'Ergonômica vs gamer',
+      seoDescription: 'Comparativo para home office.',
+      seo: {},
+      publishedAt: spokePublishedAt2,
+      createdAt: spokePublishedAt2,
+      updatedAt: spokePublishedAt2,
+    },
+  ]);
+
+  await db.insert(schema.contentClusters).values({
+    id: SEED_CONTENT_CLUSTER_ID,
+    name: 'Especial Cadeira Ergonômica',
+    slug: 'especial-cadeira-ergonomica',
+    description:
+      'Guia pilar e artigos satélite sobre escolha, ajustes e comparativos de cadeiras ergonômicas.',
+    pilarArticleId: SEED_ARTICLE_ID,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  await db
+    .update(schema.contentArticles)
+    .set({ clusterId: SEED_CONTENT_CLUSTER_ID, updatedAt: now })
+    .where(
+      inArray(schema.contentArticles.id, [
+        SEED_ARTICLE_ID,
+        SEED_ARTICLE_SPOKE_1_ID,
+        SEED_ARTICLE_SPOKE_2_ID,
+      ]),
+    );
+
+  logger.info('Content cluster seed inserted', { slug: 'especial-cadeira-ergonomica' });
 }
 
 runSeed().catch((error: unknown) => {

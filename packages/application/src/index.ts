@@ -26,6 +26,7 @@ export type {
   ArticleCategoryPublic,
   ArticleRelatedSummary,
 } from './use-cases/content/GetArticleWithEmbeds.js';
+export type { ArticleClusterPublic as ArticleClusterPublicDto } from './use-cases/content-cluster/build-article-cluster-public.js';
 export { ListAdminArticles } from './use-cases/content/ListAdminArticles.js';
 export {
   CreateArticle,
@@ -90,6 +91,14 @@ export {
   UpdateArticleCategory,
   DeleteArticleCategory,
 } from './use-cases/admin-article-category/CreateArticleCategory.js';
+export {
+  CreateContentCluster,
+  ListContentClustersAdmin,
+  GetContentClusterAdmin,
+  UpdateContentCluster,
+  DeleteContentCluster,
+} from './use-cases/content-cluster/CreateContentCluster.js';
+export type { ArticleClusterPublic } from './use-cases/content-cluster/build-article-cluster-public.js';
 export {
   UpdateCategory,
   DeleteCategory,

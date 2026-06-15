@@ -77,6 +77,19 @@ npm run dev -w @ecommerce-amazon/admin
 3. Verificar tabela desktop, scroll horizontal no mobile, specs do seed e CTAs afiliados.
 4. Confirmar que `[[product:]]` continua renderizando card editorial via `embeddedProducts`.
 
+## Clusters Hub & Spoke
+
+Quando o artigo pertence a um cluster publicado, a página inclui:
+
+| Componente | Quando | Posição |
+|------------|--------|---------|
+| `ArticleSeoAnchor` | Artigo é **pilar** e há satélites publicados | Entre hero e corpo |
+| `ArticleClusterCarousel` | ≥2 membros publicados no cluster | Antes de `ArticleRelatedGrid` |
+
+Ordem dos satélites: `publishedAt ASC`. JSON-LD `@graph` inclui `ItemList` no pilar.
+
+Doc completa: [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md).
+
 ## Próximos passos
 
 - Página standalone `/comparar/[slug]` (entidade `product_comparisons` — fluxo separado do shortcode em artigos)

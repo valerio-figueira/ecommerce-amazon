@@ -31,6 +31,7 @@ import {
   articleTypeSchema,
   createArticleBodySchema,
   type ArticleCategorySummary,
+  type ContentClusterSummary,
 } from '@ecommerce-amazon/shared/admin';
 import { slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
 
@@ -38,6 +39,7 @@ type ArticleFormProps = {
   mode: 'create' | 'edit';
   articleId?: string;
   categories: ArticleCategorySummary[];
+  clusters: ContentClusterSummary[];
   initialValues?: {
     slug: string;
     title: string;
@@ -49,6 +51,7 @@ type ArticleFormProps = {
     seoTitle: string;
     seoDescription: string;
     categoryId: string | null;
+    clusterId: string | null;
     createdAt?: string;
     updatedAt?: string;
   };
@@ -81,6 +84,7 @@ export function ArticleForm({
   mode,
   articleId,
   categories,
+  clusters,
   initialValues,
 }: ArticleFormProps): React.JSX.Element {
   const router = useRouter();
@@ -100,6 +104,7 @@ export function ArticleForm({
   const [seoTitle, setSeoTitle] = useState(initialValues?.seoTitle ?? '');
   const [seoDescription, setSeoDescription] = useState(initialValues?.seoDescription ?? '');
   const [categoryId, setCategoryId] = useState<string | null>(initialValues?.categoryId ?? null);
+  const [clusterId, setClusterId] = useState<string | null>(initialValues?.clusterId ?? null);
   const [saving, setSaving] = useState(false);
 
   function handleTitleChange(value: string): void {
@@ -123,6 +128,7 @@ export function ArticleForm({
         seoTitle: seoTitle.trim() === '' ? null : seoTitle.trim(),
         seoDescription: seoDescription.trim() === '' ? null : seoDescription.trim(),
         categoryId,
+        clusterId,
       });
 
       if (isEdit) {
@@ -310,6 +316,29 @@ export function ArticleForm({
               </Select>
               <p className="article-form-text">
                 Usada no badge da vitrine e para sugerir artigos relacionados.
+              </p>
+            </div>
+
+            <div className="mb-3 space-y-2">
+              <Label htmlFor="article-cluster">Cluster de conteúdo</Label>
+              <Select
+                value={clusterId ?? '__none__'}
+                onValueChange={(value) => setClusterId(value === '__none__' ? null : value)}
+              >
+                <SelectTrigger id="article-cluster">
+                  <SelectValue placeholder="Sem cluster" />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  <SelectItem value="__none__">Sem cluster</SelectItem>
+                  {clusters.map((cluster) => (
+                    <SelectItem key={cluster.id} value={cluster.id}>
+                      {cluster.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="article-form-text">
+                Satélites pertencem a um cluster; o artigo pilar é definido na tela Clusters.
               </p>
             </div>
 

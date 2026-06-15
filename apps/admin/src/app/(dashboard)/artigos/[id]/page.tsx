@@ -5,6 +5,7 @@ import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { ArticleForm } from '@/components/articles/ArticleForm';
 import { getAdminArticle } from '@/lib/api/articles';
 import { listArticleCategories } from '@/lib/api/article-categories';
+import { listContentClusters } from '@/lib/api/content-clusters';
 
 type EditArtigoPageProps = {
   params: Promise<{ id: string }>;
@@ -20,7 +21,11 @@ export async function generateMetadata({ params }: EditArtigoPageProps) {
 
 export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
   const { id } = await params;
-  const [article, categories] = await Promise.all([getAdminArticle(id), listArticleCategories()]);
+  const [article, categories, clustersResponse] = await Promise.all([
+    getAdminArticle(id),
+    listArticleCategories(),
+    listContentClusters(),
+  ]);
   if (!article) notFound();
 
   return (
@@ -38,6 +43,11 @@ export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
           mode="edit"
           articleId={article.id}
           categories={categories}
+          clusters={clustersResponse.items.map((item) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+          }))}
           initialValues={{
             slug: article.slug,
             title: article.title,
@@ -49,6 +59,7 @@ export default async function EditArtigoPage({ params }: EditArtigoPageProps) {
             seoTitle: article.seoTitle ?? '',
             seoDescription: article.seoDescription ?? '',
             categoryId: article.categoryId,
+            clusterId: article.clusterId,
             createdAt: article.createdAt,
             updatedAt: article.updatedAt,
           }}

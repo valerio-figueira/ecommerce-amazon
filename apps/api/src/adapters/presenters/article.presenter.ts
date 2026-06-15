@@ -4,7 +4,7 @@ import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 import { toProductDetailDto } from './product.presenter.js';
 
 export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): ArticlePublicDetail {
-  const { article, author, category, relatedArticles, embeddedProducts } = result;
+  const { article, author, category, relatedArticles, embeddedProducts, cluster } = result;
 
   return {
     id: article.id,
@@ -32,5 +32,23 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
         product ? toProductDetailDto(product) : null,
       ]),
     ),
+    cluster: cluster
+      ? {
+          name: cluster.name,
+          slug: cluster.slug,
+          description: cluster.description,
+          role: cluster.role,
+          pilarArticle: cluster.pilarArticle,
+          members: cluster.members.map((member) => ({
+            id: member.id,
+            slug: member.slug,
+            title: member.title,
+            excerpt: member.excerpt,
+            coverImageUrl: member.coverImageUrl,
+            publishedAt: member.publishedAt?.toISOString() ?? null,
+            isPilar: member.isPilar,
+          })),
+        }
+      : null,
   };
 }

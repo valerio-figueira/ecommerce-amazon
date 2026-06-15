@@ -40,6 +40,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [admin-articles-phase1.md](./admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes `[[product:slug]]` |
 | [articles-taxonomy-phase2.md](./articles-taxonomy-phase2.md) | Categorias de artigos, perfil de autor, relacionados na vitrine |
 | [articles-public-rendering.md](./articles-public-rendering.md) | Vitrine `/artigos/[slug]`, auto-linking, ProductCard embed |
+| [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md) | Clusters Hub & Spoke — SEO Anchor, carousel, CRUD admin |
 | [auto-links-admin.md](./auto-links-admin.md) | CRUD admin auto-links (API + UI), parser SEO, cache Redis |
 | [admin-profile-phase1.md](./admin-profile-phase1.md) | Perfil do operador, upload de avatar, storage plugável |
 | [remote-image-handling.md](./remote-image-handling.md) | `RemoteImage` vitrine, fallbacks admin, `remotePatterns` |

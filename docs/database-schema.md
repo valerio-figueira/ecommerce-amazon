@@ -156,7 +156,7 @@ Sessão anônima via `session_id` (cookie web).
 
 | Tabela | Colunas |
 |--------|---------|
-| `content_articles` | `slug` UNIQUE, `title`, `excerpt`, `cover_image_url`, `body`, `type`, `status`, `author_id` FK → `operators`, `category_id` FK → `article_categories`, `seo_title`, `seo_description`, `seo` jsonb, `published_at`, `created_at`, `updated_at` |
+| `content_articles` | `slug` UNIQUE, `title`, `excerpt`, `cover_image_url`, `body`, `type`, `status`, `author_id` FK → `operators`, `category_id` FK → `article_categories`, `cluster_id` FK → `content_clusters`, `seo_title`, `seo_description`, `seo` jsonb, `published_at`, `created_at`, `updated_at` |
 | `content_product_embeds` | `article_id`, `product_id`, `position`, `variant` (`inline` \| `highlight` \| `comparison`) |
 
 ### Taxonomia editorial — `article_categories`
@@ -174,6 +174,14 @@ Migration: [`0013_article_taxonomy_authors.sql`](../packages/infrastructure/src/
 | `auto_links` | `keyword`, `target_url`, `max_matches`, `priority`, `is_active`, `created_at`, `updated_at` |
 
 Seed inicial migra `SEO_KEYWORD_MAP` estático.
+
+### Clusters editoriais — `content_clusters`
+
+Doc: [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md).
+
+| Tabela | Colunas |
+|--------|---------|
+| `content_clusters` | `name`, `slug` UNIQUE, `description`, `pilar_article_id` FK → `content_articles`, `created_at`, `updated_at` |
 
 ### Coleções — `curated_collections` / `collection_products`
 

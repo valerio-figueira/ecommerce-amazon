@@ -41,6 +41,7 @@ import { registerAdminCollectionRoutes } from './admin-collection-routes.js';
 import { registerAdminProductRoutes } from './admin-product-routes.js';
 import { registerAdminArticleRoutes } from './admin-article-routes.js';
 import { registerAdminArticleCategoryRoutes } from './admin-article-category-routes.js';
+import { registerAdminContentClusterRoutes } from './admin-content-cluster-routes.js';
 import { registerAdminAutoLinkRoutes } from './admin-auto-link-routes.js';
 import { registerAdminProfileRoutes } from './admin-profile-routes.js';
 import { registerAdminMediaRoutes } from './admin-media-routes.js';
@@ -108,6 +109,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   await registerAdminProductRoutes(app, container);
   await registerAdminArticleRoutes(app, container);
   await registerAdminArticleCategoryRoutes(app, container);
+  await registerAdminContentClusterRoutes(app, container);
   registerAdminAutoLinkRoutes(app, container);
   await registerAdminProfileRoutes(app, container);
   await registerAdminMediaRoutes(app, container);

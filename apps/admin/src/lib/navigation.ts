@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   FileStack,
   FolderTree,
+  GitBranch,
   Layers,
   LayoutDashboard,
   Link2,
@@ -23,6 +24,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: '/produtos', label: 'Produtos', icon: Package },
   { href: '/categorias', label: 'Categorias', icon: FolderTree },
   { href: '/artigos', label: 'Artigos', icon: Newspaper },
+  { href: '/content-clusters', label: 'Clusters', icon: GitBranch },
   { href: '/auto-links', label: 'Auto-Links', icon: Link2 },
   { href: '/colecoes', label: 'Coleções', icon: Layers },
   { href: '/cupons', label: 'Cupons', icon: Ticket },

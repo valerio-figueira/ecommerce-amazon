@@ -45,6 +45,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |
+| [docs/content-clusters-hub-spoke.md](docs/content-clusters-hub-spoke.md) | Clusters Hub & Spoke — SEO Anchor, carousel, CRUD `/content-clusters` |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |
 | [docs/llm-context-01-project-architecture.md](docs/llm-context-01-project-architecture.md) | Síntese LLM: visão, arquitetura, invariantes |
 | [docs/llm-context-02-domain-schema-interfaces.md](docs/llm-context-02-domain-schema-interfaces.md) | Síntese LLM: domínio, schema, interfaces |

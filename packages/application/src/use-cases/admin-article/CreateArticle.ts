@@ -4,6 +4,7 @@ import {
   ArticleStatus,
   ContentArticle,
   type CacheStore,
+  type ContentClusterRepository,
   type ContentRepository,
   type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
@@ -13,11 +14,13 @@ import {
   buildArticlePublicPaths,
   invalidateArticlePublicCache,
 } from '../../cache/public-cache.helpers.js';
+import { invalidateClusterArticleCaches } from '../content-cluster/content-cluster.helpers.js';
 import { assertUniqueArticleSlug } from './article.helpers.js';
 
 export class CreateArticle {
   constructor(
     private readonly contentRepository: ContentRepository,
+    private readonly contentClusterRepository: ContentClusterRepository,
     private readonly cache: CacheStore,
     private readonly webRevalidator: PublicWebRevalidator,
   ) {}
@@ -42,6 +45,7 @@ export class CreateArticle {
       status: input.status ?? ArticleStatus.DRAFT,
       authorId,
       categoryId: input.categoryId ?? null,
+      clusterId: input.clusterId ?? null,
       seoTitle: input.seoTitle ?? null,
       seoDescription: input.seoDescription ?? null,
       embeds: [],
@@ -53,7 +57,16 @@ export class CreateArticle {
     await this.contentRepository.saveArticle(article);
     await invalidateArticlePublicCache(this.cache, [article.slug]);
 
-    if (article.status === ArticleStatus.PUBLISHED) {
+    if (article.clusterId) {
+      const slugs = await invalidateClusterArticleCaches(
+        this.contentClusterRepository,
+        this.cache,
+        article.clusterId,
+      );
+      await this.webRevalidator.revalidate({
+        paths: buildArticlePublicPaths(slugs, { includeListing: true }),
+      });
+    } else if (article.status === ArticleStatus.PUBLISHED) {
       await this.webRevalidator.revalidate({
         paths: buildArticlePublicPaths([article.slug], { includeListing: true }),
       });
@@ -83,6 +96,7 @@ export class GetAdminArticle {
       seoDescription: article.seoDescription,
       authorId: article.authorId,
       categoryId: article.categoryId,
+      clusterId: article.clusterId,
       publishedAt: article.publishedAt?.toISOString() ?? null,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),

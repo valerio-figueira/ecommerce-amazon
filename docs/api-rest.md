@@ -303,7 +303,7 @@ Categorias editoriais com ao menos um artigo publicado.
 
 Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` e `[[compare:slug-1,slug-2]]` permanecem no HTML; a vitrine resolve embeds e auto-links.
 
-**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `author` (`{ name, avatarUrl, bio }`), `category` (`{ name, slug }`), `relatedArticles` (até 3), `publishedAt`, `embeddedProducts` (`Record<slug, ProductPublicDetail | null>` — produtos referenciados em shortcodes, com preço stale aplicado)
+**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `author` (`{ name, avatarUrl, bio }`), `category` (`{ name, slug }`), `relatedArticles` (até 3), `publishedAt`, `embeddedProducts` (`Record<slug, ProductPublicDetail | null>` — produtos referenciados em shortcodes, com preço stale aplicado), `cluster` (`ArticleClusterPublic | null` — Hub & Spoke; ver [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md))
 
 ### `GET /seo/auto-links`
 
@@ -352,7 +352,21 @@ Coleção curada com produtos ordenados + metadados UTM.
 | `PATCH` | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204` |
 | `DELETE` | `/admin/article-categories/:id` | `204` (409 se categoria tiver artigos) |
 
-`CreateArticleBody` / `UpdateArticleBody` incluem `categoryId` opcional.
+`CreateArticleBody` / `UpdateArticleBody` incluem `categoryId` e `clusterId` opcionais.
+
+### Admin — `/admin/content-clusters`
+
+Doc: [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md).
+
+| Método | Rota | Body / response |
+|--------|------|-----------------|
+| `GET` | `/admin/content-clusters` | `{ items: ContentClusterAdminSummary[] }` |
+| `POST` | `/admin/content-clusters` | `CreateContentClusterBody` → `{ id }` |
+| `GET` | `/admin/content-clusters/:id` | Detail + members |
+| `PATCH` | `/admin/content-clusters/:id` | `UpdateContentClusterBody` → `204` |
+| `DELETE` | `/admin/content-clusters/:id` | `204` |
+
+Mutações invalidam cache `vitrine:article:slug:*` dos membros afetados.
 
 ### Admin — `/admin/auto-links`
 

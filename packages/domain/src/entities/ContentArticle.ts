@@ -19,6 +19,7 @@ export class ContentArticle {
     readonly status: ArticleStatus,
     readonly authorId: string | null,
     readonly categoryId: string | null,
+    readonly clusterId: string | null,
     readonly seoTitle: string | null,
     readonly seoDescription: string | null,
     readonly seo: {
@@ -43,6 +44,7 @@ export class ContentArticle {
     status: ArticleStatus;
     authorId?: string | null;
     categoryId?: string | null;
+    clusterId?: string | null;
     seoTitle?: string | null;
     seoDescription?: string | null;
     seo?: ContentArticle['seo'];
@@ -63,6 +65,7 @@ export class ContentArticle {
       props.status,
       props.authorId ?? null,
       props.categoryId ?? null,
+      props.clusterId ?? null,
       props.seoTitle ?? null,
       props.seoDescription ?? null,
       props.seo ?? {},
