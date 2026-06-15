@@ -105,6 +105,8 @@ export function ProductGridBlock({
         blockId={block.id}
         isLoading={isLoading}
         skeletonCount={props.pageSize}
+        cardVariant="compact"
+        slideSize="sm"
       />
     </section>
   );

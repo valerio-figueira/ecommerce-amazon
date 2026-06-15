@@ -22,8 +22,9 @@ type ProductCarouselProps = {
 };
 
 const SLIDE_SIZE_CLASS = {
-  default: 'min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]',
-  sm: 'min-w-0 flex-[0_0_58%] sm:flex-[0_0_38%] md:flex-[0_0_24%] lg:flex-[0_0_18%]',
+  default:
+    'min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]',
+  sm: 'min-w-0 flex-[0_0_62%] max-w-[210px] sm:flex-[0_0_38%] md:flex-[0_0_calc(28%-0.667rem)] lg:flex-[0_0_calc(22%-0.75rem)]',
 } as const;
 
 /** Breathing room so card box-shadows are not clipped by the Embla viewport. */
@@ -67,7 +68,8 @@ export function ProductCarousel({
   }, [emblaApi, products.length, isLoading]);
 
   const slideClass = SLIDE_SIZE_CLASS[slideSize];
-  const trackGap = slideSize === 'sm' ? 'gap-3' : 'gap-4';
+  const isCompactCard = cardVariant === 'compact';
+  const trackGap = isCompactCard || slideSize === 'sm' ? 'gap-3' : 'gap-4';
   const slideCount = isLoading ? skeletonCount : products.length;
   const showCarouselNav = slideCount > 1;
 
@@ -100,24 +102,27 @@ export function ProductCarousel({
         )}
 
         <div ref={emblaRef} className="min-w-0 flex-1 overflow-hidden">
-          <div className={cn('flex touch-pan-y', trackGap)}>
+          <div className={cn('flex touch-pan-y items-stretch', trackGap)}>
             {isLoading
               ? Array.from({ length: Math.min(skeletonCount, 8) }).map((_, index) => (
                   <div key={index} className={cn(slideClass, SLIDE_INSET_CLASS)}>
                     <div
                       className={cn(
                         'h-full animate-pulse rounded-2xl bg-neutral-200',
-                        slideSize === 'sm' ? 'aspect-[4/3]' : 'aspect-[4/5]',
+                        isCompactCard || slideSize === 'sm' ? 'aspect-[4/3]' : 'aspect-[4/5]',
                       )}
                     />
                   </div>
                 ))
               : products.map((product) => (
-                  <div key={product.id} className={cn(slideClass, SLIDE_INSET_CLASS)}>
+                  <div
+                    key={product.id}
+                    className={cn(slideClass, SLIDE_INSET_CLASS, isCompactCard && 'flex')}
+                  >
                     <ProductCard
                       product={product}
                       blockId={blockId}
-                      {...(cardVariant === 'compact' ? {} : { className: 'h-full' })}
+                      className={isCompactCard ? 'h-full w-full' : 'h-full'}
                       variant={cardVariant}
                       emphasizeDiscount={emphasizeDiscount}
                     />

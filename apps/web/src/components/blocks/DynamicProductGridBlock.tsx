@@ -39,6 +39,8 @@ export function DynamicProductGridBlock({ block }: BlockComponentProps): React.J
           blockId={block.id}
           skeletonCount={props.limit}
           emphasizeDiscount={emphasizeDiscount}
+          cardVariant="compact"
+          slideSize="sm"
         />
       )}
     </section>

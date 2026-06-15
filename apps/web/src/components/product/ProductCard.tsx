@@ -175,21 +175,29 @@ export function ProductCard({
           <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
         </button>
       </div>
-      <div className="relative mt-2 flex min-h-0 flex-1 flex-col gap-0.5">
-        <Link
-          href={detailHref}
-          className="line-clamp-2 shrink-0 text-sm font-semibold leading-snug hover:underline"
-        >
-          {product.title}
-        </Link>
-        <ProductRating rating={product.rating} reviewCount={product.reviewCount} className="shrink-0" />
-        <div className="flex flex-col gap-1">
-          <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
+      <div className="relative mt-2 flex min-h-0 flex-1 flex-col">
+        <div className="flex shrink-0 flex-col gap-0.5">
+          <Link
+            href={detailHref}
+            className="line-clamp-2 shrink-0 text-sm font-semibold leading-snug hover:underline"
+          >
+            {product.title}
+          </Link>
+          <ProductRating rating={product.rating} reviewCount={product.reviewCount} className="shrink-0" />
+        </div>
+        {isCompact ? <div className="min-h-0 flex-1" aria-hidden /> : null}
+        <div className={cn('flex shrink-0 flex-col gap-1', !isCompact && 'mt-0.5')}>
+          <PriceDisplay
+            price={product.price}
+            strikethrough={product.price.strikethrough}
+            compact={isCompact}
+          />
           <ProductCardActions
             product={product}
             sessionId={sessionId}
             blockId={blockId}
             clickOrigin={clickOrigin}
+            compact={isCompact}
             {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           />
         </div>

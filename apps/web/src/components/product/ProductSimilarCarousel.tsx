@@ -11,7 +11,7 @@ type ProductSimilarCarouselProps = {
 };
 
 const SLIDE_CLASS =
-  'snap-start shrink-0 w-[72%] sm:w-[48%] md:w-[calc(33.333%-0.75rem)] lg:w-[calc(25%-0.75rem)]';
+  'snap-start shrink-0 w-[62%] max-w-[210px] sm:w-[38%] md:w-[calc(28%-0.667rem)] lg:w-[calc(22%-0.75rem)]';
 
 export function ProductSimilarCarousel({
   products,
@@ -38,18 +38,19 @@ export function ProductSimilarCarousel({
 
       <div
         className={cn(
-          '-mx-4 flex gap-4 overflow-x-auto px-4 pb-2',
+          '-mx-4 flex items-stretch gap-3 overflow-x-auto px-4 pb-2',
           'snap-x snap-mandatory',
           'md:mx-0 md:px-0',
         )}
       >
         {products.map((product) => (
-          <div key={product.id} className={cn(SLIDE_CLASS, 'py-1')}>
+          <div key={product.id} className={cn(SLIDE_CLASS, 'flex py-1')}>
             <ProductCard
               product={product}
               blockId="product-similar"
               clickOrigin="listagem"
-              className="h-full"
+              variant="compact"
+              className="h-full w-full"
             />
           </div>
         ))}
