@@ -11,16 +11,13 @@ import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
 import { TrackEngagement } from '@/components/analytics/TrackEngagement';
 import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
 import { apiFetchParsed } from '@/lib/api/client';
+import { fetchOrNotFound } from '@/lib/api/safe-fetch';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
 async function getArticle(slug: string) {
-  try {
-    return await apiFetchParsed(`/articles/${slug}`, articlePublicDetailSchema);
-  } catch {
-    return null;
-  }
+  return fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
 }
 
 async function getAutoLinks() {

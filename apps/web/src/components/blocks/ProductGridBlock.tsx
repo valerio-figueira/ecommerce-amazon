@@ -9,6 +9,7 @@ import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { categoryPillsPropsSchema, productGridPropsSchema } from '@ecommerce-amazon/shared/cms';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
+import { BlockErrorFallback } from '@/components/errors/BlockErrorFallback';
 import { CategoryPillsRow } from '@/components/blocks/CategoryPillsRow';
 import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
@@ -65,7 +66,7 @@ export function ProductGridBlock({
   queryParams.set('sort', props.sort);
   queryParams.set('visibleOnly', 'true');
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['products', activeCategory, props.sort, props.pageSize, props.marketplace, 'home-visible'],
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
   });
@@ -101,15 +102,22 @@ export function ProductGridBlock({
         )}
       </div>
 
-      <ProductCarousel
-        products={data?.items ?? []}
-        blockId={block.id}
-        placement={ClickPlacement.CMS_PRODUCT_GRID}
-        isLoading={isLoading}
-        skeletonCount={props.pageSize}
-        cardVariant="compact"
-        slideSize="sm"
-      />
+      {isError ? (
+        <BlockErrorFallback
+          message="Não foi possível carregar os produtos."
+          onRetry={() => void refetch()}
+        />
+      ) : (
+        <ProductCarousel
+          products={data?.items ?? []}
+          blockId={block.id}
+          placement={ClickPlacement.CMS_PRODUCT_GRID}
+          isLoading={isLoading}
+          skeletonCount={props.pageSize}
+          cardVariant="compact"
+          slideSize="sm"
+        />
+      )}
     </section>
   );
 }

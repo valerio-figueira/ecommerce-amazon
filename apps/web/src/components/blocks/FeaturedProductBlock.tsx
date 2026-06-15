@@ -8,6 +8,8 @@ import { featuredProductPropsSchema } from '@ecommerce-amazon/shared/cms';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
+import { BlockErrorFallback } from '@/components/errors/BlockErrorFallback';
+import { BlockUnavailableFallback } from '@/components/errors/BlockUnavailableFallback';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
@@ -22,18 +24,30 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
   const { sessionId } = useWishlist();
 
   const slug = props.productSlug;
-  const { data: product } = useQuery({
+  const { data: product, isLoading, isError, refetch } = useQuery({
     queryKey: ['product', slug],
     queryFn: () => apiFetchParsed(`/products/${slug ?? ''}`, productListItemSchema),
     enabled: Boolean(slug),
   });
 
-  if (!product) {
+  if (!slug) {
+    return <BlockUnavailableFallback className="min-h-[320px]" />;
+  }
+
+  if (isLoading) {
     return (
       <div className="flex h-full min-h-[320px] animate-pulse items-center justify-center rounded-[var(--radius)] bg-white">
         Carregando...
       </div>
     );
+  }
+
+  if (isError) {
+    return <BlockErrorFallback onRetry={() => void refetch()} className="min-h-[320px]" />;
+  }
+
+  if (!product) {
+    return <BlockUnavailableFallback className="min-h-[320px]" />;
   }
 
   if (product.visible === false) {

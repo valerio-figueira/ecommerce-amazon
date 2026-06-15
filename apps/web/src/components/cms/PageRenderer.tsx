@@ -2,6 +2,7 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import type { PageBlockDeliveryDto, PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 import { categoryPillsPropsSchema, heroSplitPropsSchema } from '@ecommerce-amazon/shared/cms';
 
+import { BlockErrorBoundary } from '@/components/errors/BlockErrorBoundary';
 import { CategoryFilterProvider } from '@/components/cms/CategoryFilterContext';
 import { BlockRegistry } from '@/components/cms/BlockRegistry';
 
@@ -13,13 +14,15 @@ function collectHiddenBlockIds(blocks: PageBlockDeliveryDto[]): Set<string> {
   const hidden = new Set<string>();
   for (const block of blocks) {
     if (block.type === BlockType.HERO_SPLIT) {
-      const splitProps = heroSplitPropsSchema.parse(block.props);
-      hidden.add(splitProps.leftBlockId);
-      hidden.add(splitProps.rightBlockId);
+      const parsed = heroSplitPropsSchema.safeParse(block.props);
+      if (parsed.success) {
+        hidden.add(parsed.data.leftBlockId);
+        hidden.add(parsed.data.rightBlockId);
+      }
     }
     if (block.type === BlockType.CATEGORY_PILLS) {
-      const pillsProps = categoryPillsPropsSchema.parse(block.props);
-      if (pillsProps.linkedBlockId) {
+      const parsed = categoryPillsPropsSchema.safeParse(block.props);
+      if (parsed.success && parsed.data.linkedBlockId) {
         hidden.add(block.id);
       }
     }
@@ -44,7 +47,11 @@ export function PageRenderer({ layout }: PageRendererProps): React.JSX.Element {
         {topLevel.map((block) => {
           const Component = BlockRegistry[block.type];
           if (!Component) return null;
-          return <Component key={block.id} block={block} blocksById={blocksById} />;
+          return (
+            <BlockErrorBoundary key={block.id} blockId={block.id} blockType={block.type}>
+              <Component block={block} blocksById={blocksById} />
+            </BlockErrorBoundary>
+          );
         })}
       </div>
     </CategoryFilterProvider>

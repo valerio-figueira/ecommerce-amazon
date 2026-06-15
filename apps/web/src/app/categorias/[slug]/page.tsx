@@ -6,11 +6,13 @@ import {
   buildCategoryCollectionJsonLd,
 } from '@ecommerce-amazon/shared/seo';
 
+import { CategoryProductsError } from '@/components/category/CategoryProductsError';
 import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCategoryTree } from '@/lib/api/categories';
-import { apiFetchParsed } from '@/lib/api/client';
+import { apiFetchParsed, isNotFoundError } from '@/lib/api/client';
+import { fetchOrNotFound } from '@/lib/api/safe-fetch';
 import {
   categoryDetailSchema,
   productsPageSchema,
@@ -22,19 +24,27 @@ import { getSiteBaseUrl } from '@/lib/site-url';
 export const revalidate = 300;
 
 async function getCategory(slug: string): Promise<CategoryDetailDto | null> {
-  try {
-    return await apiFetchParsed(`/categories/${slug}`, categoryDetailSchema);
-  } catch {
-    return null;
-  }
+  return fetchOrNotFound(`/categories/${slug}`, categoryDetailSchema);
 }
 
-async function getCategoryProducts(slug: string): Promise<ProductListItemDto[]> {
-  const result = await apiFetchParsed(
-    `/products?category=${encodeURIComponent(slug)}&visibleOnly=true&pageSize=24`,
-    productsPageSchema,
-  );
-  return result.items;
+type CategoryProductsResult = {
+  items: ProductListItemDto[];
+  error: boolean;
+};
+
+async function getCategoryProducts(slug: string): Promise<CategoryProductsResult> {
+  try {
+    const result = await apiFetchParsed(
+      `/products?category=${encodeURIComponent(slug)}&visibleOnly=true&pageSize=24`,
+      productsPageSchema,
+    );
+    return { items: result.items, error: false };
+  } catch (error) {
+    if (isNotFoundError(error)) {
+      return { items: [], error: false };
+    }
+    return { items: [], error: true };
+  }
 }
 
 export async function generateMetadata({
@@ -65,7 +75,7 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }): Promise<React.JSX.Element> {
   const { slug } = await params;
-  const [category, products, categoryTree] = await Promise.all([
+  const [category, productsResult, categoryTree] = await Promise.all([
     getCategory(slug),
     getCategoryProducts(slug),
     fetchCategoryTree().catch(() => []),
@@ -74,6 +84,8 @@ export default async function CategoryPage({
   if (!category) {
     notFound();
   }
+
+  const { items: products, error: productsError } = productsResult;
   const siteBaseUrl = getSiteBaseUrl();
   const breadcrumbJsonLd = buildCategoryBreadcrumbJsonLd({
     siteBaseUrl,
@@ -156,7 +168,9 @@ export default async function CategoryPage({
       )}
 
       <section className="mb-12">
-        {products.length > 0 ? (
+        {productsError ? (
+          <CategoryProductsError />
+        ) : products.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard

@@ -1,16 +1,15 @@
 import { pageLayoutDeliverySchema, type PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 
 import { PageRenderer } from '@/components/cms/PageRenderer';
-import { fetchPageLayout } from '@/lib/api/client';
+import { fetchPageLayoutOrNull } from '@/lib/api/safe-fetch';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 async function getHomeLayout(): Promise<PageLayoutDeliveryDto | null> {
-  try {
-    const data = await fetchPageLayout('home');
-    return pageLayoutDeliverySchema.parse(data);
-  } catch {
+  const data = await fetchPageLayoutOrNull('home');
+  if (!data) {
     return null;
   }
+  return pageLayoutDeliverySchema.parse(data);
 }
 
 export async function generateMetadata(): Promise<import('next').Metadata> {

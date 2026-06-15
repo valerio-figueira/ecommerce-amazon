@@ -47,7 +47,7 @@ export function CategoryPillsRow({
 }: CategoryPillsRowProps): React.JSX.Element {
   const { categorySlug, setCategorySlug } = useCategoryFilter();
 
-  const { data: categories } = useQuery({
+  const { data: categories, isError } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
       const result = await apiFetchParsed('/categories', categoriesResponseSchema);
@@ -122,6 +122,11 @@ export function CategoryPillsRow({
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
+      {isError && (
+        <p className="text-xs text-neutral-500" role="status">
+          Categorias indisponíveis no momento.
+        </p>
+      )}
       <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
         {renderPill('Todos', null, categorySlug === null)}
         {rootNodes.map((node) =>

@@ -10,7 +10,7 @@ import type {
 } from '@ecommerce-amazon/shared/cms';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
-import { BentoHubMixSkeleton } from '@/components/blocks/BentoHubMixSkeleton';
+import { BlockUnavailableFallback } from '@/components/errors/BlockUnavailableFallback';
 import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
@@ -216,16 +216,16 @@ export function BentoHubMixGrid({ rendered, blockId }: BentoHubMixGridProps): Re
   return (
     <section>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {slot1 ? <BentoHeroSlot slot={slot1} blockId={blockId} /> : <BentoHubMixSkeleton variant="hero" />}
+        {slot1 ? <BentoHeroSlot slot={slot1} blockId={blockId} /> : <BlockUnavailableFallback variant="hero" />}
         {slot2 ? (
           <BentoOfferSlot product={slot2} blockId={blockId} />
         ) : (
-          <BentoHubMixSkeleton variant="offer" />
+          <BlockUnavailableFallback variant="offer" />
         )}
         {slot3 ? (
           <BentoListSlot slot={slot3} blockId={blockId} />
         ) : (
-          <BentoHubMixSkeleton variant="list" />
+          <BlockUnavailableFallback variant="list" />
         )}
       </div>
     </section>

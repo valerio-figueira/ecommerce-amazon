@@ -6,7 +6,17 @@ import { useState } from 'react';
 import { WishlistProvider } from '@/components/wishlist/WishlistProvider';
 
 export function Providers({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
