@@ -14,6 +14,7 @@ import type { ArticleRelatedSummary, PublishedArticleListItem } from '@ecommerce
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { recordEngagement } from '@/lib/api/engagement';
 import { setAttribution } from '@/lib/attribution/context';
+import { cn } from '@/lib/utils';
 
 type ArticleCardProps = {
   article: ArticleRelatedSummary | PublishedArticleListItem | (ArticleRelatedSummary & { excerpt?: string });
@@ -74,7 +75,12 @@ export function ArticleCard({
     <Link
       href={articleHref}
       onClick={handleClick}
-      className="group flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white transition hover:border-neutral-300"
+      className={cn(
+        'group flex h-full flex-col overflow-hidden rounded-[var(--radius)] border bg-white transition',
+        isCurrent
+          ? 'border-2 border-emerald-500'
+          : 'border border-neutral-200 hover:border-neutral-300',
+      )}
       {...(isCurrent ? { 'aria-current': 'page' as const } : {})}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
