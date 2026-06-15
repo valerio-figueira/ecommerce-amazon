@@ -28,7 +28,6 @@ export function ArticleListingView({
       <Suspense fallback={null}>
         <ArticleListingToolbar
           categories={categories}
-          total={data.total}
           activeCategory={activeCategory}
           activeSearch={activeSearch}
         />
@@ -42,10 +41,7 @@ export function ArticleListingView({
         </div>
       ) : (
         <div className="rounded-[var(--radius)] border border-dashed border-neutral-300 bg-white px-6 py-12 text-center">
-          <p className="text-base font-medium text-neutral-900">Nenhum artigo encontrado</p>
-          <p className="mt-2 text-sm text-neutral-500">
-            Tente outra palavra-chave ou remova os filtros de categoria.
-          </p>
+          <p className="text-sm text-neutral-500">Nenhum artigo encontrado.</p>
         </div>
       )}
 

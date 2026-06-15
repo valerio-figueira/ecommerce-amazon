@@ -83,6 +83,6 @@ npm run dev -w @ecommerce-amazon/admin
 
 ## Índice público `/artigos`
 
-Listagem em `apps/web/src/app/artigos/page.tsx` com busca (`?q=`), filtro por categoria (`?categoria=`) e paginação. Consome `GET /articles` e `GET /article-categories`. Links de categoria em artigos redirecionam para o índice filtrado; `/artigos/categoria/[slug]` redireciona para `/artigos?categoria={slug}`.
+Listagem em `apps/web/src/app/artigos/page.tsx` com busca (`?q=`), filtro por categoria (`?categoria=`) e paginação. UI enxuta: título, busca, pills de categoria e grid — sem contadores, rótulos redundantes ou bloco de filtros ativos. Consome `GET /articles` e `GET /article-categories`. Links de categoria em artigos redirecionam para o índice filtrado; `/artigos/categoria/[slug]` redireciona para `/artigos?categoria={slug}`.
 
 Ver também [articles-taxonomy-phase2.md](./articles-taxonomy-phase2.md) — categorias, author box e artigos relacionados.

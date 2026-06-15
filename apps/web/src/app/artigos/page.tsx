@@ -56,15 +56,10 @@ export default async function ArtigosPage({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 md:px-6">
-      <header className="mb-8 space-y-3">
-        <p className="text-sm font-medium uppercase tracking-wide text-neutral-500">Blog editorial</p>
+      <header className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">
-          {activeCategoryLabel ? `Artigos em ${activeCategoryLabel}` : 'Artigos'}
+          {activeCategoryLabel ?? 'Artigos'}
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
-          Guias, reviews e comparativos com curadoria humana. Use a busca e as categorias para
-          encontrar o conteúdo certo para sua decisão de compra.
-        </p>
       </header>
 
       <ArticleListingView

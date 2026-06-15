@@ -79,9 +79,7 @@ export function ArticleCard({
             sizes="(max-width: 768px) 100vw, 320px"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-neutral-400">
-            Sem capa
-          </div>
+          <div className="h-full bg-neutral-100" aria-hidden />
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">

@@ -24,7 +24,7 @@ flowchart LR
 1. Operador gerencia categorias em `/artigos/categorias` (CRUD via Sheet).
 2. Ao criar artigo, `author_id` é definido server-side pelo JWT; categoria é opcional no formulário.
 3. `GET /articles/:slug` retorna `author`, `category` e até 3 `relatedArticles` da mesma `category_id`.
-4. A vitrine renderiza hero + corpo; rodapé minimal (`ArticlePostFooter`) com `#categoria` linkável, data e autor; listagem em `/artigos/categoria/[slug]`.
+4. A vitrine renderiza hero + corpo; rodapé minimal (`ArticlePostFooter`) com link da categoria, data e autor; listagem em `/artigos/categoria/[slug]`.
 
 ## Schema (migration `0013`)
 

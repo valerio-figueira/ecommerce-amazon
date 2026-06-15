@@ -11,15 +11,17 @@ type ArticleProductEmbedProps = {
 };
 
 export function ArticleProductEmbed({
-  slug,
+  slug: _slug,
   product,
   articleId,
 }: ArticleProductEmbedProps): React.JSX.Element {
   if (!product) {
     return (
-      <div className="rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
-        Produto &quot;{slug}&quot; indisponível no catálogo local.
-      </div>
+      <div
+        className="rounded-[var(--radius)] border border-dashed border-neutral-200 bg-neutral-50 px-4 py-6"
+        role="status"
+        aria-label="Produto indisponível"
+      />
     );
   }
 

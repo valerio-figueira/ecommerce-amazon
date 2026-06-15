@@ -42,14 +42,10 @@ export function ArticleListingPagination({
     <nav
       aria-label="Paginação de artigos"
       className={cn(
-        'flex flex-col items-center justify-between gap-3 border-t border-neutral-200 pt-6 sm:flex-row',
+        'flex items-center justify-center gap-2 border-t border-neutral-200 pt-6',
         isPending && 'opacity-70',
       )}
     >
-      <p className="text-sm text-neutral-500">
-        Página {page} de {totalPages}
-      </p>
-      <div className="flex items-center gap-2">
         {page > 1 ? (
           <Link
             href={buildPageHref(pathname, searchParams, page - 1)}
@@ -76,7 +72,6 @@ export function ArticleListingPagination({
             Próxima
           </span>
         )}
-      </div>
     </nav>
   );
 }

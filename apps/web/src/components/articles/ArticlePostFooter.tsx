@@ -23,9 +23,9 @@ export function ArticlePostFooter({
         <p>
           <Link
             href={`/artigos?categoria=${encodeURIComponent(article.category.slug)}`}
-            className="text-base text-neutral-500 underline decoration-neutral-300 underline-offset-[3px] transition hover:text-neutral-800"
+            className="text-sm text-neutral-500 underline decoration-neutral-300 underline-offset-[3px] transition hover:text-neutral-800"
           >
-            #{article.category.slug}
+            {article.category.name}
           </Link>
         </p>
       ) : null}
