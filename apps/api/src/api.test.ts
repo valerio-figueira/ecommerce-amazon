@@ -7,6 +7,7 @@ describe('API routes', () => {
   beforeAll(async () => {
     vi.stubEnv('DATABASE_URL', 'postgresql://vitrine:vitrine@localhost:5432/vitrine');
     vi.stubEnv('REDIS_URL', 'redis://localhost:6379');
+    vi.stubEnv('TELEMETRY_BUFFER_ENABLED', 'false');
 
     const { buildServer } = await import('../src/server.js');
     const server = await buildServer();

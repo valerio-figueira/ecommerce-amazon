@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
@@ -50,16 +51,22 @@ export function AffiliateGoLink({
 }: AffiliateGoLinkProps): React.JSX.Element {
   const pathname = usePathname();
   const pagePath = pagePathProp ?? pathname;
+  const [useStoredReferrer, setUseStoredReferrer] = useState(false);
+
+  useEffect(() => {
+    setUseStoredReferrer(true);
+  }, []);
 
   const href = buildGoUrl(slug, {
     ...(blockId !== undefined ? { blockId } : {}),
     ...(articleId !== undefined ? { articleId } : {}),
     ...(collectionId !== undefined ? { collectionId } : {}),
-    ...(sessionId !== undefined ? { sessionId } : {}),
+    ...(sessionId !== undefined && sessionId.length > 0 ? { sessionId } : {}),
     origin,
     ...(placement !== undefined ? { placement } : {}),
     pagePath,
     ...(referrerPath !== undefined ? { referrerPath } : {}),
+    ...(useStoredReferrer ? { useStoredReferrer: true } : {}),
     ...(utmDefaults !== undefined ? { utmDefaults } : {}),
   });
 

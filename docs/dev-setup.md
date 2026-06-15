@@ -15,7 +15,8 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | Variável | Default | Uso |
 |----------|---------|-----|
 | `POSTGRES_*` | `localhost:5432`, user `vitrine` | Catálogo |
-| `REDIS_*` | `localhost:6379` | Cache + filas |
+| `REDIS_*` | `localhost:6379` | Cache (DB 0), filas BullMQ (DB 1), buffer telemetria (DB 2) |
+| `TELEMETRY_BUFFER_*` | ver `.env.example` | Buffer Redis → bulk flush PG; desabilitar com `TELEMETRY_BUFFER_ENABLED=false` |
 | `API_PORT` | `3000` | Fastify |
 | `WEB_PORT` | `3001` | Next.js vitrine |
 | `ADMIN_PORT` | `3002` | Painel CMS (`apps/admin`) |

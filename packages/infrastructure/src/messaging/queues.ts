@@ -13,6 +13,7 @@ export const QUEUE_NAMES = {
   COUPON_VERIFY: 'coupon_verify',
   DOMAIN_EVENTS: 'domain_events',
   EMAIL_DELIVERY: 'email_delivery',
+  TELEMETRY_FLUSH: 'telemetry_flush',
 } as const;
 
 export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
@@ -33,6 +34,10 @@ export type EmailDeliveryJobData = {
   to: string;
   subject: string;
   html: string;
+};
+
+export type TelemetryFlushJobData = {
+  trigger: 'schedule' | 'manual';
 };
 
 export function createQueue<TData>(

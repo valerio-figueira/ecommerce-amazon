@@ -23,6 +23,20 @@ export interface ClickEventRepository {
     referrerPath?: string;
     occurredAt: Date;
   }): Promise<void>;
+  recordBatch(
+    events: Array<{
+      productId: string;
+      origin: string;
+      sessionId?: string;
+      blockId?: string;
+      articleId?: string;
+      collectionId?: string;
+      placement?: string;
+      pagePath?: string;
+      referrerPath?: string;
+      occurredAt: Date;
+    }>,
+  ): Promise<void>;
 }
 
 export interface EngagementEventRepository {
@@ -36,4 +50,16 @@ export interface EngagementEventRepository {
     sessionId?: string;
     occurredAt: Date;
   }): Promise<void>;
+  recordBatch(
+    events: Array<{
+      eventType: string;
+      articleId: string;
+      pagePath: string;
+      placement?: string;
+      blockId?: string;
+      referrerPath?: string;
+      sessionId?: string;
+      occurredAt: Date;
+    }>,
+  ): Promise<void>;
 }

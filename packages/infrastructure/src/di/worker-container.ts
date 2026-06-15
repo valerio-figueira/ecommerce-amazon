@@ -4,6 +4,7 @@ import {
   RunHygienePipeline,
   VerifyCouponsBatch,
   ProcessTriggeredAlerts,
+  FlushTelemetryBuffer,
 } from '@ecommerce-amazon/application';
 import type { DomainEventMessage } from '@ecommerce-amazon/domain';
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
@@ -17,6 +18,7 @@ import type {
   CatalogSyncJobData,
   EmailDeliveryJobData,
   PriceRefreshJobData,
+  TelemetryFlushJobData,
 } from '../messaging/queues.js';
 import {
   AmazonFetcherStrategy,
@@ -31,7 +33,12 @@ import {
   DrizzlePriceAlertRepository,
   DrizzlePriceSnapshotRepository,
 } from '../persistence/repositories/drizzle-alert.repository.js';
-import { DrizzleCouponRepository } from '../persistence/repositories/drizzle-content.repository.js';
+import {
+  DrizzleClickEventRepository,
+  DrizzleCouponRepository,
+  DrizzleEngagementEventRepository,
+} from '../persistence/repositories/drizzle-content.repository.js';
+import { RedisTelemetryBufferStore } from '../telemetry/redis-telemetry-buffer.store.js';
 
 export function buildWorkerContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -44,6 +51,8 @@ export function buildWorkerContainer(env = loadEnv()) {
   const snapshotRepository = new DrizzlePriceSnapshotRepository(db);
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const couponRepository = new DrizzleCouponRepository(db);
+  const clickRepository = new DrizzleClickEventRepository(db);
+  const engagementRepository = new DrizzleEngagementEventRepository(db);
 
   const fetcherFactory = new DefaultMarketplaceFetcherFactory([
     new AmazonFetcherStrategy(),
@@ -63,6 +72,23 @@ export function buildWorkerContainer(env = loadEnv()) {
 
   const rateLimiter = new MarketplaceRateLimiter(queueRedis);
 
+  const telemetryBufferStore = env.TELEMETRY_BUFFER_ENABLED
+    ? new RedisTelemetryBufferStore(
+        createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_TELEMETRY_DB)),
+        env.TELEMETRY_BUFFER_MAX_LEN,
+      )
+    : null;
+
+  const flushTelemetryBuffer =
+    telemetryBufferStore !== null
+      ? new FlushTelemetryBuffer(
+          telemetryBufferStore,
+          clickRepository,
+          engagementRepository,
+          env.TELEMETRY_FLUSH_BATCH_SIZE,
+        )
+      : null;
+
   return {
     logger,
     env,
@@ -75,6 +101,10 @@ export function buildWorkerContainer(env = loadEnv()) {
       domainEvents: domainEventsQueue,
       emailDelivery: createQueue<EmailDeliveryJobData>(
         QUEUE_NAMES.EMAIL_DELIVERY,
+        queueConnection,
+      ),
+      telemetryFlush: createQueue<TelemetryFlushJobData>(
+        QUEUE_NAMES.TELEMETRY_FLUSH,
         queueConnection,
       ),
     },
@@ -95,6 +125,7 @@ export function buildWorkerContainer(env = loadEnv()) {
         emailSender,
         eventBus,
       ),
+      flushTelemetryBuffer,
     },
     rateLimiter,
     fetcherFactory,

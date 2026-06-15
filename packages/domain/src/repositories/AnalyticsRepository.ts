@@ -96,6 +96,7 @@ export type Ga4CtrByOriginRow = {
 
 export interface AnalyticsRepository {
   countTotalClicks(from: Date, to: Date): Promise<number>;
+  getPendingEventCount(from: Date, to: Date): Promise<number>;
   getClicksTrend(from: Date, to: Date): Promise<ClickTrendPoint[]>;
   getClicksByOrigin(from: Date, to: Date): Promise<OriginClickBreakdown[]>;
   getClicksByPlacement(from: Date, to: Date): Promise<PlacementClickBreakdown[]>;
@@ -110,6 +111,7 @@ export interface AnalyticsRepository {
 
 export interface EngagementAnalyticsRepository {
   getEditorialFunnel(from: Date, to: Date): Promise<EditorialFunnelMetrics>;
+  getPendingEventCount(from: Date, to: Date): Promise<number>;
 }
 
 export type Ga4TrafficReport = {

@@ -44,6 +44,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [remote-image-handling.md](./remote-image-handling.md) | `RemoteImage` vitrine, fallbacks admin, `remotePatterns` |
 | [admin-dashboard-phase1.md](./admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
 | [admin-dashboard-attribution-phase2.md](./admin-dashboard-attribution-phase2.md) | Atribuição por componente, funil editorial, engajamento |
+| [telemetry-redis-buffer.md](./telemetry-redis-buffer.md) | Buffer Redis para telemetria: staging, bulk flush, dashboard híbrido |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 
 ### Contexto para LLMs (síntese)

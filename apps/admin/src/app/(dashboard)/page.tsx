@@ -74,6 +74,16 @@ export default async function DashboardPage({
           </div>
         ) : null}
 
+        {!apiUnavailable && (overview.pendingEventCount ?? 0) > 0 ? (
+          <div
+            role="status"
+            className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900"
+          >
+            Inclui {(overview.pendingEventCount ?? 0).toLocaleString('pt-BR')} eventos recentes
+            ainda não consolidados no PostgreSQL.
+          </div>
+        ) : null}
+
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <DashboardKpiCard
             label="Cliques de saída"

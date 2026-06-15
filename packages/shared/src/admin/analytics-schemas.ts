@@ -27,6 +27,7 @@ export const analyticsOverviewResponseSchema = z.object({
   totalClicks: z.number(),
   clicksTrend: z.array(clickTrendPointSchema),
   catalogHealth: catalogHealthSchema,
+  pendingEventCount: z.number().optional(),
 });
 
 export const originBreakdownItemSchema = z.object({
@@ -39,6 +40,7 @@ export const clicksByOriginResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
   items: z.array(originBreakdownItemSchema),
+  pendingEventCount: z.number().optional(),
 });
 
 export const marketplaceBreakdownItemSchema = z.object({
@@ -120,6 +122,7 @@ export const clicksByPlacementResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
   items: z.array(placementBreakdownItemSchema),
+  pendingEventCount: z.number().optional(),
 });
 
 export const blockAttributionItemSchema = z.object({
@@ -133,6 +136,7 @@ export const clicksByBlockResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
   items: z.array(blockAttributionItemSchema),
+  pendingEventCount: z.number().optional(),
 });
 
 export const pagePathBreakdownItemSchema = z.object({
@@ -144,6 +148,7 @@ export const clicksByPageResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
   items: z.array(pagePathBreakdownItemSchema),
+  pendingEventCount: z.number().optional(),
 });
 
 export const originTrendPointSchema = z.object({
@@ -156,6 +161,7 @@ export const clicksTrendByOriginResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
   items: z.array(originTrendPointSchema),
+  pendingEventCount: z.number().optional(),
 });
 
 export const editorialFunnelArticleStageSchema = z.object({
@@ -168,6 +174,7 @@ export const editorialFunnelArticleStageSchema = z.object({
 export const editorialFunnelResponseSchema = z.object({
   from: z.string(),
   to: z.string(),
+  pendingEventCount: z.number().optional(),
   articleCardClicks: z.number(),
   articlePageViews: z.number(),
   embedAffiliateClicks: z.number(),

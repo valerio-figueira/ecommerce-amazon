@@ -18,3 +18,9 @@ export {
   type GoAttributionQuery,
   type RecordEngagementEventInput,
 } from './engagement-schemas.js';
+
+export type {
+  ClickEventPayload,
+  EngagementEventPayload,
+  PendingTelemetryAggregates,
+} from './telemetry-payloads.js';

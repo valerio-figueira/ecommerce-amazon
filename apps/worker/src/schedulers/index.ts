@@ -8,7 +8,7 @@ import type {
 const BATCH_SIZE = 15;
 
 export async function registerSchedulers(container: WorkerContainer) {
-  const { queues, productRepository } = container;
+  const { queues, productRepository, env } = container;
 
   await queues.priceRefresh.add(
     'schedule-price-refresh',
@@ -45,6 +45,17 @@ export async function registerSchedulers(container: WorkerContainer) {
       jobId: 'scheduler-coupon-verify',
     },
   );
+
+  if (env.TELEMETRY_BUFFER_ENABLED) {
+    await queues.telemetryFlush.add(
+      'flush-telemetry-buffer',
+      { trigger: 'schedule' },
+      {
+        repeat: { pattern: env.TELEMETRY_FLUSH_CRON },
+        jobId: 'scheduler-telemetry-flush',
+      },
+    );
+  }
 
   const enqueueBatches = async (): Promise<void> => {
     const products = await productRepository.findDueForPriceRefresh({ limit: 500 });

@@ -2,13 +2,27 @@ import type { AnalyticsRepository, EngagementAnalyticsRepository } from '@ecomme
 
 import { resolveAnalyticsDateRange } from './GetClickAnalytics.js';
 
+async function withPendingEventCount<T extends Record<string, unknown>>(
+  analyticsRepository: AnalyticsRepository,
+  from: Date,
+  to: Date,
+  payload: T,
+): Promise<T & { pendingEventCount: number }> {
+  const pendingEventCount = await analyticsRepository.getPendingEventCount(from, to);
+  return { ...payload, pendingEventCount };
+}
+
 export class GetClicksByPlacement {
   constructor(private readonly analyticsRepository: AnalyticsRepository) {}
 
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
     const items = await this.analyticsRepository.getClicksByPlacement(from, to);
-    return { from: from.toISOString(), to: to.toISOString(), items };
+    return withPendingEventCount(this.analyticsRepository, from, to, {
+      from: from.toISOString(),
+      to: to.toISOString(),
+      items,
+    });
   }
 }
 
@@ -18,7 +32,11 @@ export class GetClicksByBlock {
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
     const items = await this.analyticsRepository.getClicksByBlock(from, to);
-    return { from: from.toISOString(), to: to.toISOString(), items };
+    return withPendingEventCount(this.analyticsRepository, from, to, {
+      from: from.toISOString(),
+      to: to.toISOString(),
+      items,
+    });
   }
 }
 
@@ -28,7 +46,11 @@ export class GetClicksByPage {
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
     const items = await this.analyticsRepository.getClicksByPage(from, to, 20);
-    return { from: from.toISOString(), to: to.toISOString(), items };
+    return withPendingEventCount(this.analyticsRepository, from, to, {
+      from: from.toISOString(),
+      to: to.toISOString(),
+      items,
+    });
   }
 }
 
@@ -38,7 +60,11 @@ export class GetClicksTrendByOrigin {
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
     const items = await this.analyticsRepository.getClicksTrendByOrigin(from, to);
-    return { from: from.toISOString(), to: to.toISOString(), items };
+    return withPendingEventCount(this.analyticsRepository, from, to, {
+      from: from.toISOString(),
+      to: to.toISOString(),
+      items,
+    });
   }
 }
 
@@ -47,10 +73,14 @@ export class GetEditorialFunnel {
 
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
-    const metrics = await this.engagementAnalyticsRepository.getEditorialFunnel(from, to);
+    const [metrics, pendingEventCount] = await Promise.all([
+      this.engagementAnalyticsRepository.getEditorialFunnel(from, to),
+      this.engagementAnalyticsRepository.getPendingEventCount(from, to),
+    ]);
     return {
       from: from.toISOString(),
       to: to.toISOString(),
+      pendingEventCount,
       ...metrics,
     };
   }

@@ -21,10 +21,11 @@ export class GetClickAnalyticsOverview {
 
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
-    const [totalClicks, clicksTrend, catalogHealth] = await Promise.all([
+    const [totalClicks, clicksTrend, catalogHealth, pendingEventCount] = await Promise.all([
       this.analyticsRepository.countTotalClicks(from, to),
       this.analyticsRepository.getClicksTrend(from, to),
       this.analyticsRepository.getCatalogHealthMetrics(),
+      this.analyticsRepository.getPendingEventCount(from, to),
     ]);
 
     return {
@@ -33,6 +34,7 @@ export class GetClickAnalyticsOverview {
       totalClicks,
       clicksTrend,
       catalogHealth,
+      pendingEventCount,
     };
   }
 }
@@ -42,8 +44,11 @@ export class GetClicksByOrigin {
 
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
-    const items = await this.analyticsRepository.getClicksByOrigin(from, to);
-    return { from: from.toISOString(), to: to.toISOString(), items };
+    const [items, pendingEventCount] = await Promise.all([
+      this.analyticsRepository.getClicksByOrigin(from, to),
+      this.analyticsRepository.getPendingEventCount(from, to),
+    ]);
+    return { from: from.toISOString(), to: to.toISOString(), items, pendingEventCount };
   }
 }
 

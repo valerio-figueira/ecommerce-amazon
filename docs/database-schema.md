@@ -202,6 +202,8 @@ Seed inicial migra `SEO_KEYWORD_MAP` estático.
 
 ### Telemetria — `click_events`
 
+Writes passam por buffer Redis quando `TELEMETRY_BUFFER_ENABLED=true` (default); worker faz bulk insert periódico. Ver [telemetry-redis-buffer.md](./telemetry-redis-buffer.md).
+
 | Coluna | Valores / notas |
 |--------|-----------------|
 | `product_id`, `origin`, `session_id`, `occurred_at` | `origin`: `listagem`, `detalhe`, `embed`, `comparador`, `cupons`, `coleção`, `similar`, `redirect_go` |

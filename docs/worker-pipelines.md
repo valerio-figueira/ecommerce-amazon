@@ -16,8 +16,9 @@ Definição: [`packages/infrastructure/src/messaging/queues.ts`](../packages/inf
 | `coupon_verify` | `QUEUE_NAMES.COUPON_VERIFY` | D — cupons | Média |
 | `domain_events` | `QUEUE_NAMES.DOMAIN_EVENTS` | Eventos `PriceDropped` | — |
 | `email_delivery` | `QUEUE_NAMES.EMAIL_DELIVERY` | Confirmação alertas, notificações | — |
+| `telemetry_flush` | `QUEUE_NAMES.TELEMETRY_FLUSH` | Bulk insert telemetria Redis → PG | Baixa |
 
-Redis DB: filas em `REDIS_QUEUE_DB` (default 1); cache em `REDIS_CACHE_DB` (default 0).
+Redis DB: filas em `REDIS_QUEUE_DB` (default 1); cache em `REDIS_CACHE_DB` (default 0); buffer telemetria em `REDIS_TELEMETRY_DB` (default 2). Ver [telemetry-redis-buffer.md](./telemetry-redis-buffer.md).
 
 ## Job options padrão
 
@@ -36,6 +37,7 @@ Arquivo: [`apps/worker/src/schedulers/index.ts`](../apps/worker/src/schedulers/i
 | `schedule-catalog-sync` | `0 */6 * * *` (6h) | `catalog_sync` |
 | `schedule-hygiene` | `0 2 * * *` (diário 02:00) | `hygiene` |
 | `schedule-coupon-verify` | `0 */6 * * *` (6h) | `coupon_verify` |
+| `flush-telemetry-buffer` | `TELEMETRY_FLUSH_CRON` (default `*/5 * * * *`) | `telemetry_flush` |
 
 Na inicialização também enfileira batches de preço para produtos due (`findDueForPriceRefresh`, limit 500), agrupados por marketplace em lotes de 15 `external_id`.
 

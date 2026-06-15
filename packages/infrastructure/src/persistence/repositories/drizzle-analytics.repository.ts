@@ -52,6 +52,10 @@ function toRatePercent(numerator: number, denominator: number): number | null {
 export class DrizzleAnalyticsRepository implements AnalyticsRepository, EngagementAnalyticsRepository {
   constructor(private readonly db: DrizzleClient) {}
 
+  async getPendingEventCount(): Promise<number> {
+    return 0;
+  }
+
   async countTotalClicks(from: Date, to: Date): Promise<number> {
     const rows = await this.db
       .select({ total: count() })

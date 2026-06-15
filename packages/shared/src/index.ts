@@ -35,6 +35,14 @@ const envSchemaBase = z.object({
   REDIS_URL: z.string().url().optional(),
   REDIS_CACHE_DB: z.coerce.number().int().min(0).max(15).default(0),
   REDIS_QUEUE_DB: z.coerce.number().int().min(0).max(15).default(1),
+  REDIS_TELEMETRY_DB: z.coerce.number().int().min(0).max(15).default(2),
+  TELEMETRY_BUFFER_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((value) => value === 'true'),
+  TELEMETRY_FLUSH_BATCH_SIZE: z.coerce.number().int().positive().default(5000),
+  TELEMETRY_FLUSH_CRON: z.string().default('*/5 * * * *'),
+  TELEMETRY_BUFFER_MAX_LEN: z.coerce.number().int().positive().default(100_000),
   API_PORT: z.coerce.number().int().positive().default(3000),
   AMAZON_AFFILIATE_TAG: z.string().default(''),
   SHOPEE_AFFILIATE_ID: z.string().default(''),

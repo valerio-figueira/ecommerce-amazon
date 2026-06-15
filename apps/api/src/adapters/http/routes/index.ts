@@ -430,15 +430,24 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
           ? headerSessionId
           : undefined);
 
-      await useCases.recordEngagementEvent.execute({
-        eventType: body.eventType,
-        articleId: body.articleId,
-        pagePath: body.pagePath,
-        ...(body.placement !== undefined ? { placement: body.placement } : {}),
-        ...(body.blockId !== undefined ? { blockId: body.blockId } : {}),
-        ...(body.referrerPath !== undefined ? { referrerPath: body.referrerPath } : {}),
-        ...(sessionId !== undefined ? { sessionId } : {}),
-      });
+      void useCases.recordEngagementEvent
+        .execute({
+          eventType: body.eventType,
+          articleId: body.articleId,
+          pagePath: body.pagePath,
+          ...(body.placement !== undefined ? { placement: body.placement } : {}),
+          ...(body.blockId !== undefined ? { blockId: body.blockId } : {}),
+          ...(body.referrerPath !== undefined ? { referrerPath: body.referrerPath } : {}),
+          ...(sessionId !== undefined ? { sessionId } : {}),
+        })
+        .catch((error: unknown) => {
+          container.logger.error('Telemetry failed for engagement event', {
+            eventType: body.eventType,
+            articleId: body.articleId,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        });
+
       return reply.status(204).send();
     } catch (error) {
       return handleError(error, reply);

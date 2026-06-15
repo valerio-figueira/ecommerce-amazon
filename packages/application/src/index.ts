@@ -56,6 +56,7 @@ export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToke
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';
 export { RecordClickEvent } from './use-cases/events/RecordClickEvent.js';
 export { RecordEngagementEvent } from './use-cases/events/RecordEngagementEvent.js';
+export { FlushTelemetryBuffer } from './use-cases/events/FlushTelemetryBuffer.js';
 export {
   GetClickAnalyticsOverview,
   GetClicksByOrigin,

@@ -479,18 +479,38 @@ export class DrizzleClickEventRepository implements ClickEventRepository {
     referrerPath?: string;
     occurredAt: Date;
   }) {
-    await this.db.insert(schema.clickEvents).values({
-      productId: event.productId,
-      origin: event.origin,
-      sessionId: event.sessionId,
-      blockId: event.blockId,
-      articleId: event.articleId,
-      collectionId: event.collectionId,
-      placement: event.placement,
-      pagePath: event.pagePath,
-      referrerPath: event.referrerPath,
-      occurredAt: event.occurredAt,
-    });
+    await this.recordBatch([event]);
+  }
+
+  async recordBatch(
+    events: Array<{
+      productId: string;
+      origin: string;
+      sessionId?: string;
+      blockId?: string;
+      articleId?: string;
+      collectionId?: string;
+      placement?: string;
+      pagePath?: string;
+      referrerPath?: string;
+      occurredAt: Date;
+    }>,
+  ) {
+    if (events.length === 0) return;
+    await this.db.insert(schema.clickEvents).values(
+      events.map((event) => ({
+        productId: event.productId,
+        origin: event.origin,
+        sessionId: event.sessionId,
+        blockId: event.blockId,
+        articleId: event.articleId,
+        collectionId: event.collectionId,
+        placement: event.placement,
+        pagePath: event.pagePath,
+        referrerPath: event.referrerPath,
+        occurredAt: event.occurredAt,
+      })),
+    );
   }
 }
 
@@ -507,15 +527,33 @@ export class DrizzleEngagementEventRepository implements EngagementEventReposito
     sessionId?: string;
     occurredAt: Date;
   }) {
-    await this.db.insert(schema.contentEngagementEvents).values({
-      eventType: event.eventType,
-      articleId: event.articleId,
-      pagePath: event.pagePath,
-      placement: event.placement,
-      blockId: event.blockId,
-      referrerPath: event.referrerPath,
-      sessionId: event.sessionId,
-      occurredAt: event.occurredAt,
-    });
+    await this.recordBatch([event]);
+  }
+
+  async recordBatch(
+    events: Array<{
+      eventType: string;
+      articleId: string;
+      pagePath: string;
+      placement?: string;
+      blockId?: string;
+      referrerPath?: string;
+      sessionId?: string;
+      occurredAt: Date;
+    }>,
+  ) {
+    if (events.length === 0) return;
+    await this.db.insert(schema.contentEngagementEvents).values(
+      events.map((event) => ({
+        eventType: event.eventType,
+        articleId: event.articleId,
+        pagePath: event.pagePath,
+        placement: event.placement,
+        blockId: event.blockId,
+        referrerPath: event.referrerPath,
+        sessionId: event.sessionId,
+        occurredAt: event.occurredAt,
+      })),
+    );
   }
 }

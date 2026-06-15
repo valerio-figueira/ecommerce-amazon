@@ -12,4 +12,6 @@ export type {
   EmailDeliveryJobData,
   MarketplaceJobData,
   SchedulerTriggerJobData,
+  TelemetryFlushJobData,
 } from './messaging/queues.js';
+export { RedisTelemetryBufferStore } from './telemetry/redis-telemetry-buffer.store.js';

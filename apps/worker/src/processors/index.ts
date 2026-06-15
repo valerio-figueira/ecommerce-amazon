@@ -8,6 +8,7 @@ import {
   type CatalogSyncJobData,
   type EmailDeliveryJobData,
   type MarketplaceJobData,
+  type TelemetryFlushJobData,
 } from '@ecommerce-amazon/infrastructure';
 import type { WorkerContainer } from '@ecommerce-amazon/infrastructure';
 
@@ -83,6 +84,20 @@ export function startWorkers(container: WorkerContainer) {
     { connection: queueConnection, concurrency: 2 },
   );
 
+  const telemetryFlushWorker = new Worker<TelemetryFlushJobData>(
+    QUEUE_NAMES.TELEMETRY_FLUSH,
+    async (job) => {
+      if (!useCases.flushTelemetryBuffer) {
+        logger.warn('Telemetry flush skipped — buffer disabled', { jobId: job.id });
+        return;
+      }
+      const result = await useCases.flushTelemetryBuffer.execute();
+      logger.info('Telemetry buffer flushed', { jobId: job.id, ...result });
+      return result;
+    },
+    { connection: queueConnection, concurrency: 1 },
+  );
+
   for (const worker of [
     priceWorker,
     catalogWorker,
@@ -90,6 +105,7 @@ export function startWorkers(container: WorkerContainer) {
     couponWorker,
     domainEventsWorker,
     emailWorker,
+    telemetryFlushWorker,
   ]) {
     worker.on('failed', (job, error) => {
       logger.error('Job failed', { jobId: job?.id, error: error.message });
@@ -103,5 +119,6 @@ export function startWorkers(container: WorkerContainer) {
     couponWorker,
     domainEventsWorker,
     emailWorker,
+    telemetryFlushWorker,
   };
 }

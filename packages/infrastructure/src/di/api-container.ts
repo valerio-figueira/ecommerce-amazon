@@ -101,11 +101,18 @@ import {
   DrizzleClickEventRepository,
   DrizzleEngagementEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
+import type { ClickEventRepository, EngagementEventRepository } from '@ecommerce-amazon/domain';
 import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
 import { DrizzleAnalyticsRepository } from '../persistence/repositories/drizzle-analytics.repository.js';
+import { CompositeAnalyticsRepository } from '../persistence/repositories/composite-analytics.repository.js';
+import { RedisTelemetryBufferStore } from '../telemetry/redis-telemetry-buffer.store.js';
+import {
+  RedisBufferedClickEventRepository,
+  RedisBufferedEngagementEventRepository,
+} from '../telemetry/redis-buffered-event.repositories.js';
 import { GoogleAnalyticsDataGateway } from '../analytics/google-analytics-data.gateway.js';
 import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
 import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
@@ -147,9 +154,31 @@ export function buildApiContainer(env = loadEnv()) {
   const contentRepository = new DrizzleContentRepository(db, curatedCollectionRepository);
   const couponRepository = new DrizzleCouponRepository(db);
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
-  const clickRepository = new DrizzleClickEventRepository(db);
-  const engagementRepository = new DrizzleEngagementEventRepository(db);
-  const analyticsRepository = new DrizzleAnalyticsRepository(db);
+  const drizzleClickRepository = new DrizzleClickEventRepository(db);
+  const drizzleEngagementRepository = new DrizzleEngagementEventRepository(db);
+  const drizzleAnalyticsRepository = new DrizzleAnalyticsRepository(db);
+
+  let clickRepository: ClickEventRepository = drizzleClickRepository;
+  let engagementRepository: EngagementEventRepository = drizzleEngagementRepository;
+  let analyticsRepository: DrizzleAnalyticsRepository | CompositeAnalyticsRepository =
+    drizzleAnalyticsRepository;
+
+  if (env.TELEMETRY_BUFFER_ENABLED) {
+    const telemetryRedis = createRedisClient(
+      parseRedisUrl(env.REDIS_URL, env.REDIS_TELEMETRY_DB),
+    );
+    const telemetryBufferStore = new RedisTelemetryBufferStore(
+      telemetryRedis,
+      env.TELEMETRY_BUFFER_MAX_LEN,
+    );
+    clickRepository = new RedisBufferedClickEventRepository(telemetryBufferStore);
+    engagementRepository = new RedisBufferedEngagementEventRepository(telemetryBufferStore);
+    analyticsRepository = new CompositeAnalyticsRepository(
+      drizzleAnalyticsRepository,
+      telemetryBufferStore,
+    );
+  }
+
   const ga4Gateway = new GoogleAnalyticsDataGateway();
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);

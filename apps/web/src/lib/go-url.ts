@@ -1,6 +1,6 @@
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 
-import { resolveReferrerPath } from '@/lib/attribution/context';
+import { getAttribution } from '@/lib/attribution/context';
 
 export function buildGoUrl(
   slug: string,
@@ -13,6 +13,8 @@ export function buildGoUrl(
     placement?: ClickPlacementValue;
     pagePath?: string;
     referrerPath?: string;
+    /** When true, falls back to sessionStorage attribution (client-only; never during SSR/hydration). */
+    useStoredReferrer?: boolean;
     utmDefaults?: Record<string, string>;
   },
 ): string {
@@ -39,7 +41,9 @@ export function buildGoUrl(
     searchParams.set('pagePath', params.pagePath);
   }
 
-  const referrerPath = resolveReferrerPath(params?.referrerPath);
+  const referrerPath =
+    params?.referrerPath ??
+    (params?.useStoredReferrer ? getAttribution()?.entryPath : undefined);
   if (referrerPath) {
     searchParams.set('referrerPath', referrerPath);
   }

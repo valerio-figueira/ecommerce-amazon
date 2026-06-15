@@ -68,6 +68,7 @@ export function WishlistDrawer(): React.JSX.Element | null {
                                   sessionId,
                                   origin: 'listagem',
                                   placement: ClickPlacement.WISHLIST_DRAWER,
+                                  useStoredReferrer: true,
                                 }),
                                 '_blank',
                                 'noopener,noreferrer',
