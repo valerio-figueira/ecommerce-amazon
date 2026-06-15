@@ -128,7 +128,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white p-2 shadow-sm transition-shadow hover:shadow-md',
+        'group relative flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-100 bg-white shadow-sm transition-shadow hover:shadow-md',
         !isCompact && 'h-full',
         className,
       )}
@@ -137,7 +137,7 @@ export function ProductCard({
         <Link
           href={detailHref}
           className={cn(
-            'relative block overflow-hidden rounded-xl bg-[var(--muted)]',
+            'relative block overflow-hidden bg-[var(--muted)]',
             isCompact ? 'aspect-[4/3]' : 'aspect-square',
           )}
         >
@@ -175,7 +175,7 @@ export function ProductCard({
           <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
         </button>
       </div>
-      <div className="relative mt-2 flex min-h-0 flex-1 flex-col">
+      <div className="relative flex min-h-0 flex-1 flex-col px-2 pb-2 pt-2">
         <div className="flex shrink-0 flex-col gap-0.5">
           <Link
             href={detailHref}
