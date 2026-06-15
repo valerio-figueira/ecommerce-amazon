@@ -57,7 +57,40 @@ export class GetClicksByMarketplace {
 
   async execute(input?: { from?: string | undefined; to?: string | undefined }) {
     const { from, to } = resolveAnalyticsDateRange(input);
-    const items = await this.analyticsRepository.getClicksByMarketplace(from, to);
+    const [clickItems, catalogItems] = await Promise.all([
+      this.analyticsRepository.getClicksByMarketplace(from, to),
+      this.analyticsRepository.getVisibleProductCountByMarketplace(),
+    ]);
+
+    const clickByMarketplace = new Map(clickItems.map((item) => [item.marketplace, item]));
+    const catalogByMarketplace = new Map(catalogItems.map((item) => [item.marketplace, item]));
+    const allMarketplaces = new Set([
+      ...clickItems.map((item) => item.marketplace),
+      ...catalogItems.map((item) => item.marketplace),
+    ]);
+
+    const items = [...allMarketplaces]
+      .map((marketplace) => {
+        const click = clickByMarketplace.get(marketplace);
+        const catalog = catalogByMarketplace.get(marketplace);
+        const catalogSharePercent = catalog?.sharePercent ?? 0;
+        const clickSharePercent = click?.sharePercent ?? 0;
+        const clickIndex =
+          catalogSharePercent > 0
+            ? Math.round((clickSharePercent / catalogSharePercent) * 100) / 100
+            : null;
+
+        return {
+          marketplace,
+          count: click?.count ?? 0,
+          sharePercent: clickSharePercent,
+          catalogCount: catalog?.count ?? 0,
+          catalogSharePercent,
+          clickIndex,
+        };
+      })
+      .sort((left, right) => right.count - left.count);
+
     return { from: from.toISOString(), to: to.toISOString(), items };
   }
 }

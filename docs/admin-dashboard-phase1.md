@@ -6,7 +6,7 @@ Plano de referência: [`.cursor/plans/admin_dashboard_gold_9b9f876f.plan.md`](..
 
 Cockpit analítico em `/` do painel admin com:
 
-- **Conversão:** total de cliques, tendência diária, top 10 produtos, distribuição por marketplace
+- **Conversão:** total de cliques, tendência diária, top 10 produtos, eficiência por marketplace (cliques vs mix do catálogo)
 - **Atribuição:** cliques por ponto de inserção (`origin`), top artigos conversores (`article_id` + `embed`)
 - **Saúde do catálogo:** stale rate (24h) e contagem de produtos `out_of_stock`
 - **GA4 Data API (Fase 2):** seção de tráfego/aquisição quando credenciais estiverem configuradas na API
@@ -42,7 +42,7 @@ Enum `ClickOrigin.SIMILAR = 'similar'` no domain.
 |------|-----------|
 | `GET /admin/analytics/overview?from=&to=` | KPIs + tendência + saúde catálogo |
 | `GET /admin/analytics/clicks/by-origin` | % cliques por `origin` |
-| `GET /admin/analytics/clicks/by-marketplace` | % cliques por marketplace |
+| `GET /admin/analytics/clicks/by-marketplace` | Mix de cliques + composição do catálogo visível + índice relativo (`clickIndex`) |
 | `GET /admin/analytics/clicks/top-products?limit=10` | Ranking de produtos |
 | `GET /admin/analytics/articles/converting?limit=10` | Artigos com mais cliques via embed |
 | `GET /admin/analytics/traffic/acquisition` | Pageviews por canal (GA4) |

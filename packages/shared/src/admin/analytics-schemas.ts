@@ -47,6 +47,9 @@ export const marketplaceBreakdownItemSchema = z.object({
   marketplace: z.string(),
   count: z.number(),
   sharePercent: z.number(),
+  catalogCount: z.number().optional().default(0),
+  catalogSharePercent: z.number().optional().default(0),
+  clickIndex: z.number().nullable().optional(),
 });
 
 export const clicksByMarketplaceResponseSchema = z.object({

@@ -11,6 +11,7 @@ import {
   type EditorialFunnelMetrics,
   type EditorialFunnelArticleStage,
   type MarketplaceClickBreakdown,
+  type MarketplaceCatalogBreakdown,
   type OriginClickBreakdown,
   type OriginTrendPoint,
   type PagePathClickBreakdown,
@@ -206,6 +207,26 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
       .where(clickDateFilter(from, to))
       .groupBy(schema.products.marketplace)
       .orderBy(desc(count()));
+
+    return rows.map((row) => ({
+      marketplace: row.marketplace,
+      count: Number(row.count),
+      sharePercent: toSharePercent(Number(row.count), total),
+    }));
+  }
+
+  async getVisibleProductCountByMarketplace(): Promise<MarketplaceCatalogBreakdown[]> {
+    const rows = await this.db
+      .select({
+        marketplace: schema.products.marketplace,
+        count: count(),
+      })
+      .from(schema.products)
+      .where(eq(schema.products.visible, true))
+      .groupBy(schema.products.marketplace)
+      .orderBy(desc(count()));
+
+    const total = rows.reduce((sum, row) => sum + Number(row.count), 0);
 
     return rows.map((row) => ({
       marketplace: row.marketplace,

@@ -39,6 +39,18 @@ export type MarketplaceClickBreakdown = {
   sharePercent: number;
 };
 
+export type MarketplaceCatalogBreakdown = {
+  marketplace: string;
+  count: number;
+  sharePercent: number;
+};
+
+export type MarketplaceClickInsight = MarketplaceClickBreakdown & {
+  catalogCount: number;
+  catalogSharePercent: number;
+  clickIndex: number | null;
+};
+
 export type TopClickedProduct = {
   productId: string;
   slug: string;
@@ -104,6 +116,7 @@ export interface AnalyticsRepository {
   getClicksByPage(from: Date, to: Date, limit: number): Promise<PagePathClickBreakdown[]>;
   getClicksTrendByOrigin(from: Date, to: Date): Promise<OriginTrendPoint[]>;
   getClicksByMarketplace(from: Date, to: Date): Promise<MarketplaceClickBreakdown[]>;
+  getVisibleProductCountByMarketplace(): Promise<MarketplaceCatalogBreakdown[]>;
   getTopClickedProducts(from: Date, to: Date, limit: number): Promise<TopClickedProduct[]>;
   getConvertingArticles(from: Date, to: Date, limit: number): Promise<ConvertingArticle[]>;
   getCatalogHealthMetrics(): Promise<CatalogHealthMetrics>;

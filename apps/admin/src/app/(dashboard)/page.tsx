@@ -9,7 +9,7 @@ import { DashboardKpiCard } from '@/components/analytics/DashboardKpiCard';
 import { DateRangeSelect } from '@/components/analytics/DateRangeSelect';
 import { EditorialFunnelSection } from '@/components/analytics/EditorialFunnelSection';
 import { Ga4TrafficSection } from '@/components/analytics/Ga4TrafficSection';
-import { MarketplacePieChart } from '@/components/analytics/MarketplacePieChart';
+import { MarketplaceEfficiencyChart } from '@/components/analytics/MarketplaceEfficiencyChart';
 import { OriginBarChart } from '@/components/analytics/OriginBarChart';
 import { OriginTrendStackedChart } from '@/components/analytics/OriginTrendStackedChart';
 import { PagePathTable } from '@/components/analytics/PagePathTable';
@@ -127,7 +127,7 @@ export default async function DashboardPage({
 
         <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           <OriginBarChart data={byOrigin.items} />
-          <MarketplacePieChart data={byMarketplace.items} />
+          <MarketplaceEfficiencyChart data={byMarketplace.items} />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">

@@ -115,6 +115,10 @@ export class CompositeAnalyticsRepository
     return mergeConvertingArticles(pgItems, pending, limit);
   }
 
+  async getVisibleProductCountByMarketplace() {
+    return this.pgAnalytics.getVisibleProductCountByMarketplace();
+  }
+
   async getCatalogHealthMetrics() {
     return this.pgAnalytics.getCatalogHealthMetrics();
   }

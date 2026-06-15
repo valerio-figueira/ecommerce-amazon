@@ -37,6 +37,12 @@ export function marketplaceLabel(marketplace: string): string {
   return MARKETPLACE_LABELS[marketplace] ?? marketplace;
 }
 
+export function formatClickIndex(index: number | null | undefined): string {
+  if (index == null || Number.isNaN(index)) return '—';
+  if (index === 1) return '1× (proporcional)';
+  return `${index.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}×`;
+}
+
 export function clickOriginLabel(origin: string): string {
   return ORIGIN_LABELS[origin] ?? origin;
 }
