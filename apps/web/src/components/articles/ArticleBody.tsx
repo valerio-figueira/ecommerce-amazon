@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 
 import { injectInternalLinks } from '@ecommerce-amazon/shared/seo';
 import { parseArticleShortcodes } from '@ecommerce-amazon/shared/content';
@@ -82,7 +82,7 @@ export function ArticleHero({ article }: ArticleHeroProps): React.JSX.Element {
     <header className="mb-10 space-y-4">
       {article.coverImageUrl ? (
         <div className="relative aspect-[21/9] overflow-hidden rounded-[var(--radius)]">
-          <Image
+          <RemoteImage
             src={article.coverImageUrl}
             alt={article.title}
             fill

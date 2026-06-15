@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -26,7 +26,7 @@ export function ProductImageGallery({
         )}
       >
         {selectedImage ? (
-          <Image
+          <RemoteImage
             src={selectedImage}
             alt={alt}
             fill
@@ -52,7 +52,7 @@ export function ProductImageGallery({
                   : 'border-gray-200 hover:border-gray-300',
               )}
             >
-              <Image
+              <RemoteImage
                 src={image}
                 alt=""
                 fill

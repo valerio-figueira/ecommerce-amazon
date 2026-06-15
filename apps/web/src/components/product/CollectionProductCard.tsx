@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 
 import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
@@ -33,7 +33,7 @@ export function CollectionProductCard({
     >
       <div className="relative aspect-[3/4] w-full">
         {product.imageUrl ? (
-          <Image
+          <RemoteImage
             src={product.imageUrl}
             alt={product.title}
             fill

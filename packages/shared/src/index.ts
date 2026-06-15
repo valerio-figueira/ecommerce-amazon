@@ -109,3 +109,11 @@ export function createConsoleLogger(): Logger {
     debug: (message, meta) => console.debug(message, meta ?? ''),
   };
 }
+
+export {
+  buildNextImageRemotePatterns,
+  collectImageRemoteBaseUrls,
+  isNextImageRemoteUrl,
+  type NextImageRemoteEnv,
+  type NextImageRemotePattern,
+} from './next-image/index.js';

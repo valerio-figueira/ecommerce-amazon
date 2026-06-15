@@ -41,6 +41,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [articles-public-rendering.md](./articles-public-rendering.md) | Vitrine `/artigos/[slug]`, auto-linking, ProductCard embed |
 | [auto-links-admin.md](./auto-links-admin.md) | CRUD admin auto-links (API + UI), parser SEO, cache Redis |
 | [admin-profile-phase1.md](./admin-profile-phase1.md) | Perfil do operador, upload de avatar, storage plugável |
+| [remote-image-handling.md](./remote-image-handling.md) | `RemoteImage` vitrine, fallbacks admin, `remotePatterns` |
 | [admin-dashboard-phase1.md](./admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 

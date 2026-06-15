@@ -53,6 +53,10 @@
     "./product/spec-templates": {
       "types": "./dist/product/spec-templates.d.ts",
       "import": "./dist/product/spec-templates.js"
+    },
+    "./next-image": {
+      "types": "./dist/next-image/index.d.ts",
+      "import": "./dist/next-image/index.js"
     }
   },
   "scripts": {

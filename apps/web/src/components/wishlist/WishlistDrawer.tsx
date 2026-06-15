@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,7 @@ export function WishlistDrawer(): React.JSX.Element | null {
                   {group.map((item) => (
                     <li key={item.id} className="flex gap-3 rounded-2xl bg-neutral-50 p-3">
                       {item.product.imageUrl && (
-                        <Image
+                        <RemoteImage
                           src={item.product.imageUrl}
                           alt={item.product.title}
                           width={64}

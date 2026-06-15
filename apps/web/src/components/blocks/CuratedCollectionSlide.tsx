@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { RenderedCollection } from '@ecommerce-amazon/shared/cms';
@@ -34,7 +34,7 @@ export function CuratedCollectionSlide({
     >
       <div className="grid md:grid-cols-2">
         <div className="relative min-h-[220px] overflow-hidden md:min-h-[340px]">
-          <Image
+          <RemoteImage
             src={collection.coverImageUrl}
             alt={collection.title}
             fill

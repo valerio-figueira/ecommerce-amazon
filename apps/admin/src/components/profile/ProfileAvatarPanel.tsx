@@ -54,7 +54,8 @@ export function ProfileAvatarPanel({
     return email.charAt(0).toUpperCase();
   }, [displayName, email]);
 
-  const showManagedPhoto = Boolean(avatarUrl && isManagedAvatar);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const showManagedPhoto = Boolean(avatarUrl && isManagedAvatar && !avatarFailed);
 
   function setPhotoStatus(message: string, isError = false): void {
     setStatus({ message, isError });
@@ -88,6 +89,7 @@ export function ProfileAvatarPanel({
       const url = await uploadOperatorAvatarClient(blob);
       setAvatarUrl(url);
       setIsManagedAvatar(true);
+      setAvatarFailed(false);
       setSelectedFileName(null);
       setPhotoStatus('Foto atualizada com sucesso.');
       adminToast.success('Foto de perfil atualizada.');
@@ -108,6 +110,7 @@ export function ProfileAvatarPanel({
       await removeOperatorAvatarClient();
       setAvatarUrl(null);
       setIsManagedAvatar(false);
+      setAvatarFailed(false);
       setPhotoStatus('Foto removida.');
       adminToast.success('Foto de perfil removida.');
       router.refresh();
@@ -136,6 +139,7 @@ export function ProfileAvatarPanel({
                 height={136}
                 className="admin-profile-photo-preview"
                 decoding="async"
+                onError={() => setAvatarFailed(true)}
               />
             ) : (
               <div className="admin-profile-avatar-placeholder" aria-hidden="true">

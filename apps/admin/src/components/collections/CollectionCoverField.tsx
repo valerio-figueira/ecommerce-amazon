@@ -7,6 +7,7 @@ import { AdminImageCropDialog } from '@/components/admin/AdminImageCropDialog';
 import { AdminImageFilePicker } from '@/components/admin/AdminImageFilePicker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ManagedImage } from '@/components/ui/ManagedImage';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { uploadAdminImageClient } from '@/lib/api/admin-media-client';
 
@@ -99,7 +100,7 @@ export function CollectionCoverField({
       </div>
 
       {trimmedValue !== '' ? (
-        <img
+        <ManagedImage
           src={trimmedValue}
           alt="Pré-visualização da capa"
           className="aspect-[4/3] w-full max-w-[280px] rounded-md border border-[var(--admin-gray)] object-cover"

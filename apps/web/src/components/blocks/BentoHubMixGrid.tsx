@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type {
@@ -27,7 +27,7 @@ function BentoHeroSlot({ slot }: { slot: BentoHubMixRenderedSlot1 }): React.JSX.
         'transition-transform duration-300 hover:scale-[1.02] hover:shadow-md md:col-span-2 md:row-span-2 md:min-h-[22rem]',
       )}
     >
-      <Image
+      <RemoteImage
         src={slot.coverImageUrl}
         alt=""
         fill
@@ -78,7 +78,7 @@ function BentoOfferSlot({
     >
       <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-neutral-100">
         {product.imageUrl && (
-          <Image
+          <RemoteImage
             src={product.imageUrl}
             alt={product.title}
             fill
@@ -141,7 +141,7 @@ function BentoListSlot({
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
                   {product.imageUrl && (
-                    <Image
+                    <RemoteImage
                       src={product.imageUrl}
                       alt=""
                       fill

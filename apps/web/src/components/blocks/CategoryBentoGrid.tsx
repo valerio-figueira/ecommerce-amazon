@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { CategoryBentoGridProps, CategoryBentoTile } from '@ecommerce-amazon/shared/cms';
@@ -27,7 +27,7 @@ function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.
 
   const content = (
     <>
-      <Image
+      <RemoteImage
         src={tile.imageUrl}
         alt=""
         fill

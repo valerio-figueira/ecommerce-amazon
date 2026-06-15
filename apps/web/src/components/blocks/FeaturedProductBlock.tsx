@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import { featuredProductPropsSchema } from '@ecommerce-amazon/shared/cms';
@@ -48,7 +48,7 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
         className="relative block min-h-[180px] flex-1 overflow-hidden rounded-2xl bg-[var(--muted)]"
       >
         {product.imageUrl && (
-          <Image src={product.imageUrl} alt={product.title} fill className="object-cover" />
+          <RemoteImage src={product.imageUrl} alt={product.title} fill className="object-cover" />
         )}
         <ProductEditorialBadges product={product} />
       </Link>

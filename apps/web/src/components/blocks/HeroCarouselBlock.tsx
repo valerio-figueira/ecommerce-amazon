@@ -1,7 +1,7 @@
 'use client';
 
 import useEmblaCarousel from 'embla-carousel-react';
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { useCallback, useEffect, useState } from 'react';
 
 import { heroCarouselPropsSchema } from '@ecommerce-amazon/shared/cms';
@@ -38,7 +38,7 @@ export function HeroCarouselBlock({ block }: BlockComponentProps): React.JSX.Ele
           {props.slides.map((slide) => (
             <div key={slide.title} className="relative h-full min-w-0 flex-[0_0_100%]">
               <div className="relative h-full w-full">
-                <Image
+                <RemoteImage
                   src={slide.imageUrl}
                   alt={slide.title}
                   fill

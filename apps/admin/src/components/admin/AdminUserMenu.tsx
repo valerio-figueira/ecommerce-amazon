@@ -40,7 +40,8 @@ export function AdminUserMenu({
 
   const initial =
     session.name.trim().charAt(0).toUpperCase() || session.email.charAt(0).toUpperCase();
-  const showAvatar = Boolean(avatarUrl && isManagedAvatar);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const showAvatar = Boolean(avatarUrl && isManagedAvatar && !avatarFailed);
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -65,6 +66,7 @@ export function AdminUserMenu({
             height={32}
             className="admin-user-pill-avatar"
             decoding="async"
+            onError={() => setAvatarFailed(true)}
           />
         ) : (
           <span className="admin-user-pill-initial" aria-hidden="true">

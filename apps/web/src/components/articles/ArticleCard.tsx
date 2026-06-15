@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { ArticleRelatedSummary, PublishedArticleListItem } from '@ecommerce-amazon/shared/admin';
@@ -35,7 +35,7 @@ export function ArticleCard({ article, showExcerpt = false }: ArticleCardProps):
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
         {article.coverImageUrl ? (
-          <Image
+          <RemoteImage
             src={article.coverImageUrl}
             alt={article.title}
             fill

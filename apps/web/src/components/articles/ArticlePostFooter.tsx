@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
@@ -33,7 +33,7 @@ export function ArticlePostFooter({
       {author && (author.bio || author.avatarUrl) ? (
         <div className={`flex items-start gap-3 ${article.category ? 'mt-6' : ''}`}>
           {author.avatarUrl ? (
-            <Image
+            <RemoteImage
               src={author.avatarUrl}
               alt={authorName}
               width={40}

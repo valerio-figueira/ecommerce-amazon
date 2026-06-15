@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
@@ -78,7 +78,7 @@ export function ProductCard({
               className="relative block aspect-square w-full overflow-hidden rounded-xl bg-[var(--muted)]"
             >
               {product.imageUrl && (
-                <Image
+                <RemoteImage
                   src={product.imageUrl}
                   alt={product.title}
                   fill
@@ -146,7 +146,7 @@ export function ProductCard({
           )}
         >
           {product.imageUrl && (
-            <Image
+            <RemoteImage
               src={product.imageUrl}
               alt={product.title}
               fill

@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import { bannerPropsSchema } from '@ecommerce-amazon/shared/cms';
@@ -11,7 +11,7 @@ export function BannerBlock({ block }: BlockComponentProps): React.JSX.Element {
   const props = bannerPropsSchema.parse(block.props);
   return (
     <Link href={props.href} className="block overflow-hidden rounded-[var(--radius)]">
-      <Image
+      <RemoteImage
         src={props.imageUrl}
         alt={props.alt}
         width={1200}

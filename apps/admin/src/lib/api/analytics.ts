@@ -122,3 +122,125 @@ export function resolveDateRangeFromSearchParams(
   }
   return resolveDefaultDateRange();
 }
+
+function emptyRangeFields(range?: AnalyticsDateRange): { from: string; to: string } {
+  const resolved = resolveDefaultDateRange();
+  return {
+    from: range?.from ?? resolved.from ?? new Date(0).toISOString(),
+    to: range?.to ?? resolved.to ?? new Date().toISOString(),
+  };
+}
+
+export const emptyAnalyticsOverview: AnalyticsOverviewResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  totalClicks: 0,
+  clicksTrend: [],
+  catalogHealth: {
+    totalVisibleProducts: 0,
+    staleCount: 0,
+    staleRatePercent: 0,
+    outOfStockCount: 0,
+  },
+};
+
+export const emptyClicksByOrigin: ClicksByOriginResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyClicksByMarketplace: ClicksByMarketplaceResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyTopClickedProducts: TopClickedProductsResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyConvertingArticles: ConvertingArticlesResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyGa4TrafficAcquisition: Ga4TrafficAcquisitionResponse = {
+  configured: false,
+  from: null,
+  to: null,
+  totalPageViews: 0,
+  items: [],
+};
+
+async function safeAnalyticsFetch<T>(
+  fetcher: () => Promise<T>,
+  fallback: T,
+  onFailure: () => void,
+): Promise<T> {
+  try {
+    return await fetcher();
+  } catch {
+    onFailure();
+    return fallback;
+  }
+}
+
+export type DashboardAnalyticsData = {
+  apiUnavailable: boolean;
+  overview: AnalyticsOverviewResponse;
+  byOrigin: ClicksByOriginResponse;
+  byMarketplace: ClicksByMarketplaceResponse;
+  topProducts: TopClickedProductsResponse;
+  convertingArticles: ConvertingArticlesResponse;
+  ga4Traffic: Ga4TrafficAcquisitionResponse;
+};
+
+export async function loadDashboardAnalytics(
+  range?: AnalyticsDateRange,
+): Promise<DashboardAnalyticsData> {
+  const rangeFields = emptyRangeFields(range);
+  const emptyOverview = { ...emptyAnalyticsOverview, ...rangeFields };
+  const emptyOrigin = { ...emptyClicksByOrigin, ...rangeFields };
+  const emptyMarketplace = { ...emptyClicksByMarketplace, ...rangeFields };
+  const emptyTopProducts = { ...emptyTopClickedProducts, ...rangeFields };
+  const emptyArticles = { ...emptyConvertingArticles, ...rangeFields };
+
+  let apiUnavailable = false;
+  const markUnavailable = (): void => {
+    apiUnavailable = true;
+  };
+
+  const [
+    overview,
+    byOrigin,
+    byMarketplace,
+    topProducts,
+    convertingArticles,
+    ga4Traffic,
+  ] = await Promise.all([
+    safeAnalyticsFetch(() => fetchAnalyticsOverview(range), emptyOverview, markUnavailable),
+    safeAnalyticsFetch(() => fetchClicksByOrigin(range), emptyOrigin, markUnavailable),
+    safeAnalyticsFetch(() => fetchClicksByMarketplace(range), emptyMarketplace, markUnavailable),
+    safeAnalyticsFetch(() => fetchTopClickedProducts(range), emptyTopProducts, markUnavailable),
+    safeAnalyticsFetch(() => fetchConvertingArticles(range), emptyArticles, markUnavailable),
+    safeAnalyticsFetch(
+      () => fetchGa4TrafficAcquisition(range),
+      emptyGa4TrafficAcquisition,
+      markUnavailable,
+    ),
+  ]);
+
+  return {
+    apiUnavailable,
+    overview,
+    byOrigin,
+    byMarketplace,
+    topProducts,
+    convertingArticles,
+    ga4Traffic,
+  };
+}

@@ -9,6 +9,7 @@ import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
 import { ArticleLlmPromptHelper } from '@/components/articles/ArticleLlmPromptHelper';
 import { ArticleMetaBox } from '@/components/articles/ArticleMetaBox';
 import { ArticleSeoCharCounter } from '@/components/articles/ArticleSeoCharCounter';
+import { ManagedImage } from '@/components/ui/ManagedImage';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
@@ -328,7 +329,7 @@ export function ArticleForm({
                 <ArticleFieldHint text="Banner horizontal (16:9 ou 21:9) no topo da página e no bloco Bento quando não houver override no CMS." />
               </div>
               {trimmedCover !== '' ? (
-                <img
+                <ManagedImage
                   src={trimmedCover}
                   alt="Capa atual"
                   className="mb-2 max-w-[220px] rounded-md border border-neutral-200"

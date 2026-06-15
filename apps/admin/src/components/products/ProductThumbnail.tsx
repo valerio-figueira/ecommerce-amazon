@@ -32,7 +32,8 @@ export function ProductThumbnail({
 }: ProductThumbnailProps): React.JSX.Element {
   const [failed, setFailed] = useState(false);
   const trimmed = src?.trim();
-  const showImage = trimmed !== undefined && trimmed.startsWith('https://') && !failed;
+  const showImage =
+    trimmed !== undefined && (trimmed.startsWith('https://') || trimmed.startsWith('http://')) && !failed;
 
   return (
     <div

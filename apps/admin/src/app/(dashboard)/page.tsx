@@ -11,12 +11,7 @@ import { MarketplacePieChart } from '@/components/analytics/MarketplacePieChart'
 import { OriginBarChart } from '@/components/analytics/OriginBarChart';
 import { TopProductsTable } from '@/components/analytics/TopProductsTable';
 import {
-  fetchAnalyticsOverview,
-  fetchClicksByMarketplace,
-  fetchClicksByOrigin,
-  fetchConvertingArticles,
-  fetchGa4TrafficAcquisition,
-  fetchTopClickedProducts,
+  loadDashboardAnalytics,
   resolveDateRangeFromSearchParams,
 } from '@/lib/api/analytics';
 
@@ -34,15 +29,15 @@ export default async function DashboardPage({
   const params = await searchParams;
   const range = resolveDateRangeFromSearchParams(params);
 
-  const [overview, byOrigin, byMarketplace, topProducts, convertingArticles, ga4Traffic] =
-    await Promise.all([
-      fetchAnalyticsOverview(range),
-      fetchClicksByOrigin(range),
-      fetchClicksByMarketplace(range),
-      fetchTopClickedProducts(range),
-      fetchConvertingArticles(range),
-      fetchGa4TrafficAcquisition(range),
-    ]);
+  const {
+    apiUnavailable,
+    overview,
+    byOrigin,
+    byMarketplace,
+    topProducts,
+    convertingArticles,
+    ga4Traffic,
+  } = await loadDashboardAnalytics(range);
 
   const topArticleClicks = convertingArticles.items[0]?.clickCount ?? 0;
 
@@ -58,6 +53,16 @@ export default async function DashboardPage({
             <DateRangeSelect />
           </Suspense>
         </div>
+
+        {apiUnavailable ? (
+          <div
+            role="status"
+            className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+          >
+            Não foi possível carregar os dados analíticos. Verifique se a API está em execução e
+            tente atualizar a página.
+          </div>
+        ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <DashboardKpiCard

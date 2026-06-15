@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
@@ -116,7 +116,7 @@ function ProductHeaderCell({ product }: { product: ProductDetailDto | null }): R
         className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-neutral-100"
       >
         {imageUrl ? (
-          <Image src={imageUrl} alt={product.title} fill className="object-cover" sizes="64px" />
+          <RemoteImage src={imageUrl} alt={product.title} fill className="object-cover" sizes="64px" />
         ) : null}
       </Link>
       <Link
