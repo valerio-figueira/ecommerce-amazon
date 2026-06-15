@@ -118,9 +118,24 @@ export function BentoHubMixPreview({
           {slot3Label}
         </p>
         {slot3Type === 'category' ? (
-          <p className="mt-1 text-xs font-semibold text-neutral-900">
-            {categoryLabel ?? slot3CategorySlug ?? 'Categoria'}
-          </p>
+          <>
+            <p className="mt-1 text-xs font-semibold text-neutral-900">
+              {categoryLabel ?? slot3CategorySlug ?? 'Selecione uma categoria'}
+            </p>
+            {slot3CategorySlug ? (
+              <ul className="mt-1 space-y-0.5">
+                {[1, 2, 3].map((rank) => (
+                  <li key={rank} className="line-clamp-1 text-[11px] text-neutral-600">
+                    Top {rank} por score editorial
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-1 text-[11px] text-neutral-500">
+                Escolha a categoria para ver o Top 3 na vitrine.
+              </p>
+            )}
+          </>
         ) : (
           <ul className="mt-1 space-y-0.5">
             {listProducts.length > 0 ? (

@@ -7,9 +7,14 @@ import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
 import { mapDeliveryProductToListItem } from '@/lib/cms/map-delivery-product';
 
-export function DynamicProductGridBlock({ block }: BlockComponentProps): React.JSX.Element {
+export function DynamicProductGridBlock({ block }: BlockComponentProps): React.JSX.Element | null {
   const props = dynamicProductGridPropsSchema.parse(block.props);
   const products = (block.renderedData ?? []).map(mapDeliveryProductToListItem);
+
+  if (products.length === 0) {
+    return null;
+  }
+
   const emphasizeDiscount =
     props.minDiscountPercentage !== undefined && props.minDiscountPercentage > 0;
   const isFlashDeals =
@@ -30,21 +35,15 @@ export function DynamicProductGridBlock({ block }: BlockComponentProps): React.J
         )}
       </div>
 
-      {products.length === 0 ? (
-        <p className="text-sm text-neutral-500">
-          Nenhuma oferta com desconto verificado no momento. Volte em breve.
-        </p>
-      ) : (
-        <ProductCarousel
-          products={products}
-          blockId={block.id}
-          placement={ClickPlacement.CMS_PRODUCT_GRID}
-          skeletonCount={props.limit}
-          emphasizeDiscount={emphasizeDiscount}
-          cardVariant="compact"
-          slideSize="sm"
-        />
-      )}
+      <ProductCarousel
+        products={products}
+        blockId={block.id}
+        placement={ClickPlacement.CMS_PRODUCT_GRID}
+        skeletonCount={props.limit}
+        emphasizeDiscount={emphasizeDiscount}
+        cardVariant="compact"
+        slideSize="sm"
+      />
     </section>
   );
 }

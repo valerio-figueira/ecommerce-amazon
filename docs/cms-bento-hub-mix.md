@@ -34,8 +34,8 @@ flowchart LR
 ### Regras de preço (compliance)
 
 - Slot 2: produto stale mantém card, sem badge de desconto; `PriceDisplay` mostra “Consultar preço atualizado”.
-- Slot 3 (categoria): só produtos com `shouldShowPrice`; lista vazia → skeleton.
-- Slot 3 (produtos manuais): mesma regra; IDs inválidos são omitidos.
+- Slot 3 (categoria): top 3 por score editorial entre produtos visíveis; preço stale oculta valor numérico mas mantém o item na lista (mesma regra do slot 2).
+- Slot 3 (produtos manuais): mesma regra de preço; IDs inválidos são omitidos.
 
 ## Contrato de props
 

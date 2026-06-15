@@ -1,7 +1,7 @@
 'use client';
 
 import type { Control } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import type { BlockFormValues } from '@/components/cms/forms/BlockPropsForm';
 import { ArticleIdPicker } from '@/components/cms/props-forms/ArticleIdPicker';
@@ -61,11 +61,23 @@ export function BentoHubMixForm({
   products,
   categories,
 }: BentoHubMixFormProps): React.JSX.Element {
+  const { setValue } = useFormContext<BlockFormValues>();
   const slot1ContentType = useWatch({ control, name: 'slot1.contentType' });
   const slot3ContentType = useWatch({ control, name: 'slot3.contentType' });
 
   const slot1Type = readString(slot1ContentType) || 'collection';
   const slot3Type = readString(slot3ContentType) || 'category';
+
+  const handleSlot3ModeChange = (value: string): void => {
+    setValue('slot3.contentType', value, { shouldDirty: true });
+    if (value === 'category') {
+      setValue('slot3.productIds', [], { shouldDirty: true });
+    } else {
+      setValue('slot3.categorySlug', '', { shouldDirty: true });
+      setValue('slot3.listTitle', '', { shouldDirty: true });
+      setValue('slot3.productIds', [], { shouldDirty: true });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -211,7 +223,10 @@ export function BentoHubMixForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Modo da lista</FormLabel>
-              <Select onValueChange={field.onChange} value={readString(field.value) || 'category'}>
+              <Select
+                onValueChange={handleSlot3ModeChange}
+                value={readString(field.value) || 'category'}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue />
@@ -238,7 +253,10 @@ export function BentoHubMixForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
-                  <Select onValueChange={field.onChange} value={readString(field.value)}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={readString(field.value) || undefined}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Escolha uma categoria" />

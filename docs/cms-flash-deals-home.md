@@ -15,6 +15,7 @@ Substituição do bloco `featured_product` / `hero_split` por carrossel de promo
 - Ordenação `discount_percent_desc` + filtro `minDiscountPercentage` (default seed: ≥30%)
 - Preços stale excluídos do carrossel de ofertas (`freshPriceOnly` no repositório)
 - Badge `−X%` nos cards quando o bloco enfatiza desconto (sem countdown falso)
+- Lista vazia: o bloco **não é renderizado** na vitrine (sem mensagem de placeholder)
 
 ## Fora de escopo
 

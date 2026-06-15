@@ -296,14 +296,7 @@ export class GetPublishedPageLayout {
         visibleOnly: true,
       });
 
-      const products = items
-        .filter((product) => product.shouldShowPrice)
-        .map(toProductDeliveryItem)
-        .slice(0, 3);
-
-      if (products.length === 0) {
-        return null;
-      }
+      const products = items.map(toProductDeliveryItem).slice(0, 3);
 
       return {
         mode: 'category',
@@ -320,13 +313,8 @@ export class GetPublishedPageLayout {
     const products = slot.productIds
       .map((id) => byId.get(id))
       .filter((product): product is NonNullable<typeof product> => product !== undefined)
-      .filter((product) => product.shouldShowPrice)
       .map(toProductDeliveryItem)
       .slice(0, 3);
-
-    if (products.length === 0) {
-      return null;
-    }
 
     return {
       mode: 'products',

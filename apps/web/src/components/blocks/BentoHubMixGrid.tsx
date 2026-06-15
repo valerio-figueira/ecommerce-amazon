@@ -179,6 +179,11 @@ function BentoListSlot({
       {slot.mode === 'products' && (
         <p className="mb-3 text-sm font-bold text-neutral-900">Seleção do editor</p>
       )}
+      {slot.products.length === 0 ? (
+        <p className="flex flex-1 items-center text-xs text-neutral-500">
+          Nenhum produto publicado nesta seleção.
+        </p>
+      ) : (
       <ul className="flex flex-1 flex-col gap-2.5">
         {slot.products.map((product) => {
           const listItem = mapDeliveryProductToListItem(product);
@@ -216,6 +221,7 @@ function BentoListSlot({
           );
         })}
       </ul>
+      )}
     </div>
   );
 }

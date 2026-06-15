@@ -338,4 +338,115 @@ describe('GetPublishedPageLayout', () => {
     expect(bentoBlock?.renderedBentoHubMix?.slot3?.products).toHaveLength(1);
     expect(bentoBlock?.renderedBentoHubMix?.slot3?.categoryTitle).toBe('Top Games');
   });
+
+  it('hydrates BENTO_HUB_MIX slot3 category with stale-price products (no numeric price)', async () => {
+    const offerProduct = createProduct(OFFER_PRODUCT_ID, 'teclado-mecanico-rgb', 329.9, false, 499.9);
+    const staleListProduct = createProduct(
+      'a2222222-2222-4222-8222-222222222222',
+      'headset-gamer-7-1',
+      249.9,
+      true,
+      399.9,
+    );
+
+    const collection = CuratedCollection.create({
+      id: COLLECTION_ID,
+      slug: 'setup-gamer-iniciante',
+      title: 'Setup gamer iniciante',
+      description: 'Seleção curada',
+      coverImageUrl: 'https://example.com/cover.jpg',
+      campaignOrigin: 'organico',
+      utmDefaults: {},
+      productIds: [],
+      ctaText: 'Ver coleção',
+    });
+
+    const category = Category.create({
+      id: 'a0222222-2222-4222-8222-222222222222',
+      slug: 'games',
+      label: 'Games',
+      sortOrder: 0,
+      visible: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const pageRepository = createMockPageRepository({
+      findPublishedBySlug: vi.fn().mockResolvedValue({
+        layout: PageLayout.create({
+          id: PAGE_ID,
+          slug: 'home',
+          title: 'Home',
+          status: PageStatus.PUBLISHED,
+          updatedAt: new Date(),
+        }),
+        blocks: [
+          PageBlock.create({
+            id: BLOCK_BENTO_HUB_MIX_ID,
+            pageId: PAGE_ID,
+            type: BlockType.BENTO_HUB_MIX,
+            sortOrder: 3,
+            props: {
+              slot1: {
+                contentType: 'collection',
+                entityId: COLLECTION_ID,
+              },
+              slot2: {
+                productId: OFFER_PRODUCT_ID,
+              },
+              slot3: {
+                contentType: 'category',
+                categorySlug: 'games',
+              },
+            },
+          }),
+        ],
+      }),
+    });
+
+    const productRepository = createMockProductRepository({
+      findById: vi.fn().mockResolvedValue(offerProduct),
+      findPublished: vi.fn().mockResolvedValue({ items: [staleListProduct], total: 1 }),
+    });
+
+    const categoryRepository = {
+      findBySlug: vi.fn().mockResolvedValue(category),
+      getDescendantIds: vi.fn().mockResolvedValue([category.id]),
+    };
+
+    const deps = createLayoutDeps(productRepository, {
+      curatedCollectionRepository: {
+        findById: vi.fn().mockResolvedValue(collection),
+      },
+      categoryRepository,
+    });
+
+    const cache = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn(),
+      del: vi.fn(),
+      increment: vi.fn(),
+      getVersion: vi.fn(),
+      incrementVersion: vi.fn(),
+    };
+
+    const useCase = new GetPublishedPageLayout(
+      pageRepository,
+      cache,
+      deps.listProducts,
+      deps.getCuratedCollection,
+      deps.curatedCollectionRepository,
+      deps.contentRepository,
+      deps.productRepository,
+      deps.categoryRepository,
+    );
+
+    const layout = await useCase.execute('home');
+    const slot3 = layout?.blocks[0]?.renderedBentoHubMix?.slot3;
+
+    expect(slot3?.mode).toBe('category');
+    expect(slot3?.products).toHaveLength(1);
+    expect(slot3?.products[0]?.price.shouldShowPrice).toBe(false);
+    expect(slot3?.products[0]?.price.amount).toBeNull();
+  });
 });
