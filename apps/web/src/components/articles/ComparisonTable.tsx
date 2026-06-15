@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
-import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
 import { ProductEditorialProsCons } from '@/components/product/ProductEditorialProsCons';
 import { ProductRating } from '@/components/product/ProductRating';
 import {
@@ -18,7 +17,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { ProductDetailDto } from '@/lib/api/schemas';
-import { resolveEditorialBadge } from '@/lib/product-badges';
 import { cn } from '@/lib/utils';
 
 type ComparisonTableProps = {
@@ -73,7 +71,7 @@ function resolveComparisonBadges(
   const priced = resolved.filter(
     (entry) => !entry.product.price.isStale && entry.product.price.amount !== null,
   );
-  if (priced.length > 0) {
+  if (priced.length >= 2) {
     const bestValue = priced.reduce((best, current) => {
       const bestAmount = best.product.price.amount ?? Number.POSITIVE_INFINITY;
       const currentAmount = current.product.price.amount ?? Number.POSITIVE_INFINITY;
@@ -124,7 +122,6 @@ function ProductHeaderCell({ product }: { product: ProductDetailDto | null }): R
         {imageUrl ? (
           <Image src={imageUrl} alt={product.title} fill className="object-cover" sizes="64px" />
         ) : null}
-        <ProductEditorialBadges product={product} className="left-1 top-1 px-1.5 py-0.5 text-[8px]" />
       </Link>
       <Link
         href={`/produtos/${product.slug}`}
@@ -137,46 +134,24 @@ function ProductHeaderCell({ product }: { product: ProductDetailDto | null }): R
   );
 }
 
-function BadgeRow({
-  products,
-  badgesByIndex,
-}: {
-  products: (ProductDetailDto | null)[];
-  badgesByIndex: Map<number, ComparisonBadge[]>;
-}): React.JSX.Element {
+function ComparisonBadgesCell({ badges }: { badges: ComparisonBadge[] }): React.JSX.Element {
+  if (badges.length === 0) {
+    return <span className="text-neutral-400">—</span>;
+  }
+
   return (
     <div className="flex flex-wrap justify-center gap-1">
-      {products.map((product, index) => {
-        if (!product) return <span key={`badge-empty-${index}`}>—</span>;
-
-        const editorialBadge = resolveEditorialBadge(product);
-        const comparisonBadges = badgesByIndex.get(index) ?? [];
-
-        if (!editorialBadge && comparisonBadges.length === 0) {
-          return <span key={`badge-${product.slug}`} className="text-neutral-400">—</span>;
-        }
-
-        return (
-          <div key={`badge-${product.slug}`} className="flex flex-wrap justify-center gap-1">
-            {editorialBadge ? (
-              <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                {editorialBadge.label}
-              </span>
-            ) : null}
-            {comparisonBadges.map((badge) => (
-              <span
-                key={badge.type}
-                className={cn(
-                  'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
-                  comparisonBadgeStyles[badge.type],
-                )}
-              >
-                {badge.label}
-              </span>
-            ))}
-          </div>
-        );
-      })}
+      {badges.map((badge) => (
+        <span
+          key={badge.type}
+          className={cn(
+            'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+            comparisonBadgeStyles[badge.type],
+          )}
+        >
+          {badge.label}
+        </span>
+      ))}
     </div>
   );
 }
@@ -200,28 +175,11 @@ function MobileProductCard({
     );
   }
 
-  const editorialBadge = resolveEditorialBadge(product);
-
   return (
     <article className="min-w-[240px] shrink-0 rounded-[var(--radius)] border border-neutral-200 bg-white p-4 shadow-sm">
       <ProductHeaderCell product={product} />
-      <div className="mt-3 flex flex-wrap justify-center gap-1">
-        {editorialBadge ? (
-          <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-            {editorialBadge.label}
-          </span>
-        ) : null}
-        {badges.map((badge) => (
-          <span
-            key={badge.type}
-            className={cn(
-              'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
-              comparisonBadgeStyles[badge.type],
-            )}
-          >
-            {badge.label}
-          </span>
-        ))}
+      <div className="mt-3">
+        <ComparisonBadgesCell badges={badges} />
       </div>
       <dl className="mt-4 space-y-2 border-t border-neutral-100 pt-3">
         {specKeys.map((key) => (
@@ -298,10 +256,7 @@ export function ComparisonTable({ slugs, products }: ComparisonTableProps): Reac
               <TableCell className="font-medium text-neutral-600">Destaques</TableCell>
               {products.map((product, index) => (
                 <TableCell key={`highlights-${slugs[index] ?? index}`}>
-                  <BadgeRow
-                    products={[product]}
-                    badgesByIndex={new Map([[0, badgesByIndex.get(index) ?? []]])}
-                  />
+                  <ComparisonBadgesCell badges={badgesByIndex.get(index) ?? []} />
                 </TableCell>
               ))}
             </TableRow>

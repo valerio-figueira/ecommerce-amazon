@@ -38,7 +38,7 @@ parseArticleShortcodes(linkedHtml)
 - **Validação:** 2–3 slugs kebab-case separados por vírgula.
 - **Desktop:** tabela shadcn com colunas por produto — resumo, badges, specs dinâmicas (`specs_normalized` → `specs`), prós/contras, rating, CTA.
 - **Mobile:** cards horizontais com scroll (`overflow-x-auto flex flex-row`).
-- **Badges contextuais:** Melhor Geral (maior `editorialScore`), Custo-Benefício (menor preço não-stale) + badges editoriais existentes.
+- **Badges contextuais (linha Destaques):** apenas Melhor Geral (maior `editorialScore`) e Custo-Benefício (menor preço não-stale, só quando ≥2 produtos têm preço válido). Badges editoriais absolutas (ex.: Escolha editorial) não aparecem na tabela comparativa.
 - **Specs ausentes:** traço `-` na célula.
 - **Admin:** botão **Comparar** no editor de artigos gera o shortcode via modal multi-seleção.
 
