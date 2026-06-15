@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle } from '@ecommerce-amazon/shared/seo';
 
-import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
+import { ProductDetailAffiliateCta } from '@/components/product/ProductDetailAffiliateCta';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysis';
@@ -102,15 +102,11 @@ export default async function ProductPage({
             Curadoria independente: comparamos ofertas na {marketplaceLabel(product.marketplace)} e
             redirecionamos você para a loja parceira. Não vendemos nem entregamos produtos.
           </p>
-          <AffiliateGoLink
+          <ProductDetailAffiliateCta
             productId={product.id}
             slug={product.slug}
-            origin="detalhe"
-            variant="primary"
-            className="px-6 py-3 text-sm md:w-auto"
-          >
-            Ver preço na {marketplaceLabel(product.marketplace)}
-          </AffiliateGoLink>
+            marketplace={product.marketplace}
+          />
         </div>
       </div>
       <ProductDetailAnalysis pros={product.pros} cons={product.cons} />

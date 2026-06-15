@@ -1,10 +1,11 @@
 'use client';
 
 import { PieChart as PieChartIcon } from 'lucide-react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
+import { AnalyticsChartFrame } from '@/components/analytics/AnalyticsChartFrame';
 import { marketplaceLabel } from '@/lib/analytics/labels';
 
 const CHART_COLORS = ['#0d6efd', '#20c997', '#fd7e14', '#6f42c1', '#dc3545'];
@@ -32,9 +33,8 @@ export function MarketplacePieChart({ data }: MarketplacePieChartProps): React.J
           hint="Nenhum clique registrado para segmentar por marketplace."
         />
       ) : (
-        <div className="mt-4 h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+        <AnalyticsChartFrame height={256}>
+          <PieChart>
               <Pie
                 data={chartData}
                 dataKey="value"
@@ -54,8 +54,7 @@ export function MarketplacePieChart({ data }: MarketplacePieChartProps): React.J
               </Pie>
               <Tooltip formatter={(value) => [String(value), 'Cliques']} />
             </PieChart>
-          </ResponsiveContainer>
-        </div>
+        </AnalyticsChartFrame>
       )}
     </AdminPageCard>
   );

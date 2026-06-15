@@ -5,7 +5,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -13,6 +12,7 @@ import {
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
+import { AnalyticsChartFrame } from '@/components/analytics/AnalyticsChartFrame';
 
 type ClicksTrendChartProps = {
   data: { date: string; count: number }[];
@@ -34,9 +34,8 @@ export function ClicksTrendChart({ data }: ClicksTrendChartProps): React.JSX.Ele
           hint="Os gráficos aparecerão quando houver tráfego de saída registrado."
         />
       ) : (
-        <div className="mt-4 h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+        <AnalyticsChartFrame height={256}>
+          <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
               <XAxis dataKey="date" tickFormatter={formatDateLabel} fontSize={12} />
               <YAxis allowDecimals={false} fontSize={12} />
@@ -52,8 +51,7 @@ export function ClicksTrendChart({ data }: ClicksTrendChartProps): React.JSX.Ele
                 dot={false}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
+        </AnalyticsChartFrame>
       )}
     </AdminPageCard>
   );

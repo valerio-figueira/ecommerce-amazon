@@ -27,6 +27,7 @@ import {
   GetComparisonByToken,
   ListActiveCoupons,
   RecordClickEvent,
+  RecordEngagementEvent,
   GetPublishedPageLayout,
   ListCategoryTree,
   GetCategoryBySlug,
@@ -69,6 +70,11 @@ import {
   GetConvertingArticles,
   GetGa4TrafficAcquisition,
   GetCtrByOrigin,
+  GetClicksByPlacement,
+  GetClicksByBlock,
+  GetClicksByPage,
+  GetClicksTrendByOrigin,
+  GetEditorialFunnel,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -93,6 +99,7 @@ import {
   DrizzleCouponRepository,
   DrizzleProductComparisonRepository,
   DrizzleClickEventRepository,
+  DrizzleEngagementEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
 import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
@@ -141,6 +148,7 @@ export function buildApiContainer(env = loadEnv()) {
   const couponRepository = new DrizzleCouponRepository(db);
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
+  const engagementRepository = new DrizzleEngagementEventRepository(db);
   const analyticsRepository = new DrizzleAnalyticsRepository(db);
   const ga4Gateway = new GoogleAnalyticsDataGateway();
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
@@ -222,6 +230,7 @@ export function buildApiContainer(env = loadEnv()) {
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
+      recordEngagementEvent: new RecordEngagementEvent(engagementRepository),
       getPublishedPageLayout: new GetPublishedPageLayout(
         pageRepository,
         cache,
@@ -293,6 +302,11 @@ export function buildApiContainer(env = loadEnv()) {
       getConvertingArticles: new GetConvertingArticles(analyticsRepository),
       getGa4TrafficAcquisition: new GetGa4TrafficAcquisition(ga4Gateway, cache),
       getCtrByOrigin: new GetCtrByOrigin(analyticsRepository, ga4Gateway, cache),
+      getClicksByPlacement: new GetClicksByPlacement(analyticsRepository),
+      getClicksByBlock: new GetClicksByBlock(analyticsRepository),
+      getClicksByPage: new GetClicksByPage(analyticsRepository),
+      getClicksTrendByOrigin: new GetClicksTrendByOrigin(analyticsRepository),
+      getEditorialFunnel: new GetEditorialFunnel(analyticsRepository),
     },
     services: {
       authTokenService,

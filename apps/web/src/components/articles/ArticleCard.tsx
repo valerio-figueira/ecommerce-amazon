@@ -1,11 +1,24 @@
+'use client';
+
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
+import {
+  ClickPlacement,
+  EngagementEventType,
+  type EngagementPlacementValue,
+} from '@ecommerce-amazon/shared/analytics';
 import type { ArticleRelatedSummary, PublishedArticleListItem } from '@ecommerce-amazon/shared/admin';
+
+import { useWishlist } from '@/components/wishlist/WishlistProvider';
+import { recordEngagement } from '@/lib/api/engagement';
+import { setAttribution } from '@/lib/attribution/context';
 
 type ArticleCardProps = {
   article: ArticleRelatedSummary | PublishedArticleListItem;
   showExcerpt?: boolean;
+  engagementPlacement?: EngagementPlacementValue;
 };
 
 function formatPublishedDate(iso: string | null): string | null {
@@ -23,14 +36,37 @@ function hasExcerpt(
   return 'excerpt' in article;
 }
 
-export function ArticleCard({ article, showExcerpt = false }: ArticleCardProps): React.JSX.Element {
+export function ArticleCard({
+  article,
+  showExcerpt = false,
+  engagementPlacement = ClickPlacement.ARTICLE_LISTING,
+}: ArticleCardProps): React.JSX.Element {
+  const pathname = usePathname();
+  const { sessionId } = useWishlist();
   const publishedLabel = formatPublishedDate(article.publishedAt);
   const excerpt = showExcerpt && hasExcerpt(article) ? article.excerpt : null;
   const category = hasExcerpt(article) ? article.category : null;
+  const articleHref = `/artigos/${article.slug}`;
+
+  const handleClick = (): void => {
+    setAttribution({
+      entryPath: pathname,
+      entryPlacement: engagementPlacement,
+    });
+
+    void recordEngagement({
+      eventType: EngagementEventType.ARTICLE_CARD_CLICK,
+      articleId: article.id,
+      pagePath: pathname,
+      placement: engagementPlacement,
+      ...(sessionId !== undefined ? { sessionId } : {}),
+    });
+  };
 
   return (
     <Link
-      href={`/artigos/${article.slug}`}
+      href={articleHref}
+      onClick={handleClick}
       className="group flex flex-col overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white transition hover:border-neutral-300"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">

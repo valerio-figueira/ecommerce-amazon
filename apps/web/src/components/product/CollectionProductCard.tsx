@@ -4,6 +4,7 @@ import { RemoteImage } from '@/components/ui/RemoteImage';
 
 import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { marketplaceLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -11,6 +12,8 @@ import { cn } from '@/lib/utils';
 type CollectionProductCardProps = {
   product: ProductListItemDto;
   blockId?: string | undefined;
+  collectionId?: string | undefined;
+  placement?: ClickPlacementValue;
   utmDefaults?: Record<string, string>;
   className?: string;
 };
@@ -18,6 +21,8 @@ type CollectionProductCardProps = {
 export function CollectionProductCard({
   product,
   blockId,
+  collectionId,
+  placement,
   utmDefaults,
   className,
 }: CollectionProductCardProps): React.JSX.Element {
@@ -58,7 +63,9 @@ export function CollectionProductCard({
             slug={product.slug}
             sessionId={sessionId}
             blockId={blockId}
+            collectionId={collectionId}
             origin="coleção"
+            {...(placement !== undefined ? { placement } : {})}
             variant="outline"
             className="w-fit rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-neutral-900 shadow-sm transition-all duration-300 group-hover:scale-[1.03] group-hover:bg-neutral-50 group-hover:shadow-md"
             {...(utmDefaults !== undefined ? { utmDefaults } : {})}

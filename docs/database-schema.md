@@ -207,10 +207,26 @@ Seed inicial migra `SEO_KEYWORD_MAP` estático.
 | `product_id`, `origin`, `session_id`, `occurred_at` | `origin`: `listagem`, `detalhe`, `embed`, `comparador`, `cupons`, `coleção`, `similar`, `redirect_go` |
 | `block_id` | uuid FK → `page_blocks.id`, ON DELETE SET NULL; rastreamento analítico CMS |
 | `article_id` | uuid FK → `content_articles.id`, ON DELETE SET NULL; atribuição em embeds editoriais |
+| `collection_id` | uuid FK → `curated_collections.id`, ON DELETE SET NULL |
+| `placement` | componente concreto (`article.embed`, `cms.product_grid`, …) |
+| `page_path` | rota onde o clique ocorreu |
+| `referrer_path` | entrada anterior na sessão (funil editorial) |
 
-Índices: `(block_id)`, `(occurred_at DESC)`, `(product_id, occurred_at)`, `(origin, occurred_at)`, `(article_id)` (parcial).
+Índices: `(block_id)`, `(occurred_at DESC)`, `(product_id, occurred_at)`, `(origin, occurred_at)`, `(article_id)`, `(placement, occurred_at)`, `(page_path, occurred_at)`, `(collection_id, occurred_at)`.
 
-Migration: [`0014_click_events_analytics.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0014_click_events_analytics.sql).
+Migrations: [`0014_click_events_analytics.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0014_click_events_analytics.sql), [`0015_click_attribution.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0015_click_attribution.sql).
+
+### Telemetria — `content_engagement_events`
+
+| Coluna | Valores / notas |
+|--------|-----------------|
+| `event_type` | `article_card_click`, `article_page_view` |
+| `article_id` | FK → `content_articles` |
+| `page_path` | rota do evento |
+| `placement` | ex.: `article_listing`, `article.related` |
+| `block_id`, `referrer_path`, `session_id` | atribuição opcional |
+
+Migration: [`0015_click_attribution.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0015_click_attribution.sql). Doc: [admin-dashboard-attribution-phase2.md](./admin-dashboard-attribution-phase2.md).
 
 ### Ops — `sync_job_logs` / `affiliate_accounts` / `operators`
 

@@ -10,6 +10,8 @@ type ConvertingArticlesTableProps = {
     slug: string;
     title: string;
     clickCount: number;
+    embedClickCount: number;
+    comparadorClickCount: number;
   }[];
 };
 
@@ -22,7 +24,7 @@ export function ConvertingArticlesTable({
         Top artigos conversores
       </h3>
       <p className="mt-1 text-xs text-[color:var(--admin-text-muted)]">
-        Cliques originados de embeds editoriais (`origin = embed`).
+        Cliques afiliados com atribuição editorial (embed + comparador).
       </p>
       {items.length === 0 ? (
         <AdminEmptyState
@@ -37,7 +39,9 @@ export function ConvertingArticlesTable({
               <tr className="border-b border-[color:var(--admin-border)] text-[color:var(--admin-text-muted)]">
                 <th className="pb-2 pr-3 font-medium">#</th>
                 <th className="pb-2 pr-3 font-medium">Artigo</th>
-                <th className="pb-2 font-medium text-right">Cliques</th>
+                <th className="pb-2 pr-3 font-medium text-right">Embed</th>
+                <th className="pb-2 pr-3 font-medium text-right">Comparador</th>
+                <th className="pb-2 font-medium text-right">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +56,8 @@ export function ConvertingArticlesTable({
                       {item.title}
                     </Link>
                   </td>
+                  <td className="py-2 pr-3 text-right">{item.embedClickCount}</td>
+                  <td className="py-2 pr-3 text-right">{item.comparadorClickCount}</td>
                   <td className="py-2 text-right font-semibold">{item.clickCount}</td>
                 </tr>
               ))}

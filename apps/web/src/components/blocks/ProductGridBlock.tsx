@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 
 import { BlockType } from '@ecommerce-amazon/domain';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { categoryPillsPropsSchema, productGridPropsSchema } from '@ecommerce-amazon/shared/cms';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
@@ -103,6 +104,7 @@ export function ProductGridBlock({
       <ProductCarousel
         products={data?.items ?? []}
         blockId={block.id}
+        placement={ClickPlacement.CMS_PRODUCT_GRID}
         isLoading={isLoading}
         skeletonCount={props.pageSize}
         cardVariant="compact"

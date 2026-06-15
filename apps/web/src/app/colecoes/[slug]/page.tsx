@@ -7,6 +7,7 @@ import {
 } from '@ecommerce-amazon/shared/seo';
 
 import { ProductCard } from '@/components/product/ProductCard';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCuratedCollection } from '@/lib/api/collections';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
@@ -116,6 +117,8 @@ export default async function CuratedCollectionPage({
               <ProductCard
                 product={product}
                 clickOrigin="coleção"
+                placement={ClickPlacement.COLLECTION_PAGE}
+                collectionId={collection.id}
                 utmDefaults={collection.utmDefaults}
               />
             </div>

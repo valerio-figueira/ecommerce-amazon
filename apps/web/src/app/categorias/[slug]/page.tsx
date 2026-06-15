@@ -8,6 +8,7 @@ import {
 
 import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
 import { ProductCard } from '@/components/product/ProductCard';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCategoryTree } from '@/lib/api/categories';
 import { apiFetchParsed } from '@/lib/api/client';
 import {
@@ -158,7 +159,11 @@ export default async function CategoryPage({
         {products.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                placement={ClickPlacement.CATEGORY_LISTING}
+              />
             ))}
           </div>
         ) : (

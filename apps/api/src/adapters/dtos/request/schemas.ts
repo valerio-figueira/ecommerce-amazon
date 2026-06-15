@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { BlockType } from '@ecommerce-amazon/domain';
+import { clickPlacementSchema, recordEngagementEventSchema } from '@ecommerce-amazon/shared/analytics';
 
 export const ListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
@@ -76,7 +77,13 @@ export const RecordClickSchema = z.object({
   sessionId: z.string().optional(),
   blockId: z.string().uuid().optional(),
   articleId: z.string().uuid().optional(),
+  collectionId: z.string().uuid().optional(),
+  placement: clickPlacementSchema.optional(),
+  pagePath: z.string().max(512).optional(),
+  referrerPath: z.string().max(512).optional(),
 });
+
+export const RecordEngagementSchema = recordEngagementEventSchema;
 
 export const GoSlugParamsSchema = z.object({
   slug: z.string().min(1),
@@ -85,8 +92,12 @@ export const GoSlugParamsSchema = z.object({
 export const GoQuerySchema = z.object({
   blockId: z.string().uuid().optional(),
   articleId: z.string().uuid().optional(),
+  collectionId: z.string().uuid().optional(),
   sessionId: z.string().optional(),
   origin: z.string().optional(),
+  placement: clickPlacementSchema.optional(),
+  pagePath: z.string().max(512).optional(),
+  referrerPath: z.string().max(512).optional(),
   utm_source: z.string().optional(),
   utm_medium: z.string().optional(),
   utm_campaign: z.string().optional(),

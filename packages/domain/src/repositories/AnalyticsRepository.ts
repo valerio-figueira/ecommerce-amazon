@@ -9,6 +9,30 @@ export type OriginClickBreakdown = {
   sharePercent: number;
 };
 
+export type PlacementClickBreakdown = {
+  placement: string;
+  count: number;
+  sharePercent: number;
+};
+
+export type BlockClickBreakdown = {
+  blockId: string;
+  blockType: string;
+  pageSlug: string;
+  count: number;
+};
+
+export type PagePathClickBreakdown = {
+  pagePath: string;
+  count: number;
+};
+
+export type OriginTrendPoint = {
+  date: string;
+  origin: string;
+  count: number;
+};
+
 export type MarketplaceClickBreakdown = {
   marketplace: string;
   count: number;
@@ -28,6 +52,26 @@ export type ConvertingArticle = {
   slug: string;
   title: string;
   clickCount: number;
+  embedClickCount: number;
+  comparadorClickCount: number;
+};
+
+export type EditorialFunnelArticleStage = {
+  articleId: string;
+  slug: string;
+  title: string;
+  count: number;
+};
+
+export type EditorialFunnelMetrics = {
+  articleCardClicks: number;
+  articlePageViews: number;
+  embedAffiliateClicks: number;
+  cardToViewRatePercent: number | null;
+  viewToClickRatePercent: number | null;
+  topArticlesByCardClicks: EditorialFunnelArticleStage[];
+  topArticlesByPageViews: EditorialFunnelArticleStage[];
+  topArticlesByAffiliateClicks: EditorialFunnelArticleStage[];
 };
 
 export type CatalogHealthMetrics = {
@@ -54,10 +98,18 @@ export interface AnalyticsRepository {
   countTotalClicks(from: Date, to: Date): Promise<number>;
   getClicksTrend(from: Date, to: Date): Promise<ClickTrendPoint[]>;
   getClicksByOrigin(from: Date, to: Date): Promise<OriginClickBreakdown[]>;
+  getClicksByPlacement(from: Date, to: Date): Promise<PlacementClickBreakdown[]>;
+  getClicksByBlock(from: Date, to: Date): Promise<BlockClickBreakdown[]>;
+  getClicksByPage(from: Date, to: Date, limit: number): Promise<PagePathClickBreakdown[]>;
+  getClicksTrendByOrigin(from: Date, to: Date): Promise<OriginTrendPoint[]>;
   getClicksByMarketplace(from: Date, to: Date): Promise<MarketplaceClickBreakdown[]>;
   getTopClickedProducts(from: Date, to: Date, limit: number): Promise<TopClickedProduct[]>;
   getConvertingArticles(from: Date, to: Date, limit: number): Promise<ConvertingArticle[]>;
   getCatalogHealthMetrics(): Promise<CatalogHealthMetrics>;
+}
+
+export interface EngagementAnalyticsRepository {
+  getEditorialFunnel(from: Date, to: Date): Promise<EditorialFunnelMetrics>;
 }
 
 export type Ga4TrafficReport = {

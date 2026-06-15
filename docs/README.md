@@ -43,6 +43,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [admin-profile-phase1.md](./admin-profile-phase1.md) | Perfil do operador, upload de avatar, storage plugável |
 | [remote-image-handling.md](./remote-image-handling.md) | `RemoteImage` vitrine, fallbacks admin, `remotePatterns` |
 | [admin-dashboard-phase1.md](./admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
+| [admin-dashboard-attribution-phase2.md](./admin-dashboard-attribution-phase2.md) | Atribuição por componente, funil editorial, engajamento |
 | [admin-cms-blocks-phase2.md](./admin-cms-blocks-phase2.md) | Editor de blocos: CRUD, reorder, modais |
 
 ### Contexto para LLMs (síntese)

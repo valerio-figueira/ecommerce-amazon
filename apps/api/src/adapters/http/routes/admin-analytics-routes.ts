@@ -96,4 +96,54 @@ export async function registerAdminAnalyticsRoutes(
       return handleAdminAnalyticsError(error, reply);
     }
   });
+
+  app.get('/admin/analytics/clicks/by-placement', async (request, reply) => {
+    try {
+      const query = analyticsDateRangeQuerySchema.parse(request.query);
+      const result = await useCases.getClicksByPlacement.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAnalyticsError(error, reply);
+    }
+  });
+
+  app.get('/admin/analytics/clicks/by-block', async (request, reply) => {
+    try {
+      const query = analyticsDateRangeQuerySchema.parse(request.query);
+      const result = await useCases.getClicksByBlock.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAnalyticsError(error, reply);
+    }
+  });
+
+  app.get('/admin/analytics/clicks/by-page', async (request, reply) => {
+    try {
+      const query = analyticsDateRangeQuerySchema.parse(request.query);
+      const result = await useCases.getClicksByPage.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAnalyticsError(error, reply);
+    }
+  });
+
+  app.get('/admin/analytics/clicks/trend-by-origin', async (request, reply) => {
+    try {
+      const query = analyticsDateRangeQuerySchema.parse(request.query);
+      const result = await useCases.getClicksTrendByOrigin.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAnalyticsError(error, reply);
+    }
+  });
+
+  app.get('/admin/analytics/engagement/funnel', async (request, reply) => {
+    try {
+      const query = analyticsDateRangeQuerySchema.parse(request.query);
+      const result = await useCases.getEditorialFunnel.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAnalyticsError(error, reply);
+    }
+  });
 }

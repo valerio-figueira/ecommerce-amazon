@@ -318,7 +318,13 @@ export const clickEvents = pgTable(
       .references(() => products.id, { onDelete: 'cascade' }),
     blockId: uuid('block_id').references(() => pageBlocks.id, { onDelete: 'set null' }),
     articleId: uuid('article_id').references(() => contentArticles.id, { onDelete: 'set null' }),
+    collectionId: uuid('collection_id').references(() => curatedCollections.id, {
+      onDelete: 'set null',
+    }),
     origin: text('origin').notNull(),
+    placement: text('placement'),
+    pagePath: text('page_path'),
+    referrerPath: text('referrer_path'),
     sessionId: text('session_id'),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
   },
@@ -328,6 +334,28 @@ export const clickEvents = pgTable(
     index('click_events_product_occurred_idx').on(table.productId, table.occurredAt),
     index('click_events_origin_occurred_idx').on(table.origin, table.occurredAt),
     index('click_events_article_id_idx').on(table.articleId),
+    index('click_events_placement_occurred_idx').on(table.placement, table.occurredAt),
+    index('click_events_page_path_occurred_idx').on(table.pagePath, table.occurredAt),
+    index('click_events_collection_id_occurred_idx').on(table.collectionId, table.occurredAt),
+  ],
+);
+
+export const contentEngagementEvents = pgTable(
+  'content_engagement_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    eventType: text('event_type').notNull(),
+    articleId: uuid('article_id').references(() => contentArticles.id, { onDelete: 'set null' }),
+    pagePath: text('page_path').notNull(),
+    placement: text('placement'),
+    blockId: uuid('block_id').references(() => pageBlocks.id, { onDelete: 'set null' }),
+    referrerPath: text('referrer_path'),
+    sessionId: text('session_id'),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    index('content_engagement_events_type_occurred_idx').on(table.eventType, table.occurredAt),
+    index('content_engagement_events_article_occurred_idx').on(table.articleId, table.occurredAt),
   ],
 );
 

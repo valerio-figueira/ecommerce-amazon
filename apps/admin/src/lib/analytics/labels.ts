@@ -15,10 +15,31 @@ const ORIGIN_LABELS: Record<string, string> = {
   redirect_go: 'Redirect direto',
 };
 
+const PLACEMENT_LABELS: Record<string, string> = {
+  'article.embed': 'Embed em artigo',
+  'article.comparison': 'Comparativo no artigo',
+  'article.related': 'Artigos relacionados',
+  article_listing: 'Listagem de artigos',
+  'cms.product_grid': 'Grade CMS',
+  'cms.featured_product': 'Produto destaque CMS',
+  'cms.bento_offer': 'Bento — oferta',
+  'cms.bento_article': 'Bento — artigo',
+  'cms.curated_collection': 'Coleção curada CMS',
+  'product.detail_cta': 'CTA detalhe produto',
+  'product.similar': 'Carrossel similares',
+  'category.listing': 'Listagem categoria',
+  'collection.page': 'Página de coleção',
+  'wishlist.drawer': 'Lista de desejos',
+};
+
 export function marketplaceLabel(marketplace: string): string {
   return MARKETPLACE_LABELS[marketplace] ?? marketplace;
 }
 
 export function clickOriginLabel(origin: string): string {
   return ORIGIN_LABELS[origin] ?? origin;
+}
+
+export function clickPlacementLabel(placement: string): string {
+  return PLACEMENT_LABELS[placement] ?? placement;
 }

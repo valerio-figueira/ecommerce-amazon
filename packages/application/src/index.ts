@@ -55,6 +55,7 @@ export { CreateComparison } from './use-cases/comparison/CreateComparison.js';
 export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToken.js';
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';
 export { RecordClickEvent } from './use-cases/events/RecordClickEvent.js';
+export { RecordEngagementEvent } from './use-cases/events/RecordEngagementEvent.js';
 export {
   GetClickAnalyticsOverview,
   GetClicksByOrigin,
@@ -64,6 +65,13 @@ export {
   GetCatalogHealthMetrics,
 } from './use-cases/analytics/GetClickAnalytics.js';
 export { GetGa4TrafficAcquisition, GetCtrByOrigin } from './use-cases/analytics/GetGa4Analytics.js';
+export {
+  GetClicksByPlacement,
+  GetClicksByBlock,
+  GetClicksByPage,
+  GetClicksTrendByOrigin,
+  GetEditorialFunnel,
+} from './use-cases/analytics/GetAttributionAnalytics.js';
 export { ResolveAffiliateRedirect } from './use-cases/affiliate/ResolveAffiliateRedirect.js';
 export { GetPublishedPageLayout } from './use-cases/page/GetPublishedPageLayout.js';
 export { SavePageBlock } from './use-cases/admin-cms/SavePageBlock.js';

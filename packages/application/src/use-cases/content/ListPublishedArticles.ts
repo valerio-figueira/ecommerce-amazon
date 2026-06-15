@@ -23,6 +23,7 @@ export class ListPublishedArticles {
 
     return {
       items: result.items.map((item) => ({
+        id: item.id,
         slug: item.slug,
         title: item.title,
         excerpt: item.excerpt,

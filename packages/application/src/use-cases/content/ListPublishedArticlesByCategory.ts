@@ -21,6 +21,7 @@ export class ListPublishedArticlesByCategory {
         slug: category.slug,
       },
       items: items.map((item) => ({
+        id: item.id,
         slug: item.slug,
         title: item.title,
         coverImageUrl: item.coverImageUrl,

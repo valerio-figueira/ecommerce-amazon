@@ -8,6 +8,8 @@ import {
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
 import { ArticlePostFooter } from '@/components/articles/ArticlePostFooter';
 import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
+import { TrackEngagement } from '@/components/analytics/TrackEngagement';
+import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
 import { apiFetchParsed } from '@/lib/api/client';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
@@ -92,6 +94,10 @@ export default async function ArtigoPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ArticleHero article={article} />
+      <TrackEngagement
+        eventType={EngagementEventType.ARTICLE_PAGE_VIEW}
+        articleId={article.id}
+      />
       <ArticleBody
         article={article}
         autoLinks={autoLinks.items}

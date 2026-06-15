@@ -1,6 +1,7 @@
 'use client';
 
 import { dynamicProductGridPropsSchema } from '@ecommerce-amazon/shared/cms';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
@@ -37,6 +38,7 @@ export function DynamicProductGridBlock({ block }: BlockComponentProps): React.J
         <ProductCarousel
           products={products}
           blockId={block.id}
+          placement={ClickPlacement.CMS_PRODUCT_GRID}
           skeletonCount={props.limit}
           emphasizeDiscount={emphasizeDiscount}
           cardVariant="compact"

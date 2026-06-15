@@ -19,6 +19,7 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
     author,
     category,
     relatedArticles: relatedArticles.map((item) => ({
+      id: item.id,
       slug: item.slug,
       title: item.title,
       coverImageUrl: item.coverImageUrl,

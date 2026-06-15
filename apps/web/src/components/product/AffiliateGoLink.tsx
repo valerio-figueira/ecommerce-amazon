@@ -1,5 +1,9 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
+
 import { buildGoUrl } from '@/lib/go-url';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +22,11 @@ type AffiliateGoLinkProps = {
   sessionId?: string | undefined;
   blockId?: string | undefined;
   articleId?: string | undefined;
+  collectionId?: string | undefined;
   origin?: AffiliateClickOrigin;
+  placement?: ClickPlacementValue;
+  pagePath?: string | undefined;
+  referrerPath?: string | undefined;
   utmDefaults?: Record<string, string>;
   className?: string;
   children: React.ReactNode;
@@ -30,17 +38,28 @@ export function AffiliateGoLink({
   sessionId,
   blockId,
   articleId,
+  collectionId,
   origin = 'listagem',
+  placement,
+  pagePath: pagePathProp,
+  referrerPath,
   utmDefaults,
   className,
   children,
   variant = 'outline',
 }: AffiliateGoLinkProps): React.JSX.Element {
+  const pathname = usePathname();
+  const pagePath = pagePathProp ?? pathname;
+
   const href = buildGoUrl(slug, {
     ...(blockId !== undefined ? { blockId } : {}),
     ...(articleId !== undefined ? { articleId } : {}),
+    ...(collectionId !== undefined ? { collectionId } : {}),
     ...(sessionId !== undefined ? { sessionId } : {}),
     origin,
+    ...(placement !== undefined ? { placement } : {}),
+    pagePath,
+    ...(referrerPath !== undefined ? { referrerPath } : {}),
     ...(utmDefaults !== undefined ? { utmDefaults } : {}),
   });
 

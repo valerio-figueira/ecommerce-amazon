@@ -1,3 +1,5 @@
+'use client';
+
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
@@ -6,11 +8,16 @@ import type {
   BentoHubMixRenderedSlot1,
   ProductDeliveryItem,
 } from '@ecommerce-amazon/shared/cms';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
 import { BentoHubMixSkeleton } from '@/components/blocks/BentoHubMixSkeleton';
+import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
+import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { computeDiscountPercent } from '@/lib/discount';
 import { mapDeliveryProductToListItem } from '@/lib/cms/map-delivery-product';
+import { setAttribution } from '@/lib/attribution/context';
+import { marketplaceLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type BentoHubMixGridProps = {
@@ -18,10 +25,27 @@ type BentoHubMixGridProps = {
   blockId: string;
 };
 
-function BentoHeroSlot({ slot }: { slot: BentoHubMixRenderedSlot1 }): React.JSX.Element {
+function BentoHeroSlot({
+  slot,
+  blockId,
+}: {
+  slot: BentoHubMixRenderedSlot1;
+  blockId: string;
+}): React.JSX.Element {
+  const handleClick = (): void => {
+    if (slot.contentType === 'article') {
+      setAttribution({
+        entryPath: slot.href,
+        entryPlacement: ClickPlacement.CMS_BENTO_ARTICLE,
+        blockId,
+      });
+    }
+  };
+
   return (
     <Link
       href={slot.href}
+      onClick={handleClick}
       className={cn(
         'group relative block min-h-[18rem] overflow-hidden rounded-3xl border border-gray-100 shadow-sm',
         'transition-transform duration-300 hover:scale-[1.02] hover:shadow-md md:col-span-2 md:row-span-2 md:min-h-[22rem]',
@@ -59,6 +83,7 @@ function BentoOfferSlot({
   product: ProductDeliveryItem;
   blockId: string;
 }): React.JSX.Element {
+  const { sessionId } = useWishlist();
   const listItem = mapDeliveryProductToListItem(product);
   const discountPercent = computeDiscountPercent(
     listItem.price.amount,
@@ -66,41 +91,55 @@ function BentoOfferSlot({
   );
   const showDiscountBadge = discountPercent !== null && !listItem.price.isStale;
   const detailHref = `/produtos/${product.slug}`;
+  const marketplace = marketplaceLabel(product.marketplace);
 
   return (
-    <Link
-      href={detailHref}
-      data-block-id={blockId}
+    <article
       className={cn(
         'group flex min-h-[10.5rem] flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm',
         'transition-transform duration-300 hover:scale-[1.02] hover:shadow-md',
       )}
     >
-      <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-neutral-100">
-        {product.imageUrl && (
-          <RemoteImage
-            src={product.imageUrl}
-            alt={product.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+      <Link href={detailHref} data-block-id={blockId} className="flex flex-1 flex-col">
+        <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-neutral-100">
+          {product.imageUrl && (
+            <RemoteImage
+              src={product.imageUrl}
+              alt={product.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
+          {showDiscountBadge && (
+            <span className="absolute left-3 top-3 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
+              -{discountPercent}%
+            </span>
+          )}
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5 p-3">
+          <h4 className="line-clamp-2 text-sm font-semibold text-neutral-900">{product.title}</h4>
+          <PriceDisplay
+            price={listItem.price}
+            strikethrough={listItem.price.strikethrough}
+            compact
           />
-        )}
-        {showDiscountBadge && (
-          <span className="absolute left-3 top-3 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
-            -{discountPercent}%
-          </span>
-        )}
+        </div>
+      </Link>
+      <div className="border-t border-neutral-100 p-3 pt-0">
+        <AffiliateGoLink
+          productId={product.id}
+          slug={product.slug}
+          sessionId={sessionId}
+          blockId={blockId}
+          origin="listagem"
+          placement={ClickPlacement.CMS_BENTO_OFFER}
+          className="mt-3 text-xs"
+        >
+          Ver preço na {marketplace}
+        </AffiliateGoLink>
       </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <h4 className="line-clamp-2 text-sm font-semibold text-neutral-900">{product.title}</h4>
-        <PriceDisplay
-          price={listItem.price}
-          strikethrough={listItem.price.strikethrough}
-          compact
-        />
-      </div>
-    </Link>
+    </article>
   );
 }
 
@@ -177,7 +216,7 @@ export function BentoHubMixGrid({ rendered, blockId }: BentoHubMixGridProps): Re
   return (
     <section>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {slot1 ? <BentoHeroSlot slot={slot1} /> : <BentoHubMixSkeleton variant="hero" />}
+        {slot1 ? <BentoHeroSlot slot={slot1} blockId={blockId} /> : <BentoHubMixSkeleton variant="hero" />}
         {slot2 ? (
           <BentoOfferSlot product={slot2} blockId={blockId} />
         ) : (

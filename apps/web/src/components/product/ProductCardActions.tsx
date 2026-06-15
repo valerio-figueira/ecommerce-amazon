@@ -6,6 +6,7 @@ import {
   AffiliateGoLink,
   type AffiliateClickOrigin,
 } from '@/components/product/AffiliateGoLink';
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { marketplaceLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -15,7 +16,9 @@ type ProductCardActionsProps = {
   sessionId?: string | undefined;
   blockId?: string | undefined;
   articleId?: string | undefined;
+  collectionId?: string | undefined;
   clickOrigin?: AffiliateClickOrigin;
+  placement?: ClickPlacementValue;
   utmDefaults?: Record<string, string>;
   className?: string;
   compact?: boolean;
@@ -28,7 +31,9 @@ export function ProductCardActions({
   sessionId,
   blockId,
   articleId,
+  collectionId,
   clickOrigin = 'listagem',
+  placement,
   utmDefaults,
   className,
   compact = false,
@@ -63,7 +68,9 @@ export function ProductCardActions({
           sessionId={sessionId}
           blockId={blockId}
           articleId={articleId}
+          collectionId={collectionId}
           origin={clickOrigin}
+          {...(placement !== undefined ? { placement } : {})}
           {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           variant="primary"
           className={cn(widthClass, primaryButtonClass)}
@@ -101,7 +108,9 @@ export function ProductCardActions({
         sessionId={sessionId}
         blockId={blockId}
         articleId={articleId}
+        collectionId={collectionId}
         origin={clickOrigin}
+        {...(placement !== undefined ? { placement } : {})}
         {...(utmDefaults !== undefined ? { utmDefaults } : {})}
         variant="outline"
         className={cn(widthClass, buttonClass)}

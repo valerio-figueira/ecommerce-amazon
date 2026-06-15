@@ -95,6 +95,7 @@ export const articleCategoryPublicSchema = z.object({
 export type ArticleCategoryPublic = z.infer<typeof articleCategoryPublicSchema>;
 
 export const articleRelatedSummarySchema = z.object({
+  id: z.string().uuid(),
   slug: articleSlugSchema,
   title: z.string(),
   coverImageUrl: z.string().nullable(),

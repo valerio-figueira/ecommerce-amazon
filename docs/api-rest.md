@@ -415,12 +415,34 @@ Comparador persistido por token de compartilhamento.
   sessionId?: string;
   blockId?: string;
   articleId?: string;
+  collectionId?: string;
+  placement?: ClickPlacementValue;
+  pagePath?: string;
+  referrerPath?: string;
 }
 ```
 
 **Response:** 204
 
 Persistido em `click_events`. O fluxo principal de CTAs grava via `GET /go/:slug` com `origin` contextual na query (um evento por clique). `POST /events/click` permanece para integrações server-side.
+
+### `POST /events/engagement`
+
+**Body (`recordEngagementEventSchema`):**
+
+```typescript
+{
+  eventType: 'article_card_click' | 'article_page_view';
+  articleId: string;
+  pagePath: string;
+  placement?: 'article_listing' | 'article.related' | 'cms.bento_article';
+  blockId?: string;
+  referrerPath?: string;
+  sessionId?: string;
+}
+```
+
+**Response:** 204 — persistido em `content_engagement_events`. Ver [admin-dashboard-attribution-phase2.md](./admin-dashboard-attribution-phase2.md).
 
 ---
 
@@ -559,6 +581,11 @@ Query comum: `from`, `to` (ISO datetime; default últimos 30 dias).
 | `GET /admin/analytics/articles/converting?limit=10` | `convertingArticlesResponseSchema` |
 | `GET /admin/analytics/traffic/acquisition` | `ga4TrafficAcquisitionResponseSchema` (requer `GA4_*` env) |
 | `GET /admin/analytics/ctr/by-origin` | `ctrByOriginResponseSchema` |
+| `GET /admin/analytics/clicks/by-placement` | `clicksByPlacementResponseSchema` |
+| `GET /admin/analytics/clicks/by-block` | `clicksByBlockResponseSchema` |
+| `GET /admin/analytics/clicks/by-page` | `clicksByPageResponseSchema` |
+| `GET /admin/analytics/clicks/trend-by-origin` | `clicksTrendByOriginResponseSchema` |
+| `GET /admin/analytics/engagement/funnel` | `editorialFunnelResponseSchema` |
 
 ---
 

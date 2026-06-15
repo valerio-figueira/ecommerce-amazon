@@ -5,7 +5,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -13,6 +12,7 @@ import {
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
+import { AnalyticsChartFrame } from '@/components/analytics/AnalyticsChartFrame';
 
 type Ga4TrafficSectionProps = {
   configured: boolean;
@@ -59,10 +59,9 @@ export function Ga4TrafficSection({
           hint="Aguarde a integração GA4 no web e o tráfego na vitrine."
         />
       ) : (
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={items}>
+        <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+          <AnalyticsChartFrame height={224} className="">
+            <AreaChart data={items}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
                 <XAxis
                   dataKey="channel"
@@ -81,8 +80,7 @@ export function Ga4TrafficSection({
                   fill="color-mix(in srgb, var(--admin-primary) 20%, transparent)"
                 />
               </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          </AnalyticsChartFrame>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>

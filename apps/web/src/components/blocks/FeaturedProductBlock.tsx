@@ -5,6 +5,7 @@ import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import { featuredProductPropsSchema } from '@ecommerce-amazon/shared/cms';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
@@ -63,6 +64,7 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
           product={product}
           sessionId={sessionId}
           blockId={block.id}
+          placement={ClickPlacement.CMS_FEATURED_PRODUCT}
         />
       </div>
     </div>

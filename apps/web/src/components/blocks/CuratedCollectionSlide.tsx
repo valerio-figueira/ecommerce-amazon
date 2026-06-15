@@ -4,6 +4,7 @@ import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { RenderedCollection } from '@ecommerce-amazon/shared/cms';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 
 import { CollectionProductCard } from '@/components/product/CollectionProductCard';
 import type { ProductListItemDto } from '@/lib/api/types';
@@ -65,6 +66,9 @@ export function CuratedCollectionSlide({
                   key={product.id}
                   product={product}
                   blockId={blockId}
+                  collectionId={collection.id}
+                  placement={ClickPlacement.CMS_CURATED_COLLECTION}
+                  utmDefaults={collection.utmDefaults}
                   className="transition-transform duration-300 group-hover/slide:-translate-y-1"
                 />
               ))}

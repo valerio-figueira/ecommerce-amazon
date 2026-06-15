@@ -165,11 +165,13 @@ export class GetPublishedPageLayout {
 
           return {
             collection: {
+              id: result.collection.id,
               slug: result.collection.slug,
               title: result.collection.title,
               description: result.collection.description,
               coverImageUrl: result.collection.coverImageUrl,
               ctaText: result.collection.ctaText,
+              utmDefaults: result.collection.utmDefaults,
             },
             products: result.products.map(toProductDeliveryItem),
           };

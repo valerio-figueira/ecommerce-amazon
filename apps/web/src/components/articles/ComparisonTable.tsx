@@ -5,6 +5,8 @@ import Link from 'next/link';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
+import { useWishlist } from '@/components/wishlist/WishlistProvider';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { ProductEditorialProsCons } from '@/components/product/ProductEditorialProsCons';
 import { ProductRating } from '@/components/product/ProductRating';
 import {
@@ -165,6 +167,8 @@ function MobileProductCard({
   specKeys: string[];
   articleId: string;
 }): React.JSX.Element {
+  const { sessionId } = useWishlist();
+
   if (!product) {
     return (
       <article className="min-w-[240px] shrink-0 rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
@@ -196,7 +200,9 @@ function MobileProductCard({
       <div className="mt-4">
         <ProductCardActions
           product={product}
-          clickOrigin="embed"
+          sessionId={sessionId}
+          clickOrigin="comparador"
+          placement={ClickPlacement.ARTICLE_COMPARISON}
           articleId={articleId}
           editorial
         />
@@ -210,6 +216,8 @@ export function ComparisonTable({
   products,
   articleId,
 }: ComparisonTableProps): React.JSX.Element {
+  const { sessionId } = useWishlist();
+
   if (slugs.length < 2 || slugs.length > 3) {
     return (
       <div className="rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
@@ -315,7 +323,9 @@ export function ComparisonTable({
                   {product ? (
                     <ProductCardActions
                       product={product}
-                      clickOrigin="embed"
+                      sessionId={sessionId}
+                      clickOrigin="comparador"
+                      placement={ClickPlacement.ARTICLE_COMPARISON}
                       articleId={articleId}
                       editorial
                     />

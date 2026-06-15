@@ -9,6 +9,7 @@ import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
 import type { AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
 import { ProductEditorialProsCons } from '@/components/product/ProductEditorialProsCons';
 import { ProductRating } from '@/components/product/ProductRating';
@@ -21,7 +22,9 @@ type ProductCardProps = {
   className?: string;
   blockId?: string | undefined;
   articleId?: string | undefined;
+  collectionId?: string | undefined;
   clickOrigin?: AffiliateClickOrigin;
+  placement?: ClickPlacementValue;
   utmDefaults?: Record<string, string>;
   /** Smaller card footprint via shorter image + tighter layout; typography stays default. */
   variant?: 'default' | 'compact' | 'editorial';
@@ -35,7 +38,9 @@ export function ProductCard({
   className,
   blockId,
   articleId,
+  collectionId,
   clickOrigin = 'listagem',
+  placement,
   utmDefaults,
   variant = 'default',
   emphasizeDiscount = false,
@@ -119,7 +124,9 @@ export function ProductCard({
               sessionId={sessionId}
               blockId={blockId}
               articleId={articleId}
+              collectionId={collectionId}
               clickOrigin={clickOrigin}
+              {...(placement !== undefined ? { placement } : {})}
               editorial
               {...(utmDefaults !== undefined ? { utmDefaults } : {})}
             />
@@ -201,7 +208,9 @@ export function ProductCard({
             sessionId={sessionId}
             blockId={blockId}
             articleId={articleId}
+            collectionId={collectionId}
             clickOrigin={clickOrigin}
+            {...(placement !== undefined ? { placement } : {})}
             compact={isCompact}
             {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           />

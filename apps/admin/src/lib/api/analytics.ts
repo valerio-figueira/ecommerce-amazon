@@ -4,6 +4,11 @@ import {
   clicksByMarketplaceResponseSchema,
   clicksByOriginResponseSchema,
   convertingArticlesResponseSchema,
+  clicksByPlacementResponseSchema,
+  clicksByBlockResponseSchema,
+  clicksByPageResponseSchema,
+  clicksTrendByOriginResponseSchema,
+  editorialFunnelResponseSchema,
   ctrByOriginResponseSchema,
   ga4TrafficAcquisitionResponseSchema,
   topClickedProductsResponseSchema,
@@ -11,6 +16,11 @@ import {
   type ClicksByMarketplaceResponse,
   type ClicksByOriginResponse,
   type ConvertingArticlesResponse,
+  type ClicksByPlacementResponse,
+  type ClicksByBlockResponse,
+  type ClicksByPageResponse,
+  type ClicksTrendByOriginResponse,
+  type EditorialFunnelResponse,
   type CtrByOriginResponse,
   type Ga4TrafficAcquisitionResponse,
   type TopClickedProductsResponse,
@@ -103,6 +113,49 @@ export async function fetchCtrByOrigin(range?: AnalyticsDateRange): Promise<CtrB
   );
 }
 
+export async function fetchClicksByPlacement(
+  range?: AnalyticsDateRange,
+): Promise<ClicksByPlacementResponse> {
+  return adminFetchParsed(
+    `/admin/analytics/clicks/by-placement${buildQuery(range)}`,
+    clicksByPlacementResponseSchema,
+  );
+}
+
+export async function fetchClicksByBlock(
+  range?: AnalyticsDateRange,
+): Promise<ClicksByBlockResponse> {
+  return adminFetchParsed(
+    `/admin/analytics/clicks/by-block${buildQuery(range)}`,
+    clicksByBlockResponseSchema,
+  );
+}
+
+export async function fetchClicksByPage(range?: AnalyticsDateRange): Promise<ClicksByPageResponse> {
+  return adminFetchParsed(
+    `/admin/analytics/clicks/by-page${buildQuery(range)}`,
+    clicksByPageResponseSchema,
+  );
+}
+
+export async function fetchClicksTrendByOrigin(
+  range?: AnalyticsDateRange,
+): Promise<ClicksTrendByOriginResponse> {
+  return adminFetchParsed(
+    `/admin/analytics/clicks/trend-by-origin${buildQuery(range)}`,
+    clicksTrendByOriginResponseSchema,
+  );
+}
+
+export async function fetchEditorialFunnel(
+  range?: AnalyticsDateRange,
+): Promise<EditorialFunnelResponse> {
+  return adminFetchParsed(
+    `/admin/analytics/engagement/funnel${buildQuery(range)}`,
+    editorialFunnelResponseSchema,
+  );
+}
+
 export function resolveDefaultDateRange(): AnalyticsDateRange {
   const to = new Date();
   const from = new Date(to.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -168,6 +221,43 @@ export const emptyConvertingArticles: ConvertingArticlesResponse = {
   items: [],
 };
 
+export const emptyClicksByPlacement: ClicksByPlacementResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyClicksByBlock: ClicksByBlockResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyClicksByPage: ClicksByPageResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyClicksTrendByOrigin: ClicksTrendByOriginResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  items: [],
+};
+
+export const emptyEditorialFunnel: EditorialFunnelResponse = {
+  from: new Date(0).toISOString(),
+  to: new Date().toISOString(),
+  articleCardClicks: 0,
+  articlePageViews: 0,
+  embedAffiliateClicks: 0,
+  cardToViewRatePercent: null,
+  viewToClickRatePercent: null,
+  topArticlesByCardClicks: [],
+  topArticlesByPageViews: [],
+  topArticlesByAffiliateClicks: [],
+};
+
 export const emptyGa4TrafficAcquisition: Ga4TrafficAcquisitionResponse = {
   configured: false,
   from: null,
@@ -197,6 +287,11 @@ export type DashboardAnalyticsData = {
   topProducts: TopClickedProductsResponse;
   convertingArticles: ConvertingArticlesResponse;
   ga4Traffic: Ga4TrafficAcquisitionResponse;
+  byPlacement: ClicksByPlacementResponse;
+  byBlock: ClicksByBlockResponse;
+  byPage: ClicksByPageResponse;
+  trendByOrigin: ClicksTrendByOriginResponse;
+  editorialFunnel: EditorialFunnelResponse;
 };
 
 export async function loadDashboardAnalytics(
@@ -208,6 +303,11 @@ export async function loadDashboardAnalytics(
   const emptyMarketplace = { ...emptyClicksByMarketplace, ...rangeFields };
   const emptyTopProducts = { ...emptyTopClickedProducts, ...rangeFields };
   const emptyArticles = { ...emptyConvertingArticles, ...rangeFields };
+  const emptyPlacement = { ...emptyClicksByPlacement, ...rangeFields };
+  const emptyBlock = { ...emptyClicksByBlock, ...rangeFields };
+  const emptyPage = { ...emptyClicksByPage, ...rangeFields };
+  const emptyTrendOrigin = { ...emptyClicksTrendByOrigin, ...rangeFields };
+  const emptyFunnel = { ...emptyEditorialFunnel, ...rangeFields };
 
   let apiUnavailable = false;
   const markUnavailable = (): void => {
@@ -221,6 +321,11 @@ export async function loadDashboardAnalytics(
     topProducts,
     convertingArticles,
     ga4Traffic,
+    byPlacement,
+    byBlock,
+    byPage,
+    trendByOrigin,
+    editorialFunnel,
   ] = await Promise.all([
     safeAnalyticsFetch(() => fetchAnalyticsOverview(range), emptyOverview, markUnavailable),
     safeAnalyticsFetch(() => fetchClicksByOrigin(range), emptyOrigin, markUnavailable),
@@ -232,6 +337,11 @@ export async function loadDashboardAnalytics(
       emptyGa4TrafficAcquisition,
       markUnavailable,
     ),
+    safeAnalyticsFetch(() => fetchClicksByPlacement(range), emptyPlacement, markUnavailable),
+    safeAnalyticsFetch(() => fetchClicksByBlock(range), emptyBlock, markUnavailable),
+    safeAnalyticsFetch(() => fetchClicksByPage(range), emptyPage, markUnavailable),
+    safeAnalyticsFetch(() => fetchClicksTrendByOrigin(range), emptyTrendOrigin, markUnavailable),
+    safeAnalyticsFetch(() => fetchEditorialFunnel(range), emptyFunnel, markUnavailable),
   ]);
 
   return {
@@ -242,5 +352,10 @@ export async function loadDashboardAnalytics(
     topProducts,
     convertingArticles,
     ga4Traffic,
+    byPlacement,
+    byBlock,
+    byPage,
+    trendByOrigin,
+    editorialFunnel,
   };
 }

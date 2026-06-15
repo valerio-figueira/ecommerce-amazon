@@ -6,6 +6,7 @@ import { RemoteImage } from '@/components/ui/RemoteImage';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { Button } from '@/components/ui/button';
 import { buildGoUrl } from '@/lib/go-url';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
 
@@ -63,7 +64,11 @@ export function WishlistDrawer(): React.JSX.Element | null {
                             size="sm"
                             onClick={() => {
                               window.open(
-                                buildGoUrl(item.product.slug, { sessionId }),
+                                buildGoUrl(item.product.slug, {
+                                  sessionId,
+                                  origin: 'listagem',
+                                  placement: ClickPlacement.WISHLIST_DRAWER,
+                                }),
                                 '_blank',
                                 'noopener,noreferrer',
                               );

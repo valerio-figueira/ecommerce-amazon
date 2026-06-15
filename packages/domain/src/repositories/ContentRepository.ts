@@ -18,6 +18,7 @@ export type AdminArticleSummary = {
 };
 
 export type ArticlePublicSummary = {
+  id: string;
   slug: string;
   title: string;
   coverImageUrl: string | null;
@@ -25,6 +26,7 @@ export type ArticlePublicSummary = {
 };
 
 export type PublishedArticleListItem = {
+  id: string;
   slug: string;
   title: string;
   excerpt: string;

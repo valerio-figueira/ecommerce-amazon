@@ -24,6 +24,7 @@ export type ArticleCategoryPublic = {
 };
 
 export type ArticleRelatedSummary = {
+  id: string;
   slug: string;
   title: string;
   coverImageUrl: string | null;

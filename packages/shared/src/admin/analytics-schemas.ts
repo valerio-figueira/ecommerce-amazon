@@ -72,6 +72,8 @@ export const convertingArticleSchema = z.object({
   slug: z.string(),
   title: z.string(),
   clickCount: z.number(),
+  embedClickCount: z.number(),
+  comparadorClickCount: z.number(),
 });
 
 export const convertingArticlesResponseSchema = z.object({
@@ -108,6 +110,74 @@ export const ctrByOriginResponseSchema = z.object({
   items: z.array(ctrByOriginItemSchema),
 });
 
+export const placementBreakdownItemSchema = z.object({
+  placement: z.string(),
+  count: z.number(),
+  sharePercent: z.number(),
+});
+
+export const clicksByPlacementResponseSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  items: z.array(placementBreakdownItemSchema),
+});
+
+export const blockAttributionItemSchema = z.object({
+  blockId: z.string().uuid(),
+  blockType: z.string(),
+  pageSlug: z.string(),
+  count: z.number(),
+});
+
+export const clicksByBlockResponseSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  items: z.array(blockAttributionItemSchema),
+});
+
+export const pagePathBreakdownItemSchema = z.object({
+  pagePath: z.string(),
+  count: z.number(),
+});
+
+export const clicksByPageResponseSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  items: z.array(pagePathBreakdownItemSchema),
+});
+
+export const originTrendPointSchema = z.object({
+  date: z.string(),
+  origin: z.string(),
+  count: z.number(),
+});
+
+export const clicksTrendByOriginResponseSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  items: z.array(originTrendPointSchema),
+});
+
+export const editorialFunnelArticleStageSchema = z.object({
+  articleId: z.string().uuid(),
+  slug: z.string(),
+  title: z.string(),
+  count: z.number(),
+});
+
+export const editorialFunnelResponseSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  articleCardClicks: z.number(),
+  articlePageViews: z.number(),
+  embedAffiliateClicks: z.number(),
+  cardToViewRatePercent: z.number().nullable(),
+  viewToClickRatePercent: z.number().nullable(),
+  topArticlesByCardClicks: z.array(editorialFunnelArticleStageSchema),
+  topArticlesByPageViews: z.array(editorialFunnelArticleStageSchema),
+  topArticlesByAffiliateClicks: z.array(editorialFunnelArticleStageSchema),
+});
+
 export type AnalyticsOverviewResponse = z.infer<typeof analyticsOverviewResponseSchema>;
 export type ClicksByOriginResponse = z.infer<typeof clicksByOriginResponseSchema>;
 export type ClicksByMarketplaceResponse = z.infer<typeof clicksByMarketplaceResponseSchema>;
@@ -115,3 +185,8 @@ export type TopClickedProductsResponse = z.infer<typeof topClickedProductsRespon
 export type ConvertingArticlesResponse = z.infer<typeof convertingArticlesResponseSchema>;
 export type Ga4TrafficAcquisitionResponse = z.infer<typeof ga4TrafficAcquisitionResponseSchema>;
 export type CtrByOriginResponse = z.infer<typeof ctrByOriginResponseSchema>;
+export type ClicksByPlacementResponse = z.infer<typeof clicksByPlacementResponseSchema>;
+export type ClicksByBlockResponse = z.infer<typeof clicksByBlockResponseSchema>;
+export type ClicksByPageResponse = z.infer<typeof clicksByPageResponseSchema>;
+export type ClicksTrendByOriginResponse = z.infer<typeof clicksTrendByOriginResponseSchema>;
+export type EditorialFunnelResponse = z.infer<typeof editorialFunnelResponseSchema>;

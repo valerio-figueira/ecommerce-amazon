@@ -1,10 +1,18 @@
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
+
+import { resolveReferrerPath } from '@/lib/attribution/context';
+
 export function buildGoUrl(
   slug: string,
   params?: {
     blockId?: string;
     articleId?: string;
+    collectionId?: string;
     sessionId?: string;
     origin?: string;
+    placement?: ClickPlacementValue;
+    pagePath?: string;
+    referrerPath?: string;
     utmDefaults?: Record<string, string>;
   },
 ): string {
@@ -15,12 +23,27 @@ export function buildGoUrl(
   if (params?.articleId) {
     searchParams.set('articleId', params.articleId);
   }
+  if (params?.collectionId) {
+    searchParams.set('collectionId', params.collectionId);
+  }
   if (params?.sessionId) {
     searchParams.set('sessionId', params.sessionId);
   }
   if (params?.origin) {
     searchParams.set('origin', params.origin);
   }
+  if (params?.placement) {
+    searchParams.set('placement', params.placement);
+  }
+  if (params?.pagePath) {
+    searchParams.set('pagePath', params.pagePath);
+  }
+
+  const referrerPath = resolveReferrerPath(params?.referrerPath);
+  if (referrerPath) {
+    searchParams.set('referrerPath', referrerPath);
+  }
+
   if (params?.utmDefaults) {
     for (const [key, value] of Object.entries(params.utmDefaults)) {
       if (value) {

@@ -2,13 +2,18 @@ import { Suspense } from 'react';
 import { AlertTriangle, MousePointerClick, Newspaper, Package } from 'lucide-react';
 
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { BlockAttributionTable } from '@/components/analytics/BlockAttributionTable';
 import { ClicksTrendChart } from '@/components/analytics/ClicksTrendChart';
 import { ConvertingArticlesTable } from '@/components/analytics/ConvertingArticlesTable';
 import { DashboardKpiCard } from '@/components/analytics/DashboardKpiCard';
 import { DateRangeSelect } from '@/components/analytics/DateRangeSelect';
+import { EditorialFunnelSection } from '@/components/analytics/EditorialFunnelSection';
 import { Ga4TrafficSection } from '@/components/analytics/Ga4TrafficSection';
 import { MarketplacePieChart } from '@/components/analytics/MarketplacePieChart';
 import { OriginBarChart } from '@/components/analytics/OriginBarChart';
+import { OriginTrendStackedChart } from '@/components/analytics/OriginTrendStackedChart';
+import { PagePathTable } from '@/components/analytics/PagePathTable';
+import { PlacementBarChart } from '@/components/analytics/PlacementBarChart';
 import { TopProductsTable } from '@/components/analytics/TopProductsTable';
 import {
   loadDashboardAnalytics,
@@ -37,6 +42,11 @@ export default async function DashboardPage({
     topProducts,
     convertingArticles,
     ga4Traffic,
+    byPlacement,
+    byBlock,
+    byPage,
+    trendByOrigin,
+    editorialFunnel,
   } = await loadDashboardAnalytics(range);
 
   const topArticleClicks = convertingArticles.items[0]?.clickCount ?? 0;
@@ -86,22 +96,34 @@ export default async function DashboardPage({
           <DashboardKpiCard
             label="Top artigo conversor"
             value={topArticleClicks.toLocaleString('pt-BR')}
-            hint="Maior volume de cliques via embed"
+            hint="Maior volume de cliques via embed/comparador"
             icon={Newspaper}
           />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <EditorialFunnelSection data={editorialFunnel} />
+
+        <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           <ClicksTrendChart data={overview.clicksTrend} />
+          <OriginTrendStackedChart data={trendByOrigin.items} />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+          <PlacementBarChart data={byPlacement.items} />
+          <BlockAttributionTable items={byBlock.items} />
+        </div>
+
+        <PagePathTable items={byPage.items} />
+
+        <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+          <OriginBarChart data={byOrigin.items} />
           <MarketplacePieChart data={byMarketplace.items} />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <OriginBarChart data={byOrigin.items} />
+        <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           <TopProductsTable items={topProducts.items} />
+          <ConvertingArticlesTable items={convertingArticles.items} />
         </div>
-
-        <ConvertingArticlesTable items={convertingArticles.items} />
 
         <Ga4TrafficSection
           configured={ga4Traffic.configured}

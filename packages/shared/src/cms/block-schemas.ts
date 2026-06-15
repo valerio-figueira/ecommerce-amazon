@@ -259,11 +259,13 @@ export const productDeliveryItemSchema = z.object({
 });
 
 export const renderedCollectionSchema = z.object({
+  id: z.string().uuid(),
   slug: z.string(),
   title: z.string(),
   description: z.string(),
   coverImageUrl: z.string(),
   ctaText: z.string(),
+  utmDefaults: z.record(z.string(), z.string()).default({}),
 });
 
 export const renderedCollectionSlideSchema = z.object({

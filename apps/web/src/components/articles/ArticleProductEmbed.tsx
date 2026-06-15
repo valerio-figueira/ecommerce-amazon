@@ -1,6 +1,7 @@
 'use client';
 
 import { ProductCard } from '@/components/product/ProductCard';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import type { ProductDetailDto } from '@/lib/api/schemas';
 
 type ArticleProductEmbedProps = {
@@ -28,6 +29,7 @@ export function ArticleProductEmbed({
         product={product}
         variant="editorial"
         clickOrigin="embed"
+        placement={ClickPlacement.ARTICLE_EMBED}
         articleId={articleId}
         pros={product.pros}
         cons={product.cons}

@@ -6,6 +6,7 @@ import {
   type ContentRepository,
   type CouponRepository,
   type ClickEventRepository,
+  type EngagementEventRepository,
   type ProductComparisonRepository,
   type SyncJobLogRepository,
   Marketplace,
@@ -96,6 +97,7 @@ export class DrizzleContentRepository implements ContentRepository {
   ) {
     const rows = await this.db
       .select({
+        id: schema.contentArticles.id,
         slug: schema.contentArticles.slug,
         title: schema.contentArticles.title,
         coverImageUrl: schema.contentArticles.coverImageUrl,
@@ -113,6 +115,7 @@ export class DrizzleContentRepository implements ContentRepository {
       .limit(limit);
 
     return rows.map((row) => ({
+      id: row.id,
       slug: row.slug,
       title: row.title,
       coverImageUrl: row.coverImageUrl,
@@ -123,6 +126,7 @@ export class DrizzleContentRepository implements ContentRepository {
   async listPublishedByCategorySlug(categorySlug: string) {
     const rows = await this.db
       .select({
+        id: schema.contentArticles.id,
         slug: schema.contentArticles.slug,
         title: schema.contentArticles.title,
         coverImageUrl: schema.contentArticles.coverImageUrl,
@@ -142,6 +146,7 @@ export class DrizzleContentRepository implements ContentRepository {
       .orderBy(desc(schema.contentArticles.publishedAt));
 
     return rows.map((row) => ({
+      id: row.id,
       slug: row.slug,
       title: row.title,
       coverImageUrl: row.coverImageUrl,
@@ -182,6 +187,7 @@ export class DrizzleContentRepository implements ContentRepository {
     const [rows, totalRows] = await Promise.all([
       this.db
         .select({
+          id: schema.contentArticles.id,
           slug: schema.contentArticles.slug,
           title: schema.contentArticles.title,
           excerpt: schema.contentArticles.excerpt,
@@ -211,6 +217,7 @@ export class DrizzleContentRepository implements ContentRepository {
 
     return {
       items: rows.map((row) => ({
+        id: row.id,
         slug: row.slug,
         title: row.title,
         excerpt: row.excerpt,
@@ -466,6 +473,10 @@ export class DrizzleClickEventRepository implements ClickEventRepository {
     sessionId?: string;
     blockId?: string;
     articleId?: string;
+    collectionId?: string;
+    placement?: string;
+    pagePath?: string;
+    referrerPath?: string;
     occurredAt: Date;
   }) {
     await this.db.insert(schema.clickEvents).values({
@@ -474,6 +485,36 @@ export class DrizzleClickEventRepository implements ClickEventRepository {
       sessionId: event.sessionId,
       blockId: event.blockId,
       articleId: event.articleId,
+      collectionId: event.collectionId,
+      placement: event.placement,
+      pagePath: event.pagePath,
+      referrerPath: event.referrerPath,
+      occurredAt: event.occurredAt,
+    });
+  }
+}
+
+export class DrizzleEngagementEventRepository implements EngagementEventRepository {
+  constructor(private readonly db: DrizzleClient) {}
+
+  async record(event: {
+    eventType: string;
+    articleId: string;
+    pagePath: string;
+    placement?: string;
+    blockId?: string;
+    referrerPath?: string;
+    sessionId?: string;
+    occurredAt: Date;
+  }) {
+    await this.db.insert(schema.contentEngagementEvents).values({
+      eventType: event.eventType,
+      articleId: event.articleId,
+      pagePath: event.pagePath,
+      placement: event.placement,
+      blockId: event.blockId,
+      referrerPath: event.referrerPath,
+      sessionId: event.sessionId,
       occurredAt: event.occurredAt,
     });
   }

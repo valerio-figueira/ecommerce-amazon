@@ -6,12 +6,14 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ProductCard } from '@/components/product/ProductCard';
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
 
 type ProductCarouselProps = {
   products: ProductListItemDto[];
   blockId: string;
+  placement?: ClickPlacementValue;
   isLoading?: boolean;
   skeletonCount?: number;
   emphasizeDiscount?: boolean;
@@ -33,6 +35,7 @@ const SLIDE_INSET_CLASS = 'px-1.5 py-3';
 export function ProductCarousel({
   products,
   blockId,
+  placement,
   isLoading = false,
   skeletonCount = 8,
   emphasizeDiscount = false,
@@ -122,6 +125,7 @@ export function ProductCarousel({
                     <ProductCard
                       product={product}
                       blockId={blockId}
+                      {...(placement !== undefined ? { placement } : {})}
                       className={isCompactCard ? 'h-full w-full' : 'h-full'}
                       variant={cardVariant}
                       emphasizeDiscount={emphasizeDiscount}

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { ProductCard } from '@/components/product/ProductCard';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,7 @@ export function ProductSimilarCarousel({
             <ProductCard
               product={product}
               clickOrigin="similar"
+              placement={ClickPlacement.PRODUCT_SIMILAR}
               variant="compact"
               className="h-full w-full"
             />

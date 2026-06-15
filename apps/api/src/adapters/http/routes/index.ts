@@ -31,6 +31,7 @@ import {
   ProductSlugParamsSchema,
   CategorySlugParamsSchema,
   RecordClickSchema,
+  RecordEngagementSchema,
   PriceHistoryQuerySchema,
   WishlistAddSchema,
   WishlistRemoveParamsSchema,
@@ -91,6 +92,10 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
           origin: query.origin ?? 'redirect_go',
           ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
           ...(query.articleId !== undefined ? { articleId: query.articleId } : {}),
+          ...(query.collectionId !== undefined ? { collectionId: query.collectionId } : {}),
+          ...(query.placement !== undefined ? { placement: query.placement } : {}),
+          ...(query.pagePath !== undefined ? { pagePath: query.pagePath } : {}),
+          ...(query.referrerPath !== undefined ? { referrerPath: query.referrerPath } : {}),
           ...(sessionId !== undefined ? { sessionId } : {}),
         })
         .catch((error: unknown) => {
@@ -409,6 +414,31 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     try {
       const body = RecordClickSchema.parse(request.body);
       await useCases.recordClickEvent.execute(body);
+      return reply.status(204).send();
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.post('/events/engagement', async (request, reply) => {
+    try {
+      const body = RecordEngagementSchema.parse(request.body);
+      const headerSessionId = request.headers['x-session-id'];
+      const sessionId =
+        body.sessionId ??
+        (typeof headerSessionId === 'string' && headerSessionId.length > 0
+          ? headerSessionId
+          : undefined);
+
+      await useCases.recordEngagementEvent.execute({
+        eventType: body.eventType,
+        articleId: body.articleId,
+        pagePath: body.pagePath,
+        ...(body.placement !== undefined ? { placement: body.placement } : {}),
+        ...(body.blockId !== undefined ? { blockId: body.blockId } : {}),
+        ...(body.referrerPath !== undefined ? { referrerPath: body.referrerPath } : {}),
+        ...(sessionId !== undefined ? { sessionId } : {}),
+      });
       return reply.status(204).send();
     } catch (error) {
       return handleError(error, reply);
