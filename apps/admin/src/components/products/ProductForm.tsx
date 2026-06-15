@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { ProductAdvancedSeoSection } from '@/components/products/ProductAdvancedSeoSection';
 import { ProductAnalysisSection } from '@/components/products/ProductAnalysisSection';
 import { ProductEssentialsSection } from '@/components/products/ProductEssentialsSection';
+import { ProductImagesSection } from '@/components/products/ProductImagesSection';
 import { ProductLinkSection } from '@/components/products/ProductLinkSection';
 import { ProductPriceSection } from '@/components/products/ProductPriceSection';
 import { ProductSpecsForm } from '@/components/products/ProductSpecsForm';
@@ -147,7 +148,7 @@ export function ProductForm({
 
           <div className="cms-float-panel cms-blocks-panel">
             <p className="cms-blocks-panel__meta">
-              Dados do produto · <strong>4 abas</strong>
+              Dados do produto · <strong>5 abas</strong>
             </p>
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -155,6 +156,7 @@ export function ProductForm({
                 <TabsTrigger value="essentials">Link &amp; Essenciais</TabsTrigger>
                 <TabsTrigger value="analysis">Análise Editorial</TabsTrigger>
                 <TabsTrigger value="specs">Especificações</TabsTrigger>
+                <TabsTrigger value="images">Imagens</TabsTrigger>
                 <TabsTrigger value="seo">SEO Avançado</TabsTrigger>
               </TabsList>
 
@@ -170,6 +172,10 @@ export function ProductForm({
 
               <TabsContent value="specs">
                 <ProductSpecsForm />
+              </TabsContent>
+
+              <TabsContent value="images">
+                <ProductImagesSection />
               </TabsContent>
 
               <TabsContent value="seo">

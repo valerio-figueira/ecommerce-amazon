@@ -4,7 +4,6 @@ import { useFormContext } from 'react-hook-form';
 
 import { CategoryCascadeSelect } from '@/components/categories/CategoryCascadeSelect';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
-import { ProductImageList } from '@/components/products/ProductImageList';
 import {
   FormControl,
   FormDescription,
@@ -38,18 +37,6 @@ export function ProductEssentialsSection(): React.JSX.Element {
       />
 
       <CategoryCascadeSelect options={categoryOptions} />
-
-      <FormField
-        control={form.control}
-        name="images"
-        render={() => (
-          <FormItem>
-            <FormLabel>Imagens do produto</FormLabel>
-            <ProductImageList name="images" />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
 
       <FormField
         control={form.control}

@@ -10,7 +10,8 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
-- Formulário em **4 abas** (Link & Essenciais · Análise Editorial · Especificações · SEO Avançado)
+- Formulário em **5 abas** (Link & Essenciais · Análise Editorial · Especificações · **Imagens** · SEO Avançado)
+- Aba **Imagens** (após Especificações): upload gerenciado (`POST /admin/media/images`) com recorte 1:1 + galeria ordenada + URL externa opcional
 - Especificações dinâmicas por categoria (`specs_normalized`) na aba **Especificações**
 - `short_description` híbrida: gerada dos prós na API + textarea editável no admin
 - `long_description_html`: editor HTML manual (sem botão de IA)
@@ -80,9 +81,21 @@ Componentes: `ProductSpecsForm.tsx`, hook `useAdminCategoryOptions.ts`.
 - Listagem admin (`GET /admin/products`) usa `ListAdminProducts` — **não** filtra por `visible`.
 - Vitrine pública filtra `visible` apenas nos blocos da home e em `GET /products?visibleOnly=true`.
 
+## Imagens do produto
+
+| Camada | Comportamento |
+|--------|---------------|
+| Campo | `images: string[]` (URLs HTTPS) |
+| Admin | Aba **Imagens** → `ProductImagesSection` |
+| Upload | `AdminImageFilePicker` + recorte 1:1 (1000×1000) → `uploadAdminImageClient` → append na galeria |
+| URL externa | Bloco colapsável "Adicionar por URL" |
+| Ordem | ↑↓ na lista; posição 1 = capa (`imageUrl` na vitrine) |
+| BFF | `POST /api/admin/media/images` (proxy para API) |
+
+Componentes: `ProductImagesSection.tsx`, reutiliza `AdminImageFilePicker` e `AdminImageCropDialog`.
+
 ## Fora de escopo (fase 3)
 
-- Upload de imagem (somente URLs HTTPS)
 - Enfileirar worker no create/update; `SyncCatalogBatch` ainda só atualiza produtos existentes
 - Botão de geração de review por IA (`POST /admin/products/generate-review`)
 - Delete / soft-delete
@@ -155,6 +168,7 @@ Schemas Zod: [`packages/shared/src/admin/product-schemas.ts`](../packages/shared
 | Presenter admin | `apps/api/src/adapters/presenters/product.presenter.ts` |
 | BFF admin | `apps/admin/src/app/api/admin/products/route.ts` |
 | Formulário | `apps/admin/src/components/products/ProductForm.tsx` |
+| Galeria / upload | `apps/admin/src/components/products/ProductImagesSection.tsx` |
 | Specs por categoria | `apps/admin/src/components/products/ProductSpecsForm.tsx` |
 | Templates de specs | `packages/shared/src/product/spec-templates.ts` |
 | Listagem | `apps/admin/src/app/(dashboard)/produtos/page.tsx` |
@@ -170,7 +184,7 @@ npm run dev:admin  # :3002
 1. Login em http://localhost:3002/login
 2. **Produtos** → **Novo produto**
 3. Colar URL Amazon/Shopee/ML — verificar marketplace e ID detectados
-4. Preencher título, preço, toggle de exibição, salvar
+4. Aba **Imagens**: enviar arquivo ou URL; reordenar; salvar
 5. Confirmar listagem em `/produtos` e vitrine pública em `/produtos/{slug}` (web :3001)
 
 ## Próximos passos
