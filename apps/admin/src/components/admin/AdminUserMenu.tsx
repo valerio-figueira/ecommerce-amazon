@@ -52,7 +52,7 @@ export function AdminUserMenu({
     <div className="relative" ref={menuRef}>
       <button
         type="button"
-        className="admin-user-pill flex items-center gap-2 rounded-full border border-[color:var(--admin-gray)] bg-[color:var(--admin-surface)] px-3 py-1.5 text-sm text-[color:var(--admin-navy)] shadow-sm"
+        className="admin-user-pill"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
@@ -61,21 +61,18 @@ export function AdminUserMenu({
           <img
             src={avatarUrl ?? ''}
             alt=""
-            width={28}
-            height={28}
-            className="size-7 rounded-full object-cover"
+            width={32}
+            height={32}
+            className="admin-user-pill-avatar"
             decoding="async"
           />
         ) : (
-          <span
-            className="admin-user-pill-initial flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
-            aria-hidden="true"
-          >
+          <span className="admin-user-pill-initial" aria-hidden="true">
             {initial}
           </span>
         )}
-        <span className="hidden max-w-[10rem] truncate sm:inline">{session.name}</span>
-        <ChevronDown className="size-4 text-[color:var(--admin-text-muted)]" aria-hidden="true" />
+        <span className="admin-user-pill-name hidden sm:inline">{session.name}</span>
+        <ChevronDown className="admin-user-pill-chevron" aria-hidden="true" />
       </button>
 
       {open && (

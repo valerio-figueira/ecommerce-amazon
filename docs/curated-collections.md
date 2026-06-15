@@ -15,8 +15,31 @@ Plano de referência: [`.cursor/plans/coleções_curadas_gold_77f63d0e.plan.md`]
 - Telemetria `ClickOrigin.COLLECTION` (`coleção`) e UTM via query em `/go/:slug`
 - Migração `0009_curated_collections_constraints.sql` (`created_at`, `updated_at`, unique pivot)
 - **`CollectionProductCard`** no bloco home — card editorial full-bleed (imagem + overlay + CTA pill)
+- **Formulário admin evoluído** — sheet com seções, tooltips (`CollectionFieldHint`), upload de capa gerenciado + URL externa opcional
 
-## UX — card na home vs landing
+## Admin — formulário (`/colecoes`)
+
+O painel lateral (`CollectionFormSheet`) segue o padrão `cms-props-sheet` (header fixo, corpo scrollável, footer fixo):
+
+| Seção | Campos |
+|-------|--------|
+| Identificação | Título*, descrição editorial*, slug (colapsável — "Personalizar slug") |
+| Capa | Upload com recorte 4:3 (1200×900) via `CollectionCoverField` ou URL externa colapsável |
+| Campanha e rastreio | Origem da campanha (preenche UTMs sugeridas), fonte/meio/campanha UTM, texto do CTA* |
+| Produtos | `ProductMultiSelect` com busca, ordem ↑↓ e mínimo 1 produto* |
+
+Tooltips: ícone `CircleHelp` ao lado dos labels (`title` nativo). Validação client-side antes do submit.
+
+**Capa:** exibida no carrossel da home (`CuratedCollectionSlide`); **não** na landing `/colecoes/[slug]`.
+
+Componentes reutilizáveis de imagem (também usados no perfil):
+
+- `apps/admin/src/components/admin/AdminImageFilePicker.tsx`
+- `apps/admin/src/components/admin/AdminImageCropDialog.tsx`
+- `apps/admin/src/lib/admin-image-crop.ts`
+
+Upload de capa: `POST /admin/media/images` (multipart, campo `image`) → `{ url }` gravada em `coverImageUrl` ao salvar a coleção.
+
 
 | Contexto | Componente | Conteúdo |
 |----------|------------|----------|
@@ -63,7 +86,7 @@ sequenceDiagram
 | Camada | Path |
 |--------|------|
 | Domain | `packages/domain/src/repositories/CuratedCollectionRepository.ts` |
-| Application | `packages/application/src/use-cases/admin-collection/` |
+| Application | `packages/application/src/use-cases/admin-collection/`, `admin-media/UploadAdminImage.ts` |
 | Infrastructure | `packages/infrastructure/src/persistence/repositories/drizzle-curated-collection.repository.ts` |
 | API | `apps/api/src/adapters/http/routes/admin-collection-routes.ts` |
 | Admin | `apps/admin/src/components/collections/` |
@@ -83,6 +106,9 @@ sequenceDiagram
 | `POST` | `/admin/collections` | JWT |
 | `PATCH` | `/admin/collections/:id` | JWT |
 | `DELETE` | `/admin/collections/:id` | JWT |
+| `POST` | `/admin/media/images` | JWT (upload genérico de imagens admin) |
+
+BFF admin: `POST /api/admin/media/images` (proxy multipart).
 
 Cache: `vitrine:collection:slug:{slug}` (TTL 600s). Invalidação em writes admin.
 
@@ -98,7 +124,8 @@ pnpm dev
 ```
 
 1. Admin → **Coleções** → criar/editar coleção com produtos ordenados
-2. Abrir `/colecoes/setup-gamer-iniciante` — grid numerado e disclaimer afiliado
+2. Testar upload de capa (escolher arquivo → recortar 4:3 → salvar coleção)
+3. Abrir `/colecoes/setup-gamer-iniciante` — grid numerado e disclaimer afiliado
 3. CMS → adicionar bloco **Coleção Curada** na home — preview + CTA "Ver coleção"
 4. Clicar CTA marketplace — `POST /events/click` com `origin: coleção`
 

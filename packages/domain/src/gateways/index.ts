@@ -90,4 +90,4 @@ export interface PasswordHasher {
 }
 
 export type { ObjectStorage, StoredObject } from './object-storage.js';
-export { ADMIN_AVATAR_KEY_PREFIX } from './object-storage.js';
+export { ADMIN_AVATAR_KEY_PREFIX, ADMIN_MEDIA_KEY_PREFIX } from './object-storage.js';

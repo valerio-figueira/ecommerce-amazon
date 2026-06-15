@@ -101,3 +101,14 @@ export {
   AVATAR_MAX_BYTES,
 } from './use-cases/admin-profile/validate-avatar-image.js';
 export { buildAvatarObjectKey } from './use-cases/admin-profile/build-avatar-object-key.js';
+export { UploadAdminImage } from './use-cases/admin-media/UploadAdminImage.js';
+export type {
+  UploadAdminImageInput,
+  UploadAdminImageResult,
+} from './use-cases/admin-media/UploadAdminImage.js';
+export {
+  validateAdminImage,
+  mimeToImageExtension,
+  ADMIN_IMAGE_MAX_BYTES,
+} from './use-cases/admin-media/validate-admin-image.js';
+export { buildAdminImageObjectKey } from './use-cases/admin-media/build-admin-image-object-key.js';

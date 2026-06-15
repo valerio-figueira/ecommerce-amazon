@@ -79,7 +79,12 @@ export function ProductMultiSelect({
       />
 
       <div className="cms-category-checklist max-h-56 overflow-y-auto">
-        {filtered.map((product) => {
+        {filtered.length === 0 ? (
+          <p className="px-3 py-4 text-center text-sm text-[var(--admin-text-muted)]">
+            Nenhum produto encontrado.
+          </p>
+        ) : (
+          filtered.map((product) => {
           const checked = value.includes(product.id);
           const order = value.indexOf(product.id);
           return (
@@ -99,7 +104,8 @@ export function ProductMultiSelect({
               {checked && <span className="cms-category-order-badge">{order + 1}</span>}
             </label>
           );
-        })}
+        })
+        )}
       </div>
 
       {value.length > 0 && (

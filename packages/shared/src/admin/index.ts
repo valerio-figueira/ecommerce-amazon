@@ -5,3 +5,4 @@ export * from './article-schemas.js';
 export * from './article-category-schemas.js';
 export * from './auto-link-schemas.js';
 export * from './profile-schemas.js';
+export * from './media-schemas.js';

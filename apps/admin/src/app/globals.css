@@ -1441,6 +1441,196 @@ body.admin-login-page {
   border-radius: 0.5rem;
 }
 
+/* Shared admin image upload (profile, collections, etc.) */
+.admin-image-file-picker-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-image-sublabel {
+  display: block;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-navy);
+}
+
+.admin-image-file-picker {
+  display: flex;
+  align-items: stretch;
+  min-height: 2.5rem;
+  overflow: hidden;
+  border: 1px solid var(--admin-gray);
+  border-radius: 0.5rem;
+  background: var(--admin-surface);
+}
+
+.admin-image-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-image-file-picker-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-right: 1px solid var(--admin-gray);
+  background: var(--admin-bg);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-navy);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-image-file-picker-button:hover {
+  background: color-mix(in srgb, var(--admin-primary) 10%, var(--admin-bg));
+  color: var(--admin-primary);
+}
+
+.admin-image-file-picker-button:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: -2px;
+}
+
+.admin-image-file-picker-name {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--admin-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-image-micro-hint {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  row-gap: 0;
+  align-items: start;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--admin-text-muted);
+}
+
+.admin-image-micro-hint-icon {
+  display: inline-flex;
+  margin-top: 0.15rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-image-micro-hint-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin-image-micro-hint-text strong {
+  font-weight: 600;
+  color: var(--admin-navy);
+}
+
+.admin-image-crop-wrap .reactEasyCrop_Container {
+  border-radius: 0.5rem;
+}
+
+.admin-image-status {
+  min-height: 1.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.admin-image-status.is-visible {
+  opacity: 1;
+}
+
+.admin-image-status.is-error {
+  color: var(--admin-danger, #dc3545);
+}
+
 .admin-user-pill-initial {
   background: var(--admin-primary);
+}
+
+.admin-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.65rem 0.3rem 0.3rem;
+  border: 1px solid var(--admin-gray);
+  border-radius: 999px;
+  background: var(--admin-surface);
+  font-size: 0.875rem;
+  color: var(--admin-navy);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-navy) 6%, transparent);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.admin-user-pill:hover,
+.admin-user-pill:focus-visible {
+  border-color: color-mix(in srgb, var(--admin-primary) 45%, var(--admin-gray));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-primary) 18%, transparent);
+  outline: none;
+}
+
+.admin-user-pill-name {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.admin-user-pill-chevron {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--admin-text-muted);
+}
+
+.admin-user-pill-avatar,
+.admin-user-pill-initial {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.admin-user-pill-avatar {
+  object-fit: cover;
+  border: 1px solid var(--admin-gray);
+}
+
+.admin-user-pill-initial {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  user-select: none;
 }

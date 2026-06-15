@@ -11,3 +11,4 @@ export interface ObjectStorage {
 }
 
 export const ADMIN_AVATAR_KEY_PREFIX = 'admin-avatars/';
+export const ADMIN_MEDIA_KEY_PREFIX = 'admin/images/';

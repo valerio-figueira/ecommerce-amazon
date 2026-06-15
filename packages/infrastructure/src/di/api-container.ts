@@ -61,6 +61,7 @@ import {
   UpdateOperatorProfile,
   UploadOperatorAvatar,
   RemoveOperatorAvatar,
+  UploadAdminImage,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -273,6 +274,7 @@ export function buildApiContainer(env = loadEnv()) {
       ),
       uploadOperatorAvatar: new UploadOperatorAvatar(operatorRepository, objectStorage),
       removeOperatorAvatar: new RemoveOperatorAvatar(operatorRepository, objectStorage),
+      uploadAdminImage: new UploadAdminImage(objectStorage),
     },
     services: {
       authTokenService,

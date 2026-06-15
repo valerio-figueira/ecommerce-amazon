@@ -1,9 +1,10 @@
 'use client';
 
-import { Crop, ImageUp, Trash2 } from 'lucide-react';
+import { Crop, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { AdminImageFilePicker } from '@/components/admin/AdminImageFilePicker';
 import { ProfileAvatarCropDialog } from '@/components/profile/ProfileAvatarCropDialog';
 import {
   AlertDialog,
@@ -37,7 +38,6 @@ export function ProfileAvatarPanel({
 }: ProfileAvatarPanelProps): React.JSX.Element {
   const router = useRouter();
   const adminToast = useAdminToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [isManagedAvatar, setIsManagedAvatar] = useState(initialIsManagedAvatar);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
@@ -60,8 +60,7 @@ export function ProfileAvatarPanel({
     setStatus({ message, isError });
   }
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    const file = event.target.files?.[0];
+  function handleFileChange(file: File | null): void {
     if (!file) {
       setSelectedFileName(null);
       return;
@@ -74,8 +73,7 @@ export function ProfileAvatarPanel({
       URL.revokeObjectURL(cropSrc);
     }
 
-    const objectUrl = URL.createObjectURL(file);
-    setCropSrc(objectUrl);
+    setCropSrc(URL.createObjectURL(file));
   }
 
   function handleOpenCrop(): void {
@@ -91,9 +89,6 @@ export function ProfileAvatarPanel({
       setAvatarUrl(url);
       setIsManagedAvatar(true);
       setSelectedFileName(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
       setPhotoStatus('Foto atualizada com sucesso.');
       adminToast.success('Foto de perfil atualizada.');
       router.refresh();
@@ -151,46 +146,18 @@ export function ProfileAvatarPanel({
         </div>
 
         <div className="admin-profile-photo-toolbar">
-          <span className="admin-profile-sublabel" id="admin-profile-photo-file-label">
-            Carregar imagem
-          </span>
-
-          <div className="admin-profile-file-picker">
-            <input
-              ref={fileInputRef}
-              id="admin-profile-photo-file"
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              className="admin-profile-file-input"
-              onChange={handleFileChange}
-              autoComplete="off"
-              aria-labelledby="admin-profile-photo-file-label"
-            />
-            <label htmlFor="admin-profile-photo-file" className="admin-profile-file-picker-button">
-              <ImageUp className="size-4 shrink-0" aria-hidden="true" />
-              Escolher arquivo
-            </label>
-            <span className="admin-profile-file-picker-name" title={selectedFileName ?? undefined}>
-              {selectedFileName ?? 'Nenhum arquivo selecionado'}
-            </span>
-          </div>
-
-          <p className="admin-profile-micro-hint">
-            <span className="admin-profile-micro-hint-icon" aria-hidden="true">
-              <ImageUp className="size-3.5" />
-            </span>
-            <span className="admin-profile-micro-hint-text">
-              <span>JPG, PNG, GIF ou WebP. Máximo <strong>5 MiB</strong>.</span>
-              <span>Recorte quadrado até 512×512 px.</span>
-            </span>
-          </p>
+          <AdminImageFilePicker
+            selectedFileName={selectedFileName}
+            onFileChange={handleFileChange}
+            disabled={uploading}
+            hintLines={[
+              'JPG, PNG, GIF ou WebP. Máximo 5 MiB.',
+              'Recorte quadrado até 512×512 px.',
+            ]}
+          />
 
           <div className="admin-profile-photo-actions">
-            <Button
-              type="button"
-              onClick={handleOpenCrop}
-              disabled={!cropSrc || uploading}
-            >
+            <Button type="button" onClick={handleOpenCrop} disabled={!cropSrc || uploading}>
               <Crop className="size-4" aria-hidden="true" />
               Recortar e aplicar
             </Button>
