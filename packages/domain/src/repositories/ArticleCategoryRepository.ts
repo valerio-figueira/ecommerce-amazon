@@ -8,4 +8,5 @@ export interface ArticleCategoryRepository {
   delete(id: string): Promise<void>;
   slugExists(slug: string, excludeId?: string): Promise<boolean>;
   countLinkedArticles(id: string): Promise<number>;
+  listLinkedArticleSlugs(id: string): Promise<string[]>;
 }

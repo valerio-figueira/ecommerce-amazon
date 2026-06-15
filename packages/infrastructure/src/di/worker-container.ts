@@ -86,9 +86,9 @@ export function buildWorkerContainer(env = loadEnv()) {
         eventBus,
         cache,
       ),
-      syncCatalogBatch: new SyncCatalogBatch(productRepository, fetcherFactory),
-      runHygienePipeline: new RunHygienePipeline(productRepository),
-      verifyCouponsBatch: new VerifyCouponsBatch(couponRepository),
+      syncCatalogBatch: new SyncCatalogBatch(productRepository, fetcherFactory, cache),
+      runHygienePipeline: new RunHygienePipeline(productRepository, cache),
+      verifyCouponsBatch: new VerifyCouponsBatch(couponRepository, cache),
       processTriggeredAlerts: new ProcessTriggeredAlerts(
         alertRepository,
         productRepository,

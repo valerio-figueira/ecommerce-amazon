@@ -5,6 +5,7 @@ import {
   type CacheInvalidator,
   type CacheStore,
   type CuratedCollectionRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { UpdateCollectionBody } from '@ecommerce-amazon/shared/admin';
 
@@ -15,6 +16,7 @@ export class UpdateCuratedCollection {
     private readonly collectionRepository: CuratedCollectionRepository,
     private readonly cache: CacheStore,
     private readonly cacheInvalidator: CacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(id: string, input: UpdateCollectionBody): Promise<void> {
@@ -57,6 +59,9 @@ export class UpdateCuratedCollection {
 
     const allProductIds = [...new Set([...previousProductIds, ...collection.productIds])];
     await this.cacheInvalidator.invalidateProducts(allProductIds);
+    await this.webRevalidator.revalidate({
+      paths: [...new Set([`/colecoes/${previousSlug}`, `/colecoes/${collection.slug}`, '/'])],
+    });
   }
 }
 
@@ -65,6 +70,7 @@ export class DeleteCuratedCollection {
     private readonly collectionRepository: CuratedCollectionRepository,
     private readonly cache: CacheStore,
     private readonly cacheInvalidator: CacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(id: string): Promise<void> {
@@ -76,5 +82,8 @@ export class DeleteCuratedCollection {
     await this.collectionRepository.delete(id);
     await this.cache.del(`vitrine:collection:slug:${collection.slug}`);
     await this.cacheInvalidator.invalidateProducts(collection.productIds);
+    await this.webRevalidator.revalidate({
+      paths: [`/colecoes/${collection.slug}`, '/'],
+    });
   }
 }

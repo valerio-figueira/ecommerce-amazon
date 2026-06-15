@@ -9,6 +9,7 @@ import {
   type CategoryRepository,
   type PriceSnapshotRepository,
   type ProductRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { CreateProductBody } from '@ecommerce-amazon/shared/admin';
 import { slugifyTitle } from '@ecommerce-amazon/shared/marketplace';
@@ -36,6 +37,7 @@ export class CreateProduct {
     private readonly categoryRepository: CategoryRepository,
     private readonly snapshotRepository: PriceSnapshotRepository,
     private readonly cacheInvalidator: CacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: CreateProductBody): Promise<CreateProductResult> {
@@ -113,6 +115,15 @@ export class CreateProduct {
     }
 
     await this.cacheInvalidator.invalidateProducts([productId]);
+
+    const paths = [`/produtos/${slug}`];
+    if (input.categoryId) {
+      const category = await this.categoryRepository.findById(input.categoryId);
+      if (category) {
+        paths.push(`/categorias/${category.slug}`);
+      }
+    }
+    await this.webRevalidator.revalidate({ paths });
 
     return { id: productId, slug };
   }

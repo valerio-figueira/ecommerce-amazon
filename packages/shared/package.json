@@ -18,6 +18,10 @@
       "types": "./dist/seo/index.d.ts",
       "import": "./dist/seo/index.js"
     },
+    "./cache": {
+      "types": "./dist/cache/index.d.ts",
+      "import": "./dist/cache/index.js"
+    },
     "./admin": {
       "types": "./dist/admin/index.d.ts",
       "import": "./dist/admin/index.js"

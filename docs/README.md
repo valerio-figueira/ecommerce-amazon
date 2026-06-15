@@ -15,6 +15,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | Documento | Conteúdo |
 |-----------|----------|
 | [architecture.md](./architecture.md) | Clean Architecture, monorepo, camadas, fluxo de dependências, cache |
+| [cache-invalidation.md](./cache-invalidation.md) | Invalidação Redis + revalidação Next.js após admin/worker |
 | [domain-model.md](./domain-model.md) | Entidades, value objects, enums, ports (repositórios/gateways), eventos |
 | [database-schema.md](./database-schema.md) | Tabelas Drizzle, enums PostgreSQL, índices, migrations |
 | [api-rest.md](./api-rest.md) | Contrato REST completo: rotas, query/body Zod, DTOs de resposta |

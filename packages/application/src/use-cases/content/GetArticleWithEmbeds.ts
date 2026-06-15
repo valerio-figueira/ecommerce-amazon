@@ -10,6 +10,7 @@ import {
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import { extractAllEmbedSlugsFromBody } from '@ecommerce-amazon/shared/content';
+import { articlePublicCacheKey } from '@ecommerce-amazon/shared/cache';
 
 export type ArticleAuthorPublic = {
   name: string;
@@ -56,7 +57,7 @@ export class GetArticleWithEmbeds {
   ) {}
 
   async execute(slug: string): Promise<ArticleWithEmbedsResult | null> {
-    const cacheKey = `vitrine:article:slug:v2:${slug}`;
+    const cacheKey = articlePublicCacheKey(slug);
     const cached = await this.cache.get(cacheKey);
     if (isArticleWithEmbedsResult(cached)) {
       return cached;

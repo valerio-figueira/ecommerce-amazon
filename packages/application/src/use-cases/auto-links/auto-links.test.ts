@@ -9,6 +9,7 @@ import {
 } from '@ecommerce-amazon/domain';
 import { AUTO_LINKS_CACHE_KEY } from '@ecommerce-amazon/shared/seo';
 
+import { createMockPublicWebRevalidator } from '../../test/mock-factories.js';
 import { CreateAutoLink } from './CreateAutoLink.js';
 import { DeleteAutoLink } from './DeleteAutoLink.js';
 import { UpdateAutoLink } from './UpdateAutoLink.js';
@@ -53,7 +54,7 @@ describe('CreateAutoLink', () => {
       findByKeywordNormalized: vi.fn().mockResolvedValue(existingLink),
     });
     const cache = createCacheMock();
-    const useCase = new CreateAutoLink(repository, cache);
+    const useCase = new CreateAutoLink(repository, cache, createMockPublicWebRevalidator());
 
     await expect(
       useCase.execute({
@@ -69,7 +70,7 @@ describe('CreateAutoLink', () => {
   it('saves auto link and invalidates cache', async () => {
     const repository = createRepositoryMock();
     const cache = createCacheMock();
-    const useCase = new CreateAutoLink(repository, cache);
+    const useCase = new CreateAutoLink(repository, cache, createMockPublicWebRevalidator());
 
     const result = await useCase.execute({
       keyword: 'headset gamer',
@@ -91,7 +92,7 @@ describe('UpdateAutoLink', () => {
   it('throws EntityNotFoundError when auto link does not exist', async () => {
     const repository = createRepositoryMock();
     const cache = createCacheMock();
-    const useCase = new UpdateAutoLink(repository, cache);
+    const useCase = new UpdateAutoLink(repository, cache, createMockPublicWebRevalidator());
 
     await expect(
       useCase.execute('b2222222-2222-4222-8222-222222222222', { isActive: false }),
@@ -103,7 +104,7 @@ describe('UpdateAutoLink', () => {
       findById: vi.fn().mockResolvedValue(existingLink),
     });
     const cache = createCacheMock();
-    const useCase = new UpdateAutoLink(repository, cache);
+    const useCase = new UpdateAutoLink(repository, cache, createMockPublicWebRevalidator());
 
     await useCase.execute(existingLink.id, { isActive: false, priority: 10 });
 
@@ -118,7 +119,7 @@ describe('DeleteAutoLink', () => {
       findById: vi.fn().mockResolvedValue(existingLink),
     });
     const cache = createCacheMock();
-    const useCase = new DeleteAutoLink(repository, cache);
+    const useCase = new DeleteAutoLink(repository, cache, createMockPublicWebRevalidator());
 
     await useCase.execute(existingLink.id);
 

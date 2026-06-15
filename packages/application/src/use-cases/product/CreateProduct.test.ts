@@ -16,6 +16,7 @@ import {
   createMockCategoryRepository,
   createMockPriceSnapshotRepository,
   createMockProductRepository,
+  createMockPublicWebRevalidator,
 } from '../../test/mock-factories.js';
 
 const baseInput = {
@@ -50,6 +51,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       snapshotRepository,
       cacheInvalidator,
+      createMockPublicWebRevalidator(),
     );
     const result = await useCase.execute(baseInput);
 
@@ -81,6 +83,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       snapshotRepository,
       cacheInvalidator,
+      createMockPublicWebRevalidator(),
     );
     await useCase.execute({ ...baseInput, shouldShowPrice: false, price: 500 });
 
@@ -117,6 +120,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await expect(useCase.execute(baseInput)).rejects.toBeInstanceOf(ConflictError);
@@ -136,6 +140,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     const result = await useCase.execute(baseInput);
@@ -158,6 +163,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       snapshotRepository,
       cacheInvalidator,
+      createMockPublicWebRevalidator(),
     );
     await useCase.execute({
       ...baseInput,
@@ -183,6 +189,7 @@ describe('CreateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await expect(

@@ -5,15 +5,21 @@ import {
   ContentArticle,
   type CacheStore,
   type ContentRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { CreateArticleBody } from '@ecommerce-amazon/shared/admin';
 
+import {
+  buildArticlePublicPaths,
+  invalidateArticlePublicCache,
+} from '../../cache/public-cache.helpers.js';
 import { assertUniqueArticleSlug } from './article.helpers.js';
 
 export class CreateArticle {
   constructor(
     private readonly contentRepository: ContentRepository,
     private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(
@@ -45,7 +51,13 @@ export class CreateArticle {
     });
 
     await this.contentRepository.saveArticle(article);
-    await this.cache.del(`vitrine:article:slug:${article.slug}`);
+    await invalidateArticlePublicCache(this.cache, [article.slug]);
+
+    if (article.status === ArticleStatus.PUBLISHED) {
+      await this.webRevalidator.revalidate({
+        paths: buildArticlePublicPaths([article.slug], { includeListing: true }),
+      });
+    }
 
     return { id: article.id };
   }

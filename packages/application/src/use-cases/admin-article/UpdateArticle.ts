@@ -4,15 +4,21 @@ import {
   EntityNotFoundError,
   type CacheStore,
   type ContentRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { UpdateArticleBody } from '@ecommerce-amazon/shared/admin';
 
+import {
+  buildArticlePublicPaths,
+  invalidateArticlePublicCache,
+} from '../../cache/public-cache.helpers.js';
 import { assertUniqueArticleSlug } from './article.helpers.js';
 
 export class UpdateArticle {
   constructor(
     private readonly contentRepository: ContentRepository,
     private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(id: string, input: UpdateArticleBody): Promise<void> {
@@ -59,10 +65,12 @@ export class UpdateArticle {
     });
 
     await this.contentRepository.saveArticle(article);
-    await this.cache.del(`vitrine:article:slug:${existing.slug}`);
-    if (article.slug !== existing.slug) {
-      await this.cache.del(`vitrine:article:slug:${article.slug}`);
-    }
+    await invalidateArticlePublicCache(this.cache, [existing.slug, article.slug]);
+
+    const slugsToRevalidate = [...new Set([existing.slug, article.slug])];
+    await this.webRevalidator.revalidate({
+      paths: buildArticlePublicPaths(slugsToRevalidate, { includeListing: true }),
+    });
   }
 }
 
@@ -70,6 +78,7 @@ export class DeleteArticle {
   constructor(
     private readonly contentRepository: ContentRepository,
     private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(id: string): Promise<void> {
@@ -79,6 +88,9 @@ export class DeleteArticle {
     }
 
     await this.contentRepository.deleteArticle(id);
-    await this.cache.del(`vitrine:article:slug:${existing.slug}`);
+    await invalidateArticlePublicCache(this.cache, [existing.slug]);
+    await this.webRevalidator.revalidate({
+      paths: buildArticlePublicPaths([existing.slug], { includeListing: true }),
+    });
   }
 }

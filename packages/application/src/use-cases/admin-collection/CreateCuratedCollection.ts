@@ -6,6 +6,7 @@ import {
   type CacheInvalidator,
   type CacheStore,
   type CuratedCollectionRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { CreateCollectionBody } from '@ecommerce-amazon/shared/admin';
 
@@ -16,6 +17,7 @@ export class CreateCuratedCollection {
     private readonly collectionRepository: CuratedCollectionRepository,
     private readonly cache: CacheStore,
     private readonly cacheInvalidator: CacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: CreateCollectionBody): Promise<{ id: string }> {
@@ -49,6 +51,9 @@ export class CreateCuratedCollection {
   private async invalidateCaches(collection: CuratedCollection): Promise<void> {
     await this.cache.del(`vitrine:collection:slug:${collection.slug}`);
     await this.cacheInvalidator.invalidateProducts(collection.productIds);
+    await this.webRevalidator.revalidate({
+      paths: [`/colecoes/${collection.slug}`, '/'],
+    });
   }
 }
 

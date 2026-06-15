@@ -3,13 +3,17 @@ import {
   ValidationError,
   type PageCacheInvalidator,
   type PageRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
+
+import { buildCmsPagePublicPath } from '../../cache/public-cache.helpers.js';
 
 export class UpdatePageBlocksOrder {
   constructor(
     private readonly pageRepository: PageRepository,
     private readonly pageCacheInvalidator: PageCacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: {
@@ -64,6 +68,9 @@ export class UpdatePageBlocksOrder {
     }
 
     await this.pageCacheInvalidator.invalidateBySlug(page.layout.slug);
+    await this.webRevalidator.revalidate({
+      paths: [buildCmsPagePublicPath(page.layout.slug)],
+    });
 
     return ok({ updated: orders.length });
   }

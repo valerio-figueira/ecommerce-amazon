@@ -16,6 +16,7 @@ import {
   createMockCategoryRepository,
   createMockPriceSnapshotRepository,
   createMockProductRepository,
+  createMockPublicWebRevalidator,
 } from '../../test/mock-factories.js';
 
 const baseInput = {
@@ -78,6 +79,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       snapshotRepository,
       cacheInvalidator,
+      createMockPublicWebRevalidator(),
     );
     const result = await useCase.execute('cadeira-ergonomica-pro-x', baseInput);
 
@@ -102,6 +104,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await useCase.execute('cadeira-ergonomica-pro-x', {
@@ -131,6 +134,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await useCase.execute('cadeira-ergonomica-pro-x', {
@@ -154,6 +158,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await useCase.execute('cadeira-ergonomica-pro-x', {
@@ -170,6 +175,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await expect(useCase.execute('missing-slug', baseInput)).rejects.toBeInstanceOf(
@@ -188,6 +194,7 @@ describe('UpdateProduct', () => {
       createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
     );
 
     await expect(

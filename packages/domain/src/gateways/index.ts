@@ -64,6 +64,15 @@ export interface PageCacheInvalidator {
   invalidateBySlug(slug: string): Promise<void>;
 }
 
+export type PublicWebRevalidationOptions = {
+  paths?: string[];
+  layoutPaths?: string[];
+};
+
+export interface PublicWebRevalidator {
+  revalidate(options: PublicWebRevalidationOptions): Promise<void>;
+}
+
 export type AuthTokenPayload = {
   sub: string;
   email: string;

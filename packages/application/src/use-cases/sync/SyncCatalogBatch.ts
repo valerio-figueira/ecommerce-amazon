@@ -1,5 +1,6 @@
 import {
   TitleHygieneService,
+  type CacheInvalidator,
   type Marketplace,
   type MarketplaceFetcherFactory,
   type ProductRepository,
@@ -9,6 +10,7 @@ export class SyncCatalogBatch {
   constructor(
     private readonly productRepository: ProductRepository,
     private readonly fetcherFactory: MarketplaceFetcherFactory,
+    private readonly cacheInvalidator: CacheInvalidator,
     private readonly hygiene = new TitleHygieneService(),
   ) {}
 
@@ -16,6 +18,7 @@ export class SyncCatalogBatch {
     const fetcher = this.fetcherFactory.get(input.marketplace);
     const results = await fetcher.fetchProductsBatch(input.externalIds);
     let processed = 0;
+    const productIds: string[] = [];
 
     for (const result of results) {
       const product = await this.productRepository.findByExternalId(
@@ -31,7 +34,12 @@ export class SyncCatalogBatch {
       product.rating = result.rating;
       product.reviewCount = result.reviewCount;
       await this.productRepository.save(product);
+      productIds.push(product.id);
       processed++;
+    }
+
+    if (productIds.length > 0) {
+      await this.cacheInvalidator.invalidateProducts(productIds);
     }
 
     return { processed };

@@ -27,6 +27,8 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `API_INTERNAL_URL` | `http://localhost:3000` | Rewrite `/go/:slug` no Next.js |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | URLs absolutas no JSON-LD |
 | `CORS_ORIGINS` | `http://localhost:3001,...` | Origens explícitas na API (incluir `:3002` para admin) |
+| `REVALIDATE_SECRET` | (vazio desliga) | Secret compartilhado API → `POST /api/revalidate` no web |
+| `WEB_PUBLIC_URL` | `http://localhost:${WEB_PORT}` | Base URL da vitrine para revalidação on-demand |
 | `NEXT_ALLOWED_DEV_ORIGINS` | — | IP LAN para assets Next dev (ex.: `192.168.100.6`) |
 
 ## Infraestrutura (Postgres + Redis)

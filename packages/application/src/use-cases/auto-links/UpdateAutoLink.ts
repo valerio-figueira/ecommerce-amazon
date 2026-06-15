@@ -2,6 +2,7 @@ import {
   EntityNotFoundError,
   type AutoLinkRepository,
   type CacheStore,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { UpdateAutoLinkBody } from '@ecommerce-amazon/shared/admin';
 import { AUTO_LINKS_CACHE_KEY } from '@ecommerce-amazon/shared/seo';
@@ -12,6 +13,7 @@ export class UpdateAutoLink {
   constructor(
     private readonly autoLinkRepository: AutoLinkRepository,
     private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(id: string, input: UpdateAutoLinkBody): Promise<void> {
@@ -43,5 +45,8 @@ export class UpdateAutoLink {
 
     await this.autoLinkRepository.save(updated);
     await this.cache.del(AUTO_LINKS_CACHE_KEY);
+    await this.webRevalidator.revalidate({
+      layoutPaths: ['/artigos'],
+    });
   }
 }

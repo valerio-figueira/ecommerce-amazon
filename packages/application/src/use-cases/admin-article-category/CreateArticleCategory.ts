@@ -5,12 +5,19 @@ import {
   ConflictError,
   EntityNotFoundError,
   type ArticleCategoryRepository,
+  type CacheStore,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type {
   CreateArticleCategoryBody,
   UpdateArticleCategoryBody,
 } from '@ecommerce-amazon/shared/admin';
 
+import {
+  buildArticleCategoryPublicPaths,
+  buildArticlePublicPaths,
+  invalidateArticlePublicCache,
+} from '../../cache/public-cache.helpers.js';
 import { assertUniqueArticleCategorySlug } from './article-category.helpers.js';
 
 export class CreateArticleCategory {
@@ -49,13 +56,20 @@ export class ListArticleCategories {
 }
 
 export class UpdateArticleCategory {
-  constructor(private readonly articleCategoryRepository: ArticleCategoryRepository) {}
+  constructor(
+    private readonly articleCategoryRepository: ArticleCategoryRepository,
+    private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(id: string, input: UpdateArticleCategoryBody): Promise<void> {
     const category = await this.articleCategoryRepository.findById(id);
     if (!category) {
       throw new EntityNotFoundError('ArticleCategory', id);
     }
+
+    const previousSlug = category.slug;
+    const linkedSlugs = await this.articleCategoryRepository.listLinkedArticleSlugs(id);
 
     const nextSlug = input.slug ?? category.slug;
     if (nextSlug !== category.slug) {
@@ -71,11 +85,24 @@ export class UpdateArticleCategory {
     });
 
     await this.articleCategoryRepository.save(updated);
+    await invalidateArticlePublicCache(this.cache, linkedSlugs);
+
+    const categorySlugs = [...new Set([previousSlug, updated.slug])];
+    await this.webRevalidator.revalidate({
+      paths: [
+        ...buildArticlePublicPaths(linkedSlugs, { includeListing: true }),
+        ...buildArticleCategoryPublicPaths(categorySlugs),
+      ],
+    });
   }
 }
 
 export class DeleteArticleCategory {
-  constructor(private readonly articleCategoryRepository: ArticleCategoryRepository) {}
+  constructor(
+    private readonly articleCategoryRepository: ArticleCategoryRepository,
+    private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(id: string): Promise<void> {
     const category = await this.articleCategoryRepository.findById(id);
@@ -89,5 +116,8 @@ export class DeleteArticleCategory {
     }
 
     await this.articleCategoryRepository.delete(id);
+    await this.webRevalidator.revalidate({
+      paths: buildArticleCategoryPublicPaths([category.slug], { includeListing: true }),
+    });
   }
 }

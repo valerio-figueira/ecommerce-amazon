@@ -97,4 +97,13 @@ export class DrizzleArticleCategoryRepository implements ArticleCategoryReposito
 
     return Number(rows[0]?.count ?? 0);
   }
+
+  async listLinkedArticleSlugs(id: string): Promise<string[]> {
+    const rows = await this.db
+      .select({ slug: schema.contentArticles.slug })
+      .from(schema.contentArticles)
+      .where(eq(schema.contentArticles.categoryId, id));
+
+    return rows.map((row) => row.slug);
+  }
 }

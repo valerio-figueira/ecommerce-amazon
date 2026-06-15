@@ -1,4 +1,5 @@
 import type { CacheStore, Coupon, CouponRepository } from '@ecommerce-amazon/domain';
+import { COUPONS_ACTIVE_CACHE_KEY } from '@ecommerce-amazon/shared/cache';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -19,7 +20,7 @@ export class ListActiveCoupons {
   ) {}
 
   async execute(): Promise<Coupon[]> {
-    const cacheKey = 'vitrine:coupons:active';
+    const cacheKey = COUPONS_ACTIVE_CACHE_KEY;
     const cached = await this.cache.get(cacheKey);
     if (isCachedCouponList(cached)) {
       return cached;

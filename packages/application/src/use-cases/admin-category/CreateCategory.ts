@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { Category, ValidationError, type CategoryRepository } from '@ecommerce-amazon/domain';
+import { Category, ValidationError, type CategoryRepository, type PublicWebRevalidator } from '@ecommerce-amazon/domain';
 import type { CreateCategoryBody, AdminCategoryTreeNode } from '@ecommerce-amazon/shared/admin';
 import { buildCategoryTree } from '@ecommerce-amazon/shared/category/build-category-tree';
 
@@ -10,7 +10,10 @@ import {
 } from '../category/category.helpers.js';
 
 export class CreateCategory {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(input: CreateCategoryBody): Promise<{ id: string }> {
     await assertUniqueCategorySlug(this.categoryRepository, input.slug);
@@ -43,6 +46,10 @@ export class CreateCategory {
     });
 
     await this.categoryRepository.save(category);
+    await this.webRevalidator.revalidate({
+      paths: [`/categorias/${category.slug}`, '/'],
+      layoutPaths: ['/'],
+    });
     return { id: category.id };
   }
 }

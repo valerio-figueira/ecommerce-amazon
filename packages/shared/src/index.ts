@@ -51,12 +51,15 @@ const envSchemaBase = z.object({
   JWT_EXPIRES_IN: z.string().default('8h'),
   ADMIN_SEED_EMAIL: z.string().email().default('admin@vitrine.local'),
   ADMIN_SEED_PASSWORD: z.string().min(8).default('vitrine-admin'),
+  REVALIDATE_SECRET: z.string().default(''),
+  WEB_PUBLIC_URL: z.string().url().optional(),
 });
 
 export const envSchema = envSchemaBase.transform((data) => ({
   ...data,
   DATABASE_URL: data.DATABASE_URL ?? buildDatabaseUrl(data),
   REDIS_URL: data.REDIS_URL ?? `redis://${data.REDIS_HOST}:${data.REDIS_PORT}`,
+  WEB_PUBLIC_URL: data.WEB_PUBLIC_URL ?? `http://localhost:${data.WEB_PORT}`,
 }));
 
 export type Env = z.infer<typeof envSchema>;

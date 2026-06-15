@@ -61,6 +61,10 @@ import {
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
 import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.js';
+import {
+  HttpPublicWebRevalidator,
+  NoOpPublicWebRevalidator,
+} from '../cache/http-public-web.revalidator.js';
 import { parseRedisUrl } from '../cache/redis-connection.js';
 import { createDrizzleClient } from '../persistence/drizzle/client.js';
 import { DrizzleProductRepository } from '../persistence/repositories/drizzle-product.repository.js';
@@ -90,6 +94,9 @@ export function buildApiContainer(env = loadEnv()) {
   const db = createDrizzleClient(env.DATABASE_URL);
   const cacheRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB));
   const cache = new RedisCacheStore(cacheRedis);
+  const webRevalidator = env.REVALIDATE_SECRET
+    ? new HttpPublicWebRevalidator(env.WEB_PUBLIC_URL, env.REVALIDATE_SECRET, logger)
+    : new NoOpPublicWebRevalidator();
 
   const productRepository = new DrizzleProductRepository(db);
   const categoryRepository = new DrizzleCategoryRepository(db);
@@ -103,6 +110,7 @@ export function buildApiContainer(env = loadEnv()) {
     categoryRepository,
     snapshotRepository,
     cache,
+    webRevalidator,
   );
   const getAdminProduct = new GetAdminProduct(productRepository);
   const updateProduct = new UpdateProduct(
@@ -110,6 +118,7 @@ export function buildApiContainer(env = loadEnv()) {
     categoryRepository,
     snapshotRepository,
     cache,
+    webRevalidator,
   );
   const alertRepository = new DrizzlePriceAlertRepository(db);
   const wishlistRepository = new DrizzleWishlistRepository(db);
@@ -176,16 +185,19 @@ export function buildApiContainer(env = loadEnv()) {
         curatedCollectionRepository,
         cache,
         cache,
+        webRevalidator,
       ),
       updateCuratedCollection: new UpdateCuratedCollection(
         curatedCollectionRepository,
         cache,
         cache,
+        webRevalidator,
       ),
       deleteCuratedCollection: new DeleteCuratedCollection(
         curatedCollectionRepository,
         cache,
         cache,
+        webRevalidator,
       ),
       createComparison: new CreateComparison(comparisonRepository),
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
@@ -204,25 +216,25 @@ export function buildApiContainer(env = loadEnv()) {
       listCategoryTree: new ListCategoryTree(categoryRepository),
       getCategoryBySlug: new GetCategoryBySlug(categoryRepository),
       listAdminCategories: new ListAdminCategories(categoryRepository),
-      createCategory: new CreateCategory(categoryRepository),
-      updateCategory: new UpdateCategory(categoryRepository),
-      deleteCategory: new DeleteCategory(categoryRepository),
-      reorderCategories: new ReorderCategories(categoryRepository),
+      createCategory: new CreateCategory(categoryRepository, webRevalidator),
+      updateCategory: new UpdateCategory(categoryRepository, webRevalidator),
+      deleteCategory: new DeleteCategory(categoryRepository, webRevalidator),
+      reorderCategories: new ReorderCategories(categoryRepository, webRevalidator),
       getWishlist: new GetWishlist(wishlistRepository, productRepository),
-      savePageBlock: new SavePageBlock(pageRepository, cache),
-      deletePageBlock: new DeletePageBlock(pageRepository, cache),
-      updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache),
+      savePageBlock: new SavePageBlock(pageRepository, cache, webRevalidator),
+      deletePageBlock: new DeletePageBlock(pageRepository, cache, webRevalidator),
+      updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache, webRevalidator),
       getAdminPageLayout: new GetAdminPageLayout(pageRepository),
       listAdminPages: new ListAdminPages(pageRepository),
       listAdminArticles: new ListAdminArticles(contentRepository),
-      createArticle: new CreateArticle(contentRepository, cache),
+      createArticle: new CreateArticle(contentRepository, cache, webRevalidator),
       getAdminArticle: new GetAdminArticle(contentRepository),
-      updateArticle: new UpdateArticle(contentRepository, cache),
-      deleteArticle: new DeleteArticle(contentRepository, cache),
+      updateArticle: new UpdateArticle(contentRepository, cache, webRevalidator),
+      deleteArticle: new DeleteArticle(contentRepository, cache, webRevalidator),
       listActiveAutoLinks: new ListActiveAutoLinks(autoLinkRepository, cache),
-      createAutoLink: new CreateAutoLink(autoLinkRepository, cache),
-      updateAutoLink: new UpdateAutoLink(autoLinkRepository, cache),
-      deleteAutoLink: new DeleteAutoLink(autoLinkRepository, cache),
+      createAutoLink: new CreateAutoLink(autoLinkRepository, cache, webRevalidator),
+      updateAutoLink: new UpdateAutoLink(autoLinkRepository, cache, webRevalidator),
+      deleteAutoLink: new DeleteAutoLink(autoLinkRepository, cache, webRevalidator),
       listAutoLinksAdmin: new ListAutoLinksAdmin(autoLinkRepository),
       resolveAffiliateRedirect: new ResolveAffiliateRedirect(
         productRepository,
@@ -236,8 +248,16 @@ export function buildApiContainer(env = loadEnv()) {
       ),
       listArticleCategories: new ListArticleCategories(articleCategoryRepository),
       createArticleCategory: new CreateArticleCategory(articleCategoryRepository),
-      updateArticleCategory: new UpdateArticleCategory(articleCategoryRepository),
-      deleteArticleCategory: new DeleteArticleCategory(articleCategoryRepository),
+      updateArticleCategory: new UpdateArticleCategory(
+        articleCategoryRepository,
+        cache,
+        webRevalidator,
+      ),
+      deleteArticleCategory: new DeleteArticleCategory(
+        articleCategoryRepository,
+        cache,
+        webRevalidator,
+      ),
     },
     services: {
       authTokenService,

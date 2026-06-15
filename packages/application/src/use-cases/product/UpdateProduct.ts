@@ -11,6 +11,7 @@ import {
   type PriceSnapshotRepository,
   type Product,
   type ProductRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { UpdateProductBody } from '@ecommerce-amazon/shared/admin';
 
@@ -35,6 +36,7 @@ export class UpdateProduct {
     private readonly categoryRepository: CategoryRepository,
     private readonly snapshotRepository: PriceSnapshotRepository,
     private readonly cacheInvalidator: CacheInvalidator,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(slug: string, input: UpdateProductBody): Promise<UpdateProductResult> {
@@ -55,6 +57,7 @@ export class UpdateProduct {
     const now = new Date();
     const previousAmount = product.price.amount;
     const wasStale = product.price.isStale;
+    const previousCategoryId = product.categoryId;
     const price = this.buildUpdatedPrice(product, input, now);
 
     this.applyFormFields(product, input, price);
@@ -76,6 +79,21 @@ export class UpdateProduct {
     }
 
     await this.cacheInvalidator.invalidateProducts([product.id]);
+
+    const paths = [`/produtos/${product.slug}`];
+    if (product.categoryId) {
+      const category = await this.categoryRepository.findById(product.categoryId);
+      if (category) {
+        paths.push(`/categorias/${category.slug}`);
+      }
+    }
+    if (previousCategoryId && previousCategoryId !== product.categoryId) {
+      const previousCategory = await this.categoryRepository.findById(previousCategoryId);
+      if (previousCategory) {
+        paths.push(`/categorias/${previousCategory.slug}`);
+      }
+    }
+    await this.webRevalidator.revalidate({ paths: [...new Set(paths)] });
 
     return { id: product.id, slug: product.slug };
   }

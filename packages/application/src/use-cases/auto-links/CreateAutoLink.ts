@@ -4,6 +4,7 @@ import {
   AutoLink,
   type AutoLinkRepository,
   type CacheStore,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { CreateAutoLinkBody } from '@ecommerce-amazon/shared/admin';
 import { AUTO_LINKS_CACHE_KEY } from '@ecommerce-amazon/shared/seo';
@@ -14,6 +15,7 @@ export class CreateAutoLink {
   constructor(
     private readonly autoLinkRepository: AutoLinkRepository,
     private readonly cache: CacheStore,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: CreateAutoLinkBody): Promise<{ id: string }> {
@@ -33,6 +35,9 @@ export class CreateAutoLink {
 
     await this.autoLinkRepository.save(autoLink);
     await this.cache.del(AUTO_LINKS_CACHE_KEY);
+    await this.webRevalidator.revalidate({
+      layoutPaths: ['/artigos'],
+    });
 
     return { id: autoLink.id };
   }

@@ -3,6 +3,7 @@ import {
   EntityNotFoundError,
   ValidationError,
   type CategoryRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 import type { UpdateCategoryBody } from '@ecommerce-amazon/shared/admin';
 
@@ -13,13 +14,18 @@ import {
 } from '../category/category.helpers.js';
 
 export class UpdateCategory {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(id: string, input: UpdateCategoryBody): Promise<void> {
     const category = await this.categoryRepository.findById(id);
     if (!category) {
       throw new EntityNotFoundError('Category', id);
     }
+
+    const previousSlug = category.slug;
 
     if (input.slug !== undefined && input.slug !== category.slug) {
       await assertUniqueCategorySlug(this.categoryRepository, input.slug, id);
@@ -54,11 +60,23 @@ export class UpdateCategory {
 
     category.updatedAt = new Date();
     await this.categoryRepository.save(category);
+
+    const paths = [`/categorias/${category.slug}`, '/'];
+    if (category.slug !== previousSlug) {
+      paths.push(`/categorias/${previousSlug}`);
+    }
+    await this.webRevalidator.revalidate({
+      paths: [...new Set(paths)],
+      layoutPaths: ['/'],
+    });
   }
 }
 
 export class DeleteCategory {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(id: string): Promise<void> {
     const category = await this.categoryRepository.findById(id);
@@ -77,13 +95,24 @@ export class DeleteCategory {
     }
 
     await this.categoryRepository.delete(id);
+    await this.webRevalidator.revalidate({
+      paths: [`/categorias/${category.slug}`, '/'],
+      layoutPaths: ['/'],
+    });
   }
 }
 
 export class ReorderCategories {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(items: { id: string; sortOrder: number }[]): Promise<void> {
     await this.categoryRepository.reorder(items);
+    await this.webRevalidator.revalidate({
+      paths: ['/'],
+      layoutPaths: ['/'],
+    });
   }
 }

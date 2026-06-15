@@ -9,6 +9,7 @@ import type {
   PageRepository,
   PriceSnapshotRepository,
   ProductRepository,
+  PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 
 export function createMockProductRepository(
@@ -91,6 +92,15 @@ export function createMockPageCacheInvalidator(
 ): PageCacheInvalidator {
   return {
     invalidateBySlug: vi.fn(),
+    ...overrides,
+  };
+}
+
+export function createMockPublicWebRevalidator(
+  overrides: Partial<PublicWebRevalidator> = {},
+): PublicWebRevalidator {
+  return {
+    revalidate: vi.fn(),
     ...overrides,
   };
 }
