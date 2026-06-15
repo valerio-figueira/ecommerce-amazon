@@ -143,6 +143,9 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
             </p>
           </div>
           <div className="cms-panel-actions">
+            <span className="text-sm text-[var(--admin-text-muted)]">
+              <strong>{totalCount}</strong> categoria{totalCount === 1 ? '' : 's'}
+            </span>
             <Button type="button" onClick={() => openCreate(null)}>
               <Plus className="mr-2 size-4" />
               Nova categoria raiz
@@ -164,7 +167,7 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
               onReorder={(id, direction) => void handleReorder(id, direction)}
             />
           ) : (
-            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-[var(--admin-text-muted)]">
+            <div className="cms-empty-state rounded-lg border border-dashed p-8 text-center text-sm text-[var(--admin-text-muted)]">
               <FolderTree className="mx-auto mb-3 size-8 opacity-60" />
               Nenhuma categoria cadastrada ainda.
             </div>

@@ -9,6 +9,7 @@ import {
   formatParentOptionLabel,
 } from '@/lib/api/categories-utils';
 
+import { ArticleSeoCharCounter } from '@/components/articles/ArticleSeoCharCounter';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,6 +39,9 @@ import {
 
 import { CategoryFieldHint } from './CategoryFieldHint';
 import { CategoryLlmPromptHelper } from './CategoryLlmPromptHelper';
+
+const SEO_TITLE_GOOGLE_LIMIT = 60;
+const SEO_DESCRIPTION_GOOGLE_LIMIT = 160;
 
 type CategoryFormSheetProps = {
   open: boolean;
@@ -362,9 +366,12 @@ export function CategoryFormSheet({
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="category-seo-title">SEO title (opcional)</Label>
-                <CategoryFieldHint text="Título da aba e do Google. Ideal: palavra-chave + benefício, até ~60 caracteres visíveis." />
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Label htmlFor="category-seo-title">SEO title (opcional)</Label>
+                  <CategoryFieldHint text="Título da aba e do Google. Ideal: palavra-chave + benefício, até ~60 caracteres visíveis." />
+                </div>
+                <ArticleSeoCharCounter value={seoTitle} limit={SEO_TITLE_GOOGLE_LIMIT} />
               </div>
               <Input
                 id="category-seo-title"
@@ -376,9 +383,15 @@ export function CategoryFormSheet({
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="category-seo-description">SEO description (opcional)</Label>
-                <CategoryFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres, mencione curadoria e comparação de preços." />
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Label htmlFor="category-seo-description">SEO description (opcional)</Label>
+                  <CategoryFieldHint text="Snippet nos resultados de busca. Alvo: 140–160 caracteres, mencione curadoria e comparação de preços." />
+                </div>
+                <ArticleSeoCharCounter
+                  value={seoDescription}
+                  limit={SEO_DESCRIPTION_GOOGLE_LIMIT}
+                />
               </div>
               <Textarea
                 id="category-seo-description"
@@ -390,12 +403,6 @@ export function CategoryFormSheet({
                 }
                 maxLength={2000}
               />
-              <p className="text-xs text-[var(--admin-text-muted)]">
-                {seoDescription.trim().length}/2000 caracteres
-                {seoDescription.trim().length > 0 && seoDescription.trim().length <= 160
-                  ? ' · bom tamanho para snippet'
-                  : ''}
-              </p>
             </div>
 
             <div className="space-y-2">

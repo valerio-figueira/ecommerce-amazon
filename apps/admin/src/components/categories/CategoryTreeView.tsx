@@ -1,6 +1,16 @@
 'use client';
 
-import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  FileText,
+  Folder,
+  FolderOpen,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -128,22 +138,31 @@ function CategoryTreeNodeRow({
         </div>
 
         <div className="category-tree-node__content min-w-0 flex-1">
-          <p className="truncate font-medium text-[var(--admin-navy)]">
+          <p className="truncate font-semibold text-[var(--admin-navy)]">
             {node.icon ? <span className="mr-1.5">{node.icon}</span> : null}
             {node.label}
           </p>
-          <p className="truncate text-xs text-[var(--admin-text-muted)]">/{node.slug}</p>
+          <div className="category-tree-node__meta">
+            <p className="truncate text-xs text-[var(--admin-text-muted)]">/{node.slug}</p>
+            {hasChildren ? (
+              <span className="category-tree-node__badge">
+                {node.subcategories!.length}{' '}
+                {node.subcategories!.length === 1 ? 'subcategoria' : 'subcategorias'}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        <div className="category-tree-node__actions flex shrink-0 items-center gap-0.5">
+        <div className="category-tree-node__actions">
           <Button
             type="button"
             size="sm"
-            variant="ghost"
+            variant="outline"
             className="h-8 px-2 text-xs"
             onClick={() => onCreateChild(node)}
           >
-            + Sub
+            <Plus className="mr-1 size-3.5" />
+            Sub
           </Button>
           <Button
             type="button"
@@ -153,7 +172,7 @@ function CategoryTreeNodeRow({
             aria-label="Subir"
             onClick={() => onReorder(node.id, 'up')}
           >
-            ↑
+            <ChevronUp className="size-4" />
           </Button>
           <Button
             type="button"
@@ -163,24 +182,26 @@ function CategoryTreeNodeRow({
             aria-label="Descer"
             onClick={() => onReorder(node.id, 'down')}
           >
-            ↓
+            <ChevronDown className="size-4" />
           </Button>
           <Button
             type="button"
             size="sm"
-            variant="ghost"
+            variant="outline"
             className="h-8 px-2 text-xs"
             onClick={() => onEdit(node)}
           >
+            <Pencil className="mr-1 size-3.5" />
             Editar
           </Button>
           <Button
             type="button"
             size="sm"
-            variant="ghost"
-            className="h-8 px-2 text-xs text-red-600 hover:text-red-700"
+            variant="destructive"
+            className="h-8 px-2 text-xs"
             onClick={() => onDelete(node)}
           >
+            <Trash2 className="mr-1 size-3.5" />
             Excluir
           </Button>
         </div>
