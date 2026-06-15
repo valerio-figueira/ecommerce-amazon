@@ -8,6 +8,7 @@ import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
+import type { AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
 import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
 import { ProductEditorialProsCons } from '@/components/product/ProductEditorialProsCons';
 import { ProductRating } from '@/components/product/ProductRating';
@@ -19,7 +20,8 @@ type ProductCardProps = {
   product: ProductListItemDto;
   className?: string;
   blockId?: string | undefined;
-  clickOrigin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  articleId?: string | undefined;
+  clickOrigin?: AffiliateClickOrigin;
   utmDefaults?: Record<string, string>;
   /** Smaller card footprint via shorter image + tighter layout; typography stays default. */
   variant?: 'default' | 'compact' | 'editorial';
@@ -32,6 +34,7 @@ export function ProductCard({
   product,
   className,
   blockId,
+  articleId,
   clickOrigin = 'listagem',
   utmDefaults,
   variant = 'default',
@@ -115,6 +118,7 @@ export function ProductCard({
               product={product}
               sessionId={sessionId}
               blockId={blockId}
+              articleId={articleId}
               clickOrigin={clickOrigin}
               editorial
               {...(utmDefaults !== undefined ? { utmDefaults } : {})}
@@ -196,6 +200,7 @@ export function ProductCard({
             product={product}
             sessionId={sessionId}
             blockId={blockId}
+            articleId={articleId}
             clickOrigin={clickOrigin}
             compact={isCompact}
             {...(utmDefaults !== undefined ? { utmDefaults } : {})}

@@ -62,6 +62,13 @@ import {
   UploadOperatorAvatar,
   RemoveOperatorAvatar,
   UploadAdminImage,
+  GetClickAnalyticsOverview,
+  GetClicksByOrigin,
+  GetClicksByMarketplace,
+  GetTopClickedProducts,
+  GetConvertingArticles,
+  GetGa4TrafficAcquisition,
+  GetCtrByOrigin,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -91,6 +98,8 @@ import { DrizzleArticleCategoryRepository } from '../persistence/repositories/dr
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
+import { DrizzleAnalyticsRepository } from '../persistence/repositories/drizzle-analytics.repository.js';
+import { GoogleAnalyticsDataGateway } from '../analytics/google-analytics-data.gateway.js';
 import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
 import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
 import { createObjectStorage } from '../storage/object-storage.factory.js';
@@ -132,6 +141,8 @@ export function buildApiContainer(env = loadEnv()) {
   const couponRepository = new DrizzleCouponRepository(db);
   const comparisonRepository = new DrizzleProductComparisonRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
+  const analyticsRepository = new DrizzleAnalyticsRepository(db);
+  const ga4Gateway = new GoogleAnalyticsDataGateway();
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
   const articleCategoryRepository = new DrizzleArticleCategoryRepository(db);
@@ -275,6 +286,13 @@ export function buildApiContainer(env = loadEnv()) {
       uploadOperatorAvatar: new UploadOperatorAvatar(operatorRepository, objectStorage),
       removeOperatorAvatar: new RemoveOperatorAvatar(operatorRepository, objectStorage),
       uploadAdminImage: new UploadAdminImage(objectStorage),
+      getClickAnalyticsOverview: new GetClickAnalyticsOverview(analyticsRepository),
+      getClicksByOrigin: new GetClicksByOrigin(analyticsRepository),
+      getClicksByMarketplace: new GetClicksByMarketplace(analyticsRepository),
+      getTopClickedProducts: new GetTopClickedProducts(analyticsRepository),
+      getConvertingArticles: new GetConvertingArticles(analyticsRepository),
+      getGa4TrafficAcquisition: new GetGa4TrafficAcquisition(ga4Gateway, cache),
+      getCtrByOrigin: new GetCtrByOrigin(analyticsRepository, ga4Gateway, cache),
     },
     services: {
       authTokenService,

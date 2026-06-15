@@ -146,6 +146,7 @@ export const publicArticleCategoriesResponseSchema = z.object({
 export type PublicArticleCategoriesResponse = z.infer<typeof publicArticleCategoriesResponseSchema>;
 
 export const articlePublicDetailSchema = z.object({
+  id: z.string().uuid(),
   slug: articleSlugSchema,
   title: z.string(),
   excerpt: z.string(),

@@ -47,8 +47,7 @@ export function ProductSimilarCarousel({
           <div key={product.id} className={cn(SLIDE_CLASS, 'flex py-1')}>
             <ProductCard
               product={product}
-              blockId="product-similar"
-              clickOrigin="listagem"
+              clickOrigin="similar"
               variant="compact"
               className="h-full w-full"
             />

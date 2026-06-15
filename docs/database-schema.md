@@ -204,10 +204,13 @@ Seed inicial migra `SEO_KEYWORD_MAP` estático.
 
 | Coluna | Valores / notas |
 |--------|-----------------|
-| `product_id`, `origin`, `session_id`, `occurred_at` | `origin`: `listagem`, `detalhe`, `embed`, `comparador`, `cupons` |
+| `product_id`, `origin`, `session_id`, `occurred_at` | `origin`: `listagem`, `detalhe`, `embed`, `comparador`, `cupons`, `coleção`, `similar`, `redirect_go` |
 | `block_id` | uuid FK → `page_blocks.id`, ON DELETE SET NULL; rastreamento analítico CMS |
+| `article_id` | uuid FK → `content_articles.id`, ON DELETE SET NULL; atribuição em embeds editoriais |
 
-INDEX `(block_id)`.
+Índices: `(block_id)`, `(occurred_at DESC)`, `(product_id, occurred_at)`, `(origin, occurred_at)`, `(article_id)` (parcial).
+
+Migration: [`0014_click_events_analytics.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0014_click_events_analytics.sql).
 
 ### Ops — `sync_job_logs` / `affiliate_accounts` / `operators`
 

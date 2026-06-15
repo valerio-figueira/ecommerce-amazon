@@ -317,11 +317,18 @@ export const clickEvents = pgTable(
       .notNull()
       .references(() => products.id, { onDelete: 'cascade' }),
     blockId: uuid('block_id').references(() => pageBlocks.id, { onDelete: 'set null' }),
+    articleId: uuid('article_id').references(() => contentArticles.id, { onDelete: 'set null' }),
     origin: text('origin').notNull(),
     sessionId: text('session_id'),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
   },
-  (table) => [index('click_events_block_id_idx').on(table.blockId)],
+  (table) => [
+    index('click_events_block_id_idx').on(table.blockId),
+    index('click_events_occurred_at_idx').on(table.occurredAt),
+    index('click_events_product_occurred_idx').on(table.productId, table.occurredAt),
+    index('click_events_origin_occurred_idx').on(table.origin, table.occurredAt),
+    index('click_events_article_id_idx').on(table.articleId),
+  ],
 );
 
 export const affiliateAccounts = pgTable('affiliate_accounts', {

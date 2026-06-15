@@ -70,10 +70,12 @@ export const RecordClickSchema = z.object({
     'comparador',
     'cupons',
     'coleção',
+    'similar',
     'redirect_go',
   ]),
   sessionId: z.string().optional(),
   blockId: z.string().uuid().optional(),
+  articleId: z.string().uuid().optional(),
 });
 
 export const GoSlugParamsSchema = z.object({
@@ -82,6 +84,7 @@ export const GoSlugParamsSchema = z.object({
 
 export const GoQuerySchema = z.object({
   blockId: z.string().uuid().optional(),
+  articleId: z.string().uuid().optional(),
   sessionId: z.string().optional(),
   origin: z.string().optional(),
   utm_source: z.string().optional(),

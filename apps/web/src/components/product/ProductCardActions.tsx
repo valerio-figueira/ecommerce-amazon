@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 
-import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
+import {
+  AffiliateGoLink,
+  type AffiliateClickOrigin,
+} from '@/components/product/AffiliateGoLink';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { marketplaceLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -11,7 +14,8 @@ type ProductCardActionsProps = {
   product: ProductListItemDto;
   sessionId?: string | undefined;
   blockId?: string | undefined;
-  clickOrigin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  articleId?: string | undefined;
+  clickOrigin?: AffiliateClickOrigin;
   utmDefaults?: Record<string, string>;
   className?: string;
   compact?: boolean;
@@ -23,6 +27,7 @@ export function ProductCardActions({
   product,
   sessionId,
   blockId,
+  articleId,
   clickOrigin = 'listagem',
   utmDefaults,
   className,
@@ -57,6 +62,7 @@ export function ProductCardActions({
           slug={product.slug}
           sessionId={sessionId}
           blockId={blockId}
+          articleId={articleId}
           origin={clickOrigin}
           {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           variant="primary"
@@ -94,6 +100,7 @@ export function ProductCardActions({
         slug={product.slug}
         sessionId={sessionId}
         blockId={blockId}
+        articleId={articleId}
         origin={clickOrigin}
         {...(utmDefaults !== undefined ? { utmDefaults } : {})}
         variant="outline"

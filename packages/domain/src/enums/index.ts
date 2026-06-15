@@ -66,6 +66,7 @@ export enum ClickOrigin {
   COMPARISON = 'comparador',
   COUPONS = 'cupons',
   COLLECTION = 'coleção',
+  SIMILAR = 'similar',
   REDIRECT_GO = 'redirect_go',
 }
 

@@ -7,6 +7,7 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
   const { article, author, category, relatedArticles, embeddedProducts } = result;
 
   return {
+    id: article.id,
     slug: article.slug,
     title: article.title,
     excerpt: article.excerpt,

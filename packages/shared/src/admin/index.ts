@@ -6,3 +6,4 @@ export * from './article-category-schemas.js';
 export * from './auto-link-schemas.js';
 export * from './profile-schemas.js';
 export * from './media-schemas.js';
+export * from './analytics-schemas.js';

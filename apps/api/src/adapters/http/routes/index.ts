@@ -88,8 +88,9 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       void useCases.recordClickEvent
         .execute({
           productId: result.value.productId,
-          origin: 'redirect_go',
+          origin: query.origin ?? 'redirect_go',
           ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
+          ...(query.articleId !== undefined ? { articleId: query.articleId } : {}),
           ...(sessionId !== undefined ? { sessionId } : {}),
         })
         .catch((error: unknown) => {

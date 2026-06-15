@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 type ComparisonTableProps = {
   slugs: string[];
   products: (ProductDetailDto | null)[];
+  articleId: string;
 };
 
 type ComparisonBadge = {
@@ -156,11 +157,13 @@ function MobileProductCard({
   slug,
   badges,
   specKeys,
+  articleId,
 }: {
   product: ProductDetailDto | null;
   slug: string;
   badges: ComparisonBadge[];
   specKeys: string[];
+  articleId: string;
 }): React.JSX.Element {
   if (!product) {
     return (
@@ -191,13 +194,22 @@ function MobileProductCard({
         <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
       </div>
       <div className="mt-4">
-        <ProductCardActions product={product} clickOrigin="embed" editorial />
+        <ProductCardActions
+          product={product}
+          clickOrigin="embed"
+          articleId={articleId}
+          editorial
+        />
       </div>
     </article>
   );
 }
 
-export function ComparisonTable({ slugs, products }: ComparisonTableProps): React.JSX.Element {
+export function ComparisonTable({
+  slugs,
+  products,
+  articleId,
+}: ComparisonTableProps): React.JSX.Element {
   if (slugs.length < 2 || slugs.length > 3) {
     return (
       <div className="rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
@@ -221,6 +233,7 @@ export function ComparisonTable({ slugs, products }: ComparisonTableProps): Reac
               slug={slugs[index] ?? ''}
               badges={badgesByIndex.get(index) ?? []}
               specKeys={specKeys}
+              articleId={articleId}
             />
           ))}
         </div>
@@ -300,7 +313,12 @@ export function ComparisonTable({ slugs, products }: ComparisonTableProps): Reac
               {products.map((product, index) => (
                 <TableCell key={`action-${slugs[index] ?? index}`}>
                   {product ? (
-                    <ProductCardActions product={product} clickOrigin="embed" editorial />
+                    <ProductCardActions
+                      product={product}
+                      clickOrigin="embed"
+                      articleId={articleId}
+                      editorial
+                    />
                   ) : (
                     '—'
                   )}

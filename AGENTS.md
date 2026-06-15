@@ -39,6 +39,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
+| [docs/admin-dashboard-phase1.md](docs/admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
 | [docs/admin-profile-phase1.md](docs/admin-profile-phase1.md) | Perfil operador, avatar upload, storage plugável |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |

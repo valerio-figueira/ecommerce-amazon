@@ -1,15 +1,24 @@
 'use client';
 
-import { recordClick } from '@/lib/api/events';
 import { buildGoUrl } from '@/lib/go-url';
 import { cn } from '@/lib/utils';
+
+export type AffiliateClickOrigin =
+  | 'listagem'
+  | 'detalhe'
+  | 'embed'
+  | 'comparador'
+  | 'cupons'
+  | 'coleção'
+  | 'similar';
 
 type AffiliateGoLinkProps = {
   productId: string;
   slug: string;
   sessionId?: string | undefined;
   blockId?: string | undefined;
-  origin?: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção';
+  articleId?: string | undefined;
+  origin?: AffiliateClickOrigin;
   utmDefaults?: Record<string, string>;
   className?: string;
   children: React.ReactNode;
@@ -17,10 +26,10 @@ type AffiliateGoLinkProps = {
 };
 
 export function AffiliateGoLink({
-  productId,
   slug,
   sessionId,
   blockId,
+  articleId,
   origin = 'listagem',
   utmDefaults,
   className,
@@ -29,6 +38,7 @@ export function AffiliateGoLink({
 }: AffiliateGoLinkProps): React.JSX.Element {
   const href = buildGoUrl(slug, {
     ...(blockId !== undefined ? { blockId } : {}),
+    ...(articleId !== undefined ? { articleId } : {}),
     ...(sessionId !== undefined ? { sessionId } : {}),
     origin,
     ...(utmDefaults !== undefined ? { utmDefaults } : {}),
@@ -36,7 +46,6 @@ export function AffiliateGoLink({
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
     event.stopPropagation();
-    void recordClick(productId, origin, sessionId);
   };
 
   return (

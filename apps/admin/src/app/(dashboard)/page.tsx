@@ -1,47 +1,109 @@
-import { LayoutDashboard, Package, Ticket } from 'lucide-react';
+import { Suspense } from 'react';
+import { AlertTriangle, MousePointerClick, Newspaper, Package } from 'lucide-react';
 
-import { AdminPageCard } from '@/components/admin/AdminPageCard';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { ClicksTrendChart } from '@/components/analytics/ClicksTrendChart';
+import { ConvertingArticlesTable } from '@/components/analytics/ConvertingArticlesTable';
+import { DashboardKpiCard } from '@/components/analytics/DashboardKpiCard';
+import { DateRangeSelect } from '@/components/analytics/DateRangeSelect';
+import { Ga4TrafficSection } from '@/components/analytics/Ga4TrafficSection';
+import { MarketplacePieChart } from '@/components/analytics/MarketplacePieChart';
+import { OriginBarChart } from '@/components/analytics/OriginBarChart';
+import { TopProductsTable } from '@/components/analytics/TopProductsTable';
+import {
+  fetchAnalyticsOverview,
+  fetchClicksByMarketplace,
+  fetchClicksByOrigin,
+  fetchConvertingArticles,
+  fetchGa4TrafficAcquisition,
+  fetchTopClickedProducts,
+  resolveDateRangeFromSearchParams,
+} from '@/lib/api/analytics';
 
 export const metadata = {
   title: 'Painel — Vitrine CMS',
 };
 
-export default function DashboardPage() {
-  const kpis = [
-    { label: 'Páginas CMS', value: '—', hint: 'Editor em breve', icon: LayoutDashboard },
-    { label: 'Produtos ativos', value: '—', hint: 'Catálogo via worker', icon: Package },
-    { label: 'Cupons verificados', value: '—', hint: 'Pipeline D', icon: Ticket },
-  ];
+type DashboardPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps): Promise<React.JSX.Element> {
+  const params = await searchParams;
+  const range = resolveDateRangeFromSearchParams(params);
+
+  const [overview, byOrigin, byMarketplace, topProducts, convertingArticles, ga4Traffic] =
+    await Promise.all([
+      fetchAnalyticsOverview(range),
+      fetchClicksByOrigin(range),
+      fetchClicksByMarketplace(range),
+      fetchTopClickedProducts(range),
+      fetchConvertingArticles(range),
+      fetchGa4TrafficAcquisition(range),
+    ]);
+
+  const topArticleClicks = convertingArticles.items[0]?.clickCount ?? 0;
 
   return (
-    <section className="admin-dashboard-board w-full max-w-[var(--admin-page-max-width)] space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <AdminPageCard key={kpi.label} className="p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm text-[color:var(--admin-text-muted)]">{kpi.label}</p>
-                  <p className="mt-1 text-3xl font-semibold text-[color:var(--admin-navy)]">
-                    {kpi.value}
-                  </p>
-                  <p className="mt-2 text-xs text-[color:var(--admin-text-muted)]">{kpi.hint}</p>
-                </div>
-                <Icon className="size-5 text-[color:var(--admin-primary)]" aria-hidden="true" />
-              </div>
-            </AdminPageCard>
-          );
-        })}
-      </div>
+    <>
+      <AdminPageHeader title="Painel" breadcrumbs={[{ label: 'Painel' }]} />
+      <section className="admin-dashboard-board w-full max-w-[var(--admin-page-max-width)] space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-[color:var(--admin-text-muted)]">
+            Cockpit de conversão, atribuição e saúde do catálogo.
+          </p>
+          <Suspense fallback={<div className="h-8 w-48 animate-pulse rounded-full bg-neutral-100" />}>
+            <DateRangeSelect />
+          </Suspense>
+        </div>
 
-      <AdminPageCard>
-        <h3 className="text-lg font-semibold text-[color:var(--admin-navy)]">Bem-vindo ao painel</h3>
-        <p className="mt-2 text-sm text-[color:var(--admin-text-muted)]">
-          Esta é a estrutura inicial do CMS interno. Use o menu lateral para navegar entre os módulos
-          previstos no MVP — páginas, produtos, artigos, coleções e cupons.
-        </p>
-      </AdminPageCard>
-    </section>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <DashboardKpiCard
+            label="Cliques de saída"
+            value={overview.totalClicks.toLocaleString('pt-BR')}
+            hint="CTAs de afiliado no período"
+            icon={MousePointerClick}
+          />
+          <DashboardKpiCard
+            label="Preços defasados"
+            value={`${overview.catalogHealth.staleRatePercent}%`}
+            hint={`${overview.catalogHealth.staleCount} de ${overview.catalogHealth.totalVisibleProducts} produtos visíveis`}
+            icon={AlertTriangle}
+          />
+          <DashboardKpiCard
+            label="Produtos esgotados"
+            value={overview.catalogHealth.outOfStockCount.toLocaleString('pt-BR')}
+            hint="Disponibilidade out_of_stock"
+            icon={Package}
+          />
+          <DashboardKpiCard
+            label="Top artigo conversor"
+            value={topArticleClicks.toLocaleString('pt-BR')}
+            hint="Maior volume de cliques via embed"
+            icon={Newspaper}
+          />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ClicksTrendChart data={overview.clicksTrend} />
+          <MarketplacePieChart data={byMarketplace.items} />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <OriginBarChart data={byOrigin.items} />
+          <TopProductsTable items={topProducts.items} />
+        </div>
+
+        <ConvertingArticlesTable items={convertingArticles.items} />
+
+        <Ga4TrafficSection
+          configured={ga4Traffic.configured}
+          totalPageViews={ga4Traffic.totalPageViews}
+          items={ga4Traffic.items}
+        />
+      </section>
+    </>
   );
 }

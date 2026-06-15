@@ -411,15 +411,16 @@ Comparador persistido por token de compartilhamento.
 ```typescript
 {
   productId: string;
-  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'redirect_go';
+  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção' | 'similar' | 'redirect_go';
   sessionId?: string;
   blockId?: string;
+  articleId?: string;
 }
 ```
 
 **Response:** 204
 
-Persistido em `click_events`. Redirect `/go` usa origem `redirect_go` automaticamente.
+Persistido em `click_events`. O fluxo principal de CTAs grava via `GET /go/:slug` com `origin` contextual na query (um evento por clique). `POST /events/click` permanece para integrações server-side.
 
 ---
 
@@ -540,6 +541,24 @@ Implementação: [`admin-product-routes.ts`](../apps/api/src/adapters/http/route
 **Body:** `updateProductBodySchema` (mesmo contrato do create). Marketplace e `externalId` devem permanecer iguais ao registro.
 
 **Response 200:** `{ id, slug }`
+
+---
+
+## Admin — analytics
+
+Implementação: [`admin-analytics-routes.ts`](../apps/api/src/adapters/http/routes/admin-analytics-routes.ts). Doc: [admin-dashboard-phase1.md](./admin-dashboard-phase1.md).
+
+Query comum: `from`, `to` (ISO datetime; default últimos 30 dias).
+
+| Rota | Response |
+|------|----------|
+| `GET /admin/analytics/overview` | `analyticsOverviewResponseSchema` |
+| `GET /admin/analytics/clicks/by-origin` | `clicksByOriginResponseSchema` |
+| `GET /admin/analytics/clicks/by-marketplace` | `clicksByMarketplaceResponseSchema` |
+| `GET /admin/analytics/clicks/top-products?limit=10` | `topClickedProductsResponseSchema` |
+| `GET /admin/analytics/articles/converting?limit=10` | `convertingArticlesResponseSchema` |
+| `GET /admin/analytics/traffic/acquisition` | `ga4TrafficAcquisitionResponseSchema` (requer `GA4_*` env) |
+| `GET /admin/analytics/ctr/by-origin` | `ctrByOriginResponseSchema` |
 
 ---
 

@@ -28,6 +28,7 @@ export * from './repositories/AutoLinkRepository.js';
 export * from './repositories/CuratedCollectionRepository.js';
 export * from './repositories/CouponRepository.js';
 export * from './repositories/ProductComparisonRepository.js';
+export * from './repositories/AnalyticsRepository.js';
 export * from './repositories/PageRepository.js';
 export * from './repositories/AffiliateAccountRepository.js';
 export * from './repositories/OperatorRepository.js';

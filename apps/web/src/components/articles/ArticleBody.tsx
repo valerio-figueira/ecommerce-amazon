@@ -49,7 +49,11 @@ export function ArticleBody({
               className="not-prose my-8"
               aria-label="Comparativo de produtos"
             >
-              <ComparisonTable slugs={segment.slugs} products={products} />
+              <ComparisonTable
+                slugs={segment.slugs}
+                products={products}
+                articleId={article.id}
+              />
             </aside>
           );
         }
@@ -61,7 +65,7 @@ export function ArticleBody({
             className="not-prose my-8"
             aria-label="Produto recomendado"
           >
-            <ArticleProductEmbed slug={segment.slug} product={product} />
+            <ArticleProductEmbed slug={segment.slug} product={product} articleId={article.id} />
           </aside>
         );
       })}

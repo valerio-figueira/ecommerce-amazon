@@ -6,11 +6,13 @@ import type { ProductDetailDto } from '@/lib/api/schemas';
 type ArticleProductEmbedProps = {
   slug: string;
   product: ProductDetailDto | null;
+  articleId: string;
 };
 
 export function ArticleProductEmbed({
   slug,
   product,
+  articleId,
 }: ArticleProductEmbedProps): React.JSX.Element {
   if (!product) {
     return (
@@ -26,6 +28,7 @@ export function ArticleProductEmbed({
         product={product}
         variant="editorial"
         clickOrigin="embed"
+        articleId={articleId}
         pros={product.pros}
         cons={product.cons}
       />

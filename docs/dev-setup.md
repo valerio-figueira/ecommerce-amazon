@@ -33,8 +33,10 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `STORAGE_DRIVER` | `filesystem` | Upload de avatar: `filesystem` \| `s3` \| `gcs` |
 | `STORAGE_PUBLIC_BASE_URL` | `http://localhost:3000/uploads` | URL pública dos objetos (dev filesystem) |
 | `STORAGE_LOCAL_ROOT` | `./uploads` | Pasta local quando `STORAGE_DRIVER=filesystem` |
+| `GA4_PROPERTY_ID` | — | ID numérico da propriedade GA4 (dashboard admin) |
+| `GA4_SERVICE_ACCOUNT_JSON` | — | JSON da service account (server-side, apps/api) |
 
-Ver [admin-profile-phase1.md](./admin-profile-phase1.md) para S3/GCS.
+Ver [admin-profile-phase1.md](./admin-profile-phase1.md) para S3/GCS. Ver [admin-dashboard-phase1.md](./admin-dashboard-phase1.md) para GA4 Data API.
 
 ## Infraestrutura (Postgres + Redis)
 

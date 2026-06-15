@@ -5,8 +5,16 @@ import { getApiUrl } from '@/lib/api/client';
 
 export async function recordClick(
   productId: string,
-  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção',
+  origin:
+    | 'listagem'
+    | 'detalhe'
+    | 'embed'
+    | 'comparador'
+    | 'cupons'
+    | 'coleção'
+    | 'similar',
   sessionId?: string,
+  options?: { blockId?: string; articleId?: string },
 ): Promise<void> {
   const sid = sessionId ?? getOrCreateSessionId();
   await fetch(`${getApiUrl()}/events/click`, {
@@ -15,6 +23,12 @@ export async function recordClick(
       'Content-Type': 'application/json',
       'x-session-id': sid,
     },
-    body: JSON.stringify({ productId, origin, sessionId: sid }),
+    body: JSON.stringify({
+      productId,
+      origin,
+      sessionId: sid,
+      ...(options?.blockId !== undefined ? { blockId: options.blockId } : {}),
+      ...(options?.articleId !== undefined ? { articleId: options.articleId } : {}),
+    }),
   });
 }
