@@ -9,7 +9,7 @@
 | Rota | Função | Doc |
 |------|--------|-----|
 | `/` | Home CMS-driven via `PageRenderer` + `GET /pages/home` | `cms-home-phase1.md` |
-| `/produtos/[slug]` | Detalhe produto, JSON-LD, canonical, wishlist, CTA `/go` | `go-redirect-seo.md` |
+| `/produtos/[slug]` | Detalhe produto: galeria, análise editorial, ficha técnica, JSON-LD, CTA `/go` | `product-detail-page.md`, `go-redirect-seo.md` |
 | `/categorias/[slug]` | Listagem SEO com sidebar árvore, breadcrumbs, grid | `categories-hierarchy.md` |
 | `/artigos` | Índice do blog: busca, filtros por categoria, paginação | `articles-public-rendering.md` |
 | `/artigos/[slug]` | Artigo editorial: prose, auto-links, embeds ProductCard | `articles-public-rendering.md` |

@@ -17,6 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { ProductDetailDto } from '@/lib/api/schemas';
+import { formatSpecKey } from '@/lib/format-spec-key';
 import { cn } from '@/lib/utils';
 
 type ComparisonTableProps = {
@@ -28,12 +29,6 @@ type ComparisonBadge = {
   type: 'best_overall' | 'best_value';
   label: string;
 };
-
-function formatSpecKey(key: string): string {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
 
 function collectSpecKeys(products: (ProductDetailDto | null)[]): string[] {
   const keys: string[] = [];

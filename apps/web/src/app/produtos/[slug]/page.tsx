@@ -1,16 +1,19 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle } from '@ecommerce-amazon/shared/seo';
 
+import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
+import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysis';
+import { ProductImageGallery } from '@/components/product/ProductImageGallery';
+import { ProductRating } from '@/components/product/ProductRating';
+import { ProductSpecsTable } from '@/components/product/ProductSpecsTable';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
 import { marketplaceLabel } from '@/lib/format';
-import { buildGoUrl } from '@/lib/go-url';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -80,22 +83,16 @@ export default async function ProductPage({
         <span>{product.title}</span>
       </nav>
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-[var(--radius)] bg-[var(--muted)]">
-          {product.images[0] && (
-            <Image
-              src={product.images[0]}
-              alt={product.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width:768px) 100vw, 50vw"
-            />
-          )}
-        </div>
-        <div className="flex flex-col gap-4">
+        <ProductImageGallery images={product.images} alt={product.title} />
+        <div className="flex flex-col justify-center gap-5">
           <MarketplaceBadge marketplace={product.marketplace} />
           <h1 className="text-3xl font-bold">{product.title}</h1>
-          <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} />
+          <ProductRating rating={product.rating} reviewCount={product.reviewCount} />
+          <PriceDisplay
+            price={product.price}
+            strikethrough={product.price.strikethrough}
+            className="text-sm"
+          />
           {product.shortDescription && (
             <p className="text-neutral-600">{product.shortDescription}</p>
           )}
@@ -103,19 +100,22 @@ export default async function ProductPage({
             Curadoria independente: comparamos ofertas na {marketplaceLabel(product.marketplace)} e
             redirecionamos você para a loja parceira. Não vendemos nem entregamos produtos.
           </p>
-          <a
-            href={buildGoUrl(product.slug)}
-            target="_blank"
-            rel="noopener sponsored"
-            className="inline-flex w-full items-center justify-center rounded-full bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white md:w-auto"
+          <AffiliateGoLink
+            productId={product.id}
+            slug={product.slug}
+            origin="detalhe"
+            variant="primary"
+            className="px-6 py-3 text-sm md:w-auto"
           >
             Ver preço na {marketplaceLabel(product.marketplace)}
-          </a>
+          </AffiliateGoLink>
         </div>
       </div>
+      <ProductDetailAnalysis pros={product.pros} cons={product.cons} />
+      <ProductSpecsTable specs={product.specs} />
       {product.longDescriptionHtml && (
         <section
-          className="prose prose-neutral mt-10 max-w-none"
+          className="prose prose-neutral mt-8 max-w-none"
           dangerouslySetInnerHTML={{ __html: product.longDescriptionHtml }}
         />
       )}
