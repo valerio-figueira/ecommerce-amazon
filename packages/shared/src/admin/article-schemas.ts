@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
 
+import { productPublicDetailSchema } from './product-schemas.js';
+
 const articleSlugSchema = z
   .string()
   .trim()
@@ -156,6 +158,7 @@ export const articlePublicDetailSchema = z.object({
   category: articleCategoryPublicSchema.nullable(),
   relatedArticles: z.array(articleRelatedSummarySchema),
   publishedAt: z.string().datetime().nullable(),
+  embeddedProducts: z.record(z.string(), productPublicDetailSchema.nullable()),
 });
 
 export type ArticlePublicDetail = z.infer<typeof articlePublicDetailSchema>;

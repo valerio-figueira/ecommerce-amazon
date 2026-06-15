@@ -11,7 +11,7 @@ import {
   Marketplace,
   type SyncJobLog,
 } from '@ecommerce-amazon/domain';
-import { extractProductSlugsFromBody } from '@ecommerce-amazon/shared/content';
+import { extractAllEmbedSlugsFromBody } from '@ecommerce-amazon/shared/content';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -272,7 +272,7 @@ export class DrizzleContentRepository implements ContentRepository {
   }
 
   async saveArticle(article: import('@ecommerce-amazon/domain').ContentArticle): Promise<void> {
-    const slugs = extractProductSlugsFromBody(article.body);
+    const slugs = extractAllEmbedSlugsFromBody(article.body);
     const productRows =
       slugs.length > 0
         ? await this.db

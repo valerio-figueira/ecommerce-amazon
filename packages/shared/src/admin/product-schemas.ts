@@ -141,6 +141,57 @@ export type AdminProductListItem = z.infer<typeof adminProductListItemSchema>;
 export type AdminProductListResponse = z.infer<typeof adminProductListResponseSchema>;
 export type CreateProductResponse = z.infer<typeof createProductResponseSchema>;
 
+export const productPublicPriceSchema = z.object({
+  amount: z.number().nullable(),
+  currency: z.string(),
+  isStale: z.boolean(),
+  updatedAt: z.string(),
+  strikethrough: z.number().optional(),
+});
+
+export const productPublicListItemSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  price: productPublicPriceSchema,
+  marketplace: z.string(),
+  rating: z.number().optional(),
+  reviewCount: z.number().optional(),
+  imageUrl: z.string().optional(),
+  goUrl: z.string(),
+  editorialScore: z.number(),
+  visible: z.boolean().optional(),
+});
+
+export const productPublicCategorySummarySchema = z.object({
+  slug: z.string(),
+  label: z.string(),
+  breadcrumbs: z.array(
+    z.object({
+      slug: z.string(),
+      label: z.string(),
+    }),
+  ),
+});
+
+export const productPublicDetailSchema = productPublicListItemSchema.extend({
+  titleRaw: z.string(),
+  externalId: z.string(),
+  availability: z.string(),
+  shortDescription: z.string().optional(),
+  longDescriptionHtml: z.string().optional(),
+  images: z.array(z.string()),
+  specs: z.record(z.string()),
+  pros: z.array(z.string()).optional(),
+  cons: z.array(z.string()).optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  category: productPublicCategorySummarySchema.optional(),
+});
+
+export type ProductPublicDetail = z.infer<typeof productPublicDetailSchema>;
+
 export const adminListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(100).optional(),

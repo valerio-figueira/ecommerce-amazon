@@ -301,9 +301,9 @@ Categorias editoriais com ao menos um artigo publicado.
 
 ### `GET /articles/:slug`
 
-Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` permanecem no HTML; a vitrine resolve embeds e auto-links.
+Artigo **publicado** com body cru (sem auto-linking). Shortcodes `[[product:slug]]` e `[[compare:slug-1,slug-2]]` permanecem no HTML; a vitrine resolve embeds e auto-links.
 
-**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `author` (`{ name, avatarUrl, bio }`), `category` (`{ name, slug }`), `relatedArticles` (até 3), `publishedAt`
+**Response:** `ArticlePublicDetail` — `slug`, `title`, `excerpt`, `coverImageUrl`, `body`, `type`, `seoTitle`, `seoDescription`, `author` (`{ name, avatarUrl, bio }`), `category` (`{ name, slug }`), `relatedArticles` (até 3), `publishedAt`, `embeddedProducts` (`Record<slug, ProductPublicDetail | null>` — produtos referenciados em shortcodes, com preço stale aplicado)
 
 ### `GET /seo/auto-links`
 

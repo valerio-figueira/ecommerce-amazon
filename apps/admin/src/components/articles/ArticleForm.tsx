@@ -234,9 +234,10 @@ export function ArticleForm({
               </div>
               <ArticleEditor value={body} onChange={setBody} />
               <p className="article-form-text">
-                Editor rico com embeds via <code className="text-xs">/produto</code> ou shortcode{' '}
-                <code className="text-xs">[[product:slug]]</code>. Alterne para Código HTML para
-                colar conteúdo gerado por IA.
+                Editor rico com embeds via <code className="text-xs">/produto</code>, shortcode{' '}
+                <code className="text-xs">[[product:slug]]</code> ou tabela comparativa{' '}
+                <code className="text-xs">[[compare:slug-1,slug-2]]</code>. Use o botão Comparar ou
+                alterne para Código HTML para colar conteúdo gerado por IA.
               </p>
             </div>
           </div>

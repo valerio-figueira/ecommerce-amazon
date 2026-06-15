@@ -3,6 +3,7 @@
 import type { Editor } from '@tiptap/react';
 import {
   Bold,
+  Columns2,
   Heading2,
   Heading3,
   Italic,
@@ -19,7 +20,8 @@ import { useEditorToolbarState } from './useEditorToolbarState';
 type ArticleEditorToolbarProps = {
   editor: Editor | null;
   onInsertProduct: () => void;
-  disabled?: boolean;
+  onInsertCompare: () => void;
+  formatDisabled?: boolean;
 };
 
 type ToolbarButtonProps = {
@@ -61,12 +63,13 @@ function ToolbarButton({
 export function ArticleEditorToolbar({
   editor,
   onInsertProduct,
-  disabled = false,
+  onInsertCompare,
+  formatDisabled = false,
 }: ArticleEditorToolbarProps): React.JSX.Element {
   useEditorToolbarState(editor);
 
   const run = (command: () => void): void => {
-    if (!editor || disabled) return;
+    if (!editor || formatDisabled) return;
     command();
   };
 
@@ -74,13 +77,13 @@ export function ArticleEditorToolbar({
     <div
       className={cn(
         'flex flex-1 flex-wrap items-center gap-0.5',
-        disabled && 'pointer-events-none opacity-50',
+        formatDisabled && '[&_.format-control]:pointer-events-none [&_.format-control]:opacity-50',
       )}
     >
       <ToolbarButton
         title="Título H2"
         active={editor?.isActive('heading', { level: 2 }) ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 2 }).run())}
       >
         <Heading2 className="h-4 w-4" />
@@ -88,7 +91,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Título H3"
         active={editor?.isActive('heading', { level: 3 }) ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 3 }).run())}
       >
         <Heading3 className="h-4 w-4" />
@@ -99,7 +102,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Negrito"
         active={editor?.isActive('bold') ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleBold().run())}
       >
         <Bold className="h-4 w-4" />
@@ -107,7 +110,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Itálico"
         active={editor?.isActive('italic') ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleItalic().run())}
       >
         <Italic className="h-4 w-4" />
@@ -115,7 +118,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Riscado"
         active={editor?.isActive('strike') ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleStrike().run())}
       >
         <Strikethrough className="h-4 w-4" />
@@ -126,7 +129,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Lista marcada"
         active={editor?.isActive('bulletList') ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleBulletList().run())}
       >
         <List className="h-4 w-4" />
@@ -134,7 +137,7 @@ export function ArticleEditorToolbar({
       <ToolbarButton
         title="Lista numerada"
         active={editor?.isActive('orderedList') ?? false}
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleOrderedList().run())}
       >
         <ListOrdered className="h-4 w-4" />
@@ -146,12 +149,23 @@ export function ArticleEditorToolbar({
         type="button"
         title="Inserir produto (/produto)"
         aria-label="Inserir produto (/produto)"
-        disabled={disabled || !editor}
+        disabled={formatDisabled || !editor}
         onClick={onInsertProduct}
         className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-focus-ring)] disabled:pointer-events-none disabled:opacity-40"
       >
         <Package className="h-4 w-4" />
         <span className="hidden sm:inline">Produto</span>
+      </button>
+      <button
+        type="button"
+        title="Inserir tabela comparativa"
+        aria-label="Inserir tabela comparativa"
+        disabled={!formatDisabled && !editor}
+        onClick={onInsertCompare}
+        className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-focus-ring)] disabled:pointer-events-none disabled:opacity-40"
+      >
+        <Columns2 className="h-4 w-4" />
+        <span className="hidden sm:inline">Comparar</span>
       </button>
     </div>
   );

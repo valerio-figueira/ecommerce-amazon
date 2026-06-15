@@ -1,8 +1,10 @@
 import type { ArticleWithEmbedsResult } from '@ecommerce-amazon/application';
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 
+import { toProductDetailDto } from './product.presenter.js';
+
 export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): ArticlePublicDetail {
-  const { article, author, category, relatedArticles } = result;
+  const { article, author, category, relatedArticles, embeddedProducts } = result;
 
   return {
     slug: article.slug,
@@ -22,5 +24,11 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
       publishedAt: item.publishedAt?.toISOString() ?? null,
     })),
     publishedAt: article.publishedAt?.toISOString() ?? null,
+    embeddedProducts: Object.fromEntries(
+      Object.entries(embeddedProducts).map(([productSlug, product]) => [
+        productSlug,
+        product ? toProductDetailDto(product) : null,
+      ]),
+    ),
   };
 }

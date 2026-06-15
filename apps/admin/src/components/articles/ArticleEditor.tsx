@@ -14,11 +14,15 @@ import {
   type ArticleEditorMode,
 } from './ArticleEditorModeTabs';
 import { ArticleEditorToolbar } from './ArticleEditorToolbar';
+import { CompareInsertModal } from './CompareInsertModal';
 import {
+  buildCompareShortcode,
+  insertTextAtCursor,
   preprocessBodyForEditor,
-  ProductEmbedExtension,
   serializeArticleBody,
-} from './extensions/ProductEmbedExtension';
+} from './extensions/article-body-serialize';
+import { CompareEmbedExtension } from './extensions/CompareEmbedExtension';
+import { ProductEmbedExtension } from './extensions/ProductEmbedExtension';
 import { ProductSearchModal } from './ProductSearchModal';
 
 type ArticleEditorProps = {
@@ -28,9 +32,11 @@ type ArticleEditorProps = {
 
 export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JSX.Element {
   const [products, setProducts] = useState<ProductPickerOption[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [mode, setMode] = useState<ArticleEditorMode>('visual');
   const [htmlDraft, setHtmlDraft] = useState(value);
+  const htmlTextareaRef = useRef<HTMLTextAreaElement>(null);
   const modeRef = useRef<ArticleEditorMode>(mode);
   modeRef.current = mode;
 
@@ -41,9 +47,11 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
       }),
       Link.configure({ openOnClick: false }),
       Placeholder.configure({
-        placeholder: 'Escreva o artigo… Digite /produto para inserir um card de afiliado.',
+        placeholder:
+          'Escreva o artigo… Digite /produto para inserir um card de afiliado ou use Comparar para tabelas.',
       }),
       ProductEmbedExtension,
+      CompareEmbedExtension,
     ],
     content: preprocessBodyForEditor(value),
     immediatelyRender: false,
@@ -58,7 +66,7 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
           .focus()
           .deleteRange({ from: from - 8, to: from })
           .run();
-        setModalOpen(true);
+        setProductModalOpen(true);
       }
     },
   });
@@ -119,13 +127,44 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
     onChange(serializeArticleBody(editor.getHTML()));
   }
 
+  function insertCompare(slugs: string[]): void {
+    const shortcode = buildCompareShortcode(slugs);
+    const label = slugs.join(', ');
+
+    if (mode === 'html') {
+      const textarea = htmlTextareaRef.current;
+      if (!textarea) {
+        const next = `${htmlDraft}${shortcode}`;
+        setHtmlDraft(next);
+        onChange(next);
+        return;
+      }
+      const next = insertTextAtCursor(textarea, shortcode);
+      setHtmlDraft(next);
+      onChange(next);
+      return;
+    }
+
+    if (!editor) return;
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: 'compareEmbed',
+        attrs: { slugs: slugs.join(','), label },
+      })
+      .run();
+    onChange(serializeArticleBody(editor.getHTML()));
+  }
+
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
       <div className="flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-2 py-1.5">
         <ArticleEditorToolbar
           editor={editor}
-          onInsertProduct={() => setModalOpen(true)}
-          disabled={mode === 'html'}
+          onInsertProduct={() => setProductModalOpen(true)}
+          onInsertCompare={() => setCompareModalOpen(true)}
+          formatDisabled={mode === 'html'}
         />
         <ArticleEditorModeTabs mode={mode} onModeChange={handleModeChange} />
       </div>
@@ -137,6 +176,7 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
         />
       ) : (
         <Textarea
+          ref={htmlTextareaRef}
           value={htmlDraft}
           onChange={(event) => handleHtmlChange(event.target.value)}
           spellCheck={false}
@@ -147,10 +187,16 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
       )}
 
       <ProductSearchModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
+        open={productModalOpen}
+        onOpenChange={setProductModalOpen}
         products={products}
         onSelect={insertProduct}
+      />
+      <CompareInsertModal
+        open={compareModalOpen}
+        onOpenChange={setCompareModalOpen}
+        products={products}
+        onInsert={insertCompare}
       />
     </div>
   );

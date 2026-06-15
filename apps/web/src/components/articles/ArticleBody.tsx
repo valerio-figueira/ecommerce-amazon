@@ -7,17 +7,18 @@ import type { AutoLinksResponse } from '@ecommerce-amazon/shared/admin';
 import type { ProductDetailDto } from '@/lib/api/schemas';
 
 import { ArticleProductEmbed } from './ArticleProductEmbed';
+import { ComparisonTable } from './ComparisonTable';
 
 type ArticleBodyProps = {
   article: ArticlePublicDetail;
   autoLinks: AutoLinksResponse['items'];
-  productsBySlug: Record<string, ProductDetailDto | null>;
+  embeddedProducts: Record<string, ProductDetailDto | null>;
 };
 
 export function ArticleBody({
   article,
   autoLinks,
-  productsBySlug,
+  embeddedProducts,
 }: ArticleBodyProps): React.JSX.Element {
   const linkedHtml = injectInternalLinks(
     article.body,
@@ -40,7 +41,20 @@ export function ArticleBody({
           );
         }
 
-        const product = productsBySlug[segment.slug] ?? null;
+        if (segment.type === 'compare') {
+          const products = segment.slugs.map((slug) => embeddedProducts[slug] ?? null);
+          return (
+            <aside
+              key={`compare-${segment.slugs.join('-')}-${index}`}
+              className="not-prose my-8"
+              aria-label="Comparativo de produtos"
+            >
+              <ComparisonTable slugs={segment.slugs} products={products} />
+            </aside>
+          );
+        }
+
+        const product = embeddedProducts[segment.slug] ?? null;
         return (
           <aside
             key={`product-${segment.slug}-${index}`}

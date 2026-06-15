@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import { extractProductSlugsFromBody } from '@ecommerce-amazon/shared/content';
 import {
   articlePublicDetailSchema,
   autoLinksResponseSchema,
@@ -10,7 +9,6 @@ import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
 import { ArticlePostFooter } from '@/components/articles/ArticlePostFooter';
 import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
 import { apiFetchParsed } from '@/lib/api/client';
-import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -31,24 +29,6 @@ async function getAutoLinks() {
   } catch {
     return { items: [] };
   }
-}
-
-async function getProductsBySlug(slugs: string[]): Promise<Record<string, ProductDetailDto | null>> {
-  const entries = await Promise.all(
-    slugs.map(async (productSlug) => {
-      try {
-        const product = await apiFetchParsed(
-          `/products/${productSlug}`,
-          productDetailSchema,
-        );
-        return [productSlug, product] as const;
-      } catch {
-        return [productSlug, null] as const;
-      }
-    }),
-  );
-
-  return Object.fromEntries(entries);
 }
 
 export async function generateMetadata({
@@ -87,9 +67,6 @@ export default async function ArtigoPage({
   const [article, autoLinks] = await Promise.all([getArticle(slug), getAutoLinks()]);
   if (!article) notFound();
 
-  const slugs = extractProductSlugsFromBody(article.body);
-  const productsBySlug = await getProductsBySlug(slugs);
-
   const authorName = article.author?.name ?? 'Vitrine';
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -118,7 +95,7 @@ export default async function ArtigoPage({
       <ArticleBody
         article={article}
         autoLinks={autoLinks.items}
-        productsBySlug={productsBySlug}
+        embeddedProducts={article.embeddedProducts}
       />
       <ArticlePostFooter article={article} />
       <ArticleRelatedGrid articles={article.relatedArticles} />

@@ -157,6 +157,7 @@ export function buildApiContainer(env = loadEnv()) {
         contentRepository,
         operatorRepository,
         articleCategoryRepository,
+        productRepository,
         cache,
       ),
       listPublishedArticlesByCategory: new ListPublishedArticlesByCategory(
