@@ -9,10 +9,11 @@ import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysis';
 import { ProductImageGallery } from '@/components/product/ProductImageGallery';
 import { ProductRating } from '@/components/product/ProductRating';
+import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
 import { ProductSpecsTable } from '@/components/product/ProductSpecsTable';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
 import { apiFetchParsed } from '@/lib/api/client';
-import { productDetailSchema, type ProductDetailDto } from '@/lib/api/schemas';
+import { productDetailSchema, type ProductDetailDto, type ProductListItemDto } from '@/lib/api/schemas';
 import { marketplaceLabel } from '@/lib/format';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
@@ -61,6 +62,7 @@ export default async function ProductPage({
   }
 
   const siteBaseUrl = getSiteBaseUrl();
+  const similarProducts: ProductListItemDto[] = product.similarProducts;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
@@ -119,6 +121,11 @@ export default async function ProductPage({
           dangerouslySetInnerHTML={{ __html: product.longDescriptionHtml }}
         />
       )}
+      <ProductSimilarCarousel
+        products={similarProducts}
+        categorySlug={product.category?.slug}
+        categoryLabel={product.category?.label}
+      />
       <p className="mt-8 text-xs text-neutral-500">
         Links comerciais transparentes. Preços podem variar no marketplace parceiro.
       </p>

@@ -1,13 +1,14 @@
 # Página pública de detalhe de produto
 
-Evolução da rota `/produtos/[slug]` para layout rico de análise editorial, consumindo dados já persistidos no catálogo local (`images`, `pros`, `cons`, `specs_normalized`, `rating`).
+Evolução da rota `/produtos/[slug]` para layout rico de análise editorial e recirculação de catálogo, consumindo dados do catálogo local.
 
 ## Escopo entregue
 
 - **Hero:** galeria multi-imagem com miniaturas selecionáveis, rating, preço (incl. alerta stale), disclaimer afiliado e CTA com tracking `origin=detalhe`
 - **Análise do Especialista:** grid de prós e contras completos (sem truncamento dos cards)
 - **Ficha técnica:** tabela a partir de `specs` (`specs_normalized` no banco)
-- **Descrição longa:** bloco HTML editorial existente, abaixo das seções de análise
+- **Descrição longa:** bloco HTML editorial existente
+- **Carrossel de similares:** produtos visíveis da mesma `category_id`, ordenados por preço ASC, excluindo o produto atual (até 12 itens)
 
 ## Fora de escopo (fase seguinte)
 
@@ -18,32 +19,45 @@ Evolução da rota `/produtos/[slug]` para layout rico de análise editorial, co
 
 ```mermaid
 flowchart LR
-  DB["products.specs_normalized, pros, cons, images"]
+  DB["products + category_id"]
   API["GET /products/:slug"]
+  UC["GetProductWithEmbeds"]
   Page["apps/web/produtos/[slug]/page.tsx"]
-  Gallery[ProductImageGallery]
-  Analysis[ProductDetailAnalysis]
-  Specs[ProductSpecsTable]
-  DB --> API --> Page
-  Page --> Gallery
-  Page --> Analysis
-  Page --> Specs
+  Carousel[ProductSimilarCarousel]
+  DB --> UC --> API --> Page
+  Page --> Carousel
 ```
 
-Nenhuma alteração de API foi necessária: o presenter [`product.presenter.ts`](../apps/api/src/adapters/presenters/product.presenter.ts) já expõe `specs`, `pros`, `cons` e `images` no DTO público.
+O payload de detalhe inclui `similarProducts: ProductListItem[]` (cards leves). Query no repositório:
+
+- `category_id = produto.categoryId`
+- `visible = true`
+- `id != produto.id`
+- `ORDER BY price_amount ASC LIMIT 12`
+
+Produtos sem categoria retornam `similarProducts: []` e a seção não renderiza.
 
 ## Arquivos-chave
 
 | Arquivo | Função |
 |---------|--------|
 | [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx) | Server Component da rota |
+| [`apps/web/src/components/product/ProductSimilarCarousel.tsx`](../apps/web/src/components/product/ProductSimilarCarousel.tsx) | Carrossel snap-x nativo |
+| [`packages/application/src/use-cases/product/GetProductWithEmbeds.ts`](../packages/application/src/use-cases/product/GetProductWithEmbeds.ts) | Orquestra produto + similares |
+| [`packages/infrastructure/.../drizzle-product.repository.ts`](../packages/infrastructure/src/persistence/repositories/drizzle-product.repository.ts) | `findSimilarPublishedByCategory` |
+| [`packages/shared/src/admin/product-schemas.ts`](../packages/shared/src/admin/product-schemas.ts) | `productPublicDetailSchema.similarProducts` |
 | [`apps/web/src/components/product/ProductImageGallery.tsx`](../apps/web/src/components/product/ProductImageGallery.tsx) | Galeria client-side com thumbs |
 | [`apps/web/src/components/product/ProductDetailAnalysis.tsx`](../apps/web/src/components/product/ProductDetailAnalysis.tsx) | Seção prós/contras |
 | [`apps/web/src/components/product/ProductSpecsTable.tsx`](../apps/web/src/components/product/ProductSpecsTable.tsx) | Ficha técnica |
-| [`apps/web/src/lib/format-spec-key.ts`](../apps/web/src/lib/format-spec-key.ts) | Formatação de chaves (compartilhado com comparador) |
-| [`apps/web/src/components/product/ProductRating.tsx`](../apps/web/src/components/product/ProductRating.tsx) | Estrelas + contagem |
-| [`apps/web/src/components/product/PriceDisplay.tsx`](../apps/web/src/components/product/PriceDisplay.tsx) | Preço fresh / alerta stale |
-| [`apps/web/src/components/product/AffiliateGoLink.tsx`](../apps/web/src/components/product/AffiliateGoLink.tsx) | CTA `/go` com telemetria |
+
+## Ordem das seções na página
+
+1. Hero (galeria + conversão)
+2. Análise do Especialista
+3. Ficha técnica
+4. Descrição longa
+5. Produtos similares (carrossel)
+6. Disclaimer legal
 
 ## Conformidade
 
@@ -51,19 +65,20 @@ Nenhuma alteração de API foi necessária: o presenter [`product.presenter.ts`]
 - CTA transparente: "Ver preço na {Amazon\|Shopee}"
 - Links: `rel="noopener sponsored"`, nova aba
 - Disclaimer afiliado visível acima do CTA
+- Similares incluem produtos com preço stale (cards tratam via `PriceDisplay`)
 
 ## Como testar
 
 1. Subir API + web conforme [`dev-setup.md`](./dev-setup.md)
-2. No admin (`/produtos/[slug]`), preencher aba **Análise Editorial**: prós, contras e especificações
-3. Garantir produto com múltiplas URLs em `images` (JSONB)
-4. Abrir `/produtos/{slug}` e verificar:
-   - Troca de miniaturas na galeria
-   - Seções omitidas quando prós/contras/specs vazios
-   - Rating oculto quando ausente no catálogo
-   - CTA registrando clique com origem `detalhe`
+2. Garantir produto com `category_id` e ≥2 produtos visíveis na mesma categoria
+3. Abrir `/produtos/{slug}` e verificar:
+   - Carrossel no rodapé, produto atual ausente da lista
+   - Snap horizontal no mobile
+   - Link "Ver todos em {categoria}" quando categoria presente
+   - Seção omitida sem similares ou sem categoria
 
 ```bash
+pnpm --filter @ecommerce-amazon/application test GetProductWithEmbeds
 pnpm --filter @ecommerce-amazon/web lint
 pnpm --filter @ecommerce-amazon/web build
 ```

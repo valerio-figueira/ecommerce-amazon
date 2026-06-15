@@ -1,6 +1,7 @@
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
 import {
   GetProductBySlug,
+  GetProductWithEmbeds,
   ListProducts,
   ListAdminProducts,
   GetProductPriceHistory,
@@ -139,6 +140,7 @@ export function buildApiContainer(env = loadEnv()) {
     env,
     useCases: {
       getProductBySlug: new GetProductBySlug(productRepository),
+      getProductWithEmbeds: new GetProductWithEmbeds(productRepository),
       listProducts,
       listAdminProducts,
       createProduct,

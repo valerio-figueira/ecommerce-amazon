@@ -199,6 +199,7 @@ export const productPublicDetailSchema = productPublicListItemSchema.extend({
   metaDescription: z.string().optional(),
   canonicalUrl: z.string().optional(),
   category: productPublicCategorySummarySchema.optional(),
+  similarProducts: z.array(productPublicListItemSchema),
 });
 
 export type ProductPublicDetail = z.infer<typeof productPublicDetailSchema>;

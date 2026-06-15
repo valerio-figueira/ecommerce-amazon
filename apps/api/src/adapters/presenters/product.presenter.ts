@@ -35,6 +35,7 @@ export type ProductDetailDto = ProductListItemDto & {
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
   canonicalUrl?: string | undefined;
+  similarProducts: ProductListItemDto[];
 };
 
 export type AdminProductListItemDto = {
@@ -139,6 +140,17 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
       ? { metaDescription: product.metaDescription }
       : {}),
     ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
+    similarProducts: [],
+  };
+}
+
+export function toProductDetailWithEmbedsDto(
+  product: Product,
+  similarProducts: Product[],
+): ProductDetailDto {
+  return {
+    ...toProductDetailDto(product),
+    similarProducts: similarProducts.map(toProductListItemDto),
   };
 }
 

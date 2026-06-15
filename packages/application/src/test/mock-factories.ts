@@ -19,6 +19,7 @@ export function createMockProductRepository(
     findBySlug: vi.fn(),
     findByExternalId: vi.fn(),
     findPublished: vi.fn(),
+    findSimilarPublishedByCategory: vi.fn(),
     findByIds: vi.fn(),
     findDueForPriceRefresh: vi.fn(),
     findDueForCatalogSync: vi.fn(),

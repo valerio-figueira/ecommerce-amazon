@@ -1,4 +1,6 @@
 export { GetProductBySlug } from './use-cases/product/GetProductBySlug.js';
+export { GetProductWithEmbeds } from './use-cases/product/GetProductWithEmbeds.js';
+export type { ProductWithEmbedsResult } from './use-cases/product/GetProductWithEmbeds.js';
 export { ListProducts } from './use-cases/product/ListProducts.js';
 export { ListAdminProducts } from './use-cases/product/ListAdminProducts.js';
 export { GetProductPriceHistory } from './use-cases/product/GetProductPriceHistory.js';

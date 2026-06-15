@@ -3,6 +3,12 @@ import type { Marketplace, ProductSortField } from '../enums/index.js';
 import type { RefreshCriteria } from '../services/index.js';
 import type { Slug } from '../value-objects/index.js';
 
+export type SimilarProductsCriteria = {
+  categoryId: string;
+  excludeProductId: string;
+  limit?: number;
+};
+
 export type ProductListFilters = {
   page?: number;
   pageSize?: number;
@@ -19,6 +25,7 @@ export interface ProductRepository {
   findBySlug(slug: Slug | string): Promise<Product | null>;
   findByExternalId(marketplace: Marketplace, externalId: string): Promise<Product | null>;
   findPublished(filters: ProductListFilters): Promise<{ items: Product[]; total: number }>;
+  findSimilarPublishedByCategory(criteria: SimilarProductsCriteria): Promise<Product[]>;
   findByIds(ids: string[]): Promise<Product[]>;
   findDueForPriceRefresh(criteria: RefreshCriteria): Promise<Product[]>;
   findDueForCatalogSync(criteria: RefreshCriteria): Promise<Product[]>;

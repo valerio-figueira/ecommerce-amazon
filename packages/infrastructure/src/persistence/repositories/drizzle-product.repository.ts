@@ -1,6 +1,6 @@
-import { and, asc, desc, eq, gte, inArray, isNotNull, lt, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, isNotNull, lt, ne, sql } from 'drizzle-orm';
 
-import { Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository } from '@ecommerce-amazon/domain';
+import { Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository, type SimilarProductsCriteria } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -105,6 +105,24 @@ export class DrizzleProductRepository implements ProductRepository {
       items: items.map(mapProductRowToDomain),
       total: countResult[0]?.count ?? 0,
     };
+  }
+
+  async findSimilarPublishedByCategory(criteria: SimilarProductsCriteria) {
+    const limit = criteria.limit ?? 12;
+    const rows = await this.db
+      .select()
+      .from(schema.products)
+      .where(
+        and(
+          eq(schema.products.categoryId, criteria.categoryId),
+          eq(schema.products.visible, true),
+          ne(schema.products.id, criteria.excludeProductId),
+        ),
+      )
+      .orderBy(asc(schema.products.priceAmount))
+      .limit(limit);
+
+    return rows.map(mapProductRowToDomain);
   }
 
   async findByIds(ids: string[]) {

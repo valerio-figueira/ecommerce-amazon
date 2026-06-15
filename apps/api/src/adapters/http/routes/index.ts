@@ -8,7 +8,7 @@ import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
 import { registerAdminRoutes } from './admin-routes.js';
 import {
-  toProductDetailDto,
+  toProductDetailWithEmbedsDto,
   toProductListItemDto,
   toCuratedCollectionDto,
 } from '../../presenters/product.presenter.js';
@@ -176,13 +176,13 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
   app.get('/products/:slug', async (request, reply) => {
     try {
       const { slug } = ProductSlugParamsSchema.parse(request.params);
-      const product = await useCases.getProductBySlug.execute(slug);
-      if (!product) return reply.status(404).send({ error: 'Product not found' });
+      const result = await useCases.getProductWithEmbeds.execute(slug);
+      if (!result) return reply.status(404).send({ error: 'Product not found' });
 
-      const dto = toProductDetailDto(product);
-      if (product.categoryId) {
+      const dto = toProductDetailWithEmbedsDto(result.product, result.similarProducts);
+      if (result.product.categoryId) {
         const category = await container.repositories.categoryRepository.findById(
-          product.categoryId,
+          result.product.categoryId,
         );
         if (category) {
           const ancestors = await container.repositories.categoryRepository.getAncestorChain(
