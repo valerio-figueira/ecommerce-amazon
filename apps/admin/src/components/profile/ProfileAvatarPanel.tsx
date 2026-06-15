@@ -1,6 +1,6 @@
 'use client';
 
-import { Crop, Info, Trash2 } from 'lucide-react';
+import { Crop, ImageUp, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 
@@ -151,22 +151,40 @@ export function ProfileAvatarPanel({
         </div>
 
         <div className="admin-profile-photo-toolbar">
-          <label className="admin-profile-sublabel" htmlFor="admin-profile-photo-file">
+          <span className="admin-profile-sublabel" id="admin-profile-photo-file-label">
             Carregar imagem
-          </label>
-          <input
-            ref={fileInputRef}
-            id="admin-profile-photo-file"
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            className="admin-profile-file-input"
-            onChange={handleFileChange}
-            autoComplete="off"
-          />
+          </span>
+
+          <div className="admin-profile-file-picker">
+            <input
+              ref={fileInputRef}
+              id="admin-profile-photo-file"
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              className="admin-profile-file-input"
+              onChange={handleFileChange}
+              autoComplete="off"
+              aria-labelledby="admin-profile-photo-file-label"
+            />
+            <label htmlFor="admin-profile-photo-file" className="admin-profile-file-picker-button">
+              <ImageUp className="size-4 shrink-0" aria-hidden="true" />
+              Escolher arquivo
+            </label>
+            <span className="admin-profile-file-picker-name" title={selectedFileName ?? undefined}>
+              {selectedFileName ?? 'Nenhum arquivo selecionado'}
+            </span>
+          </div>
+
           <p className="admin-profile-micro-hint">
-            <Info className="inline size-3.5" aria-hidden="true" />
-            Formato JPG, PNG, GIF ou WebP. Limite: <strong>5 MiB</strong>. Recorte quadrado até 512×512 px.
+            <span className="admin-profile-micro-hint-icon" aria-hidden="true">
+              <ImageUp className="size-3.5" />
+            </span>
+            <span className="admin-profile-micro-hint-text">
+              <span>JPG, PNG, GIF ou WebP. Máximo <strong>5 MiB</strong>.</span>
+              <span>Recorte quadrado até 512×512 px.</span>
+            </span>
           </p>
+
           <div className="admin-profile-photo-actions">
             <Button
               type="button"
@@ -188,9 +206,6 @@ export function ProfileAvatarPanel({
               </Button>
             ) : null}
           </div>
-          {selectedFileName ? (
-            <p className="text-xs text-[color:var(--admin-text-muted)]">Arquivo: {selectedFileName}</p>
-          ) : null}
         </div>
 
         <p

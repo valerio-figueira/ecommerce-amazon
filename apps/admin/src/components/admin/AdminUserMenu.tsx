@@ -68,7 +68,7 @@ export function AdminUserMenu({
           />
         ) : (
           <span
-            className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--admin-primary)] to-[color:var(--admin-navy)] text-xs font-semibold text-white"
+            className="admin-user-pill-initial flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
             aria-hidden="true"
           >
             {initial}
