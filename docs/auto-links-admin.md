@@ -21,6 +21,8 @@ Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](..
 - Rota **`/auto-links`** com item na sidebar (ícone Link2)
 - Listagem paginada com busca por keyword/URL
 - CRUD via Sheet lateral (`AutoLinkFormSheet`)
+- **Picker híbrido de URL de destino** (`InternalLinkTargetPicker`): busca **server-side** via `GET /admin/internal-link-targets` com debounce; produtos e artigos só após ≥2 caracteres, limitados a 20 produtos por busca; categorias, coleções e taxonomias editoriais carregadas sob demanda
+- Listagem exibe **label amigável** + tipo do destino quando resolvível (badge Manual para URLs externas/custom)
 - Toggle **`is_active`** inline na listagem (PATCH imediato)
 - BFF Next.js: `/api/admin/auto-links` e `/api/admin/auto-links/[id]`
 - Atalho em **Artigos** → botão "Auto-Links"
@@ -75,6 +77,9 @@ flowchart LR
 | Admin UI | `apps/admin/src/app/(dashboard)/auto-links/page.tsx` |
 | Admin BFF | `apps/admin/src/app/api/admin/auto-links/` |
 | Admin components | `apps/admin/src/components/auto-links/` |
+| Picker helpers | `apps/admin/src/lib/internal-link-targets.ts` |
+| Picker loader | `apps/admin/src/lib/api/internal-link-targets-client.ts` |
+| Search use case | `packages/application/src/use-cases/auto-links/SearchInternalLinkTargets.ts` |
 | Vitrine | `apps/web/src/components/articles/ArticleBody.tsx` |
 
 ## API
@@ -133,11 +138,14 @@ open http://localhost:3002/auto-links
 Checklist UI:
 
 1. Login → sidebar **Auto-Links**
-2. Criar keyword + URL interna
-3. Toggle inativo na listagem
-4. Buscar por keyword
-5. Editar e excluir com confirmação
-6. Keyword duplicada → toast de erro
+2. Criar keyword escolhendo destino via combobox (produto, categoria, coleção ou artigo)
+3. Criar com toggle **URL manual** + link HTTPS externo
+4. Listagem mostra label amigável + badge de tipo (ou Manual)
+5. Toggle inativo na listagem
+6. Buscar por keyword
+7. Editar regra existente — destino resolvido corretamente no picker
+8. Editar e excluir com confirmação
+9. Keyword duplicada → toast de erro
 
 ```bash
 npm test -- --run AutoLink auto-links link-parser
@@ -147,4 +155,3 @@ npm test -- --run AutoLink auto-links link-parser
 
 - Preview ao vivo do `injectInternalLinks` no admin
 - Importação em massa de keywords
-- Picker visual de URLs internas (produto/categoria/artigo)

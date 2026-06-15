@@ -59,6 +59,9 @@ export async function registerAdminProductRoutes(
       if (query.sort !== undefined) {
         filters.sort = parseProductSortField(query.sort);
       }
+      if (query.search !== undefined && query.search.length > 0) {
+        filters.search = query.search;
+      }
       const result = await useCases.listAdminProducts.execute(filters);
       return reply.send(toAdminProductListResponseDto(result));
     } catch (error) {

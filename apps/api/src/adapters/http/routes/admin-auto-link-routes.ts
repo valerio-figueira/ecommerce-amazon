@@ -12,6 +12,7 @@ import {
   autoLinkIdParamsSchema,
   createAutoLinkBodySchema,
   listAutoLinksQuerySchema,
+  searchInternalLinkTargetsQuerySchema,
   updateAutoLinkBodySchema,
 } from '@ecommerce-amazon/shared/admin';
 
@@ -39,6 +40,16 @@ export function registerAdminAutoLinkRoutes(
   container: ApiContainer,
 ): void {
   const { useCases } = container;
+
+  app.get('/admin/internal-link-targets', async (request, reply) => {
+    try {
+      const query = searchInternalLinkTargetsQuerySchema.parse(request.query);
+      const result = await useCases.searchInternalLinkTargets.execute(query);
+      return reply.send(result);
+    } catch (error) {
+      return handleAdminAutoLinkError(error, reply);
+    }
+  });
 
   app.get('/admin/auto-links', async (request, reply) => {
     try {

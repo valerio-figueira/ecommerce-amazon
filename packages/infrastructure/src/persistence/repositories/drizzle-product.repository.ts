@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, inArray, isNotNull, lt, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, ilike, inArray, isNotNull, lt, ne, or, sql } from 'drizzle-orm';
 
 import { Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository, type SimilarProductsCriteria } from '@ecommerce-amazon/domain';
 
@@ -63,6 +63,17 @@ export class DrizzleProductRepository implements ProductRepository {
       const staleThreshold = new Date(Date.now() - PRICE_STALE_HOURS * 60 * 60 * 1000);
       conditions.push(eq(schema.products.stalePrice, false));
       conditions.push(gte(schema.products.priceUpdatedAt, staleThreshold));
+    }
+    const trimmedSearch = filters.search?.trim();
+    if (trimmedSearch) {
+      const pattern = `%${trimmedSearch}%`;
+      conditions.push(
+        or(
+          ilike(schema.products.titleClean, pattern),
+          ilike(schema.products.titleRaw, pattern),
+          ilike(schema.products.slug, pattern),
+        )!,
+      );
     }
 
     const discountPercentSql = sql`(((${schema.products.priceStrikethrough})::numeric - (${schema.products.priceAmount})::numeric) / (${schema.products.priceStrikethrough})::numeric * 100)`;

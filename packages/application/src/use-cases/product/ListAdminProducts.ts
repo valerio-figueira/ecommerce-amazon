@@ -20,6 +20,7 @@ export class ListAdminProducts {
     marketplace?: Marketplace;
     sort?: ProductSortField;
     minDiscountPercentage?: number;
+    search?: string;
   }): Promise<ListProductsResult> {
     const page = filters.page ?? 1;
     const pageSize = filters.pageSize ?? 20;

@@ -21,6 +21,7 @@ import {
   listAutoLinksClient,
   updateAutoLinkClient,
 } from '@/lib/api/auto-links-client';
+import { useInternalLinkTargetsForList } from '@/lib/hooks/useInternalLinkTargets';
 import type {
   AdminAutoLinkListResponse,
   AdminAutoLinkSummary,
@@ -51,6 +52,7 @@ export function AutoLinkListManager({
   const [deleteTarget, setDeleteTarget] = useState<AdminAutoLinkSummary | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const skipSearchDebounce = useRef(true);
+  const { targets } = useInternalLinkTargetsForList(true);
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
@@ -195,6 +197,7 @@ export function AutoLinkListManager({
         </p>
         <AutoLinkListView
           items={items}
+          targets={targets}
           togglingId={togglingId}
           onEdit={openEdit}
           onDelete={(item) => setDeleteTarget(item)}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,9 +20,11 @@ import {
   createAutoLinkClient,
   updateAutoLinkClient,
 } from '@/lib/api/auto-links-client';
+import { isManualTargetUrl } from '@/lib/internal-link-targets';
 import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
 
 import { AutoLinkFieldHint } from './AutoLinkListView';
+import { InternalLinkTargetPicker } from './InternalLinkTargetPicker';
 
 type AutoLinkFormSheetProps = {
   open: boolean;
@@ -42,6 +45,7 @@ export function AutoLinkFormSheet({
   const [maxMatches, setMaxMatches] = useState('1');
   const [priority, setPriority] = useState('0');
   const [isActive, setIsActive] = useState(true);
+  const [manualUrlMode, setManualUrlMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -53,6 +57,7 @@ export function AutoLinkFormSheet({
       setMaxMatches('1');
       setPriority('0');
       setIsActive(true);
+      setManualUrlMode(false);
       return;
     }
 
@@ -61,6 +66,7 @@ export function AutoLinkFormSheet({
     setMaxMatches(String(editing.maxMatches));
     setPriority(String(editing.priority));
     setIsActive(editing.isActive);
+    setManualUrlMode(isManualTargetUrl(editing.targetUrl));
   }, [open, editing]);
 
   async function handleSave(): Promise<void> {
@@ -113,97 +119,102 @@ export function AutoLinkFormSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="overflow-y-auto sm:max-w-md">
-        <SheetHeader>
+      <SheetContent className="auto-link-drawer cms-props-sheet flex w-full flex-col p-0 sm:max-w-lg">
+        <SheetHeader className="shrink-0 border-b border-[var(--admin-gray)] px-6 py-5">
           <SheetTitle>{editing ? 'Editar auto-link' : 'Nova auto-link'}</SheetTitle>
           <SheetDescription>
-            A keyword será linkada automaticamente na vitrine. O HTML do artigo no banco não é
-            alterado.
+            Defina a keyword e o destino. A injeção ocorre na vitrine — o HTML do artigo no banco
+            permanece intacto.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="auto-link-keyword">Keyword</Label>
-            <Input
-              id="auto-link-keyword"
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              placeholder="ex: cadeira ergonômica"
-              required
-            />
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+            <CmsFormSection title="Keyword">
+              <div className="space-y-2">
+                <Label htmlFor="auto-link-keyword">Termo a linkar</Label>
+                <Input
+                  id="auto-link-keyword"
+                  value={keyword}
+                  onChange={(event) => setKeyword(event.target.value)}
+                  placeholder="ex: cadeira ergonômica"
+                  required
+                />
+                <p className="text-xs leading-relaxed text-[var(--admin-text-muted)]">
+                  Primeira ocorrência do termo vira link nos artigos publicados.
+                </p>
+              </div>
+            </CmsFormSection>
+
+            <CmsFormSection title="Destino" className="cms-form-section-divider">
+              <InternalLinkTargetPicker
+                value={targetUrl}
+                onChange={setTargetUrl}
+                enabled={open}
+                manualMode={manualUrlMode}
+                onManualModeChange={setManualUrlMode}
+              />
+            </CmsFormSection>
+
+            <CmsFormSection title="Regras de injeção" className="cms-form-section-divider">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="auto-link-priority">Prioridade</Label>
+                    <AutoLinkFieldHint text="Maior valor = processada antes. Em empate, a keyword mais longa vence." />
+                  </div>
+                  <Input
+                    id="auto-link-priority"
+                    type="number"
+                    min={0}
+                    max={1000}
+                    value={priority}
+                    onChange={(event) => setPriority(event.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="auto-link-max-matches">Máx. ocorrências</Label>
+                    <AutoLinkFieldHint text="Limite de links por regra no mesmo texto. Não injeta dentro de links, títulos ou imagens existentes." />
+                  </div>
+                  <Input
+                    id="auto-link-max-matches"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={maxMatches}
+                    onChange={(event) => setMaxMatches(event.target.value)}
+                  />
+                </div>
+              </div>
+            </CmsFormSection>
+
+            <div className="auto-link-drawer__toggle">
+              <div>
+                <p className="text-sm font-semibold text-[var(--admin-navy)]">Regra ativa</p>
+                <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">
+                  Regras inativas não aparecem na vitrine.
+                </p>
+              </div>
+              <Switch checked={isActive} onCheckedChange={setIsActive} aria-label="Regra ativa" />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="auto-link-target-url">URL de destino</Label>
-            </div>
-            <Input
-              id="auto-link-target-url"
-              value={targetUrl}
-              onChange={(event) => setTargetUrl(event.target.value)}
-              placeholder="/produtos/slug ou https://..."
-              required
-            />
-            <p className="text-xs text-[var(--admin-text-muted)]">
-              Use caminho interno (ex.: /categorias/home-office) ou URL HTTPS absoluta.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="auto-link-priority">Prioridade</Label>
-              <AutoLinkFieldHint text="Maior valor = processada antes. Em empate, a keyword mais longa vence." />
-            </div>
-            <Input
-              id="auto-link-priority"
-              type="number"
-              min={0}
-              max={1000}
-              value={priority}
-              onChange={(event) => setPriority(event.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="auto-link-max-matches">Máx. ocorrências por artigo</Label>
-              <AutoLinkFieldHint text="Limite de links por regra no mesmo texto. Não injeta dentro de links, títulos ou imagens existentes." />
-            </div>
-            <Input
-              id="auto-link-max-matches"
-              type="number"
-              min={1}
-              max={50}
-              value={maxMatches}
-              onChange={(event) => setMaxMatches(event.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] px-3 py-2">
-            <div>
-              <p className="text-sm font-medium text-[var(--admin-navy)]">Regra ativa</p>
-              <p className="text-xs text-[var(--admin-text-muted)]">
-                Regras inativas não aparecem na vitrine.
-              </p>
-            </div>
-            <Switch checked={isActive} onCheckedChange={setIsActive} aria-label="Regra ativa" />
-          </div>
+          <SheetFooter className="shrink-0 flex-col gap-2 border-t border-[var(--admin-gray)] px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              disabled={saving}
+              onClick={() => void handleSave()}
+            >
+              {saving ? 'Salvando…' : editing ? 'Guardar' : 'Criar'}
+            </Button>
+          </SheetFooter>
         </div>
-
-        <SheetFooter className="mt-6">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            variant="primary"
-            disabled={saving}
-            onClick={() => void handleSave()}
-          >
-            {saving ? 'Salvando…' : editing ? 'Guardar' : 'Criar'}
-          </Button>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

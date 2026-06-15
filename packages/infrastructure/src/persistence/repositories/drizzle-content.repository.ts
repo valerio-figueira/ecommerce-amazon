@@ -168,6 +168,7 @@ export class DrizzleContentRepository implements ContentRepository {
         or(
           ilike(schema.contentArticles.title, pattern),
           ilike(schema.contentArticles.excerpt, pattern),
+          ilike(schema.contentArticles.slug, pattern),
         )!,
       );
     }

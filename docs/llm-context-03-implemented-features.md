@@ -126,8 +126,8 @@ Grid 3 slots: (1) coleção ou artigo hero 2×2, (2) produto oferta 1×1, (3) to
 
 | Entrega | Detalhe |
 |---------|---------|
-| API admin | `GET/POST/PATCH/DELETE /admin/auto-links` |
-| UI admin | `/auto-links` — listagem, busca, CRUD Sheet, toggle `is_active` |
+| API admin | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
+| UI admin | `/auto-links` — listagem, busca, CRUD Sheet, picker com busca server-side (`/admin/internal-link-targets`), toggle `is_active` |
 | Parser | `injectInternalLinks` com priority, maxMatches, zonas protegidas |
 | Cache | Redis `vitrine:seo:auto-links` + invalidação nas mutações |
 | Vitrine | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB) |
@@ -256,7 +256,7 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 | Artigos | `GET/POST/PATCH/DELETE /admin/articles` |
 | Categorias artigo | `GET/POST/PATCH/DELETE /admin/article-categories` |
 | Coleções | `GET/POST/PATCH/DELETE /admin/collections` |
-| Auto-links | `GET/POST/PATCH/DELETE /admin/auto-links` |
+| Auto-links | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
 
 **Rotas planejadas NÃO implementadas:**
 - `DELETE /price-alerts/:token`

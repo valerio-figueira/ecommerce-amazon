@@ -18,6 +18,7 @@ export type ProductListFilters = {
   minDiscountPercentage?: number;
   visibleOnly?: boolean;
   freshPriceOnly?: boolean;
+  search?: string;
 };
 
 export interface ProductRepository {

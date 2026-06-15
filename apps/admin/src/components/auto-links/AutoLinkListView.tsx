@@ -6,10 +6,16 @@ import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
+import {
+  isManualTargetUrl,
+  resolveInternalLinkLabel,
+  type InternalLinkTarget,
+} from '@/lib/internal-link-targets';
 import { cn } from '@/lib/utils';
 
 type AutoLinkListViewProps = {
   items: AdminAutoLinkSummary[];
+  targets: InternalLinkTarget[];
   togglingId: string | null;
   onEdit: (item: AdminAutoLinkSummary) => void;
   onDelete: (item: AdminAutoLinkSummary) => void;
@@ -19,6 +25,7 @@ type AutoLinkListViewProps = {
 
 export function AutoLinkListView({
   items,
+  targets,
   togglingId,
   onEdit,
   onDelete,
@@ -44,7 +51,11 @@ export function AutoLinkListView({
 
   return (
     <ul className="cms-block-list">
-      {items.map((item) => (
+      {items.map((item) => {
+        const resolved = resolveInternalLinkLabel(item.targetUrl, targets);
+        const manual = isManualTargetUrl(item.targetUrl);
+
+        return (
         <li key={item.id} className="cms-block-card cms-block-card--plain">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0 flex-1">
@@ -58,10 +69,20 @@ export function AutoLinkListView({
                 >
                   {item.isActive ? 'Ativo' : 'Inativo'}
                 </span>
+                {resolved ? (
+                  <span className="cms-status-pill is-published">{resolved.typeLabel}</span>
+                ) : manual ? (
+                  <span className="cms-status-pill is-draft">Manual</span>
+                ) : null}
               </div>
-              <p className="mt-0.5 truncate text-xs text-[var(--admin-text-muted)]">
-                {item.targetUrl}
+              <p className="mt-0.5 truncate text-xs text-[var(--admin-navy)]">
+                {resolved?.label ?? item.targetUrl}
               </p>
+              {resolved ? (
+                <p className="mt-0.5 truncate font-mono text-xs text-[var(--admin-text-muted)]">
+                  {item.targetUrl}
+                </p>
+              ) : null}
               <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
                 Prioridade <strong>{item.priority}</strong> · Máx.{' '}
                 <strong>{item.maxMatches}</strong> ocorrência
@@ -95,7 +116,8 @@ export function AutoLinkListView({
             </div>
           </div>
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }

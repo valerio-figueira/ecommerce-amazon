@@ -367,6 +367,18 @@ Doc: [auto-links-admin.md](./auto-links-admin.md).
 
 Mutações invalidam cache Redis `vitrine:seo:auto-links`. Keyword duplicada → 409.
 
+### Admin — `/admin/internal-link-targets`
+
+Doc: [auto-links-admin.md](./auto-links-admin.md).
+
+| Método | Rota | Query | Resposta |
+|--------|------|-------|----------|
+| `GET` | `/admin/internal-link-targets` | `?search=&productLimit=&selectedUrl=` | `SearchInternalLinkTargetsResponse` |
+
+- `search` — filtra categorias, coleções, artigos e produtos (produtos/artigos exigem ≥2 caracteres)
+- `productLimit` — default 20, máx. 50
+- `selectedUrl` — inclui destino resolvido na resposta (útil na edição)
+
 ---
 
 ## Cupons

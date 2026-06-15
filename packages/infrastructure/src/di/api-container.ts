@@ -52,6 +52,7 @@ import {
   UpdateAutoLink,
   DeleteAutoLink,
   ListAutoLinksAdmin,
+  SearchInternalLinkTargets,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
   CreateArticleCategory,
@@ -293,6 +294,13 @@ export function buildApiContainer(env = loadEnv()) {
       updateAutoLink: new UpdateAutoLink(autoLinkRepository, cache, webRevalidator),
       deleteAutoLink: new DeleteAutoLink(autoLinkRepository, cache, webRevalidator),
       listAutoLinksAdmin: new ListAutoLinksAdmin(autoLinkRepository),
+      searchInternalLinkTargets: new SearchInternalLinkTargets(
+        productRepository,
+        categoryRepository,
+        curatedCollectionRepository,
+        contentRepository,
+        articleCategoryRepository,
+      ),
       resolveAffiliateRedirect: new ResolveAffiliateRedirect(
         productRepository,
         affiliateAccountRepository,

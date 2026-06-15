@@ -207,6 +207,7 @@ export type ProductPublicDetail = z.infer<typeof productPublicDetailSchema>;
 export const adminListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(100).optional(),
+  search: z.string().trim().max(100).optional(),
   marketplace: marketplaceSchema.optional(),
   sort: z
     .enum([
