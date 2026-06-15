@@ -126,6 +126,7 @@ export class UpdateProduct {
     product.longDescriptionHtml = editorialContent.longDescriptionHtml;
     product.metaTitle = editorialContent.metaTitle;
     product.metaDescription = editorialContent.metaDescription;
+    product.specsNormalized = input.specsNormalized ?? {};
 
     if (input.strikethroughPrice !== undefined && input.strikethroughPrice > 0) {
       product.strikethroughPrice = input.strikethroughPrice;

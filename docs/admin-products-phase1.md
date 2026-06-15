@@ -10,7 +10,8 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
-- Formulário em **3 abas** (Link & Essenciais · Análise Editorial · SEO Avançado)
+- Formulário em **4 abas** (Link & Essenciais · Análise Editorial · Especificações · SEO Avançado)
+- Especificações dinâmicas por categoria (`specs_normalized`) na aba **Especificações**
 - `short_description` híbrida: gerada dos prós na API + textarea editável no admin
 - `long_description_html`: editor HTML manual (sem botão de IA)
 - Meta tags SEO automatizadas na vitrine; sobrescrita opcional na aba SEO Avançado
@@ -49,6 +50,25 @@ Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/
 |-------|-------|---------|
 | `short_description` | Textarea pré-preenchida a partir dos prós | Se vazio no save, API gera dos prós |
 | `long_description_html` | Textarea HTML + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
+| `specs_normalized` | Aba **Especificações** → seção **Especificações do Produto** | JSON `Record<string, string>`; alimenta comparador e tabela de specs na vitrine |
+
+## Especificações por categoria
+
+Templates estáticos por **slug de categoria** em [`packages/shared/src/product/spec-templates.ts`](../packages/shared/src/product/spec-templates.ts).
+
+| Comportamento | Detalhe |
+|---------------|---------|
+| Lookup | Cadeia folha → raiz (`buildCategorySlugChain` + `resolveSpecTemplateForSlugChain`) |
+| Campo no form | `specsNormalized` (react-hook-form) |
+| Template encontrado | Inputs fixos com labels do template (ex.: Switches, Layout) |
+| Sem template | Somente atributos customizados + hint |
+| Customizados | Botão **+ Adicionar atributo customizado** (par chave/valor) |
+| Edição | Valores existentes em `specs_normalized` hidratam os inputs; chaves fora do template aparecem como customizados |
+| Save | Zod remove pares com chave ou valor vazio (trim) |
+
+**MVP — slugs com template:** `teclados-mecanicos`, `perifericos`, `cadeiras-ergonomicas`. Para expandir, adicione entradas em `CATEGORY_SPEC_TEMPLATES`.
+
+Componentes: `ProductSpecsForm.tsx`, hook `useAdminCategoryOptions.ts`.
 
 ## Visibilidade na home (`visible`)
 
@@ -135,6 +155,8 @@ Schemas Zod: [`packages/shared/src/admin/product-schemas.ts`](../packages/shared
 | Presenter admin | `apps/api/src/adapters/presenters/product.presenter.ts` |
 | BFF admin | `apps/admin/src/app/api/admin/products/route.ts` |
 | Formulário | `apps/admin/src/components/products/ProductForm.tsx` |
+| Specs por categoria | `apps/admin/src/components/products/ProductSpecsForm.tsx` |
+| Templates de specs | `packages/shared/src/product/spec-templates.ts` |
 | Listagem | `apps/admin/src/app/(dashboard)/produtos/page.tsx` |
 
 ## Como testar

@@ -75,6 +75,7 @@ export type AdminProductDetailDto = {
   longDescriptionHtml?: string | undefined;
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
+  specsNormalized: Record<string, string>;
   price: number;
   strikethroughPrice?: number | undefined;
   shouldShowPrice: boolean;
@@ -200,6 +201,7 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     shouldShowPrice: !product.price.isStale,
     visible: product.visible,
     availability: product.availability,
+    specsNormalized: product.specsNormalized,
     createdAt: product.createdAt.toISOString(),
   };
 }

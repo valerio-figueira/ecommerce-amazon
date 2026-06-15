@@ -111,6 +111,26 @@ export function formatParentOptionLabel(option: CategoryParentOption): string {
   return `${indent}${option.label}`;
 }
 
+export function buildCategorySlugChain(
+  categoryId: string | undefined,
+  options: CategoryFlatOption[],
+): string[] {
+  if (!categoryId) {
+    return [];
+  }
+
+  const byId = new Map(options.map((option) => [option.id, option]));
+  const chain: string[] = [];
+  let current = byId.get(categoryId);
+
+  while (current) {
+    chain.unshift(current.slug);
+    current = current.parentId ? byId.get(current.parentId) : undefined;
+  }
+
+  return chain;
+}
+
 function depthIndent(depth: number): string {
   if (depth === 0) return '';
   return `${'│  '.repeat(depth - 1)}├─ `;

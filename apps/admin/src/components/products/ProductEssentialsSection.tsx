@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { CategoryCascadeSelect } from '@/components/categories/CategoryCascadeSelect';
@@ -15,29 +14,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  flattenAdminCategoriesForPicker,
-  type CategoryFlatOption,
-} from '@/lib/api/categories-utils';
+import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
 import type { ProductFormValues } from '@/lib/product-form-values';
-import { adminCategoriesResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 export function ProductEssentialsSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
-  const [categoryOptions, setCategoryOptions] = useState<CategoryFlatOption[]>([]);
-
-  useEffect(() => {
-    void fetch('/api/admin/categories', { cache: 'no-store' })
-      .then(async (response) => {
-        if (!response.ok) return [];
-        const payload: unknown = await response.json();
-        const parsed = adminCategoriesResponseSchema.safeParse(payload);
-        if (!parsed.success) return [];
-        return flattenAdminCategoriesForPicker(parsed.data.items);
-      })
-      .then(setCategoryOptions)
-      .catch(() => setCategoryOptions([]));
-  }, []);
+  const categoryOptions = useAdminCategoryOptions();
 
   return (
     <CmsFormSection title="Dados essenciais">

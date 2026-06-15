@@ -76,7 +76,7 @@ export class CreateProduct {
         : {}),
       affiliateLink,
       images: filteredImages,
-      specsNormalized: {},
+      specsNormalized: input.specsNormalized ?? {},
       editorialScore: toStoredEditorialScore(input.editorialScore),
       availability: parseProductAvailability(input.availability),
       tags: [],

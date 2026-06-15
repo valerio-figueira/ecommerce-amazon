@@ -13,6 +13,7 @@ import {
 import { UpdateProduct } from './UpdateProduct.js';
 import {
   createMockCacheInvalidator,
+  createMockCategoryRepository,
   createMockPriceSnapshotRepository,
   createMockProductRepository,
 } from '../../test/mock-factories.js';
@@ -72,7 +73,12 @@ describe('UpdateProduct', () => {
     });
     const cacheInvalidator = createMockCacheInvalidator();
 
-    const useCase = new UpdateProduct(productRepository, snapshotRepository, cacheInvalidator);
+    const useCase = new UpdateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      snapshotRepository,
+      cacheInvalidator,
+    );
     const result = await useCase.execute('cadeira-ergonomica-pro-x', baseInput);
 
     expect(result.slug).toBe('cadeira-ergonomica-pro-x');
@@ -81,6 +87,35 @@ describe('UpdateProduct', () => {
     expect(existing.price.amount).toBe(799.9);
     expect(snapshotRepository.insertBatch).toHaveBeenCalledOnce();
     expect(productRepository.save).toHaveBeenCalledOnce();
+  });
+
+  it('updates specsNormalized from admin payload', async () => {
+    const existing = createExistingProduct();
+    const productRepository = createMockProductRepository({
+      findBySlug: vi.fn().mockResolvedValue(existing),
+      findByExternalId: vi.fn().mockResolvedValue(existing),
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const useCase = new UpdateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      createMockPriceSnapshotRepository(),
+      createMockCacheInvalidator(),
+    );
+
+    await useCase.execute('cadeira-ergonomica-pro-x', {
+      ...baseInput,
+      specsNormalized: {
+        Switches: 'Red',
+        Layout: 'ABNT2',
+      },
+    });
+
+    expect(existing.specsNormalized).toEqual({
+      Switches: 'Red',
+      Layout: 'ABNT2',
+    });
   });
 
   it('marks price stale when shouldShowPrice is false', async () => {
@@ -93,6 +128,7 @@ describe('UpdateProduct', () => {
 
     const useCase = new UpdateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );
@@ -115,6 +151,7 @@ describe('UpdateProduct', () => {
 
     const useCase = new UpdateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );
@@ -130,6 +167,7 @@ describe('UpdateProduct', () => {
   it('throws EntityNotFoundError when slug is missing', async () => {
     const useCase = new UpdateProduct(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(null) }),
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );
@@ -147,6 +185,7 @@ describe('UpdateProduct', () => {
 
     const useCase = new UpdateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );

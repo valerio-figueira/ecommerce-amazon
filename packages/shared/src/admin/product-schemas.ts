@@ -37,6 +37,16 @@ export const createProductBodySchema = z
     longDescriptionHtml: z.string().max(50000).default(''),
     metaTitle: z.string().max(200).default(''),
     metaDescription: z.string().max(320).default(''),
+    specsNormalized: z
+      .record(z.string(), z.string())
+      .default({})
+      .transform((record) =>
+        Object.fromEntries(
+          Object.entries(record)
+            .map(([key, value]) => [key.trim(), value.trim()] as const)
+            .filter(([key, value]) => key.length > 0 && value.length > 0),
+        ),
+      ),
     price: z.number().min(0),
     strikethroughPrice: z.number().min(0).optional(),
     shouldShowPrice: z.boolean(),
@@ -89,6 +99,7 @@ export const adminProductDetailSchema = z.object({
   longDescriptionHtml: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
+  specsNormalized: z.record(z.string(), z.string()),
   price: z.number().min(0),
   strikethroughPrice: z.number().min(0).optional(),
   shouldShowPrice: z.boolean(),

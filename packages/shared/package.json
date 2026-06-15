@@ -41,6 +41,14 @@
     "./content": {
       "types": "./dist/content/index.d.ts",
       "import": "./dist/content/index.js"
+    },
+    "./product": {
+      "types": "./dist/product/index.d.ts",
+      "import": "./dist/product/index.js"
+    },
+    "./product/spec-templates": {
+      "types": "./dist/product/spec-templates.d.ts",
+      "import": "./dist/product/spec-templates.js"
     }
   },
   "scripts": {

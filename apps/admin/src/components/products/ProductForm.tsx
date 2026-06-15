@@ -11,6 +11,7 @@ import { ProductAnalysisSection } from '@/components/products/ProductAnalysisSec
 import { ProductEssentialsSection } from '@/components/products/ProductEssentialsSection';
 import { ProductLinkSection } from '@/components/products/ProductLinkSection';
 import { ProductPriceSection } from '@/components/products/ProductPriceSection';
+import { ProductSpecsForm } from '@/components/products/ProductSpecsForm';
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ const emptyValues: ProductFormValues = {
   longDescriptionHtml: '',
   metaTitle: '',
   metaDescription: '',
+  specsNormalized: {},
   price: 0,
   shouldShowPrice: false,
   visible: true,
@@ -145,13 +147,14 @@ export function ProductForm({
 
           <div className="cms-float-panel cms-blocks-panel">
             <p className="cms-blocks-panel__meta">
-              Dados do produto · <strong>3 abas</strong>
+              Dados do produto · <strong>4 abas</strong>
             </p>
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList>
                 <TabsTrigger value="essentials">Link &amp; Essenciais</TabsTrigger>
                 <TabsTrigger value="analysis">Análise Editorial</TabsTrigger>
+                <TabsTrigger value="specs">Especificações</TabsTrigger>
                 <TabsTrigger value="seo">SEO Avançado</TabsTrigger>
               </TabsList>
 
@@ -163,6 +166,10 @@ export function ProductForm({
 
               <TabsContent value="analysis">
                 <ProductAnalysisSection />
+              </TabsContent>
+
+              <TabsContent value="specs">
+                <ProductSpecsForm />
               </TabsContent>
 
               <TabsContent value="seo">

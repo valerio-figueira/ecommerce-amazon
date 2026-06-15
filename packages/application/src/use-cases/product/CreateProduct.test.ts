@@ -13,6 +13,7 @@ import {
 import { CreateProduct } from './CreateProduct.js';
 import {
   createMockCacheInvalidator,
+  createMockCategoryRepository,
   createMockPriceSnapshotRepository,
   createMockProductRepository,
 } from '../../test/mock-factories.js';
@@ -44,7 +45,12 @@ describe('CreateProduct', () => {
     });
     const cacheInvalidator = createMockCacheInvalidator();
 
-    const useCase = new CreateProduct(productRepository, snapshotRepository, cacheInvalidator);
+    const useCase = new CreateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      snapshotRepository,
+      cacheInvalidator,
+    );
     const result = await useCase.execute(baseInput);
 
     expect(result.slug).toBe('cadeira-ergonomica-pro-x');
@@ -54,6 +60,7 @@ describe('CreateProduct', () => {
     expect(savedProduct.shouldShowPrice).toBe(true);
     expect(savedProduct.visible).toBe(true);
     expect(savedProduct.editorialScore).toBe(85);
+    expect(savedProduct.specsNormalized).toEqual({});
     expect(snapshotRepository.insertBatch).toHaveBeenCalledOnce();
     expect(cacheInvalidator.invalidateProducts).toHaveBeenCalledOnce();
   });
@@ -69,7 +76,12 @@ describe('CreateProduct', () => {
     });
     const cacheInvalidator = createMockCacheInvalidator();
 
-    const useCase = new CreateProduct(productRepository, snapshotRepository, cacheInvalidator);
+    const useCase = new CreateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      snapshotRepository,
+      cacheInvalidator,
+    );
     await useCase.execute({ ...baseInput, shouldShowPrice: false, price: 500 });
 
     const savedProduct = vi.mocked(productRepository.save).mock.calls[0]?.[0] as Product;
@@ -102,6 +114,7 @@ describe('CreateProduct', () => {
     });
     const useCase = new CreateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );
@@ -120,6 +133,7 @@ describe('CreateProduct', () => {
     });
     const useCase = new CreateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );
@@ -128,12 +142,45 @@ describe('CreateProduct', () => {
     expect(result.slug).toBe('cadeira-ergonomica-pro-x-2');
   });
 
+  it('persists specsNormalized when provided', async () => {
+    const productRepository = createMockProductRepository({
+      findByExternalId: vi.fn().mockResolvedValue(null),
+      findBySlug: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+    const snapshotRepository = createMockPriceSnapshotRepository({
+      insertBatch: vi.fn().mockResolvedValue(undefined),
+    });
+    const cacheInvalidator = createMockCacheInvalidator();
+
+    const useCase = new CreateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      snapshotRepository,
+      cacheInvalidator,
+    );
+    await useCase.execute({
+      ...baseInput,
+      specsNormalized: {
+        Material: 'Mesh',
+        'Peso Máximo Suportado': '120 kg',
+      },
+    });
+
+    const savedProduct = vi.mocked(productRepository.save).mock.calls[0]?.[0] as Product;
+    expect(savedProduct.specsNormalized).toEqual({
+      Material: 'Mesh',
+      'Peso Máximo Suportado': '120 kg',
+    });
+  });
+
   it('throws ValidationError when marketplace mismatches parsed URL', async () => {
     const productRepository = createMockProductRepository({
       findByExternalId: vi.fn().mockResolvedValue(null),
     });
     const useCase = new CreateProduct(
       productRepository,
+      createMockCategoryRepository(),
       createMockPriceSnapshotRepository(),
       createMockCacheInvalidator(),
     );

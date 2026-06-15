@@ -2,6 +2,7 @@ import { vi } from 'vitest';
 
 import type {
   CacheInvalidator,
+  CategoryRepository,
   EventBus,
   MarketplaceFetcherFactory,
   PageCacheInvalidator,
@@ -23,6 +24,28 @@ export function createMockProductRepository(
     findDueForCatalogSync: vi.fn(),
     save: vi.fn(),
     saveBatch: vi.fn(),
+    ...overrides,
+  };
+}
+
+export function createMockCategoryRepository(
+  overrides: Partial<CategoryRepository> = {},
+): CategoryRepository {
+  return {
+    findById: vi.fn(),
+    findBySlug: vi.fn(),
+    listAll: vi.fn(),
+    listChildren: vi.fn(),
+    getDescendantIds: vi.fn(),
+    getAncestorChain: vi.fn(),
+    countProductsInIds: vi.fn(),
+    countProductsByCategoryId: vi.fn(),
+    hasChildren: vi.fn(),
+    countDirectProducts: vi.fn(),
+    save: vi.fn(),
+    delete: vi.fn(),
+    reorder: vi.fn(),
+    slugExists: vi.fn(),
     ...overrides,
   };
 }
