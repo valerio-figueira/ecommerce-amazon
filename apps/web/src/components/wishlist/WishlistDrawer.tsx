@@ -9,9 +9,11 @@ import { buildGoUrl } from '@/lib/go-url';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
+import { usePathname } from 'next/navigation';
 
 export function WishlistDrawer(): React.JSX.Element | null {
   const { items, isOpen, setOpen, removeItem, sessionId } = useWishlist();
+  const pathname = usePathname();
 
   if (!isOpen) return null;
 
@@ -68,6 +70,7 @@ export function WishlistDrawer(): React.JSX.Element | null {
                                   sessionId,
                                   origin: 'listagem',
                                   placement: ClickPlacement.WISHLIST_DRAWER,
+                                  pagePath: pathname,
                                   useStoredReferrer: true,
                                 }),
                                 '_blank',

@@ -31,6 +31,10 @@ function isArticleAffiliateClick(event: ClickEventPayload): boolean {
   return event.origin === ClickOrigin.EMBED || event.origin === ClickOrigin.COMPARISON;
 }
 
+function isDashboardClick(event: ClickEventPayload): boolean {
+  return event.origin !== ClickOrigin.REDIRECT_GO;
+}
+
 function engagementArticleKey(eventType: string, articleId: string): string {
   return `${eventType}:${articleId}`;
 }
@@ -96,6 +100,9 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
     const engagementByType: Record<string, number> = {};
     const engagementByArticleAndType: Record<string, number> = {};
     const affiliateClicksByArticle: Record<string, number> = {};
+    const affiliateClicksByArticleAndOrigin: Record<string, number> = {};
+    const clicksByProductId: Record<string, number> = {};
+    const clicksByMarketplace: Record<string, number> = {};
 
     let totalClickCount = 0;
     let pendingEventCount = 0;
@@ -170,6 +177,40 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
         affiliateClicksByArticle[articleId] = (affiliateClicksByArticle[articleId] ?? 0) + value;
       }
 
+      const articleAffiliateOriginPattern = pendingKey(
+        'clicks',
+        'day',
+        day,
+        'article_affiliate_origin',
+        '*',
+      );
+      const articleAffiliateOriginKeys = await this.scanKeys(articleAffiliateOriginPattern);
+      for (const key of articleAffiliateOriginKeys) {
+        const compositeKey = key.split(':').slice(-2).join(':');
+        const value = Number((await this.redis.get(key)) ?? 0);
+        if (value <= 0) continue;
+        affiliateClicksByArticleAndOrigin[compositeKey] =
+          (affiliateClicksByArticleAndOrigin[compositeKey] ?? 0) + value;
+      }
+
+      const productPattern = pendingKey('clicks', 'day', day, 'product', '*');
+      const productKeys = await this.scanKeys(productPattern);
+      for (const key of productKeys) {
+        const productId = key.split(':').pop() ?? 'unknown';
+        const value = Number((await this.redis.get(key)) ?? 0);
+        if (value <= 0) continue;
+        clicksByProductId[productId] = (clicksByProductId[productId] ?? 0) + value;
+      }
+
+      const marketplacePattern = pendingKey('clicks', 'day', day, 'marketplace', '*');
+      const marketplaceKeys = await this.scanKeys(marketplacePattern);
+      for (const key of marketplaceKeys) {
+        const marketplace = key.split(':').pop() ?? 'unknown';
+        const value = Number((await this.redis.get(key)) ?? 0);
+        if (value <= 0) continue;
+        clicksByMarketplace[marketplace] = (clicksByMarketplace[marketplace] ?? 0) + value;
+      }
+
       const engagementPrefix = `${pendingKey('engagement', 'day', day)}:`;
       const engagementPattern = `${engagementPrefix}*`;
       const engagementKeys = await this.scanKeys(engagementPattern);
@@ -205,6 +246,9 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
       engagementByArticleAndType,
       embedAffiliateClicks,
       affiliateClicksByArticle,
+      affiliateClicksByArticleAndOrigin,
+      clicksByProductId,
+      clicksByMarketplace,
     };
   }
 
@@ -262,8 +306,21 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
   ): void {
     const day = formatTelemetryDay(new Date(event.occurredAt));
     this.incrWithTtl(pipeline, pendingKey('events', 'day', day, 'total'));
+
+    if (!isDashboardClick(event)) {
+      return;
+    }
+
     this.incrWithTtl(pipeline, pendingKey('clicks', 'day', day, 'total'));
     this.incrWithTtl(pipeline, pendingKey('clicks', 'day', day, 'origin', event.origin));
+    this.incrWithTtl(pipeline, pendingKey('clicks', 'day', day, 'product', event.productId));
+
+    if (event.marketplace) {
+      this.incrWithTtl(
+        pipeline,
+        pendingKey('clicks', 'day', day, 'marketplace', event.marketplace),
+      );
+    }
 
     if (event.placement) {
       this.incrWithTtl(
@@ -289,6 +346,16 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
         pipeline,
         pendingKey('clicks', 'day', day, 'article_affiliate', event.articleId),
       );
+      this.incrWithTtl(
+        pipeline,
+        pendingKey(
+          'clicks',
+          'day',
+          day,
+          'article_affiliate_origin',
+          `${event.articleId}:${event.origin}`,
+        ),
+      );
     }
   }
 
@@ -298,8 +365,21 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
   ): void {
     const day = formatTelemetryDay(new Date(event.occurredAt));
     this.decrWithCleanup(pipeline, pendingKey('events', 'day', day, 'total'));
+
+    if (!isDashboardClick(event)) {
+      return;
+    }
+
     this.decrWithCleanup(pipeline, pendingKey('clicks', 'day', day, 'total'));
     this.decrWithCleanup(pipeline, pendingKey('clicks', 'day', day, 'origin', event.origin));
+    this.decrWithCleanup(pipeline, pendingKey('clicks', 'day', day, 'product', event.productId));
+
+    if (event.marketplace) {
+      this.decrWithCleanup(
+        pipeline,
+        pendingKey('clicks', 'day', day, 'marketplace', event.marketplace),
+      );
+    }
 
     if (event.placement) {
       this.decrWithCleanup(
@@ -322,6 +402,16 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
       this.decrWithCleanup(
         pipeline,
         pendingKey('clicks', 'day', day, 'article_affiliate', event.articleId),
+      );
+      this.decrWithCleanup(
+        pipeline,
+        pendingKey(
+          'clicks',
+          'day',
+          day,
+          'article_affiliate_origin',
+          `${event.articleId}:${event.origin}`,
+        ),
       );
     }
   }

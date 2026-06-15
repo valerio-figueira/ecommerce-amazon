@@ -89,6 +89,8 @@ npm run test -w @ecommerce-amazon/infrastructure -- telemetry
 | Situação | Ação |
 |----------|------|
 | Worker parado | Eventos acumulam no Redis; dashboard ainda mostra pending. Subir worker. |
+| Top produtos/marketplace defasados vs KPI total | Agregações PG sem merge do buffer (corrigido via composite analytics) | Aguardar flush ou verificar worker |
+| Cliques somem após flush | `origin=redirect_go` — link `/go` sem atribuição | Usar `AffiliateGoLink` com `origin` + `placement` |
 | Redis cheio | Verificar `TELEMETRY_BUFFER_MAX_LEN`; aumentar frequência de flush ou cap. |
 | Dev sem worker | `TELEMETRY_BUFFER_ENABLED=false` no `.env` |
 | Perda Redis | Processing list + requeue; eventos em processing são reenfileirados em falha PG |

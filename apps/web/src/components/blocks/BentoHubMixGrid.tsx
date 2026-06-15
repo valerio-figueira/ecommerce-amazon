@@ -2,6 +2,7 @@
 
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import type {
   BentoHubMixRendered,
@@ -150,6 +151,16 @@ function BentoListSlot({
   slot: NonNullable<BentoHubMixRendered['slot3']>;
   blockId: string;
 }): React.JSX.Element {
+  const pathname = usePathname();
+
+  const handleProductClick = (): void => {
+    setAttribution({
+      entryPath: pathname,
+      entryPlacement: ClickPlacement.CMS_BENTO_LIST,
+      blockId,
+    });
+  };
+
   return (
     <div
       className={cn(
@@ -176,6 +187,7 @@ function BentoListSlot({
               <Link
                 href={`/produtos/${product.slug}`}
                 data-block-id={blockId}
+                onClick={handleProductClick}
                 className="group flex items-center gap-3 rounded-xl p-1 transition-colors hover:bg-neutral-50"
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">

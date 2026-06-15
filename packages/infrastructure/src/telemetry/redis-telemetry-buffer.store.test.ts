@@ -82,6 +82,22 @@ describe('RedisTelemetryBufferStore', () => {
     expect(counters.get(`telemetry:pending:clicks:day:${day}:origin:${ClickOrigin.EMBED}`)).toBe(1);
   });
 
+  it('does not increment dashboard click counters for redirect_go', async () => {
+    const { redis, counters } = createRedisMock();
+    const store = new RedisTelemetryBufferStore(redis as never, 1000);
+    const occurredAt = '2026-06-15T10:00:00.000Z';
+
+    await store.pushClick({
+      productId: '550e8400-e29b-41d4-a716-446655440000',
+      origin: ClickOrigin.REDIRECT_GO,
+      occurredAt,
+    });
+
+    const day = formatTelemetryDay(new Date(occurredAt));
+    expect(counters.get(`telemetry:pending:events:day:${day}:total`)).toBe(1);
+    expect(counters.get(`telemetry:pending:clicks:day:${day}:total`)).toBeUndefined();
+  });
+
   it('drains clicks into processing list', async () => {
     const { redis, lists } = createRedisMock();
     lists.set('telemetry:buffer:clicks', [

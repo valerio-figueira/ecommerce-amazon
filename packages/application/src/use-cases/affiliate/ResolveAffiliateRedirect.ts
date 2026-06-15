@@ -25,7 +25,7 @@ export class ResolveAffiliateRedirect {
     utmCampaign?: string | undefined;
   }): Promise<
     Result<
-      { productId: string; targetUrl: string },
+      { productId: string; targetUrl: string; marketplace: string },
       EntityNotFoundError | ValidationError
     >
   > {
@@ -69,6 +69,7 @@ export class ResolveAffiliateRedirect {
     return ok({
       productId: product.id,
       targetUrl,
+      marketplace: product.marketplace,
     });
   }
 }

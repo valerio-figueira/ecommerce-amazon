@@ -18,9 +18,12 @@ export function buildGoUrl(
     utmDefaults?: Record<string, string>;
   },
 ): string {
+  const attribution = params?.useStoredReferrer ? getAttribution() : null;
   const searchParams = new URLSearchParams();
-  if (params?.blockId) {
-    searchParams.set('blockId', params.blockId);
+
+  const blockId = params?.blockId ?? attribution?.blockId;
+  if (blockId) {
+    searchParams.set('blockId', blockId);
   }
   if (params?.articleId) {
     searchParams.set('articleId', params.articleId);
@@ -41,9 +44,7 @@ export function buildGoUrl(
     searchParams.set('pagePath', params.pagePath);
   }
 
-  const referrerPath =
-    params?.referrerPath ??
-    (params?.useStoredReferrer ? getAttribution()?.entryPath : undefined);
+  const referrerPath = params?.referrerPath ?? attribution?.entryPath;
   if (referrerPath) {
     searchParams.set('referrerPath', referrerPath);
   }

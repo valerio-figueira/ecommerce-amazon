@@ -86,9 +86,10 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         return reply.redirect('/', 307);
       }
 
-      void useCases.recordClickEvent
-        .execute({
+      try {
+        await useCases.recordClickEvent.execute({
           productId: result.value.productId,
+          marketplace: result.value.marketplace,
           origin: query.origin ?? 'redirect_go',
           ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
           ...(query.articleId !== undefined ? { articleId: query.articleId } : {}),
@@ -97,13 +98,13 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
           ...(query.pagePath !== undefined ? { pagePath: query.pagePath } : {}),
           ...(query.referrerPath !== undefined ? { referrerPath: query.referrerPath } : {}),
           ...(sessionId !== undefined ? { sessionId } : {}),
-        })
-        .catch((error: unknown) => {
-          container.logger.error('Telemetry failed for /go redirect', {
-            slug,
-            error: error instanceof Error ? error.message : String(error),
-          });
         });
+      } catch (error: unknown) {
+        container.logger.error('Telemetry failed for /go redirect', {
+          slug,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
 
       return reply.redirect(result.value.targetUrl, 307);
     } catch (error) {

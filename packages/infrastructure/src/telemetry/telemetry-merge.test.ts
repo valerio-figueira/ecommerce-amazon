@@ -26,6 +26,9 @@ describe('telemetry merge helpers', () => {
     engagementByArticleAndType: {},
     embedAffiliateClicks: 2,
     affiliateClicksByArticle: {},
+    affiliateClicksByArticleAndOrigin: {},
+    clicksByProductId: {},
+    clicksByMarketplace: {},
   };
 
   it('merges origin breakdown without double-counting PG totals', () => {

@@ -6,6 +6,7 @@ export class RecordClickEvent {
   async execute(input: {
     productId: string;
     origin: string;
+    marketplace?: string | undefined;
     sessionId?: string | undefined;
     blockId?: string | undefined;
     articleId?: string | undefined;
@@ -17,6 +18,7 @@ export class RecordClickEvent {
     await this.clickRepository.record({
       productId: input.productId,
       origin: input.origin,
+      ...(input.marketplace !== undefined ? { marketplace: input.marketplace } : {}),
       ...(input.sessionId !== undefined ? { sessionId: input.sessionId } : {}),
       ...(input.blockId !== undefined ? { blockId: input.blockId } : {}),
       ...(input.articleId !== undefined ? { articleId: input.articleId } : {}),

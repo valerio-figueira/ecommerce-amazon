@@ -9,10 +9,13 @@ import {
   mergeBlockBreakdown,
   mergeClickTrend,
   mergeEditorialFunnel,
+  mergeMarketplaceBreakdown,
   mergeOriginBreakdown,
   mergeOriginTrend,
   mergePageBreakdown,
   mergePlacementBreakdown,
+  mergeTopClickedProducts,
+  mergeConvertingArticles,
 } from '../../telemetry/telemetry-merge.js';
 
 export class CompositeAnalyticsRepository
@@ -89,15 +92,27 @@ export class CompositeAnalyticsRepository
   }
 
   async getClicksByMarketplace(from: Date, to: Date) {
-    return this.pgAnalytics.getClicksByMarketplace(from, to);
+    const [pgItems, pending] = await Promise.all([
+      this.pgAnalytics.getClicksByMarketplace(from, to),
+      this.bufferStore.getPendingAggregates(from, to),
+    ]);
+    return mergeMarketplaceBreakdown(pgItems, pending);
   }
 
   async getTopClickedProducts(from: Date, to: Date, limit: number) {
-    return this.pgAnalytics.getTopClickedProducts(from, to, limit);
+    const [pgItems, pending] = await Promise.all([
+      this.pgAnalytics.getTopClickedProducts(from, to, limit),
+      this.bufferStore.getPendingAggregates(from, to),
+    ]);
+    return mergeTopClickedProducts(pgItems, pending, limit);
   }
 
   async getConvertingArticles(from: Date, to: Date, limit: number) {
-    return this.pgAnalytics.getConvertingArticles(from, to, limit);
+    const [pgItems, pending] = await Promise.all([
+      this.pgAnalytics.getConvertingArticles(from, to, limit),
+      this.bufferStore.getPendingAggregates(from, to),
+    ]);
+    return mergeConvertingArticles(pgItems, pending, limit);
   }
 
   async getCatalogHealthMetrics() {

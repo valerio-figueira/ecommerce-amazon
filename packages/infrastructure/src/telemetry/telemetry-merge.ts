@@ -1,14 +1,18 @@
 import type {
   BlockClickBreakdown,
   ClickTrendPoint,
+  ConvertingArticle,
   EditorialFunnelArticleStage,
   EditorialFunnelMetrics,
+  MarketplaceClickBreakdown,
   OriginClickBreakdown,
   OriginTrendPoint,
   PagePathClickBreakdown,
   PendingTelemetryAggregates,
   PlacementClickBreakdown,
+  TopClickedProduct,
 } from '@ecommerce-amazon/domain';
+import { ClickOrigin } from '@ecommerce-amazon/domain';
 import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
 
 export function mergeOriginBreakdown(
@@ -20,6 +24,7 @@ export function mergeOriginBreakdown(
     counts.set(item.origin, item.count);
   }
   for (const [origin, count] of Object.entries(pending.clicksByOrigin)) {
+    if (origin === ClickOrigin.REDIRECT_GO) continue;
     counts.set(origin, (counts.get(origin) ?? 0) + count);
   }
 
@@ -108,6 +113,7 @@ export function mergeOriginTrend(
     counts.set(`${item.date}:${item.origin}`, item.count);
   }
   for (const item of pending.clicksTrendByOrigin) {
+    if (item.origin === ClickOrigin.REDIRECT_GO) continue;
     const key = `${item.date}:${item.origin}`;
     counts.set(key, (counts.get(key) ?? 0) + item.count);
   }
@@ -135,6 +141,97 @@ export function mergeClickTrend(
   return [...counts.entries()]
     .map(([date, count]) => ({ date, count }))
     .sort((left, right) => left.date.localeCompare(right.date));
+}
+
+export function mergeMarketplaceBreakdown(
+  pgItems: MarketplaceClickBreakdown[],
+  pending: PendingTelemetryAggregates,
+): MarketplaceClickBreakdown[] {
+  const counts = new Map<string, number>();
+  for (const item of pgItems) {
+    counts.set(item.marketplace, item.count);
+  }
+  for (const [marketplace, count] of Object.entries(pending.clicksByMarketplace)) {
+    counts.set(marketplace, (counts.get(marketplace) ?? 0) + count);
+  }
+
+  const total = [...counts.values()].reduce((sum, count) => sum + count, 0);
+  return [...counts.entries()]
+    .map(([marketplace, count]) => ({
+      marketplace,
+      count,
+      sharePercent: toSharePercent(count, total),
+    }))
+    .sort((left, right) => right.count - left.count);
+}
+
+export function mergeTopClickedProducts(
+  pgItems: TopClickedProduct[],
+  pending: PendingTelemetryAggregates,
+  limit: number,
+): TopClickedProduct[] {
+  const byProduct = new Map<string, TopClickedProduct>();
+  for (const item of pgItems) {
+    byProduct.set(item.productId, { ...item });
+  }
+
+  for (const [productId, count] of Object.entries(pending.clicksByProductId)) {
+    const existing = byProduct.get(productId);
+    if (existing) {
+      existing.clickCount += count;
+      continue;
+    }
+    byProduct.set(productId, {
+      productId,
+      slug: '—',
+      title: 'Evento pendente',
+      marketplace: '—',
+      clickCount: count,
+    });
+  }
+
+  return [...byProduct.values()].sort((left, right) => right.clickCount - left.clickCount).slice(0, limit);
+}
+
+export function mergeConvertingArticles(
+  pgItems: ConvertingArticle[],
+  pending: PendingTelemetryAggregates,
+  limit: number,
+): ConvertingArticle[] {
+  const byArticle = new Map<string, ConvertingArticle>();
+  for (const item of pgItems) {
+    byArticle.set(item.articleId, { ...item });
+  }
+
+  for (const [compositeKey, count] of Object.entries(pending.affiliateClicksByArticleAndOrigin)) {
+    const separatorIndex = compositeKey.indexOf(':');
+    if (separatorIndex === -1) continue;
+    const articleId = compositeKey.slice(0, separatorIndex);
+    const origin = compositeKey.slice(separatorIndex + 1);
+    if (origin !== ClickOrigin.EMBED && origin !== ClickOrigin.COMPARISON) continue;
+
+    const existing = byArticle.get(articleId);
+    if (existing) {
+      existing.clickCount += count;
+      if (origin === ClickOrigin.EMBED) {
+        existing.embedClickCount += count;
+      } else {
+        existing.comparadorClickCount += count;
+      }
+      continue;
+    }
+
+    byArticle.set(articleId, {
+      articleId,
+      slug: '—',
+      title: 'Evento pendente',
+      clickCount: count,
+      embedClickCount: origin === ClickOrigin.EMBED ? count : 0,
+      comparadorClickCount: origin === ClickOrigin.COMPARISON ? count : 0,
+    });
+  }
+
+  return [...byArticle.values()].sort((left, right) => right.clickCount - left.clickCount).slice(0, limit);
 }
 
 export function mergeEditorialFunnel(

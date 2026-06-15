@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 
+import { getAttribution } from '@/lib/attribution/context';
 import { buildGoUrl } from '@/lib/go-url';
 import { cn } from '@/lib/utils';
 
@@ -57,16 +58,19 @@ export function AffiliateGoLink({
     setUseStoredReferrer(true);
   }, []);
 
+  const attribution = useStoredReferrer ? getAttribution() : null;
+  const resolvedBlockId = blockId ?? attribution?.blockId;
+  const resolvedReferrerPath = referrerPath ?? attribution?.entryPath;
+
   const href = buildGoUrl(slug, {
-    ...(blockId !== undefined ? { blockId } : {}),
+    ...(resolvedBlockId !== undefined ? { blockId: resolvedBlockId } : {}),
     ...(articleId !== undefined ? { articleId } : {}),
     ...(collectionId !== undefined ? { collectionId } : {}),
     ...(sessionId !== undefined && sessionId.length > 0 ? { sessionId } : {}),
     origin,
     ...(placement !== undefined ? { placement } : {}),
     pagePath,
-    ...(referrerPath !== undefined ? { referrerPath } : {}),
-    ...(useStoredReferrer ? { useStoredReferrer: true } : {}),
+    ...(resolvedReferrerPath !== undefined ? { referrerPath: resolvedReferrerPath } : {}),
     ...(utmDefaults !== undefined ? { utmDefaults } : {}),
   });
 

@@ -14,6 +14,7 @@ export interface ClickEventRepository {
   record(event: {
     productId: string;
     origin: string;
+    marketplace?: string;
     sessionId?: string;
     blockId?: string;
     articleId?: string;
@@ -27,6 +28,7 @@ export interface ClickEventRepository {
     events: Array<{
       productId: string;
       origin: string;
+      marketplace?: string;
       sessionId?: string;
       blockId?: string;
       articleId?: string;

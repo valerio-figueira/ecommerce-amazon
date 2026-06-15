@@ -23,6 +23,7 @@ const PLACEMENT_LABELS: Record<string, string> = {
   'cms.product_grid': 'Grade CMS',
   'cms.featured_product': 'Produto destaque CMS',
   'cms.bento_offer': 'Bento — oferta',
+  'cms.bento_list': 'Bento — lista',
   'cms.bento_article': 'Bento — artigo',
   'cms.curated_collection': 'Coleção curada CMS',
   'product.detail_cta': 'CTA detalhe produto',

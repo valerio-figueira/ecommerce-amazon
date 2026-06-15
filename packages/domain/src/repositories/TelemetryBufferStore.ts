@@ -1,6 +1,7 @@
 export type ClickEventPayload = {
   productId: string;
   origin: string;
+  marketplace?: string;
   sessionId?: string;
   blockId?: string;
   articleId?: string;
@@ -35,6 +36,9 @@ export type PendingTelemetryAggregates = {
   engagementByArticleAndType: Record<string, number>;
   embedAffiliateClicks: number;
   affiliateClicksByArticle: Record<string, number>;
+  affiliateClicksByArticleAndOrigin: Record<string, number>;
+  clicksByProductId: Record<string, number>;
+  clicksByMarketplace: Record<string, number>;
 };
 
 export interface TelemetryBufferStore {

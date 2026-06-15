@@ -176,6 +176,7 @@ export default async function CategoryPage({
               <ProductCard
                 key={product.id}
                 product={product}
+                clickOrigin="listagem"
                 placement={ClickPlacement.CATEGORY_LISTING}
               />
             ))}

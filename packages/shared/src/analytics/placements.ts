@@ -6,6 +6,7 @@ export const ClickPlacement = {
   CMS_PRODUCT_GRID: 'cms.product_grid',
   CMS_FEATURED_PRODUCT: 'cms.featured_product',
   CMS_BENTO_OFFER: 'cms.bento_offer',
+  CMS_BENTO_LIST: 'cms.bento_list',
   CMS_BENTO_ARTICLE: 'cms.bento_article',
   CMS_CURATED_COLLECTION: 'cms.curated_collection',
   PRODUCT_DETAIL_CTA: 'product.detail_cta',

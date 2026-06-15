@@ -66,6 +66,7 @@ describe('ResolveAffiliateRedirect', () => {
     if (result.ok) {
       expect(result.value.targetUrl).toContain('amazon.com.br');
       expect(result.value.productId).toBe(product.id);
+      expect(result.value.marketplace).toBe(Marketplace.AMAZON_BR);
     }
   });
 

@@ -22,6 +22,7 @@ export class RedisBufferedClickEventRepository implements ClickEventRepository {
     await this.bufferStore.pushClick({
       productId: event.productId,
       origin: event.origin,
+      ...(event.marketplace !== undefined ? { marketplace: event.marketplace } : {}),
       ...(event.sessionId !== undefined ? { sessionId: event.sessionId } : {}),
       ...(event.blockId !== undefined ? { blockId: event.blockId } : {}),
       ...(event.articleId !== undefined ? { articleId: event.articleId } : {}),
