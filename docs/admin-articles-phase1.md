@@ -24,8 +24,9 @@ flowchart LR
 1. Operador cria/edita em `/artigos`, `/artigos/novo`, `/artigos/[id]`.
 2. Formulário em **layout two-pane** (estilo php-app/notícias): painel principal (título, slug, resumo, editor) + sidebar sticky (Publicar, Capa, SEO, Metadados).
 3. Editor TipTap serializa embeds como `[[product:slug]]` no campo `body`.
-3. Ao salvar, o repositório extrai shortcodes e sincroniza `content_product_embeds`.
-4. `authorId` é definido server-side a partir do JWT (`adminOperator.id`).
+4. **Capa:** upload com recorte 16:9 via `POST /admin/media/images` (mesmo fluxo de coleções) ou URL externa no campo de texto; valor gravado em `coverImageUrl`.
+5. Ao salvar, o repositório extrai shortcodes e sincroniza `content_product_embeds`.
+6. `authorId` é definido server-side a partir do JWT (`adminOperator.id`).
 
 ## Editor de conteúdo
 
@@ -41,7 +42,7 @@ flowchart LR
 | Camada | Path |
 |--------|------|
 | UI listagem | `apps/admin/src/components/articles/ArticleListManager.tsx` |
-| UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx`, `ArticleMetaBox.tsx` |
+| UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx`, `ArticleCoverField.tsx`, `ArticleMetaBox.tsx` |
 | Editor TipTap | `apps/admin/src/components/articles/ArticleEditor.tsx` |
 | Toolbar + modo HTML | `apps/admin/src/components/articles/ArticleEditorToolbar.tsx`, `ArticleEditorModeTabs.tsx`, `useEditorToolbarState.ts` |
 | Extensão embed | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts` |
@@ -72,9 +73,10 @@ npm run dev -w @ecommerce-amazon/admin
 
 1. Login em `http://localhost:3002/login`
 2. Abrir `/artigos` → criar artigo
-3. No editor, digitar `/produto` ou usar o botão na toolbar → inserir produto
-4. Alternar **Código HTML** → editar shortcodes manualmente → voltar **Visual** e conferir embed
-5. Publicar e abrir na vitrine: `/artigos/{slug}`
+3. Na sidebar **Capa**: enviar arquivo (recortar 16:9) ou colar URL externa
+4. No editor, digitar `/produto` ou usar o botão na toolbar → inserir produto
+5. Alternar **Código HTML** → editar shortcodes manualmente → voltar **Visual** e conferir embed
+6. Publicar e abrir na vitrine: `/artigos/{slug}`
 
 ## Próximos passos
 

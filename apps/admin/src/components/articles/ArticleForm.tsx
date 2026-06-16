@@ -4,12 +4,12 @@ import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
+import { ArticleCoverField } from '@/components/articles/ArticleCoverField';
 import { ArticleEditor } from '@/components/articles/ArticleEditor';
 import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
 import { ArticleLlmPromptHelper } from '@/components/articles/ArticleLlmPromptHelper';
 import { ArticleMetaBox } from '@/components/articles/ArticleMetaBox';
 import { ArticleSeoCharCounter } from '@/components/articles/ArticleSeoCharCounter';
-import { ManagedImage } from '@/components/ui/ManagedImage';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
@@ -147,8 +147,6 @@ export function ArticleForm({
       setSaving(false);
     }
   }
-
-  const trimmedCover = coverImageUrl.trim();
 
   return (
     <section className="article-editor-section">
@@ -349,31 +347,11 @@ export function ArticleForm({
           </ArticleMetaBox>
 
           <ArticleMetaBox title="Capa">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="article-cover">
-                  URL da capa{' '}
-                  <span className="font-normal text-[var(--admin-text-muted)]">(opcional)</span>
-                </Label>
-                <ArticleFieldHint text="Banner horizontal (16:9 ou 21:9) no topo da página e no bloco Bento quando não houver override no CMS." />
-              </div>
-              {trimmedCover !== '' ? (
-                <ManagedImage
-                  src={trimmedCover}
-                  alt="Capa atual"
-                  className="mb-2 max-w-[220px] rounded-md border border-neutral-200"
-                />
-              ) : null}
-              <Input
-                id="article-cover"
-                value={coverImageUrl}
-                onChange={(event) => setCoverImageUrl(event.target.value)}
-                placeholder="https://…"
-              />
-              <p className="article-form-text">
-                Priorize imagens horizontais, nítidas e com licença adequada (ex.: Pexels).
-              </p>
-            </div>
+            <ArticleCoverField
+              value={coverImageUrl}
+              onChange={setCoverImageUrl}
+              disabled={saving}
+            />
           </ArticleMetaBox>
 
           <ArticleMetaBox title="SEO">
