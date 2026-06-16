@@ -16,11 +16,24 @@ export type AdminPageSummary = {
   slug: string;
   title: string;
   status: PageLayout['status'];
+  pageKind: PageLayout['pageKind'];
+};
+
+export type InstitutionalPageResult = {
+  layout: PageLayout;
 };
 
 export interface PageRepository {
   findPublishedBySlug(slug: string): Promise<PublishedPageResult | null>;
   findPageBySlug(slug: string): Promise<PageWithBlocksResult | null>;
+  findPublishedInstitutionalBySlug(slug: string): Promise<InstitutionalPageResult | null>;
+  findInstitutionalBySlug(slug: string): Promise<InstitutionalPageResult | null>;
+  updateInstitutionalContent(
+    pageId: string,
+    content: Record<string, unknown>,
+    seoTitle?: string | null,
+    seoDescription?: string | null,
+  ): Promise<InstitutionalPageResult>;
   findPageById(pageId: string): Promise<PageWithBlocksResult | null>;
   listPages(): Promise<AdminPageSummary[]>;
   findBlockById(blockId: string): Promise<PageBlock | null>;

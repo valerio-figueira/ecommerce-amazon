@@ -6,6 +6,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  smallint,
   text,
   timestamp,
   unique,
@@ -51,6 +52,7 @@ export const syncJobTypeEnum = pgEnum('sync_job_type', [
 ]);
 export const syncJobStatusEnum = pgEnum('sync_job_status', ['running', 'completed', 'failed']);
 export const pageStatusEnum = pgEnum('page_status', ['draft', 'published']);
+export const pageKindEnum = pgEnum('page_kind', ['block_layout', 'institutional']);
 export const blockVisibilityEnum = pgEnum('block_visibility', ['all', 'desktop', 'mobile']);
 export const blockTypeEnum = pgEnum('block_type', [
   'hero_carousel',
@@ -77,6 +79,8 @@ export const pages = pgTable(
     status: pageStatusEnum('status').notNull().default('draft'),
     seoTitle: text('seo_title'),
     seoDescription: text('seo_description'),
+    pageKind: pageKindEnum('page_kind').notNull().default('block_layout'),
+    institutionalContent: jsonb('institutional_content').$type<Record<string, unknown>>(),
     publishedAt: timestamp('published_at', { withTimezone: true }),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -375,6 +379,7 @@ export const affiliateAccounts = pgTable('affiliate_accounts', {
 
 export const operatorStatusEnum = pgEnum('operator_status', ['active', 'disabled']);
 export const operatorRoleEnum = pgEnum('operator_role', ['admin', 'editor']);
+export const teamPublicRoleEnum = pgEnum('team_public_role', ['founder', 'member']);
 
 export const operators = pgTable('operators', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -385,6 +390,16 @@ export const operators = pgTable('operators', {
   bio: varchar('bio', { length: 250 }),
   role: operatorRoleEnum('role').notNull().default('admin'),
   status: operatorStatusEnum('status').notNull().default('active'),
+  jobTitle: varchar('job_title', { length: 120 }),
+  socialLinks: jsonb('social_links').$type<{
+    linkedin?: string;
+    instagram?: string;
+    x?: string;
+    telegram?: string;
+  }>(),
+  showOnTeam: boolean('show_on_team').notNull().default(false),
+  teamSortOrder: smallint('team_sort_order'),
+  teamPublicRole: teamPublicRoleEnum('team_public_role').default('member'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });

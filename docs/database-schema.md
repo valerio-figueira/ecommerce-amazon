@@ -54,7 +54,7 @@ Migration: `0001_cms_pages.sql`.
 
 | Tabela | Colunas principais | Índices |
 |--------|-------------------|---------|
-| `pages` | `id`, `slug`, `title`, `status`, `seo_title`, `seo_description`, `published_at`, `updated_at` | UNIQUE `(slug, status)` |
+| `pages` | `id`, `slug`, `title`, `status`, `seo_title`, `seo_description`, `page_kind` enum (`block_layout`, `institutional`), `institutional_content` jsonb, `published_at`, `updated_at` | UNIQUE `(slug, status)` |
 | `page_blocks` | `id`, `page_id` FK, `type`, `sort_order`, `props` JSONB, `visibility` | INDEX `(page_id, sort_order)` |
 
 Regra de negócio: apenas um layout `published` por `slug` (índice composto).
@@ -244,9 +244,9 @@ Migration: [`0015_click_attribution.sql`](../packages/infrastructure/src/persist
 |--------|-----|
 | `sync_job_logs` | auditoria pipelines worker |
 | `affiliate_accounts` | tag afiliado por marketplace; `status` inclui `pending_manual_validation` |
-| `operators` | operadores CMS; `email` único, `avatar_url`, `bio` varchar(250), `role` enum (`admin`, `editor`), `status` enum (`active`, `disabled`) |
+| `operators` | operadores CMS; `email` único, `avatar_url`, `bio` varchar(250), `role` enum (`admin`, `editor`), `status` enum (`active`, `disabled`), `job_title`, `social_links` jsonb, `show_on_team`, `team_sort_order`, `team_public_role` enum (`founder`, `member`) |
 
-Migration: [`0004_operators.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql).
+Migrations: [`0004_operators.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql), [`0017_operator_public_profile.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0017_operator_public_profile.sql), [`0018_institutional_pages.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0018_institutional_pages.sql).
 
 ## Seed de desenvolvimento
 

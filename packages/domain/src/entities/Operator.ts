@@ -1,4 +1,11 @@
-import { OperatorStatus, OperatorRole } from '../enums/index.js';
+import { OperatorStatus, OperatorRole, TeamPublicRole } from '../enums/index.js';
+
+export type OperatorSocialLinks = {
+  linkedin?: string;
+  instagram?: string;
+  x?: string;
+  telegram?: string;
+};
 
 export class Operator {
   constructor(
@@ -10,6 +17,11 @@ export class Operator {
     readonly bio: string | null,
     readonly role: OperatorRole,
     readonly status: OperatorStatus,
+    readonly jobTitle: string | null,
+    readonly socialLinks: OperatorSocialLinks | null,
+    readonly showOnTeam: boolean,
+    readonly teamSortOrder: number | null,
+    readonly teamPublicRole: TeamPublicRole,
     readonly createdAt: Date,
     readonly updatedAt: Date,
   ) {}

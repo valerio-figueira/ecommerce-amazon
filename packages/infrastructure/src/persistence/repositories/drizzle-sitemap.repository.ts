@@ -10,6 +10,12 @@ const SITEMAP_ENTRIES_SQL = sql`
     UNION ALL
     SELECT '/artigos'::text, NOW()
     UNION ALL
+    SELECT '/legal'::text, NOW()
+    UNION ALL
+    SELECT '/sobre'::text, NOW()
+    UNION ALL
+    SELECT '/contato'::text, NOW()
+    UNION ALL
     SELECT '/categorias/' || slug, updated_at
     FROM categories
     WHERE visible = true

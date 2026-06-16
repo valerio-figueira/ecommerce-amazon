@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
+import { operatorSocialLinksSchema } from '../about/about-content.schema.js';
+
 export const operatorRoleSchema = z.enum(['admin', 'editor']);
 export const operatorStatusSchema = z.enum(['active', 'disabled']);
+export const teamPublicRoleSchema = z.enum(['founder', 'member']);
 
 export const operatorProfileSchema = z.object({
   id: z.string().uuid(),
@@ -12,6 +15,11 @@ export const operatorProfileSchema = z.object({
   role: operatorRoleSchema,
   status: operatorStatusSchema,
   isManagedAvatar: z.boolean(),
+  jobTitle: z.string().nullable(),
+  socialLinks: operatorSocialLinksSchema.nullable(),
+  showOnTeam: z.boolean(),
+  teamSortOrder: z.number().int().nullable(),
+  publicTeamRole: teamPublicRoleSchema,
 });
 
 export type OperatorProfile = z.infer<typeof operatorProfileSchema>;
@@ -19,6 +27,11 @@ export type OperatorProfile = z.infer<typeof operatorProfileSchema>;
 export const updateOperatorProfileBodySchema = z.object({
   name: z.string().trim().min(1).max(120),
   bio: z.string().trim().max(250).nullable().optional(),
+  jobTitle: z.string().trim().max(120).nullable().optional(),
+  socialLinks: operatorSocialLinksSchema.nullable().optional(),
+  showOnTeam: z.boolean().optional(),
+  teamSortOrder: z.number().int().min(0).max(32767).nullable().optional(),
+  publicTeamRole: teamPublicRoleSchema.optional(),
 });
 
 export type UpdateOperatorProfileBody = z.infer<typeof updateOperatorProfileBodySchema>;

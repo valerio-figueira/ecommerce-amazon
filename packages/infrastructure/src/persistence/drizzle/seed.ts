@@ -10,10 +10,13 @@ import {
   CouponStatus,
   DiscountType,
   Marketplace,
+  PageKind,
   PageStatus,
   ProductAvailability,
+  TeamPublicRole,
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
+import { buildDefaultAboutPageContent } from '@ecommerce-amazon/shared/about';
 import {
   formatWebHomeTitle,
   formatWebPageTitle,
@@ -41,6 +44,7 @@ const SEED_COUPON_ID = 'd1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_AMAZON_ID = 'e1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_SHOPEE_ID = 'e2222222-2222-4222-8222-222222222222';
 const SEED_PAGE_HOME_ID = 'f1111111-1111-4111-8111-111111111111';
+const SEED_PAGE_SOBRE_ID = 'f2222222-2222-4222-8222-222222222222';
 const SEED_BLOCK_HERO_SPLIT_ID = 'f2111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
@@ -143,6 +147,7 @@ async function runSeed(): Promise<void> {
     await ensureBentoHubMixHomeBlock(db, logger);
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
+    await seedAboutPage(db, now, logger);
     await seedAutoLinks(db, logger);
     await seedContentClusters(db, now, logger);
   } finally {
@@ -1019,6 +1024,13 @@ async function seedOperator(
         avatarUrl: PEXELS.authorAvatar,
         bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
         role: 'admin',
+        jobTitle: 'Fundador e curador-chefe',
+        showOnTeam: true,
+        teamPublicRole: TeamPublicRole.FOUNDER,
+        socialLinks: {
+          linkedin: 'https://linkedin.com/in/vitrine',
+          instagram: brand.socials.instagram,
+        },
         updatedAt: new Date(),
       })
       .where(eq(schema.operators.id, SEED_OPERATOR_ID));
@@ -1038,9 +1050,59 @@ async function seedOperator(
     bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
     role: 'admin',
     status: 'active',
+    jobTitle: 'Fundador e curador-chefe',
+    showOnTeam: true,
+    teamPublicRole: TeamPublicRole.FOUNDER,
+    socialLinks: {
+      linkedin: 'https://linkedin.com/in/vitrine',
+      instagram: brand.socials.instagram,
+    },
   });
 
   logger.info('Operator seed inserted', { email: env.ADMIN_SEED_EMAIL });
+}
+
+async function seedAboutPage(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'sobre'))
+    .limit(1);
+
+  const brand = getBrandConfig(loadEnv());
+  const aboutContent = buildDefaultAboutPageContent(brand);
+
+  if (existing.length > 0) {
+    await db
+      .update(schema.pages)
+      .set({
+        pageKind: PageKind.INSTITUTIONAL,
+        institutionalContent: aboutContent,
+        updatedAt: now,
+      })
+      .where(eq(schema.pages.slug, 'sobre'));
+    logger.info('About page seed updated');
+    return;
+  }
+
+  await db.insert(schema.pages).values({
+    id: SEED_PAGE_SOBRE_ID,
+    slug: 'sobre',
+    title: 'Sobre',
+    status: PageStatus.PUBLISHED,
+    pageKind: PageKind.INSTITUTIONAL,
+    seoTitle: formatWebPageTitle('Sobre', brand),
+    seoDescription: aboutContent.heroIntro.slice(0, 160),
+    institutionalContent: aboutContent,
+    publishedAt: now,
+    updatedAt: now,
+  });
+
+  logger.info('About page seed inserted');
 }
 
 async function seedAutoLinks(

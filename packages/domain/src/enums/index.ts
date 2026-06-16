@@ -86,4 +86,5 @@ export enum OperatorRole {
   EDITOR = 'editor',
 }
 
+export { TeamPublicRole, PageKind } from './operator-profile.js';
 export { BlockType, PageStatus, BlockVisibility, ProductSortField } from './cms.js';

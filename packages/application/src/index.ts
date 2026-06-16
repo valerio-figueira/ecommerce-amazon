@@ -141,6 +141,13 @@ export {
 } from './use-cases/admin-profile/validate-avatar-image.js';
 export { buildAvatarObjectKey } from './use-cases/admin-profile/build-avatar-object-key.js';
 export { UploadAdminImage } from './use-cases/admin-media/UploadAdminImage.js';
+export { GetPublicTeamMembers } from './use-cases/team/GetPublicTeamMembers.js';
+export type { GetPublicTeamMembersResult } from './use-cases/team/GetPublicTeamMembers.js';
+export {
+  GetPublishedInstitutionalPage,
+  GetAdminInstitutionalPage,
+  UpdateInstitutionalPage,
+} from './use-cases/institutional/GetInstitutionalPage.js';
 export type {
   UploadAdminImageInput,
   UploadAdminImageResult,

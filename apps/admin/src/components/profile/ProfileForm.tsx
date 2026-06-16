@@ -24,6 +24,13 @@ import type { OperatorProfile } from '@ecommerce-amazon/shared/admin';
 const profileFormSchema = z.object({
   name: z.string().trim().min(1, 'Informe o nome.').max(120, 'Máximo de 120 caracteres.'),
   bio: z.string().trim().max(250, 'Máximo de 250 caracteres.'),
+  jobTitle: z.string().trim().max(120, 'Máximo de 120 caracteres.'),
+  showOnTeam: z.boolean(),
+  publicTeamRole: z.enum(['founder', 'member']),
+  linkedin: z.string().trim().url('URL inválida.').or(z.literal('')),
+  instagram: z.string().trim().url('URL inválida.').or(z.literal('')),
+  x: z.string().trim().url('URL inválida.').or(z.literal('')),
+  telegram: z.string().trim().url('URL inválida.').or(z.literal('')),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -42,6 +49,16 @@ type ProfileFormProps = {
   profile: OperatorProfile;
 };
 
+function buildSocialLinks(values: ProfileFormValues) {
+  const links = {
+    ...(values.linkedin ? { linkedin: values.linkedin } : {}),
+    ...(values.instagram ? { instagram: values.instagram } : {}),
+    ...(values.x ? { x: values.x } : {}),
+    ...(values.telegram ? { telegram: values.telegram } : {}),
+  };
+  return Object.keys(links).length > 0 ? links : null;
+}
+
 export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
   const router = useRouter();
   const adminToast = useAdminToast();
@@ -51,6 +68,13 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
     defaultValues: {
       name: profile.name,
       bio: profile.bio ?? '',
+      jobTitle: profile.jobTitle ?? '',
+      showOnTeam: profile.showOnTeam,
+      publicTeamRole: profile.publicTeamRole,
+      linkedin: profile.socialLinks?.linkedin ?? '',
+      instagram: profile.socialLinks?.instagram ?? '',
+      x: profile.socialLinks?.x ?? '',
+      telegram: profile.socialLinks?.telegram ?? '',
     },
   });
 
@@ -59,6 +83,10 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
       await updateOperatorProfileClient({
         name: values.name,
         bio: values.bio.trim() ? values.bio.trim() : null,
+        jobTitle: values.jobTitle.trim() ? values.jobTitle.trim() : null,
+        socialLinks: buildSocialLinks(values),
+        showOnTeam: values.showOnTeam,
+        publicTeamRole: values.publicTeamRole,
       });
       adminToast.success('Perfil atualizado.');
       router.refresh();
@@ -147,6 +175,92 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="admin-profile-block">
+            <h3 className="admin-profile-block-title" id="profile-block-public">
+              Perfil público (página Sobre)
+            </h3>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="showOnTeam"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-3 space-y-0">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 rounded border-[color:var(--admin-gray)]"
+                      />
+                    </FormControl>
+                    <div>
+                      <FormLabel>Exibir na página Sobre</FormLabel>
+                      <FormDescription>
+                        Seu nome, cargo, bio e foto aparecerão na seção &quot;Quem somos&quot;.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="jobTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cargo público</FormLabel>
+                    <FormControl>
+                      <Input {...field} maxLength={120} placeholder="Ex.: Editor de reviews" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="publicTeamRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Papel no JSON-LD</FormLabel>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="flex h-10 w-full rounded-lg border border-[color:var(--admin-gray)] bg-white px-3 text-sm"
+                      >
+                        <option value="member">Membro da equipe</option>
+                        <option value="founder">Fundador</option>
+                      </select>
+                    </FormControl>
+                    <FormDescription>
+                      Usado pelos buscadores para vincular você à organização.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {(['linkedin', 'instagram', 'x', 'telegram'] as const).map((network) => (
+                  <FormField
+                    key={network}
+                    control={form.control}
+                    name={network}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="capitalize">{network === 'x' ? 'X (Twitter)' : network}</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="url" placeholder="https://" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="admin-profile-block">

@@ -3,13 +3,17 @@ import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
 import {
   BlockType,
   BlockVisibility,
+  EntityNotFoundError,
   PageBlock,
+  PageKind,
   PageLayout,
   PageStatus,
   parseBlockType,
   parseBlockVisibility,
+  parsePageKind,
   parsePageStatus,
   type AdminPageSummary,
+  type InstitutionalPageResult,
   type PageRepository,
   type PublishedPageResult,
   type PageWithBlocksResult,
@@ -24,8 +28,10 @@ function mapPageRow(row: typeof schema.pages.$inferSelect): PageLayout {
     slug: row.slug,
     title: row.title,
     status: parsePageStatus(row.status),
+    pageKind: parsePageKind(row.pageKind),
     seoTitle: row.seoTitle ?? undefined,
     seoDescription: row.seoDescription ?? undefined,
+    institutionalContent: row.institutionalContent ?? undefined,
     publishedAt: row.publishedAt ?? undefined,
     updatedAt: row.updatedAt,
   });
@@ -78,6 +84,7 @@ export class DrizzlePageRepository implements PageRepository {
         slug: schema.pages.slug,
         title: schema.pages.title,
         status: schema.pages.status,
+        pageKind: schema.pages.pageKind,
       })
       .from(schema.pages)
       .orderBy(asc(schema.pages.slug));
@@ -87,7 +94,67 @@ export class DrizzlePageRepository implements PageRepository {
       slug: row.slug,
       title: row.title,
       status: parsePageStatus(row.status),
+      pageKind: parsePageKind(row.pageKind),
     }));
+  }
+
+  async findPublishedInstitutionalBySlug(slug: string): Promise<InstitutionalPageResult | null> {
+    const pageRows = await this.db
+      .select()
+      .from(schema.pages)
+      .where(
+        and(
+          eq(schema.pages.slug, slug),
+          eq(schema.pages.status, PageStatus.PUBLISHED),
+          eq(schema.pages.pageKind, PageKind.INSTITUTIONAL),
+        ),
+      )
+      .limit(1);
+
+    const pageRow = pageRows[0];
+    if (!pageRow) return null;
+
+    return { layout: mapPageRow(pageRow) };
+  }
+
+  async findInstitutionalBySlug(slug: string): Promise<InstitutionalPageResult | null> {
+    const pageRows = await this.db
+      .select()
+      .from(schema.pages)
+      .where(
+        and(eq(schema.pages.slug, slug), eq(schema.pages.pageKind, PageKind.INSTITUTIONAL)),
+      )
+      .limit(1);
+
+    const pageRow = pageRows[0];
+    if (!pageRow) return null;
+
+    return { layout: mapPageRow(pageRow) };
+  }
+
+  async updateInstitutionalContent(
+    pageId: string,
+    content: Record<string, unknown>,
+    seoTitle?: string | null,
+    seoDescription?: string | null,
+  ): Promise<InstitutionalPageResult> {
+    const rows = await this.db
+      .update(schema.pages)
+      .set({
+        institutionalContent: content,
+        ...(seoTitle !== undefined ? { seoTitle } : {}),
+        ...(seoDescription !== undefined ? { seoDescription } : {}),
+        updatedAt: new Date(),
+      })
+      .where(and(eq(schema.pages.id, pageId), eq(schema.pages.pageKind, PageKind.INSTITUTIONAL)))
+      .returning();
+
+    const row = rows[0];
+    if (!row) {
+      throw new EntityNotFoundError('InstitutionalPage', pageId);
+    }
+
+    return { layout: mapPageRow(row) };
   }
 
   async findPageById(pageId: string): Promise<PageWithBlocksResult | null> {

@@ -46,6 +46,7 @@ import { registerAdminAutoLinkRoutes } from './admin-auto-link-routes.js';
 import { registerAdminProfileRoutes } from './admin-profile-routes.js';
 import { registerAdminMediaRoutes } from './admin-media-routes.js';
 import { registerAdminAnalyticsRoutes } from './admin-analytics-routes.js';
+import { registerAdminInstitutionalRoutes } from './institutional-routes.js';
 
 export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
@@ -112,6 +113,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   await registerAdminContentClusterRoutes(app, container);
   registerAdminAutoLinkRoutes(app, container);
   await registerAdminProfileRoutes(app, container);
+  await registerAdminInstitutionalRoutes(app, container);
   await registerAdminMediaRoutes(app, container);
   await registerAdminAnalyticsRoutes(app, container);
 }

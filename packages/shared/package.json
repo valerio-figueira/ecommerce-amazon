@@ -69,6 +69,14 @@
     "./legal": {
       "types": "./dist/legal/index.d.ts",
       "import": "./dist/legal/index.js"
+    },
+    "./about": {
+      "types": "./dist/about/index.d.ts",
+      "import": "./dist/about/index.js"
+    },
+    "./contact": {
+      "types": "./dist/contact/index.d.ts",
+      "import": "./dist/contact/index.js"
     }
   },
   "scripts": {
@@ -77,6 +85,7 @@
   },
   "dependencies": {
     "@ecommerce-amazon/domain": "*",
+    "isomorphic-dompurify": "^3.17.0",
     "zod": "^3.25.51"
   },
   "devDependencies": {

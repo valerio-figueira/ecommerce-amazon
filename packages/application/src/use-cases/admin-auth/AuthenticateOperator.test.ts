@@ -5,22 +5,43 @@ import {
   Operator,
   OperatorRole,
   OperatorStatus,
+  TeamPublicRole,
 } from '@ecommerce-amazon/domain';
 
 import { AuthenticateOperator } from './AuthenticateOperator.js';
 
-describe('AuthenticateOperator', () => {
-  const activeOperator = new Operator(
-    'op-1',
-    'admin@vitrine.local',
+function createTestOperator(
+  id: string,
+  email: string,
+  name: string,
+  status: OperatorStatus,
+): Operator {
+  const now = new Date();
+  return new Operator(
+    id,
+    email,
     'hashed-password',
-    'Admin Vitrine',
+    name,
     null,
     null,
     OperatorRole.ADMIN,
+    status,
+    null,
+    null,
+    false,
+    null,
+    TeamPublicRole.MEMBER,
+    now,
+    now,
+  );
+}
+
+describe('AuthenticateOperator', () => {
+  const activeOperator = createTestOperator(
+    'op-1',
+    'admin@vitrine.local',
+    'Admin Vitrine',
     OperatorStatus.ACTIVE,
-    new Date(),
-    new Date(),
   );
 
   it('returns token and operator DTO for valid credentials', async () => {
@@ -96,17 +117,11 @@ describe('AuthenticateOperator', () => {
   });
 
   it('returns AuthenticationError when operator is disabled', async () => {
-    const disabledOperator = new Operator(
+    const disabledOperator = createTestOperator(
       'op-2',
       'disabled@vitrine.local',
-      'hashed-password',
       'Disabled',
-      null,
-      null,
-      OperatorRole.ADMIN,
       OperatorStatus.DISABLED,
-      new Date(),
-      new Date(),
     );
 
     const useCase = new AuthenticateOperator(

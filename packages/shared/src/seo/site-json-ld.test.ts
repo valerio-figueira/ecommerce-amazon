@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import { createBrandConfig } from '../config/brand.js';
 import {
+  buildAboutPageJsonLd,
   buildArticleJsonLd,
   buildCategoryProductItemListJsonLd,
+  buildContactPageJsonLd,
   buildOrganizationJsonLd,
   buildSiteJsonLdGraph,
   buildWebSiteJsonLd,
@@ -32,6 +34,30 @@ describe('site json-ld', () => {
   it('builds site graph', () => {
     const jsonLd = buildSiteJsonLdGraph(brand);
     expect(jsonLd['@graph']).toHaveLength(2);
+  });
+
+  it('builds about page graph with organization and linked persons', () => {
+    const jsonLd = buildAboutPageJsonLd(brand, [
+      {
+        name: 'Ana Curadora',
+        jobTitle: 'Editora',
+        avatarUrl: 'https://cdn.example/ana.jpg',
+        socialLinks: { linkedin: 'https://linkedin.com/in/ana' },
+        publicTeamRole: 'founder',
+      },
+    ]);
+    const graph = jsonLd['@graph'] as Array<Record<string, unknown>>;
+    const org = graph.find((node) => node['@type'] === 'Organization')!;
+    const person = graph.find((node) => node['@type'] === 'Person')!;
+    expect(org['founder']).toEqual([{ '@id': `${brand.url}/sobre#person-0` }]);
+    expect(person['worksFor']).toEqual({ '@id': `${brand.url}/#organization` });
+    expect(person['sameAs']).toEqual(['https://linkedin.com/in/ana']);
+  });
+
+  it('builds contact page graph', () => {
+    const jsonLd = buildContactPageJsonLd(brand);
+    const graph = jsonLd['@graph'] as Array<Record<string, unknown>>;
+    expect(graph.some((node) => node['@type'] === 'ContactPage')).toBe(true);
   });
 
   it('builds category product item list', () => {

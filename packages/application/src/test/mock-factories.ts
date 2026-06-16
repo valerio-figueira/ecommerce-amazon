@@ -111,6 +111,9 @@ export function createMockPageRepository(
   return {
     findPublishedBySlug: vi.fn(),
     findPageBySlug: vi.fn(),
+    findPublishedInstitutionalBySlug: vi.fn(),
+    findInstitutionalBySlug: vi.fn(),
+    updateInstitutionalContent: vi.fn(),
     findPageById: vi.fn(),
     listPages: vi.fn(),
     findBlockById: vi.fn(),

@@ -47,11 +47,14 @@ export {
   type SiteMetadata,
 } from './site-metadata.js';
 export {
+  buildAboutPageJsonLd,
   buildArticleJsonLd,
   buildCategoryProductItemListJsonLd,
+  buildContactPageJsonLd,
   buildOrganizationJsonLd,
   buildSiteJsonLdGraph,
   buildWebSiteJsonLd,
+  type AboutPageJsonLdTeamMember,
   type ArticleJsonLdInput,
   type CategoryProductItemListInput,
 } from './site-json-ld.js';

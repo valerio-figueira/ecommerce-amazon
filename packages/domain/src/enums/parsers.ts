@@ -176,3 +176,24 @@ export function isProductSortField(value: string): value is ProductSortField {
 export function parseProductSortField(value: string): ProductSortField {
   return isProductSortField(value) ? value : invalidEnum('product sort field', value);
 }
+
+import { PageKind, TeamPublicRole } from './index.js';
+
+const PAGE_KIND_VALUES: ReadonlySet<string> = new Set(Object.values(PageKind));
+const TEAM_PUBLIC_ROLE_VALUES: ReadonlySet<string> = new Set(Object.values(TeamPublicRole));
+
+export function isPageKind(value: string): value is PageKind {
+  return PAGE_KIND_VALUES.has(value);
+}
+
+export function parsePageKind(value: string): PageKind {
+  return isPageKind(value) ? value : invalidEnum('page kind', value);
+}
+
+export function isTeamPublicRole(value: string): value is TeamPublicRole {
+  return TEAM_PUBLIC_ROLE_VALUES.has(value);
+}
+
+export function parseTeamPublicRole(value: string): TeamPublicRole {
+  return isTeamPublicRole(value) ? value : invalidEnum('team public role', value);
+}

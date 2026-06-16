@@ -11,7 +11,7 @@ import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category
 
 const EDITORIAL_LINKS = [
   { href: '/artigos', label: 'Artigos' },
-  { href: '#', label: 'Sobre' },
+  { href: '/sobre', label: 'Sobre' },
 ];
 
 type SiteHeaderProps = {

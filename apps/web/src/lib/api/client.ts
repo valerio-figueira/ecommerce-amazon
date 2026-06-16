@@ -36,9 +36,14 @@ export async function fetchPageLayout(slug: string): Promise<unknown> {
   return response.json();
 }
 
+type ApiFetchInit = RequestInit & {
+  sessionId?: string;
+  next?: RequestInit extends { next?: infer N } ? N : never;
+};
+
 export async function apiFetch(
   path: string,
-  init?: RequestInit & { sessionId?: string },
+  init?: ApiFetchInit,
 ): Promise<unknown> {
   const headers = new Headers(init?.headers);
   headers.set('Content-Type', 'application/json');
@@ -46,10 +51,15 @@ export async function apiFetch(
     headers.set('x-session-id', init.sessionId);
   }
 
+  const { sessionId: _sessionId, next, ...fetchInit } = init ?? {};
+
   const response = await fetch(`${API_URL}${path}`, {
-    ...init,
+    ...fetchInit,
     headers,
-    next: init?.method === undefined ? { revalidate: 60 } : undefined,
+    next:
+      fetchInit.method === undefined
+        ? (next ?? { revalidate: 60 })
+        : undefined,
   });
 
   if (!response.ok) {
@@ -66,7 +76,7 @@ export async function apiFetch(
 export async function apiFetchParsed<T>(
   path: string,
   schema: z.ZodType<T>,
-  init?: RequestInit & { sessionId?: string },
+  init?: ApiFetchInit,
 ): Promise<T> {
   const data = await apiFetch(path, init);
   return schema.parse(data);

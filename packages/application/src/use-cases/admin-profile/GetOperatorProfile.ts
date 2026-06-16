@@ -3,6 +3,8 @@ import {
   type OperatorRepository,
   type OperatorRole,
   type OperatorStatus,
+  type OperatorSocialLinks,
+  type TeamPublicRole,
 } from '@ecommerce-amazon/domain';
 
 export type OperatorProfileDto = {
@@ -14,6 +16,11 @@ export type OperatorProfileDto = {
   role: OperatorRole;
   status: OperatorStatus;
   isManagedAvatar: boolean;
+  jobTitle: string | null;
+  socialLinks: OperatorSocialLinks | null;
+  showOnTeam: boolean;
+  teamSortOrder: number | null;
+  publicTeamRole: TeamPublicRole;
 };
 
 export class GetOperatorProfile {
@@ -37,6 +44,11 @@ export class GetOperatorProfile {
       role: operator.role,
       status: operator.status,
       isManagedAvatar: operator.avatarUrl ? this.isManagedAvatarUrl(operator.avatarUrl) : false,
+      jobTitle: operator.jobTitle,
+      socialLinks: operator.socialLinks,
+      showOnTeam: operator.showOnTeam,
+      teamSortOrder: operator.teamSortOrder,
+      publicTeamRole: operator.teamPublicRole,
     };
   }
 }

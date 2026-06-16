@@ -81,6 +81,124 @@ export function buildSiteJsonLdGraph(brand: BrandConfig): Record<string, unknown
   };
 }
 
+export type AboutPageJsonLdTeamMember = {
+  name: string;
+  jobTitle?: string | null;
+  avatarUrl?: string | null;
+  socialLinks?: {
+    linkedin?: string;
+    instagram?: string;
+    x?: string;
+    telegram?: string;
+  } | null;
+  publicTeamRole: 'founder' | 'member';
+};
+
+function collectPersonSameAs(
+  socialLinks: AboutPageJsonLdTeamMember['socialLinks'],
+): string[] {
+  if (!socialLinks) return [];
+  return [socialLinks.linkedin, socialLinks.instagram, socialLinks.x, socialLinks.telegram].filter(
+    (url): url is string => typeof url === 'string' && url.length > 0,
+  );
+}
+
+export function buildAboutPageJsonLd(
+  brand: BrandConfig,
+  teamMembers: AboutPageJsonLdTeamMember[] = [],
+): Record<string, unknown> {
+  const orgId = `${brand.url}/#organization`;
+  const pageId = `${brand.url}/sobre#webpage`;
+  const founders: Array<{ '@id': string }> = [];
+  const employees: Array<{ '@id': string }> = [];
+  const personNodes: Record<string, unknown>[] = [];
+
+  teamMembers.forEach((member, index) => {
+    const personId = `${brand.url}/sobre#person-${index}`;
+    const sameAs = collectPersonSameAs(member.socialLinks);
+    const personNode: Record<string, unknown> = {
+      '@type': 'Person',
+      '@id': personId,
+      name: member.name,
+      worksFor: { '@id': orgId },
+      ...(member.jobTitle ? { jobTitle: member.jobTitle } : {}),
+      ...(member.avatarUrl ? { image: member.avatarUrl } : {}),
+      ...(sameAs.length > 0 ? { sameAs } : {}),
+    };
+    personNodes.push(personNode);
+
+    if (member.publicTeamRole === 'founder') {
+      founders.push({ '@id': personId });
+    } else {
+      employees.push({ '@id': personId });
+    }
+  });
+
+  const organizationNode: Record<string, unknown> = {
+    '@type': 'Organization',
+    '@id': orgId,
+    name: brand.name,
+    legalName: brand.legalName,
+    url: brand.url,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: brand.contactEmail,
+      contactType: 'customer support',
+    },
+    ...(founders.length > 0 ? { founder: founders } : {}),
+    ...(employees.length > 0 ? { employee: employees } : {}),
+  };
+
+  const brandSameAs = [brand.socials.instagram, brand.socials.telegram].filter(
+    (url) => url.length > 0,
+  );
+  if (brandSameAs.length > 0) {
+    organizationNode['sameAs'] = brandSameAs;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        '@id': pageId,
+        url: `${brand.url}/sobre`,
+        name: `Sobre ${brand.name}`,
+        mainEntity: { '@id': orgId },
+      },
+      organizationNode,
+      ...personNodes,
+    ],
+  };
+}
+
+export function buildContactPageJsonLd(brand: BrandConfig): Record<string, unknown> {
+  const orgId = `${brand.url}/#organization`;
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'ContactPage',
+        '@id': `${brand.url}/contato#webpage`,
+        url: `${brand.url}/contato`,
+        name: `Contato — ${brand.name}`,
+        mainEntity: { '@id': orgId },
+      },
+      {
+        '@type': 'Organization',
+        '@id': orgId,
+        name: brand.name,
+        url: brand.url,
+        contactPoint: {
+          '@type': 'ContactPoint',
+          email: brand.contactEmail,
+          contactType: 'customer support',
+        },
+      },
+    ],
+  };
+}
+
 export function buildCategoryProductItemListJsonLd(
   input: CategoryProductItemListInput,
 ): Record<string, unknown> {

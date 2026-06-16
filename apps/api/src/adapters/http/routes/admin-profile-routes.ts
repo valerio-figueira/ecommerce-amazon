@@ -10,6 +10,7 @@ import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
   updateOperatorProfileBodySchema,
 } from '@ecommerce-amazon/shared/admin';
+import { TeamPublicRole } from '@ecommerce-amazon/domain';
 
 function handleAdminProfileError(error: unknown, reply: FastifyReply) {
   if (error instanceof ZodError) {
@@ -59,6 +60,11 @@ export async function registerAdminProfileRoutes(
         operatorId,
         name: body.name,
         bio: body.bio ?? null,
+        jobTitle: body.jobTitle ?? null,
+        socialLinks: body.socialLinks ?? null,
+        showOnTeam: body.showOnTeam ?? false,
+        teamSortOrder: body.teamSortOrder ?? null,
+        publicTeamRole: body.publicTeamRole ?? TeamPublicRole.MEMBER,
       });
 
       return reply.send(result);
