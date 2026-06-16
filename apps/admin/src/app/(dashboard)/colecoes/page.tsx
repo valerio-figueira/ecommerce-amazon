@@ -1,10 +1,15 @@
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { CollectionListManager } from '@/components/collections/CollectionListManager';
 import { listAdminCollections } from '@/lib/api/collections';
+import { getServerBrandConfig } from '@/lib/brand';
+
+const brand = getServerBrandConfig();
 
 export const metadata = {
-  title: 'Coleções — Vitrine CMS',
+  title: formatAdminPageTitle('Coleções', brand),
 };
 
 export default async function ColecoesPage(): Promise<React.JSX.Element> {

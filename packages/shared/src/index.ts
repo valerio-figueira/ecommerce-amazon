@@ -61,6 +61,14 @@ const envSchemaBase = z.object({
   ADMIN_SEED_PASSWORD: z.string().min(8).default('vitrine-admin'),
   REVALIDATE_SECRET: z.string().default(''),
   WEB_PUBLIC_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  SITE_NAME: z.string().default('Vitrine'),
+  NEXT_PUBLIC_SITE_NAME: z.string().optional(),
+  COMPANY_LEGAL_NAME: z.string().default('Vitrine Ltda'),
+  CONTACT_EMAIL: z.string().email().default('contato@vitrine.com.br'),
+  SITE_TAGLINE: z.string().default('Curadoria inteligente'),
+  SITE_SOCIAL_INSTAGRAM: z.string().url().default('https://instagram.com/vitrine'),
+  SITE_SOCIAL_TELEGRAM: z.string().url().default('https://t.me/vitrine_ofertas'),
   STORAGE_DRIVER: z.enum(['filesystem', 's3', 'gcs']).default('filesystem'),
   STORAGE_PUBLIC_BASE_URL: z.string().url().optional(),
   STORAGE_LOCAL_ROOT: z.string().default('./uploads'),
@@ -76,7 +84,8 @@ export const envSchema = envSchemaBase.transform((data) => ({
   ...data,
   DATABASE_URL: data.DATABASE_URL ?? buildDatabaseUrl(data),
   REDIS_URL: data.REDIS_URL ?? `redis://${data.REDIS_HOST}:${data.REDIS_PORT}`,
-  WEB_PUBLIC_URL: data.WEB_PUBLIC_URL ?? `http://localhost:${data.WEB_PORT}`,
+  WEB_PUBLIC_URL:
+    data.WEB_PUBLIC_URL ?? data.NEXT_PUBLIC_SITE_URL ?? `http://localhost:${data.WEB_PORT}`,
 }));
 
 export type Env = z.infer<typeof envSchema>;
@@ -125,3 +134,17 @@ export {
   type NextImageRemoteEnv,
   type NextImageRemotePattern,
 } from './next-image/index.js';
+
+export {
+  BRAND_DEFAULTS,
+  createBrandConfig,
+  formatAdminPageTitle,
+  formatCopyrightNotice,
+  formatEditorialTeamName,
+  formatWebHomeTitle,
+  formatWebPageTitle,
+  getBrandConfig,
+  type BrandConfig,
+  type BrandEnvSource,
+  type BrandSocials,
+} from './config/brand.js';

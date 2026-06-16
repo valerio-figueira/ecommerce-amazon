@@ -1,3 +1,4 @@
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
 import { ChevronRight, Package, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -7,14 +8,17 @@ import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { AdminToastOnMount } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { listAdminProducts } from '@/lib/api/admin-products';
+import { getServerBrandConfig } from '@/lib/brand';
 import {
   adminMarketplaceLabel,
   formatEditorialScore,
 } from '@/lib/product-admin-format';
 import { cn } from '@/lib/utils';
 
+const brand = getServerBrandConfig();
+
 export const metadata = {
-  title: 'Produtos — Vitrine CMS',
+  title: formatAdminPageTitle('Produtos', brand),
 };
 
 export default async function ProdutosPage(): Promise<React.JSX.Element> {

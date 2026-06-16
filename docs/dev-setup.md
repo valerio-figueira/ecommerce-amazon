@@ -27,6 +27,11 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3000` | Fetch do browser/SSR |
 | `API_INTERNAL_URL` | `http://localhost:3000` | Rewrite `/go/:slug` no Next.js |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | URLs absolutas no JSON-LD |
+| `SITE_NAME` | `Vitrine` | Nome da marca (Web, Admin, e-mails, seed) — ver [brand-config.md](./brand-config.md) |
+| `COMPANY_LEGAL_NAME` | `Vitrine Ltda` | Razão social |
+| `CONTACT_EMAIL` | `contato@vitrine.com.br` | E-mail de contato em conteúdo transacional |
+| `SITE_TAGLINE` | `Curadoria inteligente` | Subtítulo da home/metadata |
+| `WEB_PUBLIC_URL` | `http://localhost:${WEB_PORT}` | URL canônica server (unifica com `NEXT_PUBLIC_SITE_URL`) |
 | `CORS_ORIGINS` | `http://localhost:3001,...` | Origens explícitas na API (incluir `:3002` para admin) |
 | `REVALIDATE_SECRET` | (vazio desliga) | Secret compartilhado API → `POST /api/revalidate` no web |
 | `WEB_PUBLIC_URL` | `http://localhost:${WEB_PORT}` | Base URL da vitrine para revalidação on-demand |

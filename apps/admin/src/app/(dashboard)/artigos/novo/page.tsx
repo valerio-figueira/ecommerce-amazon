@@ -1,11 +1,16 @@
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { ArticleForm } from '@/components/articles/ArticleForm';
 import { listArticleCategories } from '@/lib/api/article-categories';
 import { listContentClusters } from '@/lib/api/content-clusters';
+import { getServerBrandConfig } from '@/lib/brand';
+
+const brand = getServerBrandConfig();
 
 export const metadata = {
-  title: 'Novo artigo — Vitrine CMS',
+  title: formatAdminPageTitle('Novo artigo', brand),
 };
 
 export default async function NovoArtigoPage(): Promise<React.JSX.Element> {

@@ -5,7 +5,10 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft, X } from 'lucide-react';
 
 import { ADMIN_NAV_ITEMS } from '@/lib/navigation';
+import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
+
+const brand = getClientBrandConfig();
 
 type AdminSidebarProps = {
   collapsed: boolean;
@@ -36,7 +39,7 @@ export function AdminSidebar({
               </div>
               {!collapsed && (
                 <div className="side-brand-text min-w-0">
-                  <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">Vitrine</p>
+                  <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">{brand.name}</p>
                   <p className="truncate text-xs text-[color:var(--admin-text-muted)]">Painel CMS</p>
                 </div>
               )}

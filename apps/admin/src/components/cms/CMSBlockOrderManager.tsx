@@ -4,6 +4,8 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import { Layers, Plus, Save, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { getClientBrandConfig } from '@/lib/brand';
+
 import { BlockPropsSheet } from '@/components/cms/BlockPropsSheet';
 import { BlockListItem } from '@/components/cms/BlockListItem';
 import { ALL_BLOCK_TYPES, getDefaultBlockProps } from '@/components/cms/block-type-labels';
@@ -40,6 +42,8 @@ import {
 import type { PageBlockDto } from '@ecommerce-amazon/shared/cms';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+
+const brand = getClientBrandConfig();
 
 type CMSBlockOrderManagerProps = {
   slug: string;
@@ -185,7 +189,7 @@ export function CMSBlockOrderManager({
     <section className="cms-editor-section">
       <div className="cms-float-panel cms-vitrine-panel">
         <div className="cms-panel-head">
-          <h2 className="cms-panel-title">Vitrine</h2>
+          <h2 className="cms-panel-title">{brand.name}</h2>
           <p className="cms-panel-meta">
             <strong>{pageTitle}</strong>
             <span className="cms-panel-slug">/{slug}</span>

@@ -1,9 +1,12 @@
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { notFound } from 'next/navigation';
 
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { ProductForm } from '@/components/products/ProductForm';
 import { getAdminProduct } from '@/lib/api/admin-products';
+import { getServerBrandConfig } from '@/lib/brand';
 import { adminProductDetailToFormValues } from '@/lib/product-form-values';
 
 type ProductEditPageProps = {
@@ -11,12 +14,13 @@ type ProductEditPageProps = {
 };
 
 export async function generateMetadata({ params }: ProductEditPageProps) {
+  const brand = getServerBrandConfig();
   const { slug } = await params;
   try {
     const product = await getAdminProduct(slug);
-    return { title: `${product.titleClean} — Vitrine CMS` };
+    return { title: formatAdminPageTitle(product.titleClean, brand) };
   } catch {
-    return { title: 'Editar produto — Vitrine CMS' };
+    return { title: formatAdminPageTitle('Editar produto', brand) };
   }
 }
 

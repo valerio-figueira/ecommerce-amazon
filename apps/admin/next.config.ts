@@ -12,9 +12,19 @@ const devOrigins = process.env['NEXT_ALLOWED_DEV_ORIGINS']
   .map((origin) => origin.trim())
   .filter((origin) => origin.length > 0) ?? [];
 
+const siteName = process.env['SITE_NAME'] ?? process.env['NEXT_PUBLIC_SITE_NAME'] ?? 'Vitrine';
+const siteUrl =
+  process.env['WEB_PUBLIC_URL'] ??
+  process.env['NEXT_PUBLIC_SITE_URL'] ??
+  `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
+
 const nextConfig: NextConfig = {
   output: 'standalone',
   allowedDevOrigins: ['localhost', '127.0.0.1', ...devOrigins],
+  env: {
+    NEXT_PUBLIC_SITE_NAME: siteName,
+    NEXT_PUBLIC_SITE_URL: siteUrl,
+  },
 };
 
 export default nextConfig;

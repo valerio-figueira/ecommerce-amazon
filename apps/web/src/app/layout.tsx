@@ -1,7 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { formatWebHomeTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
 import { Footer } from '@/components/layout/Footer';
+import { getServerBrandConfig } from '@/lib/site-url';
 
 import { Providers } from './providers';
 import './globals.css';
@@ -16,8 +19,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const brand = getServerBrandConfig();
+
 export const metadata = {
-  title: 'Vitrine — Curadoria inteligente',
+  title: formatWebHomeTitle(brand),
   description: 'Descubra ofertas selecionadas com histórico de preços e alertas.',
 };
 

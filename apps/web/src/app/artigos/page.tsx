@@ -1,9 +1,11 @@
+import { formatWebPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { ArticleListingView } from '@/components/articles/ArticleListingView';
 import {
   fetchPublicArticleCategories,
   fetchPublishedArticles,
 } from '@/lib/api/articles';
-import { getSiteBaseUrl } from '@/lib/site-url';
+import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -23,8 +25,10 @@ function parsePage(value: string | undefined): number {
   return Math.floor(parsed);
 }
 
+const brand = getServerBrandConfig();
+
 export const metadata = {
-  title: 'Artigos | Vitrine',
+  title: formatWebPageTitle('Artigos', brand),
   description:
     'Guias, reviews e comparativos editoriais para escolher produtos com mais confiança.',
   alternates: {

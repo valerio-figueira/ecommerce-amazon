@@ -5,6 +5,8 @@ import {
   type PriceAlertRepository,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
+import { getBrandConfig } from '@ecommerce-amazon/shared/config/brand';
+import { loadEnv } from '@ecommerce-amazon/shared';
 
 export type ProcessTriggeredAlertsResult = {
   sent: number;
@@ -22,16 +24,19 @@ export class ProcessTriggeredAlerts {
     const product = await this.productRepository.findById(productId);
     if (!product || product.price.isStale) return { sent: 0 };
 
+    const brand = getBrandConfig(loadEnv());
     const alerts = await this.alertRepository.findActiveForProduct(productId);
     let sent = 0;
 
     for (const alert of alerts) {
       if (!alert.shouldTrigger(product.price)) continue;
 
+      const formattedPrice = product.price.amount.toFixed(2);
+
       await this.emailSender.send({
         to: alert.email.value,
-        subject: `Price alert: ${product.titleClean}`,
-        html: `<p>Target price reached: R$ ${product.price.amount.toFixed(2)}</p>`,
+        subject: `Alerta de preço — ${product.titleClean} | ${brand.name}`,
+        html: `<p>O preço alvo foi atingido: R$ ${formattedPrice}.</p><p>Confira em <a href="${brand.url}/produtos/${product.slug}">${brand.name}</a>.</p><p>Dúvidas? ${brand.contactEmail}</p>`,
       });
 
       const triggered = alert.trigger(new Date());

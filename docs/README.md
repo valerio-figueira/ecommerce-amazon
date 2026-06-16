@@ -28,6 +28,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [cms-home-phase1.md](./cms-home-phase1.md) | Home CMS-driven: blocos, schemas Zod, seed, `apps/web`, wishlist, tracking |
 | [web-error-handling.md](./web-error-handling.md) | Erros 404/500 pt-BR, boundaries de blocos CMS, `ApiError` |
 | [web-loading-skeletons.md](./web-loading-skeletons.md) | Skeletons de rota (`loading.tsx`) na vitrine — feedback de navegação |
+| [brand-config.md](./brand-config.md) | Marca centralizada: nome, URL, contato, helpers de título |
 | [cms-category-bento-grid.md](./cms-category-bento-grid.md) | Bloco `category_bento_grid`: grade bento de categorias |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |
@@ -77,7 +78,7 @@ Documentação condensada para análise e contexto de outra LLM — cobre arquit
 | `packages/domain` | Entidades, enums, ports | [domain-model.md](./domain-model.md) |
 | `packages/application` | Use cases | [architecture.md](./architecture.md) |
 | `packages/infrastructure` | Drizzle, Redis, repositórios | [database-schema.md](./database-schema.md) |
-| `packages/shared` | Env, Zod CMS schemas, CORS | [cms-home-phase1.md](./cms-home-phase1.md), [api-rest.md](./api-rest.md) |
+| `packages/shared` | Env, Zod CMS schemas, CORS, brand config | [brand-config.md](./brand-config.md), [cms-home-phase1.md](./cms-home-phase1.md) |
 
 ## Mapa rápido: plano → código
 

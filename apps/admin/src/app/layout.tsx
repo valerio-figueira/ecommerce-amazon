@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { getServerBrandConfig } from '@/lib/brand';
+
 import { AdminAppProviders } from '@/components/admin/AdminAppProviders';
 
 import './globals.css';
@@ -15,8 +17,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const brand = getServerBrandConfig();
+
 export const metadata: Metadata = {
-  title: 'Vitrine — Painel CMS',
+  title: `${brand.name} — Painel CMS`,
   description: 'Painel administrativo interno da vitrine',
   robots: {
     index: false,

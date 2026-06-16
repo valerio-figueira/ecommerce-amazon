@@ -7,9 +7,11 @@ import { AdminLayoutProvider } from '@/components/admin/AdminLayoutContext';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import type { AdminSession } from '@/lib/auth/session';
 import type { AdminBreadcrumb } from '@/lib/navigation';
+import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
 const SIDEBAR_STORAGE_KEY = 'vitrine-admin-sidebar-collapsed';
+const brand = getClientBrandConfig();
 
 export function AdminShellLayout({
   session,
@@ -71,7 +73,7 @@ export function AdminShellLayout({
         <main className="admin-content-column">{children}</main>
 
         <footer className="admin-app-footer">
-          <small>© {new Date().getFullYear()} Vitrine — Painel CMS interno</small>
+          <small>© {new Date().getFullYear()} {brand.name} — Painel CMS interno</small>
         </footer>
 
         {mobileOpen && (

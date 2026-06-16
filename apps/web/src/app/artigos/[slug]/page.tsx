@@ -5,6 +5,7 @@ import {
   autoLinksResponseSchema,
 } from '@ecommerce-amazon/shared/admin';
 
+
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
 import { ArticleClusterCarousel } from '@/components/articles/ArticleClusterCarousel';
 import { ArticlePostFooter } from '@/components/articles/ArticlePostFooter';
@@ -14,7 +15,7 @@ import { TrackEngagement } from '@/components/analytics/TrackEngagement';
 import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
 import { apiFetchParsed } from '@/lib/api/client';
 import { fetchOrNotFound } from '@/lib/api/safe-fetch';
-import { getSiteBaseUrl } from '@/lib/site-url';
+import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -68,7 +69,8 @@ export default async function ArtigoPage({
   const [article, autoLinks] = await Promise.all([getArticle(slug), getAutoLinks()]);
   if (!article) notFound();
 
-  const authorName = article.author?.name ?? 'Vitrine';
+  const brand = getServerBrandConfig();
+  const authorName = article.author?.name ?? brand.name;
   const jsonLdGraph: Record<string, unknown>[] = [
     {
       '@type': 'Article',
@@ -81,7 +83,7 @@ export default async function ArtigoPage({
             name: authorName,
             ...(article.author.avatarUrl ? { image: article.author.avatarUrl } : {}),
           }
-        : { '@type': 'Organization', name: 'Vitrine' },
+        : { '@type': 'Organization', name: brand.name },
       ...(article.category ? { articleSection: article.category.name } : {}),
       ...(article.coverImageUrl ? { image: [article.coverImageUrl] } : {}),
     },

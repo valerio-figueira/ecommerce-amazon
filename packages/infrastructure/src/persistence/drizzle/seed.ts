@@ -14,6 +14,11 @@ import {
   ProductAvailability,
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
+import {
+  formatWebHomeTitle,
+  formatWebPageTitle,
+  getBrandConfig,
+} from '@ecommerce-amazon/shared/config/brand';
 import { SEO_KEYWORD_MAP } from '@ecommerce-amazon/shared/seo';
 
 import { schema } from '../drizzle/client.js';
@@ -150,6 +155,7 @@ async function insertProductSeed(
   now: Date,
 ): Promise<void> {
   const env = loadEnv();
+  const brand = getBrandConfig(env);
 
   await db.insert(schema.affiliateAccounts).values([
     {
@@ -191,7 +197,7 @@ async function insertProductSeed(
         reviewCount: 128,
         categoryId: SEED_CATEGORY_HOME_OFFICE_ID,
         tags: ['ergonomica', 'home-office'],
-        metaTitle: 'Cadeira Ergonômica Home Office | Vitrine',
+        metaTitle: formatWebPageTitle('Cadeira Ergonômica Home Office', brand),
         metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
         pros: ['Apoio lombar', 'Braços ajustáveis'],
         cons: ['Montagem demorada'],
@@ -390,14 +396,16 @@ async function seedHomePage(
     return;
   }
 
+  const brand = getBrandConfig(loadEnv());
+
   await insertPageWithBlocks(
     db,
     {
       id: SEED_PAGE_HOME_ID,
       slug: 'home',
-      title: 'Vitrine',
+      title: brand.name,
       status: PageStatus.PUBLISHED,
-      seoTitle: 'Vitrine — Curadoria inteligente de produtos',
+      seoTitle: `${formatWebHomeTitle(brand)} de produtos`,
       seoDescription: 'Descubra ofertas selecionadas com histórico de preços e alertas.',
       publishedAt: now,
       updatedAt: now,
@@ -997,6 +1005,7 @@ async function seedOperator(
   logger: ReturnType<typeof createConsoleLogger>,
 ): Promise<void> {
   const env = loadEnv();
+  const brand = getBrandConfig(env);
   const existing = await db
     .select({ id: schema.operators.id })
     .from(schema.operators)
@@ -1024,7 +1033,7 @@ async function seedOperator(
     id: SEED_OPERATOR_ID,
     email: env.ADMIN_SEED_EMAIL.toLowerCase(),
     passwordHash,
-    name: 'Administrador Vitrine',
+    name: `Administrador ${brand.name}`,
     avatarUrl: PEXELS.authorAvatar,
     bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
     role: 'admin',

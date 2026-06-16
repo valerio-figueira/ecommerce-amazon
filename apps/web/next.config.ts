@@ -17,11 +17,19 @@ const storagePublicBaseUrl =
   process.env['STORAGE_PUBLIC_BASE_URL'] ??
   `${(process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000').replace(/\/+$/, '')}/uploads`;
 
+const siteName = process.env['SITE_NAME'] ?? process.env['NEXT_PUBLIC_SITE_NAME'] ?? 'Vitrine';
+const siteUrl =
+  process.env['WEB_PUBLIC_URL'] ??
+  process.env['NEXT_PUBLIC_SITE_URL'] ??
+  `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
+
 const nextConfig: NextConfig = {
   output: 'standalone',
   allowedDevOrigins: ['localhost', '127.0.0.1', ...devOrigins],
   env: {
     NEXT_PUBLIC_STORAGE_PUBLIC_BASE_URL: storagePublicBaseUrl,
+    NEXT_PUBLIC_SITE_NAME: siteName,
+    NEXT_PUBLIC_SITE_URL: siteUrl,
   },
   images: {
     remotePatterns: buildWebNextImageRemotePatterns({

@@ -5,6 +5,7 @@ import {
   buildCategoryBreadcrumbJsonLd,
   buildCategoryCollectionJsonLd,
 } from '@ecommerce-amazon/shared/seo';
+import { formatWebPageTitle } from '@ecommerce-amazon/shared/config/brand';
 
 import { CategoryProductsError } from '@/components/category/CategoryProductsError';
 import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
@@ -19,7 +20,7 @@ import {
   type CategoryDetailDto,
   type ProductListItemDto,
 } from '@/lib/api/schemas';
-import { getSiteBaseUrl } from '@/lib/site-url';
+import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -58,8 +59,10 @@ export async function generateMetadata({
     return { title: 'Categoria não encontrada' };
   }
 
+  const brand = getServerBrandConfig();
+
   return {
-    title: category.seoTitle ?? `${category.label} | Vitrine`,
+    title: category.seoTitle ?? formatWebPageTitle(category.label, brand),
     description:
       category.seoDescription ??
       `Explore produtos curados em ${category.label} com histórico de preços e análise editorial.`,

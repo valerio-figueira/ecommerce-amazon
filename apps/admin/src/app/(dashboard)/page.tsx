@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import { AlertTriangle, MousePointerClick, Newspaper, Package } from 'lucide-react';
 
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { BlockAttributionTable } from '@/components/analytics/BlockAttributionTable';
 import { ClicksTrendChart } from '@/components/analytics/ClicksTrendChart';
@@ -19,9 +21,12 @@ import {
   loadDashboardAnalytics,
   resolveDateRangeFromSearchParams,
 } from '@/lib/api/analytics';
+import { getServerBrandConfig } from '@/lib/brand';
+
+const brand = getServerBrandConfig();
 
 export const metadata = {
-  title: 'Painel — Vitrine CMS',
+  title: formatAdminPageTitle('Painel', brand),
 };
 
 type DashboardPageProps = {

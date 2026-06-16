@@ -1,3 +1,5 @@
+import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
+
 import { notFound } from 'next/navigation';
 
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -6,16 +8,18 @@ import { ArticleForm } from '@/components/articles/ArticleForm';
 import { getAdminArticle } from '@/lib/api/articles';
 import { listArticleCategories } from '@/lib/api/article-categories';
 import { listContentClusters } from '@/lib/api/content-clusters';
+import { getServerBrandConfig } from '@/lib/brand';
 
 type EditArtigoPageProps = {
   params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({ params }: EditArtigoPageProps) {
+  const brand = getServerBrandConfig();
   const { id } = await params;
   const article = await getAdminArticle(id);
   return {
-    title: article ? `${article.title} — Artigos` : 'Artigo — Vitrine CMS',
+    title: article ? `${article.title} — Artigos` : formatAdminPageTitle('Artigo', brand),
   };
 }
 

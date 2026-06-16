@@ -15,10 +15,11 @@ const EDITORIAL_LINKS = [
 ];
 
 type SiteHeaderProps = {
+  siteName: string;
   navCategories?: CategoryNavNode[];
 };
 
-export function SiteHeader({ navCategories = [] }: SiteHeaderProps): React.JSX.Element {
+export function SiteHeader({ siteName, navCategories = [] }: SiteHeaderProps): React.JSX.Element {
   const { items, setOpen } = useWishlist();
 
   return (
@@ -30,7 +31,7 @@ export function SiteHeader({ navCategories = [] }: SiteHeaderProps): React.JSX.E
               href="/"
               className="shrink-0 text-lg font-bold tracking-tight md:text-xl"
             >
-              VITRINE
+              {siteName.toUpperCase()}
             </Link>
 
             <CategoryCatalogFlyout categories={navCategories} />

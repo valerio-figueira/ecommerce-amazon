@@ -1,7 +1,10 @@
+import { formatEditorialTeamName } from '@ecommerce-amazon/shared/config/brand';
+
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
+import { getServerBrandConfig } from '@/lib/site-url';
 
 type ArticlePostFooterProps = {
   article: ArticlePublicDetail;
@@ -10,8 +13,9 @@ type ArticlePostFooterProps = {
 export function ArticlePostFooter({
   article,
 }: ArticlePostFooterProps): React.JSX.Element | null {
+  const brand = getServerBrandConfig();
   const author = article.author;
-  const authorName = author?.name ?? 'Redação Vitrine';
+  const authorName = author?.name ?? formatEditorialTeamName(brand);
 
   if (!article.category && !author) {
     return null;

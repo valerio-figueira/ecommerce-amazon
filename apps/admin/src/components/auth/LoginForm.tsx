@@ -4,7 +4,10 @@ import { useSearchParams } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
 import { useAdminToast } from '@/components/ui/admin-toast';
+import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
+
+const brand = getClientBrandConfig();
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -58,10 +61,10 @@ export function LoginForm() {
         <div className="admin-login-box w-full max-w-[24rem] rounded-[15px] border border-[color:rgba(24,42,90,0.12)] bg-[color:var(--admin-surface)] p-9 shadow-[0_0.35rem_1.25rem_var(--admin-shadow),0_1.25rem_2.5rem_rgba(24,42,90,0.07)]">
           <div className="admin-login-head mb-6 flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
-              V
+              {brand.name.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="main-title text-xl font-bold text-[color:var(--admin-navy)]">Vitrine</h1>
+              <h1 className="main-title text-xl font-bold text-[color:var(--admin-navy)]">{brand.name}</h1>
               <p className="subtitle text-sm text-[color:var(--admin-text-muted)]">Painel CMS</p>
             </div>
           </div>

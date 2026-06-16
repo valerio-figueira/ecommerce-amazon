@@ -61,6 +61,10 @@
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
       "import": "./dist/analytics/index.js"
+    },
+    "./config/brand": {
+      "types": "./dist/config/brand.d.ts",
+      "import": "./dist/config/brand.js"
     }
   },
   "scripts": {
