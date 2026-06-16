@@ -24,10 +24,12 @@ import { loadEnv } from '@ecommerce-amazon/shared';
 const brand = getBrandConfig(loadEnv()); // server / worker / use cases
 ```
 
-Client Components (Next.js):
+Client Components (Next.js) — use `getClientBrandConfig()` (ignora `SITE_NAME` server-only; evita hydration mismatch):
 
 ```typescript
-const brand = getBrandConfig(process.env); // após forwarding em next.config.ts
+import { getClientBrandConfig } from '@ecommerce-amazon/shared/config/brand';
+
+const brand = getClientBrandConfig(); // lê só NEXT_PUBLIC_* (forwarded em next.config.ts)
 ```
 
 ## Variáveis de ambiente

@@ -8,6 +8,7 @@ import {
   formatEditorialTeamName,
   formatWebHomeTitle,
   formatWebPageTitle,
+  getClientBrandConfig,
 } from './brand.js';
 
 describe('brand config', () => {
@@ -33,6 +34,15 @@ describe('brand config', () => {
 
   it('falls back to NEXT_PUBLIC_SITE_NAME when SITE_NAME is missing', () => {
     const brand = createBrandConfig({
+      NEXT_PUBLIC_SITE_NAME: 'Marca Client',
+    });
+
+    expect(brand.name).toBe('Marca Client');
+  });
+
+  it('getClientBrandConfig ignores server-only SITE_NAME for hydration-safe client bundles', () => {
+    const brand = getClientBrandConfig({
+      SITE_NAME: 'Marca Server',
       NEXT_PUBLIC_SITE_NAME: 'Marca Client',
     });
 

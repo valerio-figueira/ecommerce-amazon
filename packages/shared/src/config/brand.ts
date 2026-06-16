@@ -69,6 +69,20 @@ export function getBrandConfig(source: BrandEnvSource = process.env): BrandConfi
   return createBrandConfig(source);
 }
 
+/** Env keys safe for Next.js Client Components (SSR + browser must match). */
+export function createClientBrandEnvSource(
+  env: BrandEnvSource = process.env,
+): BrandEnvSource {
+  return {
+    NEXT_PUBLIC_SITE_NAME: env.NEXT_PUBLIC_SITE_NAME,
+    NEXT_PUBLIC_SITE_URL: env.NEXT_PUBLIC_SITE_URL,
+  };
+}
+
+export function getClientBrandConfig(env: BrandEnvSource = process.env): BrandConfig {
+  return createBrandConfig(createClientBrandEnvSource(env));
+}
+
 export function formatWebPageTitle(pageTitle: string, brand: BrandConfig): string {
   return `${pageTitle} | ${brand.name}`;
 }
