@@ -94,6 +94,13 @@
       "breakpoints": true
     },
     {
+      "idx": 13,
+      "version": "7",
+      "when": 1719244800000,
+      "tag": "0013_article_taxonomy_authors",
+      "breakpoints": true
+    },
+    {
       "idx": 14,
       "version": "7",
       "when": 1719331200000,

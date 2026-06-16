@@ -10,8 +10,10 @@ import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { formatDatabaseConnectionError } from './connection-error.js';
 import { loadDotenvFromMonorepoRoot } from './load-env.js';
 
+const migrationPostgresOptions = { max: 1, onnotice: () => {} };
+
 async function assertDatabaseConnection(databaseUrl: string): Promise<void> {
-  const client = postgres(databaseUrl, { max: 1 });
+  const client = postgres(databaseUrl, migrationPostgresOptions);
   try {
     await client`SELECT 1`;
   } finally {
@@ -38,7 +40,7 @@ async function runMigrations(): Promise<void> {
     process.exit(1);
   }
 
-  const migrationClient = postgres(env.DATABASE_URL, { max: 1 });
+  const migrationClient = postgres(env.DATABASE_URL, migrationPostgresOptions);
   const db = drizzle(migrationClient);
 
   try {

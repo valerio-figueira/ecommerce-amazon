@@ -111,7 +111,7 @@ async function runSeed(): Promise<void> {
     return;
   }
 
-  const sql = postgres(env.DATABASE_URL, { max: 1 });
+  const sql = postgres(env.DATABASE_URL, { max: 1, onnotice: () => {} });
   const db = drizzle(sql, { schema });
   const now = new Date();
 
