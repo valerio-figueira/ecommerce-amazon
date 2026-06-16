@@ -72,7 +72,7 @@ flowchart LR
 
 - Cookie keys (`vitrine_session`), prefixos Redis (`vitrine:`) — identificadores técnicos
 - Prompts LLM no admin
-- Página `/legal` (link no Footer ainda aponta para rota futura)
+- Banner de cookies + Consent Mode (citado na política; implementação futura)
 
 ## Como testar
 

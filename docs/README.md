@@ -29,6 +29,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [web-error-handling.md](./web-error-handling.md) | Erros 404/500 pt-BR, boundaries de blocos CMS, `ApiError` |
 | [web-loading-skeletons.md](./web-loading-skeletons.md) | Skeletons de rota (`loading.tsx`) na vitrine — feedback de navegação |
 | [brand-config.md](./brand-config.md) | Marca centralizada: nome, URL, contato, helpers de título |
+| [legal-pages.md](./legal-pages.md) | `/legal`: privacidade LGPD, termos, afiliados, cookies |
 | [cms-category-bento-grid.md](./cms-category-bento-grid.md) | Bloco `category_bento_grid`: grade bento de categorias |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |

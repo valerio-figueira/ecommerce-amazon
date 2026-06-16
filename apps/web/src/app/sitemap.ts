@@ -10,7 +10,7 @@ import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
-const STATIC_SITEMAP_PATHS = ['/', '/artigos'] as const;
+const STATIC_SITEMAP_PATHS = ['/', '/artigos', '/legal'] as const;
 
 async function fetchSitemapMeta(): Promise<{ totalPages: number }> {
   try {

@@ -65,6 +65,10 @@
     "./config/brand": {
       "types": "./dist/config/brand.d.ts",
       "import": "./dist/config/brand.js"
+    },
+    "./legal": {
+      "types": "./dist/legal/index.d.ts",
+      "import": "./dist/legal/index.js"
     }
   },
   "scripts": {
