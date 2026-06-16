@@ -34,6 +34,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |
 | [cms-bento-hub-mix.md](./cms-bento-hub-mix.md) | Bloco `bento_hub_mix`: grid assimétrico 3 slots, BFF hydration, admin preview |
 | [go-redirect-seo.md](./go-redirect-seo.md) | Redirect `/go`, JSON-LD produto, interlinkagem SEO |
+| [seo-technical-phase1.md](./seo-technical-phase1.md) | Metadados globais, sitemap paginado, robots, crawl budget, CWV |
 | [product-detail-page.md](./product-detail-page.md) | Detalhe `/produtos/[slug]`: galeria, análise editorial, ficha técnica |
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
 | [admin-products-phase1.md](./admin-products-phase1.md) | Gestão manual de produtos, parser de URL, API admin |

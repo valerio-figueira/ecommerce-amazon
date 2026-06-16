@@ -44,12 +44,12 @@ export function PageRenderer({ layout }: PageRendererProps): React.JSX.Element {
   return (
     <CategoryFilterProvider>
       <div className="space-y-10">
-        {topLevel.map((block) => {
+        {topLevel.map((block, index) => {
           const Component = BlockRegistry[block.type];
           if (!Component) return null;
           return (
             <BlockErrorBoundary key={block.id} blockId={block.id} blockType={block.type}>
-              <Component block={block} blocksById={blocksById} />
+              <Component block={block} blocksById={blocksById} isFirstBlock={index === 0} />
             </BlockErrorBoundary>
           );
         })}

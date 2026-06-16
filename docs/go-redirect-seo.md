@@ -87,6 +87,25 @@ curl "http://localhost:3000/articles/guia-cadeira-ergonomica" | jq .article.body
 
 Abrir `http://localhost:3001/produtos/cadeira-ergonomica-home-office` e inspecionar `<script type="application/ld+json">`.
 
+## Checklist `rel` em links comerciais
+
+Todo CTA que aponta para `/go/{slug}` deve usar **`rel="noopener sponsored"`** (regra de conformidade afiliado).
+
+| Componente | Status |
+|------------|--------|
+| [`AffiliateGoLink.tsx`](../apps/web/src/components/product/AffiliateGoLink.tsx) | Conforme — único wrapper de CTA afiliado |
+| [`WishlistDrawer.tsx`](../apps/web/src/components/wishlist/WishlistDrawer.tsx) | Conforme — usa `AffiliateGoLink` |
+| Grep `/go/` em `apps/web` | Deve retornar apenas `AffiliateGoLink`, `go-url.ts`, `robots.ts`, `next.config.ts` |
+
+Auditoria periódica:
+
+```bash
+rg 'href=.*/go/' apps/web/src --glob '*.tsx'
+rg 'window\.open.*go' apps/web/src
+```
+
+Ver também [seo-technical-phase1.md](./seo-technical-phase1.md) para `robots.txt` (`Disallow: /go/`).
+
 ## Env vars
 
 | Variável | Uso |

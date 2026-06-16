@@ -1,4 +1,4 @@
-const META_TITLE_SUFFIX = ' | Análise, Prós, Contras e Ofertas';
+const META_TITLE_SUFFIX = ' — Análise e Ofertas';
 
 export function buildProductMetaTitle(titleClean: string): string {
   const trimmed = titleClean.trim();

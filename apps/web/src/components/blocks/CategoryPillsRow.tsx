@@ -134,8 +134,8 @@ export function CategoryPillsRow({
         )}
       </div>
 
-      {subcategoryNodes.length > 0 && activeRootNode && (
-        <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+      {subcategoryNodes.length > 0 && activeRootNode ? (
+        <div className="flex min-h-[2.25rem] gap-2 overflow-x-auto pb-1 md:pb-0">
           {renderPill(
             `Todas de ${activeRootNode.label}`,
             activeRootNode.slug,
@@ -146,6 +146,8 @@ export function CategoryPillsRow({
             renderPill(child.label, child.slug, categorySlug === child.slug, true),
           )}
         </div>
+      ) : (
+        <div className="min-h-[2.25rem]" aria-hidden />
       )}
     </div>
   );

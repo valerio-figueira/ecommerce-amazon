@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ProductCard } from '@/components/product/ProductCard';
+import { ProductCardSkeleton } from '@/components/loading/ProductCardSkeleton';
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
@@ -108,13 +109,8 @@ export function ProductCarousel({
           <div className={cn('flex touch-pan-y items-stretch', trackGap)}>
             {isLoading
               ? Array.from({ length: Math.min(skeletonCount, 8) }).map((_, index) => (
-                  <div key={index} className={cn(slideClass, SLIDE_INSET_CLASS)}>
-                    <div
-                      className={cn(
-                        'h-full animate-pulse rounded-2xl bg-neutral-200',
-                        isCompactCard || slideSize === 'sm' ? 'aspect-[4/3]' : 'aspect-[4/5]',
-                      )}
-                    />
+                  <div key={index} className={cn(slideClass, SLIDE_INSET_CLASS, isCompactCard && 'flex')}>
+                    <ProductCardSkeleton variant={isCompactCard ? 'compact' : 'default'} />
                   </div>
                 ))
               : products.map((product) => (

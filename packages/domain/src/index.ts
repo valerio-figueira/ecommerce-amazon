@@ -35,4 +35,5 @@ export * from './repositories/AnalyticsRepository.js';
 export * from './repositories/PageRepository.js';
 export * from './repositories/AffiliateAccountRepository.js';
 export * from './repositories/OperatorRepository.js';
+export * from './repositories/SitemapRepository.js';
 export * from './gateways/index.js';

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle } from '@ecommerce-amazon/shared/seo';
+import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle, buildNotFoundMetadata } from '@ecommerce-amazon/shared/seo';
 
 import { ProductDetailAffiliateCta } from '@/components/product/ProductDetailAffiliateCta';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
@@ -31,17 +31,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) {
-    return { title: 'Produto não encontrado' };
+    return buildNotFoundMetadata('Produto não encontrado');
   }
 
   const siteBaseUrl = getSiteBaseUrl();
   const canonical = resolveProductCanonicalUrl(product.slug, siteBaseUrl, product.canonicalUrl);
+  const title = resolveProductMetaTitle(product.title, product.metaTitle);
+  const description = resolveProductMetaDescription(product.title, product.metaDescription);
+  const primaryImage = product.images[0];
 
   return {
-    title: resolveProductMetaTitle(product.title, product.metaTitle),
-    description: resolveProductMetaDescription(product.title, product.metaDescription),
-    alternates: {
-      canonical,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      ...(primaryImage ? { images: [{ url: primaryImage }] } : {}),
     },
   };
 }
@@ -58,7 +65,7 @@ export default async function ProductPage({
   }
 
   const siteBaseUrl = getSiteBaseUrl();
-  const similarProducts: ProductListItemDto[] = product.similarProducts;
+  const similarProducts: ProductListItemDto[] = product.similarProducts ?? [];
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">

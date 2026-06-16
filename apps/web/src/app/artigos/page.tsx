@@ -1,11 +1,15 @@
-import { formatWebPageTitle } from '@ecommerce-amazon/shared/config/brand';
+import {
+  buildFacetedListingMetadata,
+  hasArticleFacetParams,
+  parseListingPage,
+} from '@ecommerce-amazon/shared/seo';
 
 import { ArticleListingView } from '@/components/articles/ArticleListingView';
 import {
   fetchPublicArticleCategories,
   fetchPublishedArticles,
 } from '@/lib/api/articles';
-import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
+import { getServerBrandConfig } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -19,28 +23,36 @@ type ArtigosPageProps = {
   }>;
 };
 
-function parsePage(value: string | undefined): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed < 1) return 1;
-  return Math.floor(parsed);
+export async function generateMetadata({
+  searchParams,
+}: ArtigosPageProps): Promise<import('next').Metadata> {
+  const params = await searchParams;
+  const brand = getServerBrandConfig();
+  const page = parseListingPage(params);
+  const hasFacetParams = hasArticleFacetParams(params);
+
+  return buildFacetedListingMetadata({
+    title: 'Artigos',
+    description:
+      'Guias, reviews e comparativos editoriais para escolher produtos com mais confiança.',
+    canonicalPath: '/artigos',
+    brand,
+    page,
+    hasFacetParams,
+    openGraph: {
+      title: 'Artigos',
+      description:
+        'Guias, reviews e comparativos editoriais para escolher produtos com mais confiança.',
+      url: `${brand.url}/artigos`,
+    },
+  });
 }
-
-const brand = getServerBrandConfig();
-
-export const metadata = {
-  title: formatWebPageTitle('Artigos', brand),
-  description:
-    'Guias, reviews e comparativos editoriais para escolher produtos com mais confiança.',
-  alternates: {
-    canonical: `${getSiteBaseUrl()}/artigos`,
-  },
-};
 
 export default async function ArtigosPage({
   searchParams,
 }: ArtigosPageProps): Promise<React.JSX.Element> {
   const params = await searchParams;
-  const page = parsePage(params.page);
+  const page = parseListingPage(params);
   const activeCategory = params.categoria?.trim() || null;
   const activeSearch = params.q?.trim() || '';
 

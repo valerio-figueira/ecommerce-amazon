@@ -37,6 +37,17 @@ export {
   DeleteArticle,
 } from './use-cases/admin-article/UpdateArticle.js';
 export { ListActiveAutoLinks } from './use-cases/seo/ListActiveAutoLinks.js';
+export {
+  GetSitemapMeta,
+  ListSitemapEntries,
+  DEFAULT_SITEMAP_PAGE_SIZE,
+  MAX_SITEMAP_PAGE_SIZE,
+} from './use-cases/seo/ListSitemapEntries.js';
+export type {
+  GetSitemapMetaResult,
+  ListSitemapEntriesResult,
+  SitemapEntryDto,
+} from './use-cases/seo/ListSitemapEntries.js';
 export { CreateAutoLink } from './use-cases/auto-links/CreateAutoLink.js';
 export { UpdateAutoLink } from './use-cases/auto-links/UpdateAutoLink.js';
 export { DeleteAutoLink } from './use-cases/auto-links/DeleteAutoLink.js';

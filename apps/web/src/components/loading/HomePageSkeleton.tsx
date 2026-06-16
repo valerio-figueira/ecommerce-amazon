@@ -20,7 +20,7 @@ export function HomePageSkeleton(): React.JSX.Element {
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="aspect-[4/5] min-w-[72%] flex-[0_0_72%] rounded-2xl sm:min-w-[48%] sm:flex-[0_0_48%] md:min-w-[32%] md:flex-[0_0_32%]"
+                className="aspect-[4/3] min-w-[72%] flex-[0_0_72%] rounded-2xl sm:min-w-[48%] sm:flex-[0_0_48%] md:min-w-[32%] md:flex-[0_0_32%]"
               />
             ))}
           </div>

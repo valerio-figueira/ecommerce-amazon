@@ -199,10 +199,10 @@ export const productPublicDetailSchema = productPublicListItemSchema.extend({
   metaDescription: z.string().optional(),
   canonicalUrl: z.string().optional(),
   category: productPublicCategorySummarySchema.optional(),
-  similarProducts: z.array(productPublicListItemSchema).default([]),
+  similarProducts: z.array(productPublicListItemSchema).optional(),
 });
 
-export type ProductPublicDetail = z.infer<typeof productPublicDetailSchema>;
+export type ProductPublicDetail = z.output<typeof productPublicDetailSchema>;
 
 export const adminListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),

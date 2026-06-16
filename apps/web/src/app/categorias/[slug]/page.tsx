@@ -4,8 +4,13 @@ import { notFound } from 'next/navigation';
 import {
   buildCategoryBreadcrumbJsonLd,
   buildCategoryCollectionJsonLd,
+  buildCategoryProductItemListJsonLd,
+  buildFacetedListingMetadata,
+  buildNotFoundMetadata,
+  buildPageCanonical,
+  hasCategoryFacetParams,
+  parseListingPage,
 } from '@ecommerce-amazon/shared/seo';
-import { formatWebPageTitle } from '@ecommerce-amazon/shared/config/brand';
 
 import { CategoryProductsError } from '@/components/category/CategoryProductsError';
 import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
@@ -50,26 +55,39 @@ async function getCategoryProducts(slug: string): Promise<CategoryProductsResult
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<import('next').Metadata> {
   const { slug } = await params;
+  const sp = await searchParams;
   const category = await getCategory(slug);
   if (!category) {
-    return { title: 'Categoria não encontrada' };
+    return buildNotFoundMetadata('Categoria não encontrada');
   }
 
   const brand = getServerBrandConfig();
+  const page = parseListingPage(sp);
+  const hasFacetParams = hasCategoryFacetParams(sp);
 
-  return {
-    title: category.seoTitle ?? formatWebPageTitle(category.label, brand),
+  return buildFacetedListingMetadata({
+    title: category.seoTitle ?? category.label,
     description:
       category.seoDescription ??
       `Explore produtos curados em ${category.label} com histórico de preços e análise editorial.`,
-    alternates: {
-      canonical: `${getSiteBaseUrl()}/categorias/${category.slug}`,
+    canonicalPath: `/categorias/${category.slug}`,
+    brand,
+    page,
+    hasFacetParams,
+    openGraph: {
+      title: category.seoTitle ?? category.label,
+      description:
+        category.seoDescription ??
+        `Explore produtos curados em ${category.label} com histórico de preços e análise editorial.`,
+      url: buildPageCanonical(`/categorias/${category.slug}`, brand),
     },
-  };
+  });
 }
 
 export default async function CategoryPage({
@@ -106,6 +124,14 @@ export default async function CategoryPage({
     productCount: category.productCount,
     seoDescription: category.seoDescription,
   });
+  const productItemListJsonLd = buildCategoryProductItemListJsonLd({
+    siteBaseUrl,
+    categoryLabel: category.label,
+    products: products.slice(0, 10).map((product) => ({
+      slug: product.slug,
+      title: product.title,
+    })),
+  });
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
@@ -117,6 +143,12 @@ export default async function CategoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
+      {products.length > 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productItemListJsonLd) }}
+        />
+      ) : null}
 
       <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
         {categoryTree.length > 0 && (

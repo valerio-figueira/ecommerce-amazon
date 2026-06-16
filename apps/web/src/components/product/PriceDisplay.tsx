@@ -17,7 +17,7 @@ export function PriceDisplay({
   className,
   compact = false,
 }: PriceDisplayProps): React.JSX.Element {
-  const minHeight = compact ? undefined : 'min-h-[48px]';
+  const minHeight = compact ? 'min-h-[1.25rem]' : 'min-h-[48px]';
 
   if (price.isStale || price.amount === null) {
     return (
@@ -38,13 +38,13 @@ export function PriceDisplay({
   return (
     <div className={cn('flex flex-col', minHeight, compact ? 'gap-0' : 'justify-center gap-0.5', className)}>
       <div className="flex items-baseline gap-1.5">
-        <span className={cn('font-bold', compact ? 'text-sm' : 'text-lg')}>
+        <span className={cn('font-bold tabular-nums', compact ? 'text-sm' : 'text-lg')}>
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: price.currency }).format(
             price.amount,
           )}
         </span>
         {strikethrough !== undefined && (
-          <span className={cn('text-neutral-400 line-through', compact ? 'text-[10px]' : 'text-sm')}>
+          <span className={cn('tabular-nums text-neutral-400 line-through', compact ? 'text-[10px]' : 'text-sm')}>
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: price.currency }).format(
               strikethrough,
             )}

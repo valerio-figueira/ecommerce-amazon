@@ -16,6 +16,10 @@ import { toProductCategorySummaryDto } from '../../presenters/category.presenter
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
 import { listArticlesByCategoryQuerySchema, listPublishedArticlesQuerySchema } from '@ecommerce-amazon/shared/admin';
 import {
+  sitemapEntriesQuerySchema,
+  sitemapMetaQuerySchema,
+} from '@ecommerce-amazon/shared/seo';
+import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
   CollectionSlugParamsSchema,
@@ -350,6 +354,33 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     try {
       const result = await useCases.listActiveAutoLinks.execute();
       return reply.send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  const sitemapCacheControl = 'public, s-maxage=3600, stale-while-revalidate=86400';
+
+  app.get('/seo/sitemap-meta', async (request, reply) => {
+    try {
+      const query = sitemapMetaQuerySchema.parse(request.query);
+      const result = await useCases.getSitemapMeta.execute({
+        ...(query.pageSize !== undefined ? { pageSize: query.pageSize } : {}),
+      });
+      return reply.header('Cache-Control', sitemapCacheControl).send(result);
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.get('/seo/sitemap-entries', async (request, reply) => {
+    try {
+      const query = sitemapEntriesQuerySchema.parse(request.query);
+      const result = await useCases.listSitemapEntries.execute({
+        ...(query.page !== undefined ? { page: query.page } : {}),
+        ...(query.pageSize !== undefined ? { pageSize: query.pageSize } : {}),
+      });
+      return reply.header('Cache-Control', sitemapCacheControl).send(result);
     } catch (error) {
       return handleError(error, reply);
     }

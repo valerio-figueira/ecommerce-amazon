@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import { formatWebHomeTitle } from '@ecommerce-amazon/shared/config/brand';
+import { buildRootMetadata } from '@ecommerce-amazon/shared/seo';
+import type { Metadata } from 'next';
 
 import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
 import { Footer } from '@/components/layout/Footer';
@@ -19,11 +20,9 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const brand = getServerBrandConfig();
-
-export const metadata = {
-  title: formatWebHomeTitle(brand),
-  description: 'Descubra ofertas selecionadas com histórico de preços e alertas.',
+export const metadata: Metadata = {
+  ...buildRootMetadata(getServerBrandConfig()),
+  twitter: { card: 'summary_large_image' },
 };
 
 export default function RootLayout({

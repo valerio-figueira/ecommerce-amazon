@@ -1,5 +1,6 @@
 import type { ArticleWithEmbedsResult } from '@ecommerce-amazon/application';
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
+import { toIsoDateTime } from '@ecommerce-amazon/shared/admin';
 
 import { toProductDetailDto } from './product.presenter.js';
 
@@ -25,7 +26,13 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
       coverImageUrl: item.coverImageUrl,
       publishedAt: item.publishedAt?.toISOString() ?? null,
     })),
-    publishedAt: article.publishedAt?.toISOString() ?? null,
+    publishedAt: article.publishedAt
+      ? toIsoDateTime(article.publishedAt)
+      : null,
+    updatedAt: toIsoDateTime(
+      article.updatedAt,
+      article.publishedAt ?? article.createdAt,
+    ),
     embeddedProducts: Object.fromEntries(
       Object.entries(embeddedProducts).map(([productSlug, product]) => [
         productSlug,

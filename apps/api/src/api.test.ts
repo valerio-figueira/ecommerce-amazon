@@ -33,4 +33,42 @@ describe('API routes', () => {
     });
     expect(response.statusCode).toBe(400);
   });
+
+  it('GET /seo/sitemap-meta returns pagination metadata', async () => {
+    const response = await app.inject({ method: 'GET', url: '/seo/sitemap-meta' });
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      totalEntries: number;
+      pageSize: number;
+      totalPages: number;
+    };
+    expect(body.pageSize).toBe(50_000);
+    expect(body.totalPages).toBeGreaterThanOrEqual(1);
+    expect(typeof body.totalEntries).toBe('number');
+  });
+
+  it('GET /seo/sitemap-entries returns paginated items', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/seo/sitemap-entries?page=1&pageSize=10',
+    });
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      page: number;
+      pageSize: number;
+      items: Array<{ path: string; lastModified: string }>;
+    };
+    expect(body.page).toBe(1);
+    expect(body.pageSize).toBe(10);
+    expect(Array.isArray(body.items)).toBe(true);
+    expect(response.headers['cache-control']).toContain('s-maxage=3600');
+  });
+
+  it('returns 400 for invalid sitemap pageSize', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/seo/sitemap-entries?pageSize=999999',
+    });
+    expect(response.statusCode).toBe(400);
+  });
 });

@@ -149,7 +149,35 @@ export const publicArticleCategoriesResponseSchema = z.object({
 
 export type PublicArticleCategoriesResponse = z.infer<typeof publicArticleCategoriesResponseSchema>;
 
-export const articlePublicDetailSchema = z.object({
+export function toIsoDateTime(
+  value: Date | string | null | undefined,
+  fallback?: Date | string | null | undefined,
+): string {
+  const resolved = value ?? fallback;
+  if (resolved instanceof Date) {
+    return resolved.toISOString();
+  }
+  if (typeof resolved === 'string' && resolved.length > 0) {
+    return resolved;
+  }
+  if (fallback instanceof Date) {
+    return fallback.toISOString();
+  }
+  if (typeof fallback === 'string' && fallback.length > 0) {
+    return fallback;
+  }
+  return new Date().toISOString();
+}
+
+export function resolveArticleUpdatedAtIso(input: {
+  updatedAt?: string | null | undefined;
+  publishedAt?: string | null | undefined;
+}): string {
+  return toIsoDateTime(input.updatedAt, input.publishedAt);
+}
+
+export const articlePublicDetailSchema = z
+  .object({
   id: z.string().uuid(),
   slug: articleSlugSchema,
   title: z.string(),
@@ -163,11 +191,16 @@ export const articlePublicDetailSchema = z.object({
   category: articleCategoryPublicSchema.nullable(),
   relatedArticles: z.array(articleRelatedSummarySchema),
   publishedAt: z.string().datetime().nullable(),
+  updatedAt: z.string().datetime().optional(),
   embeddedProducts: z.record(z.string(), productPublicDetailSchema.nullable()),
-  cluster: articleClusterPublicSchema.nullable().default(null),
-});
+  cluster: articleClusterPublicSchema.nullable(),
+})
+  .transform((data) => ({
+    ...data,
+    updatedAt: resolveArticleUpdatedAtIso(data),
+  }));
 
-export type ArticlePublicDetail = z.infer<typeof articlePublicDetailSchema>;
+export type ArticlePublicDetail = z.output<typeof articlePublicDetailSchema>;
 
 export const autoLinkItemSchema = z.object({
   keyword: z.string(),

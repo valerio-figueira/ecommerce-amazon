@@ -20,6 +20,7 @@ import { SpacerBlock } from '@/components/blocks/SpacerBlock';
 export type BlockComponentProps = {
   block: PageBlockDeliveryDto;
   blocksById: Record<string, PageBlockDeliveryDto>;
+  isFirstBlock?: boolean;
 };
 
 export const BlockRegistry: Record<

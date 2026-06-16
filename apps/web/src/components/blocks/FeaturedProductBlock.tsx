@@ -10,6 +10,7 @@ import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { BlockErrorFallback } from '@/components/errors/BlockErrorFallback';
 import { BlockUnavailableFallback } from '@/components/errors/BlockUnavailableFallback';
+import { ProductCardSkeleton } from '@/components/loading/ProductCardSkeleton';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
@@ -18,6 +19,8 @@ import { ProductRating } from '@/components/product/ProductRating';
 import { apiFetchParsed } from '@/lib/api/client';
 import { productListItemSchema } from '@/lib/api/schemas';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
+
+const FEATURED_MIN_HEIGHT = 'min-h-[320px]';
 
 export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.Element | null {
   const props = featuredProductPropsSchema.parse(block.props);
@@ -31,23 +34,25 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
   });
 
   if (!slug) {
-    return <BlockUnavailableFallback className="min-h-[320px]" />;
+    return <BlockUnavailableFallback className={FEATURED_MIN_HEIGHT} />;
   }
 
   if (isLoading) {
     return (
-      <div className="flex h-full min-h-[320px] animate-pulse items-center justify-center rounded-[var(--radius)] bg-white">
-        Carregando...
+      <div
+        className={`flex h-full ${FEATURED_MIN_HEIGHT} flex-col rounded-[var(--radius)] border border-neutral-100 bg-white p-4 shadow-sm`}
+      >
+        <ProductCardSkeleton />
       </div>
     );
   }
 
   if (isError) {
-    return <BlockErrorFallback onRetry={() => void refetch()} className="min-h-[320px]" />;
+    return <BlockErrorFallback onRetry={() => void refetch()} className={FEATURED_MIN_HEIGHT} />;
   }
 
   if (!product) {
-    return <BlockUnavailableFallback className="min-h-[320px]" />;
+    return <BlockUnavailableFallback className={FEATURED_MIN_HEIGHT} />;
   }
 
   if (product.visible === false) {
@@ -57,7 +62,9 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
   const detailHref = `/produtos/${product.slug}`;
 
   return (
-    <div className="flex h-full min-h-[240px] flex-col rounded-[var(--radius)] border border-neutral-100 bg-white p-4 shadow-sm">
+    <div
+      className={`flex h-full ${FEATURED_MIN_HEIGHT} flex-col rounded-[var(--radius)] border border-neutral-100 bg-white p-4 shadow-sm`}
+    >
       <Link
         href={detailHref}
         className="relative block min-h-[180px] flex-1 overflow-hidden rounded-2xl bg-[var(--muted)]"

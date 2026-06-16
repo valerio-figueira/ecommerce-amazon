@@ -3,8 +3,14 @@ import { notFound } from 'next/navigation';
 import {
   articlePublicDetailSchema,
   autoLinksResponseSchema,
+  resolveArticleUpdatedAtIso,
+  type ArticlePublicDetail,
 } from '@ecommerce-amazon/shared/admin';
-
+import {
+  buildArticleJsonLd,
+  buildNotFoundMetadata,
+  buildPageCanonical,
+} from '@ecommerce-amazon/shared/seo';
 
 import { ArticleBody, ArticleHero } from '@/components/articles/ArticleBody';
 import { ArticleClusterCarousel } from '@/components/articles/ArticleClusterCarousel';
@@ -19,8 +25,17 @@ import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
-async function getArticle(slug: string) {
-  return fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
+async function getArticle(slug: string): Promise<ArticlePublicDetail | null> {
+  const article = await fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
+  if (!article) {
+    return null;
+  }
+
+  return {
+    ...article,
+    cluster: article.cluster ?? null,
+    updatedAt: resolveArticleUpdatedAtIso(article),
+  };
 }
 
 async function getAutoLinks() {
@@ -41,20 +56,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) {
-    return { title: 'Artigo não encontrado' };
+    return buildNotFoundMetadata('Artigo não encontrado');
   }
 
-  const siteBaseUrl = getSiteBaseUrl();
+  const brand = getServerBrandConfig();
+  const canonical = buildPageCanonical(`/artigos/${article.slug}`, brand);
+  const title = article.seoTitle ?? article.title;
+  const description = article.seoDescription ?? article.excerpt;
+
   return {
-    title: article.seoTitle ?? article.title,
-    description: article.seoDescription ?? article.excerpt,
-    alternates: {
-      canonical: `${siteBaseUrl}/artigos/${article.slug}`,
-    },
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: article.seoTitle ?? article.title,
-      description: article.seoDescription ?? article.excerpt,
+      title,
+      description,
       type: 'article',
+      url: canonical,
+      siteName: brand.name,
+      ...(article.publishedAt ? { publishedTime: article.publishedAt } : {}),
+      ...(article.updatedAt ?? article.publishedAt
+        ? { modifiedTime: resolveArticleUpdatedAtIso(article) }
+        : {}),
       ...(article.coverImageUrl ? { images: [{ url: article.coverImageUrl }] } : {}),
     },
   };
@@ -70,46 +93,30 @@ export default async function ArtigoPage({
   if (!article) notFound();
 
   const brand = getServerBrandConfig();
-  const authorName = article.author?.name ?? brand.name;
-  const jsonLdGraph: Record<string, unknown>[] = [
-    {
-      '@type': 'Article',
-      headline: article.title,
-      description: article.excerpt,
-      datePublished: article.publishedAt,
-      author: article.author
-        ? {
-            '@type': 'Person',
-            name: authorName,
-            ...(article.author.avatarUrl ? { image: article.author.avatarUrl } : {}),
-          }
-        : { '@type': 'Organization', name: brand.name },
-      ...(article.category ? { articleSection: article.category.name } : {}),
-      ...(article.coverImageUrl ? { image: [article.coverImageUrl] } : {}),
-    },
-  ];
-
-  if (article.cluster?.role === 'pilar') {
-    const spokes = article.cluster.members.filter((member) => !member.isPilar);
-    if (spokes.length > 0) {
-      const siteBaseUrl = getSiteBaseUrl();
-      jsonLdGraph.push({
-        '@type': 'ItemList',
-        name: article.cluster.name,
-        itemListElement: spokes.map((member, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          name: member.title,
-          url: `${siteBaseUrl}/artigos/${member.slug}`,
-        })),
-      });
-    }
-  }
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': jsonLdGraph,
-  };
+  const siteBaseUrl = getSiteBaseUrl();
+  const jsonLd = buildArticleJsonLd({
+    siteBaseUrl,
+    brand,
+    slug: article.slug,
+    title: article.title,
+    excerpt: article.excerpt,
+    publishedAt: article.publishedAt,
+    updatedAt: resolveArticleUpdatedAtIso(article),
+    coverImageUrl: article.coverImageUrl,
+    author: article.author,
+    categoryName: article.category?.name ?? null,
+    cluster: article.cluster
+      ? {
+          name: article.cluster.name,
+          role: article.cluster.role,
+          members: article.cluster.members.map((member) => ({
+            slug: member.slug,
+            title: member.title,
+            isPilar: member.isPilar,
+          })),
+        }
+      : null,
+  });
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 md:px-6">

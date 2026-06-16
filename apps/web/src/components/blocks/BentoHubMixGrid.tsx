@@ -24,14 +24,17 @@ import { cn } from '@/lib/utils';
 type BentoHubMixGridProps = {
   rendered: BentoHubMixRendered | undefined;
   blockId: string;
+  heroPriority?: boolean;
 };
 
 function BentoHeroSlot({
   slot,
   blockId,
+  priority = false,
 }: {
   slot: BentoHubMixRenderedSlot1;
   blockId: string;
+  priority?: boolean;
 }): React.JSX.Element {
   const handleClick = (): void => {
     if (slot.contentType === 'article') {
@@ -59,6 +62,7 @@ function BentoHeroSlot({
         sizes="(max-width: 768px) 100vw, 66vw"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         aria-hidden
+        {...(priority ? { priority: true } : { loading: 'lazy' as const, decoding: 'async' as const })}
       />
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
@@ -226,7 +230,11 @@ function BentoListSlot({
   );
 }
 
-export function BentoHubMixGrid({ rendered, blockId }: BentoHubMixGridProps): React.JSX.Element {
+export function BentoHubMixGrid({
+  rendered,
+  blockId,
+  heroPriority = false,
+}: BentoHubMixGridProps): React.JSX.Element {
   const slot1 = rendered?.slot1 ?? null;
   const slot2 = rendered?.slot2 ?? null;
   const slot3 = rendered?.slot3 ?? null;
@@ -234,7 +242,11 @@ export function BentoHubMixGrid({ rendered, blockId }: BentoHubMixGridProps): Re
   return (
     <section>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {slot1 ? <BentoHeroSlot slot={slot1} blockId={blockId} /> : <BlockUnavailableFallback variant="hero" />}
+        {slot1 ? (
+          <BentoHeroSlot slot={slot1} blockId={blockId} priority={heroPriority} />
+        ) : (
+          <BlockUnavailableFallback variant="hero" />
+        )}
         {slot2 ? (
           <BentoOfferSlot product={slot2} blockId={blockId} />
         ) : (

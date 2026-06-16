@@ -9,7 +9,7 @@ import { heroCarouselPropsSchema } from '@ecommerce-amazon/shared/cms';
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { cn } from '@/lib/utils';
 
-export function HeroCarouselBlock({ block }: BlockComponentProps): React.JSX.Element {
+export function HeroCarouselBlock({ block, isFirstBlock = false }: BlockComponentProps): React.JSX.Element {
   const props = heroCarouselPropsSchema.parse(block.props);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [index, setIndex] = useState(0);
@@ -35,15 +35,18 @@ export function HeroCarouselBlock({ block }: BlockComponentProps): React.JSX.Ele
     <div className="relative aspect-[2/1] w-full overflow-hidden rounded-[var(--radius)] bg-neutral-900 text-white md:aspect-[5/2]">
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
         <div className="flex h-full">
-          {props.slides.map((slide) => (
+          {props.slides.map((slide, slideIndex) => (
             <div key={slide.title} className="relative h-full min-w-0 flex-[0_0_100%]">
               <div className="relative h-full w-full">
                 <RemoteImage
                   src={slide.imageUrl}
                   alt={slide.title}
                   fill
+                  sizes="100vw"
                   className="object-cover opacity-80"
-                  priority
+                  {...(isFirstBlock && slideIndex === 0
+                    ? { priority: true }
+                    : { loading: 'lazy' as const, decoding: 'async' as const })}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-10">

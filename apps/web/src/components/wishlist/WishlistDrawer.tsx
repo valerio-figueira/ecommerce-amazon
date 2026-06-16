@@ -4,16 +4,14 @@ import { X } from 'lucide-react';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
+import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { Button } from '@/components/ui/button';
-import { buildGoUrl } from '@/lib/go-url';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
-import { usePathname } from 'next/navigation';
 
 export function WishlistDrawer(): React.JSX.Element | null {
   const { items, isOpen, setOpen, removeItem, sessionId } = useWishlist();
-  const pathname = usePathname();
 
   if (!isOpen) return null;
 
@@ -62,24 +60,17 @@ export function WishlistDrawer(): React.JSX.Element | null {
                         <p className="line-clamp-2 text-sm font-medium">{item.product.title}</p>
                         <PriceDisplay price={{ ...item.product.price, updatedAt: item.addedAt }} />
                         <div className="mt-2 flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              window.open(
-                                buildGoUrl(item.product.slug, {
-                                  sessionId,
-                                  origin: 'listagem',
-                                  placement: ClickPlacement.WISHLIST_DRAWER,
-                                  pagePath: pathname,
-                                  useStoredReferrer: true,
-                                }),
-                                '_blank',
-                                'noopener,noreferrer',
-                              );
-                            }}
+                          <AffiliateGoLink
+                            productId={item.productId}
+                            slug={item.product.slug}
+                            sessionId={sessionId}
+                            origin="listagem"
+                            placement={ClickPlacement.WISHLIST_DRAWER}
+                            variant="primary"
+                            className="w-auto px-3 py-1.5 text-sm"
                           >
                             Ver oferta
-                          </Button>
+                          </AffiliateGoLink>
                           <Button size="sm" variant="ghost" onClick={() => void removeItem(item.id)}>
                             Remover
                           </Button>

@@ -61,11 +61,16 @@ export function SiteHeader({ siteName, navCategories = [] }: SiteHeaderProps): R
               onClick={() => setOpen(true)}
             >
               <Heart className="h-5 w-5" />
-              {items.length > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] text-white">
-                  {items.length}
-                </span>
-              )}
+              <span
+                className={
+                  items.length > 0
+                    ? 'absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[10px] text-white'
+                    : 'absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-transparent px-1 text-[10px] text-white'
+                }
+                aria-hidden={items.length === 0}
+              >
+                {items.length > 0 ? items.length : ''}
+              </span>
             </button>
           </div>
         </div>

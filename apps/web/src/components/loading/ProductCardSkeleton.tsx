@@ -1,9 +1,18 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
-export function ProductCardSkeleton(): React.JSX.Element {
+type ProductCardSkeletonProps = {
+  variant?: 'default' | 'compact';
+};
+
+export function ProductCardSkeleton({
+  variant = 'default',
+}: ProductCardSkeletonProps): React.JSX.Element {
+  const imageAspect = variant === 'compact' ? 'aspect-[4/3]' : 'aspect-[4/5]';
+
   return (
-    <div className="flex flex-col gap-3" aria-hidden>
-      <Skeleton className="aspect-[4/5] rounded-2xl" />
+    <div className="flex h-full flex-col gap-3" aria-hidden>
+      <Skeleton className={cn('rounded-2xl', imageAspect)} />
       <Skeleton className="h-3 w-1/3 rounded-full" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-2/3" />

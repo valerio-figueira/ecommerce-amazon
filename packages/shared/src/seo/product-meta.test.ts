@@ -10,7 +10,7 @@ import {
 describe('product-meta', () => {
   it('builds default meta title from titleClean', () => {
     expect(buildProductMetaTitle('Elements Magna')).toBe(
-      'Elements Magna | Análise, Prós, Contras e Ofertas',
+      'Elements Magna — Análise e Ofertas',
     );
   });
 
@@ -30,7 +30,7 @@ describe('product-meta', () => {
 
   it('falls back to templates when override is empty', () => {
     expect(resolveProductMetaTitle('Elements Magna', '  ')).toBe(
-      'Elements Magna | Análise, Prós, Contras e Ofertas',
+      'Elements Magna — Análise e Ofertas',
     );
   });
 });

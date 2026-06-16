@@ -4,12 +4,14 @@ import { notFound } from 'next/navigation';
 import {
   buildCuratedCollectionBreadcrumbJsonLd,
   buildCuratedCollectionJsonLd,
+  buildNotFoundMetadata,
+  buildPageCanonical,
 } from '@ecommerce-amazon/shared/seo';
 
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCuratedCollection } from '@/lib/api/collections';
-import { getSiteBaseUrl } from '@/lib/site-url';
+import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
@@ -25,14 +27,23 @@ export async function generateMetadata({
   const { slug } = await params;
   const data = await getCollection(slug);
   if (!data) {
-    return { title: 'Coleção não encontrada' };
+    return buildNotFoundMetadata('Coleção não encontrada');
   }
 
+  const brand = getServerBrandConfig();
+  const canonical = buildPageCanonical(`/colecoes/${data.collection.slug}`, brand);
+
   return {
-    title: `${data.collection.title} | Coleções`,
+    title: data.collection.title,
     description: data.collection.description,
-    alternates: {
-      canonical: `${getSiteBaseUrl()}/colecoes/${data.collection.slug}`,
+    alternates: { canonical },
+    openGraph: {
+      title: data.collection.title,
+      description: data.collection.description,
+      url: canonical,
+      ...(data.collection.coverImageUrl
+        ? { images: [{ url: data.collection.coverImageUrl }] }
+        : {}),
     },
   };
 }

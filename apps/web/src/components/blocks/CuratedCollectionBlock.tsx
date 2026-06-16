@@ -30,7 +30,10 @@ function resolveSlides(block: BlockComponentProps['block']): RenderedCollectionS
   return [];
 }
 
-export function CuratedCollectionBlock({ block }: BlockComponentProps): React.JSX.Element {
+export function CuratedCollectionBlock({
+  block,
+  isFirstBlock = false,
+}: BlockComponentProps): React.JSX.Element {
   const props = curatedCollectionPropsSchema.parse(block.props);
   const slides = useMemo(() => resolveSlides(block), [block]);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: slides.length > 1 });
@@ -99,12 +102,13 @@ export function CuratedCollectionBlock({ block }: BlockComponentProps): React.JS
 
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex touch-pan-y">
-          {slides.map((slide) => (
+          {slides.map((slide, slideIndex) => (
             <div key={slide.collection.slug} className="min-w-0 flex-[0_0_100%]">
               <CuratedCollectionSlide
                 collection={slide.collection}
                 products={slide.products.map(mapDeliveryProductToListItem)}
                 blockId={block.id}
+                imagePriority={isFirstBlock && slideIndex === 0}
               />
             </div>
           ))}

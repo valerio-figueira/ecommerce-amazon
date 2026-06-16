@@ -81,6 +81,8 @@ import {
   GetClicksByPage,
   GetClicksTrendByOrigin,
   GetEditorialFunnel,
+  GetSitemapMeta,
+  ListSitemapEntries,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -114,6 +116,7 @@ import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/d
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
 import { DrizzleAnalyticsRepository } from '../persistence/repositories/drizzle-analytics.repository.js';
+import { DrizzleSitemapRepository } from '../persistence/repositories/drizzle-sitemap.repository.js';
 import { CompositeAnalyticsRepository } from '../persistence/repositories/composite-analytics.repository.js';
 import { RedisTelemetryBufferStore } from '../telemetry/redis-telemetry-buffer.store.js';
 import {
@@ -192,6 +195,7 @@ export function buildApiContainer(env = loadEnv()) {
   const articleCategoryRepository = new DrizzleArticleCategoryRepository(db);
   const contentClusterRepository = new DrizzleContentClusterRepository(db);
   const autoLinkRepository = new DrizzleAutoLinkRepository(db);
+  const sitemapRepository = new DrizzleSitemapRepository(db);
   const passwordHasher = new BcryptPasswordHasher();
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
   const objectStorage = createObjectStorage(env);
@@ -371,6 +375,8 @@ export function buildApiContainer(env = loadEnv()) {
       getClicksByPage: new GetClicksByPage(analyticsRepository),
       getClicksTrendByOrigin: new GetClicksTrendByOrigin(analyticsRepository),
       getEditorialFunnel: new GetEditorialFunnel(analyticsRepository),
+      getSitemapMeta: new GetSitemapMeta(sitemapRepository),
+      listSitemapEntries: new ListSitemapEntries(sitemapRepository),
     },
     services: {
       authTokenService,

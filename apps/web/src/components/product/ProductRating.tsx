@@ -14,11 +14,11 @@ export function ProductRating({
   reviewCount,
   className,
   compact = false,
-}: ProductRatingProps): React.JSX.Element | null {
+}: ProductRatingProps): React.JSX.Element {
   const rowHeight = compact ? 'min-h-4' : 'min-h-[1.125rem]';
 
   if (rating === undefined) {
-    return null;
+    return <div className={cn(rowHeight, className)} aria-hidden />;
   }
 
   const formattedRating = new Intl.NumberFormat('pt-BR', {
