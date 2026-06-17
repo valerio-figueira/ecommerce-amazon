@@ -134,6 +134,13 @@
       "when": 1719676800000,
       "tag": "0018_institutional_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1719763200000,
+      "tag": "0019_operational_settings",
+      "breakpoints": true
     }
   ]
 }

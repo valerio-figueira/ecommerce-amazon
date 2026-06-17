@@ -639,6 +639,30 @@ Query comum: `from`, `to` (ISO datetime; default últimos 30 dias).
 
 ---
 
+## Admin — configurações operacionais
+
+Implementação: [`admin-settings-routes.ts`](../apps/api/src/adapters/http/routes/admin-settings-routes.ts). Doc: [admin-operational-settings.md](./admin-operational-settings.md).
+
+| Método | Rota | Acesso |
+|--------|------|--------|
+| GET | `/admin/affiliate-accounts` | JWT |
+| PATCH | `/admin/affiliate-accounts/:id` | JWT admin |
+| GET | `/admin/operators` | JWT admin |
+| POST | `/admin/operators` | JWT admin |
+| PATCH | `/admin/operators/:id` | JWT admin |
+| PATCH | `/admin/profile/password` | JWT |
+| GET | `/admin/site-settings` | JWT |
+| PATCH | `/admin/site-settings` | JWT admin |
+| GET | `/admin/operational-status` | JWT |
+
+### Público
+
+| Método | Rota | Response |
+|--------|------|----------|
+| GET | `/site-settings/public` | `publicSiteSettingsResponseSchema` |
+
+---
+
 ## Schemas de request (referência)
 
 Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts)

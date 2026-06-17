@@ -162,3 +162,14 @@ export {
   ADMIN_IMAGE_MAX_BYTES,
 } from './use-cases/admin-media/validate-admin-image.js';
 export { buildAdminImageObjectKey } from './use-cases/admin-media/build-admin-image-object-key.js';
+export { AffiliateScaleGateService } from './services/AffiliateScaleGateService.js';
+export { ListAffiliateAccounts } from './use-cases/admin-settings/ListAffiliateAccounts.js';
+export { UpdateAffiliateAccount } from './use-cases/admin-settings/UpdateAffiliateAccount.js';
+export { ListOperators } from './use-cases/admin-settings/ListOperators.js';
+export { CreateOperator } from './use-cases/admin-settings/CreateOperator.js';
+export { UpdateOperatorAccess } from './use-cases/admin-settings/UpdateOperatorAccess.js';
+export { ChangeOperatorPassword } from './use-cases/admin-settings/ChangeOperatorPassword.js';
+export { GetSiteSettings } from './use-cases/admin-settings/GetSiteSettings.js';
+export { UpdateSiteSettings } from './use-cases/admin-settings/UpdateSiteSettings.js';
+export { GetPublicSiteSettings } from './use-cases/admin-settings/GetPublicSiteSettings.js';
+export { GetOperationalStatus } from './use-cases/admin-settings/GetOperationalStatus.js';

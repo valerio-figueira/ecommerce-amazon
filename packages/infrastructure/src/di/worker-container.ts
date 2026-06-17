@@ -5,6 +5,7 @@ import {
   VerifyCouponsBatch,
   ProcessTriggeredAlerts,
   FlushTelemetryBuffer,
+  AffiliateScaleGateService,
 } from '@ecommerce-amazon/application';
 import type { DomainEventMessage } from '@ecommerce-amazon/domain';
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
@@ -38,6 +39,8 @@ import {
   DrizzleCouponRepository,
   DrizzleEngagementEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
+import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
+import { DrizzleSiteSettingsRepository } from '../persistence/repositories/drizzle-site-settings.repository.js';
 import { RedisTelemetryBufferStore } from '../telemetry/redis-telemetry-buffer.store.js';
 
 export function buildWorkerContainer(env = loadEnv()) {
@@ -53,6 +56,13 @@ export function buildWorkerContainer(env = loadEnv()) {
   const couponRepository = new DrizzleCouponRepository(db);
   const clickRepository = new DrizzleClickEventRepository(db);
   const engagementRepository = new DrizzleEngagementEventRepository(db);
+  const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
+  const siteSettingsRepository = new DrizzleSiteSettingsRepository(db);
+  const affiliateScaleGateService = new AffiliateScaleGateService(
+    siteSettingsRepository,
+    affiliateAccountRepository,
+    cache,
+  );
 
   const fetcherFactory = new DefaultMarketplaceFetcherFactory([
     new AmazonFetcherStrategy(),
@@ -124,6 +134,7 @@ export function buildWorkerContainer(env = loadEnv()) {
         productRepository,
         emailSender,
         eventBus,
+        affiliateScaleGateService,
       ),
       flushTelemetryBuffer,
     },

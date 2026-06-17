@@ -17,6 +17,7 @@ import {
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { buildDefaultAboutPageContent } from '@ecommerce-amazon/shared/about';
+import { DEFAULT_SITE_SETTINGS } from '@ecommerce-amazon/shared/admin';
 import {
   formatWebHomeTitle,
   formatWebPageTitle,
@@ -27,6 +28,7 @@ import { SEO_KEYWORD_MAP } from '@ecommerce-amazon/shared/seo';
 import { schema } from '../drizzle/client.js';
 import { loadDotenvFromMonorepoRoot } from './load-env.js';
 import { insertPageWithBlocks } from '../repositories/drizzle-page.repository.js';
+import { SITE_SETTINGS_ROW_ID } from '../repositories/drizzle-site-settings.repository.js';
 import { BcryptPasswordHasher } from '../../auth/bcrypt-password.hasher.js';
 
 const SEED_PRODUCT_AMAZON_ID = 'a1111111-1111-4111-8111-111111111111';
@@ -147,6 +149,7 @@ async function runSeed(): Promise<void> {
     await ensureBentoHubMixHomeBlock(db, logger);
     await ensureCuratedCollectionHomeBlock(db, logger);
     await seedOperator(db, logger);
+    await seedSiteSettings(db, logger);
     await seedAboutPage(db, now, logger);
     await seedAutoLinks(db, logger);
     await seedContentClusters(db, now, logger);
@@ -1061,6 +1064,30 @@ async function seedOperator(
   });
 
   logger.info('Operator seed inserted', { email: env.ADMIN_SEED_EMAIL });
+}
+
+async function seedSiteSettings(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.siteSettings.id })
+    .from(schema.siteSettings)
+    .where(eq(schema.siteSettings.id, SITE_SETTINGS_ROW_ID))
+    .limit(1);
+
+  if (existing.length > 0) {
+    logger.info('Site settings seed already present, skipping');
+    return;
+  }
+
+  await db.insert(schema.siteSettings).values({
+    id: SITE_SETTINGS_ROW_ID,
+    settings: DEFAULT_SITE_SETTINGS,
+    updatedBy: SEED_OPERATOR_ID,
+  });
+
+  logger.info('Site settings seed inserted');
 }
 
 async function seedAboutPage(

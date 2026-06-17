@@ -9,3 +9,7 @@ export * from './internal-link-target-schemas.js';
 export * from './profile-schemas.js';
 export * from './media-schemas.js';
 export * from './analytics-schemas.js';
+export * from './site-settings-schemas.js';
+export * from './affiliate-account-schemas.js';
+export * from './operator-management-schemas.js';
+export * from './operational-status-schemas.js';

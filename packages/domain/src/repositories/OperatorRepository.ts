@@ -1,6 +1,6 @@
 import type { Operator } from '../entities/Operator.js';
 import type { OperatorSocialLinks } from '../entities/Operator.js';
-import type { TeamPublicRole } from '../enums/index.js';
+import type { TeamPublicRole, OperatorRole, OperatorStatus } from '../enums/index.js';
 
 export type { OperatorSocialLinks };
 
@@ -23,10 +23,27 @@ export type PublicTeamMember = {
   publicTeamRole: TeamPublicRole;
 };
 
+export type CreateOperatorData = {
+  email: string;
+  passwordHash: string;
+  name: string;
+  role: OperatorRole;
+};
+
+export type UpdateOperatorAccessData = {
+  role?: OperatorRole;
+  status?: OperatorStatus;
+};
+
 export interface OperatorRepository {
   findByEmail(email: string): Promise<Operator | null>;
   findById(id: string): Promise<Operator | null>;
+  findAll(): Promise<Operator[]>;
+  countActiveAdmins(excludeId?: string): Promise<number>;
   findPublicTeamMembers(): Promise<PublicTeamMember[]>;
+  create(data: CreateOperatorData): Promise<Operator>;
   updateProfile(id: string, data: UpdateOperatorProfileData): Promise<Operator>;
   updateAvatarUrl(id: string, avatarUrl: string | null): Promise<Operator>;
+  updateAccess(id: string, data: UpdateOperatorAccessData): Promise<Operator>;
+  updatePasswordHash(id: string, passwordHash: string): Promise<Operator>;
 }

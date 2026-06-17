@@ -55,10 +55,15 @@ describe('ResolveAffiliateRedirect', () => {
       buildWithTracking: vi.fn().mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21'),
     };
 
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new ResolveAffiliateRedirect(
       productRepository,
       affiliateAccountRepository,
       affiliateLinkBuilder,
+      gateService,
     );
 
     const result = await useCase.execute({ slug: 'cadeira-ergonomica-home-office' });
@@ -88,6 +93,10 @@ describe('ResolveAffiliateRedirect', () => {
       createdAt: new Date(),
     });
 
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
       {
@@ -105,6 +114,7 @@ describe('ResolveAffiliateRedirect', () => {
         buildBatchCheckout: vi.fn(),
         buildWithTracking: vi.fn(),
       },
+      gateService,
     );
 
     const result = await useCase.execute({ slug: 'headset-gamer-7-1' });
@@ -115,10 +125,15 @@ describe('ResolveAffiliateRedirect', () => {
   });
 
   it('returns EntityNotFoundError when product is missing', async () => {
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(null) }),
       { findByMarketplace: vi.fn() },
       { build: vi.fn(), buildBatchCheckout: vi.fn(), buildWithTracking: vi.fn() },
+      gateService,
     );
 
     const result = await useCase.execute({ slug: 'missing-product' });

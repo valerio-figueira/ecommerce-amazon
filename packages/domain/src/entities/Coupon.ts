@@ -78,5 +78,6 @@ export class AffiliateAccount {
     readonly status: string,
     readonly validatedBy?: string,
     readonly validatedAt?: Date,
+    readonly validationNotes?: string,
   ) {}
 }

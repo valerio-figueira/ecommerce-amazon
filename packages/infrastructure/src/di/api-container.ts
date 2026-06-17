@@ -90,6 +90,17 @@ import {
   GetEditorialFunnel,
   GetSitemapMeta,
   ListSitemapEntries,
+  AffiliateScaleGateService,
+  ListAffiliateAccounts,
+  UpdateAffiliateAccount,
+  ListOperators,
+  CreateOperator,
+  UpdateOperatorAccess,
+  ChangeOperatorPassword,
+  GetSiteSettings,
+  UpdateSiteSettings,
+  GetPublicSiteSettings,
+  GetOperationalStatus,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -115,11 +126,13 @@ import {
   DrizzleProductComparisonRepository,
   DrizzleClickEventRepository,
   DrizzleEngagementEventRepository,
+  DrizzleSyncJobLogRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
 import type { ClickEventRepository, EngagementEventRepository } from '@ecommerce-amazon/domain';
 import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
 import { DrizzleContentClusterRepository } from '../persistence/repositories/drizzle-content-cluster.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
+import { DrizzleSiteSettingsRepository } from '../persistence/repositories/drizzle-site-settings.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
 import { DrizzleAnalyticsRepository } from '../persistence/repositories/drizzle-analytics.repository.js';
@@ -203,6 +216,8 @@ export function buildApiContainer(env = loadEnv()) {
 
   const ga4Gateway = new GoogleAnalyticsDataGateway();
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
+  const siteSettingsRepository = new DrizzleSiteSettingsRepository(db);
+  const syncJobLogRepository = new DrizzleSyncJobLogRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
   const articleCategoryRepository = new DrizzleArticleCategoryRepository(db);
   const contentClusterRepository = new DrizzleContentClusterRepository(db);
@@ -216,6 +231,12 @@ export function buildApiContainer(env = loadEnv()) {
   const linkBuilder = new DefaultAffiliateLinkBuilder(
     env.AMAZON_AFFILIATE_TAG,
     env.SHOPEE_AFFILIATE_ID,
+  );
+
+  const affiliateScaleGateService = new AffiliateScaleGateService(
+    siteSettingsRepository,
+    affiliateAccountRepository,
+    cache,
   );
 
   const getCuratedCollection = new GetCuratedCollection(
@@ -247,6 +268,7 @@ export function buildApiContainer(env = loadEnv()) {
         productRepository,
         linkBuilder,
         affiliateAccountRepository,
+        affiliateScaleGateService,
       ),
       getArticleWithEmbeds: new GetArticleWithEmbeds(
         contentRepository,
@@ -333,6 +355,7 @@ export function buildApiContainer(env = loadEnv()) {
         productRepository,
         affiliateAccountRepository,
         linkBuilder,
+        affiliateScaleGateService,
       ),
       authenticateOperator: new AuthenticateOperator(
         operatorRepository,
@@ -398,10 +421,27 @@ export function buildApiContainer(env = loadEnv()) {
       getEditorialFunnel: new GetEditorialFunnel(analyticsRepository),
       getSitemapMeta: new GetSitemapMeta(sitemapRepository),
       listSitemapEntries: new ListSitemapEntries(sitemapRepository),
+      listAffiliateAccounts: new ListAffiliateAccounts(affiliateAccountRepository),
+      updateAffiliateAccount: new UpdateAffiliateAccount(
+        affiliateAccountRepository,
+        affiliateScaleGateService,
+      ),
+      listOperators: new ListOperators(operatorRepository),
+      createOperator: new CreateOperator(operatorRepository, passwordHasher),
+      updateOperatorAccess: new UpdateOperatorAccess(operatorRepository),
+      changeOperatorPassword: new ChangeOperatorPassword(operatorRepository, passwordHasher),
+      getSiteSettings: new GetSiteSettings(siteSettingsRepository),
+      updateSiteSettings: new UpdateSiteSettings(siteSettingsRepository, affiliateScaleGateService),
+      getPublicSiteSettings: new GetPublicSiteSettings(affiliateScaleGateService),
+      getOperationalStatus: new GetOperationalStatus(
+        affiliateAccountRepository,
+        syncJobLogRepository,
+      ),
     },
     services: {
       authTokenService,
       objectStorage,
+      affiliateScaleGateService,
     },
     repositories: {
       wishlistRepository,

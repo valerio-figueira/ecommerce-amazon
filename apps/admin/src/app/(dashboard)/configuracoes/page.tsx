@@ -1,10 +1,13 @@
 import { formatAdminPageTitle } from '@ecommerce-amazon/shared/config/brand';
 
-import { Settings } from 'lucide-react';
-
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { OperationalSettingsManager } from '@/components/settings/OperationalSettingsManager';
+import { listAffiliateAccounts } from '@/lib/api/affiliate-accounts';
+import { getOperationalStatus } from '@/lib/api/operational-status';
+import { listOperators } from '@/lib/api/operators';
+import { getOperatorProfile } from '@/lib/api/profile';
+import { getSiteSettings } from '@/lib/api/site-settings';
 import { getServerBrandConfig } from '@/lib/brand';
 
 const brand = getServerBrandConfig();
@@ -13,7 +16,16 @@ export const metadata = {
   title: formatAdminPageTitle('Configurações', brand),
 };
 
-export default function ConfiguracoesPage() {
+export default async function ConfiguracoesPage(): Promise<React.JSX.Element> {
+  const profile = await getOperatorProfile();
+  const [affiliateAccounts, siteSettings, operationalStatus] = await Promise.all([
+    listAffiliateAccounts(),
+    getSiteSettings(),
+    getOperationalStatus(),
+  ]);
+
+  const operators = profile.role === 'admin' ? await listOperators() : [];
+
   return (
     <>
       <AdminPageHeader
@@ -24,10 +36,12 @@ export default function ConfiguracoesPage() {
         ]}
       />
       <AdminPageCard transparent>
-        <AdminEmptyState
-          icon={Settings}
-          title="Configurações operacionais em breve"
-          hint="Contas de afiliado, operadores e preferências do CMS serão centralizadas nesta área."
+        <OperationalSettingsManager
+          profile={profile}
+          affiliateAccounts={affiliateAccounts}
+          siteSettings={siteSettings}
+          operationalStatus={operationalStatus}
+          operators={operators}
         />
       </AdminPageCard>
     </>

@@ -49,12 +49,14 @@ type CMSBlockOrderManagerProps = {
   slug: string;
   pageTitle: string;
   initialBlocks: PageBlockDto[];
+  publishConfirmRequired?: boolean;
 };
 
 export function CMSBlockOrderManager({
   slug,
   pageTitle,
   initialBlocks,
+  publishConfirmRequired = false,
 }: CMSBlockOrderManagerProps): React.JSX.Element {
   const adminToast = useAdminToast();
   const [blocks, setBlocks] = useState<AdminBlock[]>(() => toAdminBlocks(initialBlocks));
@@ -69,6 +71,7 @@ export function CMSBlockOrderManager({
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [blockTypeFilter, setBlockTypeFilter] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<AdminBlock | null>(null);
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
 
   const filteredBlockTypes = useMemo(() => {
     const query = blockTypeFilter.trim().toLowerCase();
@@ -182,7 +185,16 @@ export function CMSBlockOrderManager({
       adminToast.error(error instanceof Error ? error.message : 'Erro ao salvar ordem');
     } finally {
       setIsSavingOrder(false);
+      setConfirmSaveOpen(false);
     }
+  }
+
+  function requestSaveOrder(): void {
+    if (publishConfirmRequired) {
+      setConfirmSaveOpen(true);
+      return;
+    }
+    void handleSaveOrder();
   }
 
   return (
@@ -206,7 +218,7 @@ export function CMSBlockOrderManager({
             variant="primary"
             size="sm"
             disabled={!orderDirty || isSavingOrder || blocks.length === 0}
-            onClick={() => void handleSaveOrder()}
+            onClick={() => requestSaveOrder()}
             className={cn(orderDirty && 'ring-2 ring-[var(--admin-focus-ring)] ring-offset-1')}
           >
             <Save className="h-4 w-4" />
@@ -338,6 +350,23 @@ export function CMSBlockOrderManager({
         onSaved={handleBlockSaved}
         pageBlocks={blocks}
       />
+
+      <AlertDialog open={confirmSaveOpen} onOpenChange={setConfirmSaveOpen}>
+        <AlertDialogContent className="cms-dialog-accent">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Publicar alterações na vitrine?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A nova ordem dos blocos ficará visível na home pública após salvar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void handleSaveOrder()}>
+              Confirmar publicação
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent className="cms-dialog-accent">

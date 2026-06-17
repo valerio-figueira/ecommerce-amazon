@@ -10,6 +10,8 @@ npm run db:migrate    # aplicar
 npm run db:seed       # dados de desenvolvimento
 ```
 
+Migrations SQL criadas manualmente precisam de entrada correspondente em `migrations/meta/_journal.json`; sem isso o Drizzle ignora o arquivo e `db:migrate` conclui sem aplicar a migration.
+
 ## Diagrama ER (simplificado)
 
 ```mermaid
@@ -243,7 +245,8 @@ Migration: [`0015_click_attribution.sql`](../packages/infrastructure/src/persist
 | Tabela | Uso |
 |--------|-----|
 | `sync_job_logs` | auditoria pipelines worker |
-| `affiliate_accounts` | tag afiliado por marketplace; `status` inclui `pending_manual_validation` |
+| `affiliate_accounts` | tag afiliado por marketplace; `status` inclui `pending_manual_validation`; `validation_notes` |
+| `site_settings` | single-row JSONB — feature flags CMS/plataforma (ver [admin-operational-settings.md](./admin-operational-settings.md)) |
 | `operators` | operadores CMS; `email` único, `avatar_url`, `bio` varchar(250), `role` enum (`admin`, `editor`), `status` enum (`active`, `disabled`), `job_title`, `social_links` jsonb, `show_on_team`, `team_sort_order`, `team_public_role` enum (`founder`, `member`) |
 
 Migrations: [`0004_operators.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql), [`0017_operator_public_profile.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0017_operator_public_profile.sql), [`0018_institutional_pages.sql`](../packages/infrastructure/src/persistence/drizzle/migrations/0018_institutional_pages.sql).

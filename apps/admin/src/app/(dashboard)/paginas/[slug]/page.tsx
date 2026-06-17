@@ -6,6 +6,7 @@ import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { CMSBlockOrderManager } from '@/components/cms/CMSBlockOrderManager';
 import { getAdminInstitutionalPage } from '@/lib/api/institutional-pages';
 import { getAdminPageLayout, listAdminPages } from '@/lib/api/cms-pages';
+import { getSiteSettings } from '@/lib/api/site-settings';
 import { PageKind } from '@ecommerce-amazon/domain';
 
 type PageEditorProps = {
@@ -57,8 +58,14 @@ export default async function PageEditorPage({ params }: PageEditorProps): Promi
   }
 
   let layout: Awaited<ReturnType<typeof getAdminPageLayout>>;
+  let publishConfirmRequired = false;
   try {
-    layout = await getAdminPageLayout(slug);
+    const [layoutResult, siteSettings] = await Promise.all([
+      getAdminPageLayout(slug),
+      getSiteSettings(),
+    ]);
+    layout = layoutResult;
+    publishConfirmRequired = siteSettings.cms.publishConfirmRequired;
   } catch {
     notFound();
   }
@@ -78,6 +85,7 @@ export default async function PageEditorPage({ params }: PageEditorProps): Promi
           slug={slug}
           pageTitle={layout.title}
           initialBlocks={layout.blocks}
+          publishConfirmRequired={publishConfirmRequired}
         />
       </AdminPageCard>
     </>

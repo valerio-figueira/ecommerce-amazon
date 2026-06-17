@@ -375,6 +375,7 @@ export const affiliateAccounts = pgTable('affiliate_accounts', {
   status: text('status').notNull(),
   validatedBy: text('validated_by'),
   validatedAt: timestamp('validated_at', { withTimezone: true }),
+  validationNotes: text('validation_notes'),
 });
 
 export const operatorStatusEnum = pgEnum('operator_status', ['active', 'disabled']);
@@ -402,4 +403,11 @@ export const operators = pgTable('operators', {
   teamPublicRole: teamPublicRoleEnum('team_public_role').default('member'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const siteSettings = pgTable('site_settings', {
+  id: uuid('id').primaryKey(),
+  settings: jsonb('settings').$type<Record<string, unknown>>().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid('updated_by').references(() => operators.id, { onDelete: 'set null' }),
 });

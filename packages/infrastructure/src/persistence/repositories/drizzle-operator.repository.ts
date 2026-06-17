@@ -1,15 +1,18 @@
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, ne, sql } from 'drizzle-orm';
 
 import {
   EntityNotFoundError,
   Operator,
+  OperatorRole,
   OperatorStatus,
   TeamPublicRole,
   parseOperatorRole,
   parseTeamPublicRole,
+  type CreateOperatorData,
   type OperatorRepository,
   type OperatorSocialLinks,
   type PublicTeamMember,
+  type UpdateOperatorAccessData,
   type UpdateOperatorProfileData,
 } from '@ecommerce-amazon/domain';
 
@@ -58,6 +61,56 @@ export class DrizzleOperatorRepository implements OperatorRepository {
 
     const row = rows[0];
     if (!row) return null;
+
+    return this.mapRow(row);
+  }
+
+  async findAll(): Promise<Operator[]> {
+    const rows = await this.db
+      .select()
+      .from(schema.operators)
+      .orderBy(asc(schema.operators.name));
+
+    return rows.map((row) => this.mapRow(row));
+  }
+
+  async countActiveAdmins(excludeId?: string): Promise<number> {
+    const conditions = [
+      eq(schema.operators.role, OperatorRole.ADMIN),
+      eq(schema.operators.status, OperatorStatus.ACTIVE),
+    ];
+
+    if (excludeId) {
+      conditions.push(ne(schema.operators.id, excludeId));
+    }
+
+    const rows = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.operators)
+      .where(and(...conditions));
+
+    return rows[0]?.count ?? 0;
+  }
+
+  async create(data: CreateOperatorData): Promise<Operator> {
+    const now = new Date();
+    const rows = await this.db
+      .insert(schema.operators)
+      .values({
+        email: data.email.trim().toLowerCase(),
+        passwordHash: data.passwordHash,
+        name: data.name,
+        role: data.role,
+        status: OperatorStatus.ACTIVE,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+
+    const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to create operator');
+    }
 
     return this.mapRow(row);
   }
@@ -123,6 +176,46 @@ export class DrizzleOperatorRepository implements OperatorRepository {
       .update(schema.operators)
       .set({
         avatarUrl,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.operators.id, id))
+      .returning();
+
+    const row = rows[0];
+    if (!row) {
+      throw new EntityNotFoundError('Operator', id);
+    }
+
+    return this.mapRow(row);
+  }
+
+  async updateAccess(id: string, data: UpdateOperatorAccessData): Promise<Operator> {
+    const patch: Partial<typeof schema.operators.$inferInsert> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.role !== undefined) patch.role = data.role;
+    if (data.status !== undefined) patch.status = data.status;
+
+    const rows = await this.db
+      .update(schema.operators)
+      .set(patch)
+      .where(eq(schema.operators.id, id))
+      .returning();
+
+    const row = rows[0];
+    if (!row) {
+      throw new EntityNotFoundError('Operator', id);
+    }
+
+    return this.mapRow(row);
+  }
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<Operator> {
+    const rows = await this.db
+      .update(schema.operators)
+      .set({
+        passwordHash,
         updatedAt: new Date(),
       })
       .where(eq(schema.operators.id, id))

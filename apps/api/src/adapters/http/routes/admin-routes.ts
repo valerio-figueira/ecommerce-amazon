@@ -15,6 +15,7 @@ import { registerAdminAutoLinkRoutes } from './admin-auto-link-routes.js';
 import { registerAdminProfileRoutes } from './admin-profile-routes.js';
 import { registerAdminMediaRoutes } from './admin-media-routes.js';
 import { registerAdminAnalyticsRoutes } from './admin-analytics-routes.js';
+import { registerAdminSettingsRoutes } from './admin-settings-routes.js';
 import { registerAdminInstitutionalRoutes } from './institutional-routes.js';
 import { AdminLoginSchema } from '../../dtos/request/schemas.js';
 import { createLoginRateLimiter } from '../login-rate-limiter.js';
@@ -138,6 +139,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   await registerAdminInstitutionalRoutes(app, container);
   await registerAdminMediaRoutes(app, container);
   await registerAdminAnalyticsRoutes(app, container);
+  await registerAdminSettingsRoutes(app, container);
 }
 
 declare module 'fastify' {

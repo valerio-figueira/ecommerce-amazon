@@ -12,15 +12,22 @@ export type ProcessTriggeredAlertsResult = {
   sent: number;
 };
 
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+
 export class ProcessTriggeredAlerts {
   constructor(
     private readonly alertRepository: PriceAlertRepository,
     private readonly productRepository: ProductRepository,
     private readonly emailSender: EmailSender,
     private readonly eventBus: EventBus,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(productId: string): Promise<ProcessTriggeredAlertsResult> {
+    if (!(await this.gateService.isPriceAlertsEnabled())) {
+      return { sent: 0 };
+    }
+
     const product = await this.productRepository.findById(productId);
     if (!product || product.price.isStale) return { sent: 0 };
 

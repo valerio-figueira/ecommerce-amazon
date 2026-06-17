@@ -8,6 +8,7 @@ export interface ProductComparisonRepository {
 
 export interface SyncJobLogRepository {
   save(log: SyncJobLog): Promise<void>;
+  findRecent(input: { limit: number; status?: string }): Promise<SyncJobLog[]>;
 }
 
 export interface ClickEventRepository {

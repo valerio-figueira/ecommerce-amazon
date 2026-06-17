@@ -8,11 +8,14 @@ import {
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
 
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+
 export class ResolveAffiliateRedirect {
   constructor(
     private readonly productRepository: ProductRepository,
     private readonly affiliateAccountRepository: AffiliateAccountRepository,
     private readonly affiliateLinkBuilder: AffiliateLinkBuilder,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(input: {

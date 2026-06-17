@@ -9,6 +9,7 @@ import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
 import { registerAdminRoutes } from './admin-routes.js';
 import { registerInstitutionalRoutes } from './institutional-routes.js';
+import { registerPublicSiteSettingsRoute } from './admin-settings-routes.js';
 import {
   toProductDetailWithEmbedsDto,
   toProductListItemDto,
@@ -520,5 +521,6 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
   });
 
   await registerInstitutionalRoutes(app, container);
+  await registerPublicSiteSettingsRoute(app, container);
   await registerAdminRoutes(app, container);
 }

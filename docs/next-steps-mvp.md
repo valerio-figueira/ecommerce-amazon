@@ -111,7 +111,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 | Forms CMS fase 2: `HERO_SPLIT`, `COUPON_STRIP` | ❌ (“Edição amigável em breve”) |
 | `CURATED_COLLECTION` no admin | ✅ (form existe) |
 | Admin CRUD cupons | ❌ stub |
-| Admin configurações operacionais | ❌ stub |
+| Admin configurações operacionais | ✅ ver [admin-operational-settings.md](./admin-operational-settings.md) |
 | Editor CMS página Sobre (`/paginas/sobre`) | ✅ ver [admin-about-page.md](./admin-about-page.md) |
 
 ---

@@ -10,7 +10,9 @@ import {
   type ProductComparisonRepository,
   type SyncJobLogRepository,
   Marketplace,
-  type SyncJobLog,
+  SyncJobLog,
+  parseSyncJobStatus,
+  parseSyncJobType,
 } from '@ecommerce-amazon/domain';
 import { extractAllEmbedSlugsFromBody } from '@ecommerce-amazon/shared/content';
 
@@ -462,6 +464,32 @@ export class DrizzleSyncJobLogRepository implements SyncJobLogRepository {
       startedAt: log.startedAt,
       finishedAt: log.finishedAt,
     });
+  }
+
+  async findRecent(input: { limit: number; status?: string }): Promise<SyncJobLog[]> {
+    const conditions = input.status
+      ? [eq(schema.syncJobLogs.status, input.status as typeof schema.syncJobLogs.$inferSelect.status)]
+      : [];
+
+    const rows = await this.db
+      .select()
+      .from(schema.syncJobLogs)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(schema.syncJobLogs.startedAt))
+      .limit(input.limit);
+
+    return rows.map(
+      (row) =>
+        new SyncJobLog(
+          row.id,
+          parseSyncJobType(row.jobType),
+          parseSyncJobStatus(row.status),
+          row.itemsProcessed,
+          row.errors,
+          row.startedAt,
+          row.finishedAt ?? undefined,
+        ),
+    );
   }
 }
 

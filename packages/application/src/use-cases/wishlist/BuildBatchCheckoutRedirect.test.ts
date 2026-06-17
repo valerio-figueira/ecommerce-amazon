@@ -57,11 +57,16 @@ describe('BuildBatchCheckoutRedirect', () => {
       ),
     };
 
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new BuildBatchCheckoutRedirect(
       wishlistRepository,
       productRepository,
       linkBuilder,
       affiliateAccountRepository,
+      gateService,
     );
 
     const result = await useCase.execute({ sessionId, marketplace });
@@ -99,11 +104,16 @@ describe('BuildBatchCheckoutRedirect', () => {
       ),
     };
 
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new BuildBatchCheckoutRedirect(
       wishlistRepository,
       productRepository,
       linkBuilder,
       affiliateAccountRepository,
+      gateService,
     );
 
     await expect(useCase.execute({ sessionId, marketplace })).rejects.toThrow(ValidationError);
@@ -129,11 +139,16 @@ describe('BuildBatchCheckoutRedirect', () => {
       findByMarketplace: vi.fn().mockResolvedValue(null),
     };
 
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
     const useCase = new BuildBatchCheckoutRedirect(
       wishlistRepository,
       productRepository,
       linkBuilder,
       affiliateAccountRepository,
+      gateService,
     );
 
     await expect(useCase.execute({ sessionId, marketplace })).rejects.toThrow(ValidationError);

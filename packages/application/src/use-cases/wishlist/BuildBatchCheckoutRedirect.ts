@@ -8,15 +8,22 @@ import {
   type WishlistRepository,
 } from '@ecommerce-amazon/domain';
 
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+
 export class BuildBatchCheckoutRedirect {
   constructor(
     private readonly wishlistRepository: WishlistRepository,
     private readonly productRepository: ProductRepository,
     private readonly linkBuilder: AffiliateLinkBuilder,
     private readonly affiliateAccountRepository: AffiliateAccountRepository,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(input: { sessionId: string; marketplace: Marketplace }) {
+    if (!(await this.gateService.isBatchCheckoutEnabled())) {
+      throw new ValidationError('Batch checkout is disabled by platform settings');
+    }
+
     const account = await this.affiliateAccountRepository.findByMarketplace(input.marketplace);
 
     if (account !== null && account.status === AffiliateAccountStatus.PENDING) {
