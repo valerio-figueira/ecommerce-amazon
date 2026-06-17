@@ -133,6 +133,12 @@ export class DrizzleWishlistRepository implements WishlistRepository {
       .where(and(eq(schema.wishlistItems.id, id), eq(schema.wishlistItems.sessionId, sessionId)));
   }
 
+  async removeAllBySessionId(sessionId: string) {
+    await this.db
+      .delete(schema.wishlistItems)
+      .where(eq(schema.wishlistItems.sessionId, sessionId));
+  }
+
   async countBySessionAndMarketplace(sessionId: string, marketplace: Marketplace) {
     const rows = await this.db
       .select()

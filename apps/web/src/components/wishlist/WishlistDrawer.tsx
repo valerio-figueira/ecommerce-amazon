@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 
@@ -9,9 +10,44 @@ import { Button } from '@/components/ui/button';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { marketplaceLabel } from '@/lib/format';
+import { ApiError } from '@/lib/api/client';
+
+function openBatchCheckoutUrls(marketplace: string, url: string): void {
+  if (marketplace === 'amazon_br') {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  const urls = url.split('|').filter((entry) => entry.length > 0);
+  if (urls.length === 0) return;
+
+  window.alert(
+    `Abriremos ${urls.length} abas na ${marketplaceLabel(marketplace)} — uma por produto. Compras finalizadas lá.`,
+  );
+
+  urls.forEach((entry, index) => {
+    window.setTimeout(() => {
+      window.open(entry, '_blank', 'noopener,noreferrer');
+    }, index * 500);
+  });
+}
 
 export function WishlistDrawer(): React.JSX.Element | null {
-  const { items, isOpen, setOpen, removeItem, sessionId } = useWishlist();
+  const {
+    items,
+    isOpen,
+    setOpen,
+    removeItem,
+    sessionId,
+    consentGranted,
+    checkoutBatch,
+    clearAll,
+    requestConsent,
+  } = useWishlist();
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   if (!isOpen) return null;
 
@@ -21,6 +57,44 @@ export function WishlistDrawer(): React.JSX.Element | null {
     acc[item.marketplace] = list;
     return acc;
   }, {});
+
+  const handleBatchCheckout = async (marketplace: string, itemCount: number): Promise<void> => {
+    if (!consentGranted) {
+      requestConsent();
+      return;
+    }
+
+    setCheckoutError(null);
+    setCheckoutLoading(marketplace);
+    try {
+      const result = await checkoutBatch(marketplace);
+      if (result.itemCount === 0 || itemCount === 0) {
+        setCheckoutError('Nenhum item disponível para checkout nesta loja.');
+        return;
+      }
+      openBatchCheckoutUrls(marketplace, result.url);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 400) {
+        setCheckoutError(
+          'Checkout em lote indisponível no momento. Tente novamente mais tarde ou abra os itens individualmente.',
+        );
+      } else {
+        setCheckoutError('Não foi possível preparar o checkout. Tente novamente.');
+      }
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handleClearAll = async (): Promise<void> => {
+    setClearing(true);
+    try {
+      await clearAll();
+      setConfirmClear(false);
+    } finally {
+      setClearing(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -79,12 +153,70 @@ export function WishlistDrawer(): React.JSX.Element | null {
                     </li>
                   ))}
                 </ul>
+                <div className="mt-4 space-y-2">
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="w-full"
+                    disabled={
+                      !consentGranted || group.length === 0 || checkoutLoading === marketplace
+                    }
+                    onClick={() => void handleBatchCheckout(marketplace, group.length)}
+                  >
+                    {checkoutLoading === marketplace
+                      ? 'Preparando checkout…'
+                      : `Finalizar na ${marketplaceLabel(marketplace)} (${group.length} itens)`}
+                  </Button>
+                  <p className="text-xs text-neutral-500">
+                    Abriremos a {marketplaceLabel(marketplace)} com seus itens. Compras finalizadas
+                    lá.
+                  </p>
+                </div>
               </div>
             ))
           )}
+          {checkoutError && (
+            <p className="mt-2 text-sm text-red-600" role="alert">
+              {checkoutError}
+            </p>
+          )}
         </div>
-        <div className="border-t p-4 text-xs text-neutral-500">
-          Compras finalizadas no marketplace. Links organizados por loja.
+        <div className="space-y-3 border-t p-4 text-xs text-neutral-500">
+          <p>Compras finalizadas no marketplace. Links organizados por loja.</p>
+          {!confirmClear ? (
+            <button
+              type="button"
+              className="text-sm font-medium text-neutral-700 underline"
+              onClick={() => setConfirmClear(true)}
+            >
+              Apagar minha lista
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-neutral-700">
+                Isso remove todos os produtos salvos neste navegador.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={clearing}
+                  onClick={() => void handleClearAll()}
+                >
+                  {clearing ? 'Apagando…' : 'Confirmar'}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setConfirmClear(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
     </div>

@@ -5,5 +5,6 @@ export interface WishlistRepository {
   findBySessionId(sessionId: string): Promise<WishlistItem[]>;
   add(item: WishlistItem): Promise<void>;
   remove(id: string, sessionId: string): Promise<void>;
+  removeAllBySessionId(sessionId: string): Promise<void>;
   countBySessionAndMarketplace(sessionId: string, marketplace: Marketplace): Promise<number>;
 }

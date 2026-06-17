@@ -27,6 +27,7 @@ import {
   CollectionSlugParamsSchema,
   ComparisonTokenParamsSchema,
   ConfirmPriceAlertParamsSchema,
+  CancelPriceAlertParamsSchema,
   CreateComparisonSchema,
   CreatePriceAlertSchema,
   GoQuerySchema,
@@ -266,6 +267,17 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     }
   });
 
+  app.delete('/price-alerts/:token', async (request, reply) => {
+    try {
+      const { token } = CancelPriceAlertParamsSchema.parse(request.params);
+      const result = await useCases.cancelPriceAlert.execute(token);
+      if (!result.ok) return reply.status(400).send({ error: result.error.message });
+      return reply.status(204).send();
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
   app.get('/wishlist', async (request, reply) => {
     try {
       const sessionId = getSessionId(request);
@@ -292,6 +304,16 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const sessionId = getSessionId(request);
       const { id } = WishlistRemoveParamsSchema.parse(request.params);
       await container.repositories.wishlistRepository.remove(id, sessionId);
+      return reply.status(204).send();
+    } catch (error) {
+      return handleError(error, reply);
+    }
+  });
+
+  app.delete('/wishlist', async (request, reply) => {
+    try {
+      const sessionId = getSessionId(request);
+      await useCases.clearWishlist.execute(sessionId);
       return reply.status(204).send();
     } catch (error) {
       return handleError(error, reply);

@@ -26,6 +26,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | Documento | Conteúdo |
 |-----------|----------|
 | [cms-home-phase1.md](./cms-home-phase1.md) | Home CMS-driven: blocos, schemas Zod, seed, `apps/web`, wishlist, tracking |
+| [wishlist-retention-lgpd.md](./wishlist-retention-lgpd.md) | Batch checkout, banner cookies, cancelamento de alertas, `DELETE /wishlist` |
 | [web-error-handling.md](./web-error-handling.md) | Erros 404/500 pt-BR, boundaries de blocos CMS, `ApiError` |
 | [web-loading-skeletons.md](./web-loading-skeletons.md) | Skeletons de rota (`loading.tsx`) na vitrine — feedback de navegação |
 | [brand-config.md](./brand-config.md) | Marca centralizada: nome, URL, contato, helpers de título |

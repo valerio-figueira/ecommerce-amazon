@@ -230,7 +230,13 @@ Ver [go-redirect-seo.md](./go-redirect-seo.md).
 
 **Response 200:** `{ confirmed: true }`
 
-> Nota: `DELETE /price-alerts/:token` está no plano MVP mas **não implementado** na rota atual.
+### `DELETE /price-alerts/:token`
+
+Cancela alerta pelo `confirmToken` (LGPD). Status → `expired`. Idempotente se já expirado ou disparado.
+
+**Response:** 204
+
+**Response 400:** token inválido
 
 ---
 
@@ -271,6 +277,12 @@ Tipo: `WishlistItemEnriched` em [`GetWishlist.ts`](../packages/application/src/u
 ### `DELETE /wishlist/:id`
 
 **Params:** `id` uuid do item  
+**Response:** 204
+
+### `DELETE /wishlist`
+
+Remove **todos** os itens da sessão identificada por `x-session-id`.
+
 **Response:** 204
 
 ### `POST /wishlist/checkout-batch`
@@ -639,6 +651,7 @@ Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapt
 | `PriceHistoryQuerySchema` | query days |
 | `CreatePriceAlertSchema` | POST /price-alerts |
 | `ConfirmPriceAlertParamsSchema` | confirm |
+| `CancelPriceAlertParamsSchema` | DELETE /price-alerts/:token |
 | `WishlistAddSchema` | POST /wishlist |
 | `WishlistRemoveParamsSchema` | DELETE |
 | `BatchCheckoutSchema` | checkout-batch |
@@ -665,7 +678,6 @@ Client HTTP: [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.t
 
 | Rota | Plano |
 |------|-------|
-| `DELETE /price-alerts/:token` | PRD Core |
 | `GET /coupons/:marketplace` | PRD Core |
 | `POST /admin/pages/:slug/publish` | Admin CMS draft/publish |
 

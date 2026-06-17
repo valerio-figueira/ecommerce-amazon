@@ -19,7 +19,9 @@
 
 **Admin:** `/auto-links` — CRUD keywords SEO (`auto-links-admin.md`)
 
-**Pendentes no MVP:** `/comparador`, central `/cupons`, wishlist dedicada, alertas UI.
+**Pendentes no MVP:** `/comparador`, central `/cupons`, alertas UI (formulário na vitrine).
+
+**Retenção / LGPD entregues:** batch checkout no drawer, banner cookies, `DELETE /price-alerts/:token`, `DELETE /wishlist`, `/alertas/cancelar/[token]` — ver [wishlist-retention-lgpd.md](./wishlist-retention-lgpd.md).
 
 ---
 
@@ -232,9 +234,11 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 |--------|------|-------|
 | POST | `/price-alerts` | Double opt-in; 201 |
 | POST | `/price-alerts/confirm/:token` | Ativa alerta |
+| DELETE | `/price-alerts/:token` | Cancela alerta (LGPD); 204 |
 | GET | `/wishlist` | Enriquecido com produto |
 | POST | `/wishlist` | Body `{ productId }` |
 | DELETE | `/wishlist/:id` | 204 |
+| DELETE | `/wishlist` | Limpa lista da sessão; 204 |
 | POST | `/wishlist/checkout-batch` | URL batch checkout |
 | POST | `/comparisons` | 2–3 produtos; intro ≥150 chars |
 | POST | `/events/click` | 204; origens: listagem, detalhe, embed, comparador, cupons, redirect_go |
@@ -270,7 +274,6 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 | Auto-links | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
 
 **Rotas planejadas NÃO implementadas:**
-- `DELETE /price-alerts/:token`
 - `GET /coupons/:marketplace`
 - `POST /admin/pages/:slug/publish`
 
@@ -340,7 +343,8 @@ Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketpla
 | Central de cupons web | Alta |
 | Hub `/artigos` (índice + filtros) | ✅ Entregue |
 | Alertas email em produção (Resend) | Alta |
-| `DELETE /price-alerts/:token` (LGPD) | Média |
+| `DELETE /price-alerts/:token` (LGPD) | ✅ |
+| Banner cookies + `DELETE /wishlist` | ✅ |
 | Draft/preview/publish CMS | Média |
 | Admin CRUD `auto_links` | Média | ✅ API + UI `/auto-links` |
 | Gate manual conta afiliado antes de escala | Negócio |

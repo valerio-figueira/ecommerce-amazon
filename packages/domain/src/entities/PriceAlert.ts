@@ -58,6 +58,19 @@ export class PriceAlert {
     );
   }
 
+  cancel(): PriceAlert {
+    return new PriceAlert(
+      this.id,
+      this.productId,
+      this.email,
+      this.targetPrice,
+      AlertStatus.EXPIRED,
+      this.confirmToken,
+      this.createdAt,
+      this.triggeredAt,
+    );
+  }
+
   shouldTrigger(currentPrice: Price): boolean {
     return (
       this.status === AlertStatus.ACTIVE &&

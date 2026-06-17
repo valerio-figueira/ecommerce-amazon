@@ -41,6 +41,8 @@ export const ConfirmPriceAlertParamsSchema = z.object({
   token: z.string().min(1),
 });
 
+export const CancelPriceAlertParamsSchema = ConfirmPriceAlertParamsSchema;
+
 export const WishlistAddSchema = z.object({
   productId: z.string().uuid(),
 });

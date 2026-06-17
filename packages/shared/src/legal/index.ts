@@ -7,3 +7,4 @@ export {
   type LegalSection,
   type LegalSubsection,
 } from './legal-content.js';
+export { CONSENT_COOKIE_NAME, CONSENT_VALUE } from './cookie-consent.js';

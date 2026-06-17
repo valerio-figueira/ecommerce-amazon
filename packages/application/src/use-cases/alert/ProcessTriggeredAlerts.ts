@@ -36,7 +36,7 @@ export class ProcessTriggeredAlerts {
       await this.emailSender.send({
         to: alert.email.value,
         subject: `Alerta de preço — ${product.titleClean} | ${brand.name}`,
-        html: `<p>O preço alvo foi atingido: R$ ${formattedPrice}.</p><p>Confira em <a href="${brand.url}/produtos/${product.slug}">${brand.name}</a>.</p><p>Dúvidas? ${brand.contactEmail}</p>`,
+        html: `<p>O preço alvo foi atingido: R$ ${formattedPrice}.</p><p>Confira em <a href="${brand.url}/produtos/${product.slug}">${brand.name}</a>.</p><p><a href="${brand.url}/alertas/cancelar/${alert.confirmToken}">Cancelar este alerta</a></p><p>Dúvidas? ${brand.contactEmail}</p>`,
       });
 
       const triggered = alert.trigger(new Date());

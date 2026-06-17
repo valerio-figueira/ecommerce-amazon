@@ -1,4 +1,24 @@
-export const SESSION_COOKIE = 'vitrine_session';
+import {
+  CONSENT_COOKIE_NAME,
+  CONSENT_VALUE,
+  SESSION_COOKIE_NAME,
+} from '@ecommerce-amazon/shared/legal';
+
+const CONSENT_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
+function readCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
+}
+
+function writeCookie(name: string, value: string, maxAgeSeconds: number): void {
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax`;
+}
+
+function deleteCookie(name: string): void {
+  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+}
 
 function generateSessionId(): string {
   const webCrypto = globalThis.crypto;
@@ -19,15 +39,33 @@ function generateSessionId(): string {
   throw new Error('Crypto API unavailable — use HTTPS or localhost for session support');
 }
 
+export function hasFunctionalConsent(): boolean {
+  return readCookie(CONSENT_COOKIE_NAME) === CONSENT_VALUE;
+}
+
+export function acceptFunctionalConsent(): void {
+  writeCookie(CONSENT_COOKIE_NAME, CONSENT_VALUE, CONSENT_MAX_AGE_SECONDS);
+}
+
 export function getOrCreateSessionId(): string {
   if (typeof document === 'undefined') {
     return '';
   }
-  const match = document.cookie.match(new RegExp(`(?:^|; )${SESSION_COOKIE}=([^;]*)`));
-  if (match?.[1]) {
-    return decodeURIComponent(match[1]);
+
+  if (!hasFunctionalConsent()) {
+    return '';
   }
+
+  const existing = readCookie(SESSION_COOKIE_NAME);
+  if (existing) {
+    return existing;
+  }
+
   const id = generateSessionId();
-  document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(id)}; path=/; max-age=31536000; SameSite=Lax`;
+  writeCookie(SESSION_COOKIE_NAME, id, CONSENT_MAX_AGE_SECONDS);
   return id;
+}
+
+export function clearSessionCookie(): void {
+  deleteCookie(SESSION_COOKIE_NAME);
 }

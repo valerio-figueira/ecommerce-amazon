@@ -1,4 +1,7 @@
 import {
+  AffiliateAccountStatus,
+  ValidationError,
+  type AffiliateAccountRepository,
   type AffiliateLinkBuilder,
   type Marketplace,
   type ProductRepository,
@@ -10,11 +13,27 @@ export class BuildBatchCheckoutRedirect {
     private readonly wishlistRepository: WishlistRepository,
     private readonly productRepository: ProductRepository,
     private readonly linkBuilder: AffiliateLinkBuilder,
+    private readonly affiliateAccountRepository: AffiliateAccountRepository,
   ) {}
 
   async execute(input: { sessionId: string; marketplace: Marketplace }) {
+    const account = await this.affiliateAccountRepository.findByMarketplace(input.marketplace);
+
+    if (account !== null && account.status === AffiliateAccountStatus.PENDING) {
+      throw new ValidationError('Affiliate account pending manual validation');
+    }
+
+    if (account !== null && account.status === AffiliateAccountStatus.SUSPENDED) {
+      throw new ValidationError('Affiliate account suspended');
+    }
+
     const items = await this.wishlistRepository.findBySessionId(input.sessionId);
     const filtered = items.filter((i) => i.marketplace === input.marketplace);
+
+    if (filtered.length === 0) {
+      throw new ValidationError('No wishlist items for this marketplace');
+    }
+
     const products = await this.productRepository.findByIds(filtered.map((i) => i.productId));
     const externalIds = products.map((p) => p.externalId);
     const url = this.linkBuilder.buildBatchCheckout(input.marketplace, externalIds);
