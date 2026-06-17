@@ -24,7 +24,8 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
       slug: item.slug,
       title: item.title,
       coverImageUrl: item.coverImageUrl,
-      publishedAt: item.publishedAt?.toISOString() ?? null,
+      publishedAt:
+        item.publishedAt != null ? toIsoDateTime(item.publishedAt) : null,
     })),
     publishedAt: article.publishedAt
       ? toIsoDateTime(article.publishedAt)
@@ -52,7 +53,8 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
             title: member.title,
             excerpt: member.excerpt,
             coverImageUrl: member.coverImageUrl,
-            publishedAt: member.publishedAt?.toISOString() ?? null,
+            publishedAt:
+              member.publishedAt != null ? toIsoDateTime(member.publishedAt) : null,
             isPilar: member.isPilar,
           })),
         }
