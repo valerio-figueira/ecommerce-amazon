@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import {
   contentClusterAdminDetailSchema,
   contentClustersAdminResponseSchema,
@@ -10,7 +11,7 @@ import {
 } from '@ecommerce-amazon/shared/admin';
 
 export async function listContentClustersClient(): Promise<ContentClusterAdminSummary[]> {
-  const response = await fetch('/api/admin/content-clusters', { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/content-clusters', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error('Falha ao carregar clusters');
   }
@@ -23,7 +24,7 @@ export async function listContentClustersClient(): Promise<ContentClusterAdminSu
 }
 
 export async function getContentClusterClient(id: string) {
-  const response = await fetch(`/api/admin/content-clusters/${id}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/content-clusters/${id}`, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error('Falha ao carregar cluster');
   }
@@ -37,7 +38,7 @@ export async function getContentClusterClient(id: string) {
 
 export async function createContentClusterClient(body: CreateContentClusterBody): Promise<{ id: string }> {
   const parsedBody = createContentClusterBodySchema.parse(body);
-  const response = await fetch('/api/admin/content-clusters', {
+  const response = await adminClientFetch('/api/admin/content-clusters', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),
@@ -59,7 +60,7 @@ export async function updateContentClusterClient(
   body: UpdateContentClusterBody,
 ): Promise<void> {
   const parsedBody = updateContentClusterBodySchema.parse(body);
-  const response = await fetch(`/api/admin/content-clusters/${id}`, {
+  const response = await adminClientFetch(`/api/admin/content-clusters/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),

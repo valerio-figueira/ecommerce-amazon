@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -174,12 +176,12 @@ export function CategoryFormSheet({
 
     try {
       const response = editing
-        ? await fetch(`/api/admin/categories/${editing.id}`, {
+        ? await adminClientFetch(`/api/admin/categories/${editing.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
           })
-        : await fetch('/api/admin/categories', {
+        : await adminClientFetch('/api/admin/categories', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),

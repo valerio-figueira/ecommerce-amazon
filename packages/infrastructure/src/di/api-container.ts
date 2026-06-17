@@ -55,6 +55,7 @@ import {
   SearchInternalLinkTargets,
   ResolveAffiliateRedirect,
   AuthenticateOperator,
+  ValidateOperatorSession,
   CreateArticleCategory,
   ListArticleCategories,
   UpdateArticleCategory,
@@ -135,7 +136,9 @@ import { createObjectStorage } from '../storage/object-storage.factory.js';
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
   const db = createDrizzleClient(env.DATABASE_URL);
-  const cacheRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB));
+  const cacheRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB), (error) => {
+    logger.warn('Redis cache connection error', { error: error.message });
+  });
   const cache = new RedisCacheStore(cacheRedis);
   const webRevalidator = env.REVALIDATE_SECRET
     ? new HttpPublicWebRevalidator(env.WEB_PUBLIC_URL, env.REVALIDATE_SECRET, logger)
@@ -180,6 +183,9 @@ export function buildApiContainer(env = loadEnv()) {
   if (env.TELEMETRY_BUFFER_ENABLED) {
     const telemetryRedis = createRedisClient(
       parseRedisUrl(env.REDIS_URL, env.REDIS_TELEMETRY_DB),
+      (error) => {
+        logger.warn('Redis telemetry connection error', { error: error.message });
+      },
     );
     const telemetryBufferStore = new RedisTelemetryBufferStore(
       telemetryRedis,
@@ -200,7 +206,7 @@ export function buildApiContainer(env = loadEnv()) {
   const contentClusterRepository = new DrizzleContentClusterRepository(db);
   const autoLinkRepository = new DrizzleAutoLinkRepository(db);
   const sitemapRepository = new DrizzleSitemapRepository(db);
-  const passwordHasher = new BcryptPasswordHasher();
+  const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
   const authTokenService = new JwtAuthTokenService(env.JWT_SECRET, env.JWT_EXPIRES_IN);
   const objectStorage = createObjectStorage(env);
   const isManagedAvatarUrl = (url: string) => objectStorage.isManagedUrl(url);
@@ -219,6 +225,7 @@ export function buildApiContainer(env = loadEnv()) {
   return {
     logger,
     env,
+    db,
     useCases: {
       getProductBySlug: new GetProductBySlug(productRepository),
       getProductWithEmbeds: new GetProductWithEmbeds(productRepository),
@@ -327,6 +334,7 @@ export function buildApiContainer(env = loadEnv()) {
         passwordHasher,
         authTokenService,
       ),
+      validateOperatorSession: new ValidateOperatorSession(operatorRepository),
       listArticleCategories: new ListArticleCategories(articleCategoryRepository),
       createArticleCategory: new CreateArticleCategory(articleCategoryRepository),
       updateArticleCategory: new UpdateArticleCategory(

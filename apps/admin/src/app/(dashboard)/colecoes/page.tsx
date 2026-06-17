@@ -13,7 +13,14 @@ export const metadata = {
 };
 
 export default async function ColecoesPage(): Promise<React.JSX.Element> {
-  const items = await listAdminCollections();
+  let items: Awaited<ReturnType<typeof listAdminCollections>> = [];
+  let apiUnavailable = false;
+
+  try {
+    items = await listAdminCollections();
+  } catch {
+    apiUnavailable = true;
+  }
 
   return (
     <>
@@ -25,7 +32,17 @@ export default async function ColecoesPage(): Promise<React.JSX.Element> {
         ]}
       />
       <AdminPageCard transparent>
-        <CollectionListManager initialItems={items} />
+        {apiUnavailable ? (
+          <div
+            role="status"
+            className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+          >
+            Não foi possível carregar as coleções. Verifique se a API está em execução e tente
+            atualizar a página.
+          </div>
+        ) : (
+          <CollectionListManager initialItems={items} />
+        )}
       </AdminPageCard>
     </>
   );

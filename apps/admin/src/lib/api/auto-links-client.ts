@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import {
   adminAutoLinkListResponseSchema,
   createAutoLinkBodySchema,
@@ -45,7 +46,7 @@ export async function listAutoLinksClient(
 
 export async function createAutoLinkClient(body: CreateAutoLinkBody): Promise<{ id: string }> {
   const parsed = createAutoLinkBodySchema.parse(body);
-  const response = await fetch('/api/admin/auto-links', {
+  const response = await adminClientFetch('/api/admin/auto-links', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsed),
@@ -57,7 +58,7 @@ export async function createAutoLinkClient(body: CreateAutoLinkBody): Promise<{ 
 
 export async function updateAutoLinkClient(id: string, body: UpdateAutoLinkBody): Promise<void> {
   const parsed = updateAutoLinkBodySchema.parse(body);
-  const response = await fetch(`/api/admin/auto-links/${id}`, {
+  const response = await adminClientFetch(`/api/admin/auto-links/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsed),
@@ -66,6 +67,6 @@ export async function updateAutoLinkClient(id: string, body: UpdateAutoLinkBody)
 }
 
 export async function deleteAutoLinkClient(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/auto-links/${id}`, { method: 'DELETE' });
+  const response = await adminClientFetch(`/api/admin/auto-links/${id}`, { method: 'DELETE' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
 }

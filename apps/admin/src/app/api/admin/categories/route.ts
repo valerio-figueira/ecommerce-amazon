@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import {
   createAdminCategory,
@@ -15,8 +16,8 @@ export async function GET() {
     const items = await listAdminCategories();
     return NextResponse.json({ items });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -28,8 +29,8 @@ export async function POST(request: Request) {
     const result = await createAdminCategory(parsed);
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -41,8 +42,8 @@ export async function PATCH(request: Request) {
     await reorderAdminCategories(parsed);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

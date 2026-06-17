@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { FolderTree, Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -41,7 +43,7 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
   }, [items]);
 
   const refresh = useCallback(async () => {
-    const response = await fetch('/api/admin/categories', { cache: 'no-store' });
+    const response = await adminClientFetch('/api/admin/categories', { cache: 'no-store' });
     if (!response.ok) throw new Error('Falha ao carregar categorias');
     const payload: unknown = await response.json();
     if (typeof payload !== 'object' || payload === null || !('items' in payload)) {
@@ -74,7 +76,7 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
     reordered[index] = { ...swap, sortOrder: current.sortOrder };
     reordered[swapIndex] = { ...current, sortOrder: swap.sortOrder };
 
-    const response = await fetch('/api/admin/categories', {
+    const response = await adminClientFetch('/api/admin/categories', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -95,7 +97,7 @@ export function CategoryTreeManager({ initialItems }: CategoryTreeManagerProps):
   async function handleDelete() {
     if (!deleteTarget) return;
 
-    const response = await fetch(`/api/admin/categories/${deleteTarget.id}`, {
+    const response = await adminClientFetch(`/api/admin/categories/${deleteTarget.id}`, {
       method: 'DELETE',
     });
 

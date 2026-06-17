@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
 import { adminFetchMultipart } from '@/lib/api/admin-fetch-multipart';
 
@@ -8,8 +9,8 @@ export async function POST(request: Request) {
     const result = await adminFetchMultipart('/admin/media/images', formData);
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

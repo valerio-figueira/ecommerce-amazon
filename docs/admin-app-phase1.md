@@ -45,6 +45,15 @@ sequenceDiagram
 3. Layout `(dashboard)` valida JWT com `JWT_SECRET` compartilhado.
 4. Logout via `POST /api/auth/logout` limpa o cookie.
 
+## Segurança (fail-closed)
+
+Desde o hardening documentado em [admin-security.md](./admin-security.md):
+
+- Layout `(dashboard)` confirma `GET /admin/auth/session` na API antes de renderizar o shell
+- API/DB indisponíveis → redirect `/servico-indisponivel` (sem sidebar)
+- Middleware valida assinatura JWT (não só presença do cookie)
+- Senhas com bcrypt + `PASSWORD_PEPPER`
+
 ## Variáveis de ambiente
 
 | Variável | Default | Uso |
@@ -54,6 +63,7 @@ sequenceDiagram
 | `JWT_EXPIRES_IN` | `8h` | Expiração do token |
 | `ADMIN_SEED_EMAIL` | `admin@vitrine.local` | Operador criado no seed |
 | `ADMIN_SEED_PASSWORD` | `vitrine-admin` | Senha do operador seed |
+| `PASSWORD_PEPPER` | (dev placeholder) | Pepper bcrypt — ver [admin-security.md](./admin-security.md) |
 | `API_INTERNAL_URL` | `http://localhost:3000` | Proxy de login server-side |
 | `CORS_ORIGINS` | inclui `:3002` | Origem admin na API |
 

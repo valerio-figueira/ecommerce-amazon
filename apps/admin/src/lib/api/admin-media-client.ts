@@ -1,12 +1,14 @@
 'use client';
 
+import { adminClientFetch } from './admin-client';
+
 import { uploadAdminImageResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 export async function uploadAdminImageClient(file: Blob): Promise<string> {
   const formData = new FormData();
   formData.append('image', file, 'image.jpg');
 
-  const response = await fetch('/api/admin/media/images', {
+  const response = await adminClientFetch('/api/admin/media/images', {
     method: 'POST',
     body: formData,
   });

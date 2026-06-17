@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import { adminFetch } from '@/lib/api/admin-fetch';
 
@@ -14,8 +15,8 @@ export async function POST(request: Request, { params }: RouteParams) {
     });
     return NextResponse.json(block, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, isUnauthorizedError, isServiceUnavailableError, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import { deleteAutoLink, updateAutoLink } from '@/lib/api/auto-links';
 import {
@@ -10,8 +11,9 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-function resolveErrorStatus(message: string): number {
-  if (message === 'Unauthorized') return 401;
+function resolveErrorStatus(error: unknown, message: string): number {
+  if (isUnauthorizedError(error)) return 401;
+  if (isServiceUnavailableError(error)) return 503;
   if (message === 'Keyword já cadastrada') return 409;
   return 400;
 }
@@ -25,7 +27,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Request failed';
-    const status = resolveErrorStatus(message);
+    const status = resolveErrorStatus(error, message);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -36,8 +38,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteAutoLink(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

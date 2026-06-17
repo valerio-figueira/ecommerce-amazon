@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import {
   deleteArticleCategory,
@@ -21,8 +22,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     await updateArticleCategory(id, parsed);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -33,8 +34,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteArticleCategory(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

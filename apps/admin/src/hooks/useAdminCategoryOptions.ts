@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { useEffect, useState } from 'react';
 
 import {
@@ -12,7 +14,7 @@ export function useAdminCategoryOptions(): CategoryFlatOption[] {
   const [categoryOptions, setCategoryOptions] = useState<CategoryFlatOption[]>([]);
 
   useEffect(() => {
-    void fetch('/api/admin/categories', { cache: 'no-store' })
+    void adminClientFetch('/api/admin/categories', { cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) return [];
         const payload: unknown = await response.json();

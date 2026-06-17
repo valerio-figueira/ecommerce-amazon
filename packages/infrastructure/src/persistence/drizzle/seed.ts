@@ -1038,7 +1038,7 @@ async function seedOperator(
     return;
   }
 
-  const passwordHasher = new BcryptPasswordHasher();
+  const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
   const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
 
   await db.insert(schema.operators).values({

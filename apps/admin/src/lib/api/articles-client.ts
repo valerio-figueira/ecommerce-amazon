@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import {
   adminArticleDetailSchema,
   adminArticlesResponseSchema,
@@ -28,14 +29,14 @@ export async function listAdminArticlesClient(
   status?: string,
 ): Promise<AdminArticleSummary[]> {
   const query = status ? `?status=${encodeURIComponent(status)}` : '';
-  const response = await fetch(`/api/admin/articles${query}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/articles${query}`, { cache: 'no-store' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
   const data: unknown = await response.json();
   return adminArticlesResponseSchema.parse(data).items;
 }
 
 export async function getAdminArticleClient(id: string): Promise<AdminArticleDetail> {
-  const response = await fetch(`/api/admin/articles/${id}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/articles/${id}`, { cache: 'no-store' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
   const data: unknown = await response.json();
   return adminArticleDetailSchema.parse(data);
@@ -45,7 +46,7 @@ export async function createAdminArticleClient(
   body: CreateArticleBody,
 ): Promise<CreateArticleResponse> {
   const parsedBody = createArticleBodySchema.parse(body);
-  const response = await fetch('/api/admin/articles', {
+  const response = await adminClientFetch('/api/admin/articles', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),
@@ -60,7 +61,7 @@ export async function updateAdminArticleClient(
   body: UpdateArticleBody,
 ): Promise<void> {
   const parsedBody = updateArticleBodySchema.parse(body);
-  const response = await fetch(`/api/admin/articles/${id}`, {
+  const response = await adminClientFetch(`/api/admin/articles/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),
@@ -69,6 +70,6 @@ export async function updateAdminArticleClient(
 }
 
 export async function deleteAdminArticleClient(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/articles/${id}`, { method: 'DELETE' });
+  const response = await adminClientFetch(`/api/admin/articles/${id}`, { method: 'DELETE' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
 }

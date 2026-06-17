@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import {
   adminProductDetailSchema,
   adminProductListResponseSchema,
@@ -47,7 +48,7 @@ export async function listAdminProductsClient(
 }
 
 export async function getAdminProductClient(slug: string): Promise<AdminProductDetail> {
-  const response = await fetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
+  const response = await adminClientFetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
     cache: 'no-store',
   });
   if (!response.ok) {
@@ -70,7 +71,7 @@ export async function createAdminProductClient(
   body: CreateProductBody,
 ): Promise<CreateProductResponse> {
   const parsedBody = createProductBodySchema.parse(body);
-  const response = await fetch('/api/admin/products', {
+  const response = await adminClientFetch('/api/admin/products', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),
@@ -97,7 +98,7 @@ export async function updateAdminProductClient(
   body: UpdateProductBody,
 ): Promise<UpdateProductResponse> {
   const parsedBody = updateProductBodySchema.parse(body);
-  const response = await fetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
+  const response = await adminClientFetch(`/api/admin/products/${encodeURIComponent(slug)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsedBody),

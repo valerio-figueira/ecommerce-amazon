@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import {
   createContentCluster,
@@ -11,8 +12,8 @@ export async function GET() {
     const result = await listContentClusters();
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -24,8 +25,8 @@ export async function POST(request: Request) {
     const result = await createContentCluster(parsed);
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

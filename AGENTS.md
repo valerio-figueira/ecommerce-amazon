@@ -38,6 +38,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/worker-pipelines.md](docs/worker-pipelines.md) | Filas BullMQ, pipelines A–D |
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
+| [docs/admin-security.md](docs/admin-security.md) | Segurança admin: fail-closed, pepper, rate limit |
 | [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
 | [docs/admin-dashboard-phase1.md](docs/admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |

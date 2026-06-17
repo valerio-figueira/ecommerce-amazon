@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, isUnauthorizedError, resolveBffStatus } from '@/lib/api/bff-error-status';
+
 import { ZodError } from 'zod';
 
 import {
@@ -17,10 +19,10 @@ function resolveErrorStatus(error: unknown): number {
     return 400;
   }
 
-  const message = error instanceof Error ? error.message : 'Request failed';
-  if (message === 'Unauthorized') {
+  if (isUnauthorizedError(error)) {
     return 401;
   }
+  const message = getBffErrorMessage(error);
   if (message.toLowerCase().includes('not found') || message.includes('(404)')) {
     return 404;
   }
@@ -47,8 +49,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     await updateAdminCollection(id, parsed);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -59,8 +61,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteAdminCollection(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

@@ -39,6 +39,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [seo-technical-phase1.md](./seo-technical-phase1.md) | Metadados globais, sitemap paginado, robots, crawl budget, CWV |
 | [product-detail-page.md](./product-detail-page.md) | Detalhe `/produtos/[slug]`: galeria, análise editorial, ficha técnica |
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
+| [admin-security.md](./admin-security.md) | Fail-closed, pepper, rate limit login, sessão confirmada na API |
 | [admin-products-phase1.md](./admin-products-phase1.md) | Gestão manual de produtos, parser de URL, API admin |
 | [categories-hierarchy.md](./categories-hierarchy.md) | Árvore de categorias, SEO, admin e vitrine |
 | [curated-collections.md](./curated-collections.md) | Coleções curadas: CRUD admin, landing `/colecoes/[slug]`, bloco CMS |

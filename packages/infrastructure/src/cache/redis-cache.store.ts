@@ -49,8 +49,19 @@ export class RedisCacheStore implements CacheStore, CacheInvalidator, PageCacheI
   }
 }
 
-export function createRedisClient(options: RedisConnectionOptions): Redis {
-  return new Redis(options);
+export function createRedisClient(
+  options: RedisConnectionOptions,
+  onError?: (error: Error) => void,
+): Redis {
+  const client = new Redis(options);
+  client.on('error', (error: Error) => {
+    if (onError) {
+      onError(error);
+      return;
+    }
+    console.warn('[redis] connection error:', error.message);
+  });
+  return client;
 }
 
 export { parseRedisUrl };

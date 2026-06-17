@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
 import type { z } from 'zod';
 
+import { verifySessionToken } from '@/lib/auth/session';
 import { ADMIN_SESSION_COOKIE, getApiUrl } from '@/lib/auth/constants';
+import { UnauthorizedError, ServiceUnavailableError } from '@/lib/api/admin-errors';
 
 export type AdminFetchOptions = {
   method?: string;
@@ -21,7 +23,12 @@ export async function adminFetch(path: string, options: AdminFetchOptions = {}):
   const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
 
   if (!token) {
-    throw new Error('Unauthorized');
+    throw new UnauthorizedError();
+  }
+
+  const session = await verifySessionToken(token);
+  if (!session) {
+    throw new UnauthorizedError();
   }
 
   const headers: Record<string, string> = {
@@ -40,7 +47,20 @@ export async function adminFetch(path: string, options: AdminFetchOptions = {}):
     init.body = JSON.stringify(options.body);
   }
 
-  const response = await fetch(`${getApiUrl()}${path}`, init);
+  let response: Response;
+  try {
+    response = await fetch(`${getApiUrl()}${path}`, init);
+  } catch {
+    throw new ServiceUnavailableError();
+  }
+
+  if (response.status === 401) {
+    throw new UnauthorizedError();
+  }
+
+  if (response.status === 503) {
+    throw new ServiceUnavailableError();
+  }
 
   if (!response.ok) {
     const payload: unknown = await response.json().catch(() => null);

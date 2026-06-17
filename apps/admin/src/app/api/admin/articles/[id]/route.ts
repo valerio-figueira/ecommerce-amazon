@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
 import {
   deleteAdminArticle,
@@ -20,8 +21,8 @@ export async function GET(_request: Request, context: RouteContext) {
     }
     return NextResponse.json(article);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -33,8 +34,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     await updateAdminArticle(id, body);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -45,8 +46,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteAdminArticle(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
-import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants';
+
 import { getOperatorProfile, updateOperatorProfile } from '@/lib/api/profile';
+import { getSessionCookieMaxAge } from '@/lib/auth/jwt-expiry';
+import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants';
+import { SESSION_COOKIE_OPTIONS } from '@/lib/auth/session-guard';
 import { updateOperatorProfileBodySchema } from '@ecommerce-amazon/shared/admin';
 
 export async function GET() {
@@ -9,8 +13,8 @@ export async function GET() {
     const profile = await getOperatorProfile();
     return NextResponse.json(profile);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -22,17 +26,14 @@ export async function PATCH(request: Request) {
 
     const nextResponse = NextResponse.json(result);
     nextResponse.cookies.set(ADMIN_SESSION_COOKIE, result.token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 60 * 60 * 8,
+      ...SESSION_COOKIE_OPTIONS,
+      maxAge: getSessionCookieMaxAge(),
     });
 
     return nextResponse;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

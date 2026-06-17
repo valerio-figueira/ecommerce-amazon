@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
 import { adminFetchParsed } from '@/lib/api/admin-fetch';
 import {
@@ -34,8 +35,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     const result = await adminFetchParsed(path, searchInternalLinkTargetsResponseSchema);
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }

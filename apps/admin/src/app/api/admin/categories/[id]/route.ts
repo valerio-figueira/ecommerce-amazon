@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import { deleteAdminCategory, updateAdminCategory } from '@/lib/api/categories';
 import { updateCategoryBodySchema } from '@ecommerce-amazon/shared/admin';
@@ -15,8 +16,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     await updateAdminCategory(id, parsed);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 400;
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -27,9 +28,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteAdminCategory(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status =
-      message === 'Unauthorized' ? 401 : message.includes('linked') ? 409 : 400;
+    const message = getBffErrorMessage(error);
+    const status = resolveBffStatus(error, message.includes('linked') ? 409 : 400);
     return NextResponse.json({ error: message }, { status });
   }
 }

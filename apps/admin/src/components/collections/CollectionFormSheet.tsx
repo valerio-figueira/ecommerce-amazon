@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -113,7 +115,7 @@ export function CollectionFormSheet({
     }
 
     setLoading(true);
-    void fetch(`/api/admin/collections/${editing.id}`, { cache: 'no-store' })
+    void adminClientFetch(`/api/admin/collections/${editing.id}`, { cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error('Falha ao carregar coleção');
         const payload: unknown = await response.json();
@@ -206,12 +208,12 @@ export function CollectionFormSheet({
       };
 
       const response = editing
-        ? await fetch(`/api/admin/collections/${editing.id}`, {
+        ? await adminClientFetch(`/api/admin/collections/${editing.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
           })
-        : await fetch('/api/admin/collections', {
+        : await adminClientFetch('/api/admin/collections', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),

@@ -1,39 +1,8 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { ZodError } from 'zod';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 
-import {
-  AuthenticationError,
-  DomainError,
-  ValidationError,
-} from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
-import { AdminLoginSchema } from '../../dtos/request/schemas.js';
-
-function handleAdminError(error: unknown, reply: FastifyReply) {
-  if (error instanceof ZodError) {
-    return reply.status(400).send({ error: 'Validation failed', details: error.flatten() });
-  }
-  if (error instanceof AuthenticationError) {
-    return reply.status(401).send({ error: error.message, code: error.code });
-  }
-  if (error instanceof ValidationError || error instanceof DomainError) {
-    return reply.status(400).send({ error: error.message, code: error.code });
-  }
-  if (error instanceof Error) {
-    return reply.status(500).send({ error: error.message });
-  }
-  return reply.status(500).send({ error: 'Internal server error' });
-}
-
-function getBearerToken(request: FastifyRequest): string | null {
-  const header = request.headers.authorization;
-  if (typeof header !== 'string' || !header.startsWith('Bearer ')) {
-    return null;
-  }
-  const token = header.slice('Bearer '.length).trim();
-  return token.length > 0 ? token : null;
-}
+import { handleAdminError } from '../admin-error-handler.js';
 
 import { registerAdminCmsRoutes } from './admin-cms-routes.js';
 import { registerAdminCategoryRoutes } from './admin-category-routes.js';
@@ -47,19 +16,53 @@ import { registerAdminProfileRoutes } from './admin-profile-routes.js';
 import { registerAdminMediaRoutes } from './admin-media-routes.js';
 import { registerAdminAnalyticsRoutes } from './admin-analytics-routes.js';
 import { registerAdminInstitutionalRoutes } from './institutional-routes.js';
+import { AdminLoginSchema } from '../../dtos/request/schemas.js';
+import { createLoginRateLimiter } from '../login-rate-limiter.js';
+
+function getBearerToken(request: FastifyRequest): string | null {
+  const header = request.headers.authorization;
+  if (typeof header !== 'string' || !header.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = header.slice('Bearer '.length).trim();
+  return token.length > 0 ? token : null;
+}
+
+function getClientIp(request: FastifyRequest): string {
+  const forwarded = request.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.length > 0) {
+    return forwarded.split(',')[0]?.trim() ?? request.ip;
+  }
+  return request.ip;
+}
 
 export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
+  const loginRateLimiter = createLoginRateLimiter();
 
   app.post('/admin/auth/login', async (request, reply) => {
+    const clientIp = getClientIp(request);
+    const rateLimit = loginRateLimiter.check(clientIp);
+    if (!rateLimit.allowed) {
+      return reply
+        .status(429)
+        .header('Retry-After', String(rateLimit.retryAfterSeconds))
+        .send({
+          error: 'Too many login attempts. Try again later.',
+          code: 'RATE_LIMITED',
+        });
+    }
+
     try {
       const body = AdminLoginSchema.parse(request.body);
       const result = await useCases.authenticateOperator.execute(body);
 
       if (!result.ok) {
+        loginRateLimiter.recordFailure(clientIp);
         return reply.status(401).send({ error: result.error.message, code: result.error.code });
       }
 
+      loginRateLimiter.reset(clientIp);
       return reply.send(result.value);
     } catch (error) {
       return handleAdminError(error, reply);
@@ -102,6 +105,25 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
     }
 
     return reply.send(request.adminOperator);
+  });
+
+  app.get('/admin/auth/session', async (request, reply) => {
+    const operatorId = request.adminOperator?.id;
+    if (!operatorId) {
+      return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
+    }
+
+    try {
+      const result = await useCases.validateOperatorSession.execute(operatorId);
+
+      if (!result.ok) {
+        return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
+      }
+
+      return reply.send(result.value);
+    } catch (error) {
+      return handleAdminError(error, reply);
+    }
   });
 
   await registerAdminCmsRoutes(app, container);

@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import { z } from 'zod';
 
 import { BlockType } from '@ecommerce-amazon/domain';
@@ -162,7 +163,7 @@ export async function listProductsClient(
   params: { pageSize?: number } = {},
 ): Promise<ProductPickerOption[]> {
   const pageSize = params.pageSize ?? 50;
-  const response = await fetch(`/api/admin/products?pageSize=${pageSize}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/products?pageSize=${pageSize}`, { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   const parsed = adminProductsPageSchema.safeParse(payload);
@@ -176,7 +177,7 @@ export async function listProductsClient(
 }
 
 export async function listAdminCollectionsClient(): Promise<AdminCollectionPickerOption[]> {
-  const response = await fetch('/api/admin/collections', { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/collections', { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   const parsed = adminCollectionsResponseSchema.safeParse(payload);
@@ -190,7 +191,7 @@ export async function listAdminCollectionsClient(): Promise<AdminCollectionPicke
 }
 
 export async function listAdminArticlesClient(): Promise<AdminArticlePickerOption[]> {
-  const response = await fetch('/api/admin/articles?picker=true', { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/articles?picker=true', { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   const parsed = adminArticlesResponseSchema.safeParse(payload);

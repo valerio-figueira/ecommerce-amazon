@@ -1,17 +1,9 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-
 import { AdminShell } from '@/components/admin/AdminShell';
 import { getOperatorProfile } from '@/lib/api/profile';
-import { ADMIN_SESSION_COOKIE, getSessionFromCookie } from '@/lib/auth/session';
+import { requireConfirmedSession } from '@/lib/auth/require-confirmed-session';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const session = await getSessionFromCookie(cookieStore.get(ADMIN_SESSION_COOKIE)?.value);
-
-  if (!session) {
-    redirect('/login');
-  }
+  const session = await requireConfirmedSession();
 
   let avatarUrl: string | null = null;
   let isManagedAvatar = false;

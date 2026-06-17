@@ -29,18 +29,24 @@ export function LoginForm() {
 
       if (!response.ok) {
         let errorMessage = 'E-mail ou senha inválidos';
-        try {
-          const body: unknown = await response.json();
-          if (
-            typeof body === 'object' &&
-            body !== null &&
-            'error' in body &&
-            typeof body.error === 'string'
-          ) {
-            errorMessage = body.error;
+        if (response.status === 503) {
+          errorMessage = 'Serviço indisponível. Tente novamente em instantes.';
+        } else if (response.status === 429) {
+          errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
+        } else {
+          try {
+            const body: unknown = await response.json();
+            if (
+              typeof body === 'object' &&
+              body !== null &&
+              'error' in body &&
+              typeof body.error === 'string'
+            ) {
+              errorMessage = body.error;
+            }
+          } catch {
+            // keep default message
           }
-        } catch {
-          // keep default message
         }
         adminToast.error(errorMessage);
         return;

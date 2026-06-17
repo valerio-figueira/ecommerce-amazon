@@ -1,3 +1,4 @@
+import { adminClientFetch } from './admin-client';
 import {
   articleCategoriesResponseSchema,
   createArticleCategoryBodySchema,
@@ -22,7 +23,7 @@ async function readErrorMessage(response: Response): Promise<string> {
 }
 
 export async function listArticleCategoriesClient(): Promise<ArticleCategorySummary[]> {
-  const response = await fetch('/api/admin/article-categories', { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/article-categories', { cache: 'no-store' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
   const payload: unknown = await response.json();
   return articleCategoriesResponseSchema.parse(payload).items;
@@ -32,7 +33,7 @@ export async function createArticleCategoryClient(
   body: CreateArticleCategoryBody,
 ): Promise<{ id: string }> {
   const parsed = createArticleCategoryBodySchema.parse(body);
-  const response = await fetch('/api/admin/article-categories', {
+  const response = await adminClientFetch('/api/admin/article-categories', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsed),
@@ -47,7 +48,7 @@ export async function updateArticleCategoryClient(
   body: UpdateArticleCategoryBody,
 ): Promise<void> {
   const parsed = updateArticleCategoryBodySchema.parse(body);
-  const response = await fetch(`/api/admin/article-categories/${id}`, {
+  const response = await adminClientFetch(`/api/admin/article-categories/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(parsed),
@@ -56,6 +57,6 @@ export async function updateArticleCategoryClient(
 }
 
 export async function deleteArticleCategoryClient(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/article-categories/${id}`, { method: 'DELETE' });
+  const response = await adminClientFetch(`/api/admin/article-categories/${id}`, { method: 'DELETE' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
 }

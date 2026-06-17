@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from './admin-client';
+
 import {
   operatorProfileSchema,
   updateOperatorProfileResponseSchema,
@@ -9,7 +11,7 @@ import {
 } from '@ecommerce-amazon/shared/admin';
 
 export async function fetchOperatorProfileClient(): Promise<OperatorProfile> {
-  const response = await fetch('/api/admin/profile', { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/profile', { cache: 'no-store' });
   if (!response.ok) {
     const payload: unknown = await response.json().catch(() => null);
     const message =
@@ -29,7 +31,7 @@ export async function fetchOperatorProfileClient(): Promise<OperatorProfile> {
 export async function updateOperatorProfileClient(
   body: UpdateOperatorProfileBody,
 ): Promise<OperatorProfile> {
-  const response = await fetch('/api/admin/profile', {
+  const response = await adminClientFetch('/api/admin/profile', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -56,7 +58,7 @@ export async function uploadOperatorAvatarClient(file: Blob): Promise<string> {
   const formData = new FormData();
   formData.append('avatar', file, 'avatar.jpg');
 
-  const response = await fetch('/api/admin/profile/avatar', {
+  const response = await adminClientFetch('/api/admin/profile/avatar', {
     method: 'POST',
     body: formData,
   });
@@ -78,7 +80,7 @@ export async function uploadOperatorAvatarClient(file: Blob): Promise<string> {
 }
 
 export async function removeOperatorAvatarClient(): Promise<void> {
-  const response = await fetch('/api/admin/profile/avatar', { method: 'DELETE' });
+  const response = await adminClientFetch('/api/admin/profile/avatar', { method: 'DELETE' });
   if (!response.ok) {
     const payload: unknown = await response.json().catch(() => null);
     const message =

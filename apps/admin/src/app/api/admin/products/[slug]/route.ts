@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import { getAdminProduct, updateAdminProduct } from '@/lib/api/admin-products';
 import { updateProductBodySchema } from '@ecommerce-amazon/shared/admin';
@@ -13,9 +14,8 @@ export async function GET(_request: Request, context: RouteContext) {
     const product = await getAdminProduct(slug);
     return NextResponse.json(product);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status =
-      message === 'Unauthorized' ? 401 : message.includes('not found') ? 404 : 500;
+    const message = getBffErrorMessage(error);
+    const status = resolveBffStatus(error, message.includes('not found') ? 404 : 500);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -28,15 +28,11 @@ export async function PATCH(request: Request, context: RouteContext) {
     const product = await updateAdminProduct(slug, parsed);
     return NextResponse.json(product);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status =
-      message === 'Unauthorized'
-        ? 401
-        : message.includes('not found')
-          ? 404
-          : message.includes('already exists')
-            ? 409
-            : 400;
+    const message = getBffErrorMessage(error);
+    const status = resolveBffStatus(
+      error,
+      message.includes('not found') ? 404 : message.includes('already exists') ? 409 : 400,
+    );
     return NextResponse.json({ error: message }, { status });
   }
 }

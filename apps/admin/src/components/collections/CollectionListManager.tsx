@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { Layers, Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -37,7 +39,7 @@ export function CollectionListManager({
   const [deleteTarget, setDeleteTarget] = useState<AdminCollectionSummary | null>(null);
 
   const refresh = useCallback(async () => {
-    const response = await fetch('/api/admin/collections', { cache: 'no-store' });
+    const response = await adminClientFetch('/api/admin/collections', { cache: 'no-store' });
     if (!response.ok) throw new Error('Falha ao carregar coleções');
     const payload: unknown = await response.json();
     const parsed = adminCollectionsResponseSchema.safeParse(payload);
@@ -58,7 +60,7 @@ export function CollectionListManager({
   async function confirmDelete(): Promise<void> {
     if (!deleteTarget) return;
     try {
-      const response = await fetch(`/api/admin/collections/${deleteTarget.id}`, {
+      const response = await adminClientFetch(`/api/admin/collections/${deleteTarget.id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Falha ao excluir coleção');

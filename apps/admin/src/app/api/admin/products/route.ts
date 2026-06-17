@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getBffErrorMessage, getBffErrorStatus, resolveBffStatus } from '@/lib/api/bff-error-status';
 
 import { createAdminProduct, listAdminProducts } from '@/lib/api/admin-products';
 import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
@@ -17,8 +18,8 @@ export async function GET(request: Request) {
     });
     return NextResponse.json(products);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status = message === 'Unauthorized' ? 401 : 500;
+    const status = getBffErrorStatus(error);
+    const message = getBffErrorMessage(error);
     return NextResponse.json({ error: message }, { status });
   }
 }
@@ -30,9 +31,8 @@ export async function POST(request: Request) {
     const product = await createAdminProduct(parsed);
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    const status =
-      message === 'Unauthorized' ? 401 : message.includes('already exists') ? 409 : 400;
+    const message = getBffErrorMessage(error);
+    const status = resolveBffStatus(error, message.includes('already exists') ? 409 : 400);
     return NextResponse.json({ error: message }, { status });
   }
 }

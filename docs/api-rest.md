@@ -490,7 +490,19 @@ Rotas `/admin/*` (exceto login/logout) exigem header `Authorization: Bearer <JWT
 
 **Headers:** `Authorization: Bearer <token>`
 
+**Response 200:** `{ id, email, name }` (claims do JWT, sem revalidação no DB).
+
+### `GET /admin/auth/session`
+
+**Headers:** `Authorization: Bearer <token>`
+
+Confirma operador **ativo** no PostgreSQL (usado pelo admin fail-closed).
+
 **Response 200:** `{ id, email, name }`
+
+**Response 401:** token inválido, operador ausente ou `status !== active`
+
+**Response 503:** indisponibilidade de infraestrutura (DB)
 
 ### `POST /admin/auth/logout`
 

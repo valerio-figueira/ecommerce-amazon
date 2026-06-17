@@ -59,6 +59,10 @@ const envSchemaBase = z.object({
   JWT_EXPIRES_IN: z.string().default('8h'),
   ADMIN_SEED_EMAIL: z.string().email().default('admin@vitrine.local'),
   ADMIN_SEED_PASSWORD: z.string().min(8).default('vitrine-admin'),
+  PASSWORD_PEPPER: z
+    .string()
+    .min(16)
+    .default('dev-pepper-change-in-production-min-16-chars'),
   REVALIDATE_SECRET: z.string().default(''),
   WEB_PUBLIC_URL: z.string().url().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),

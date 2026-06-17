@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { sql } from 'drizzle-orm';
 import { ZodError } from 'zod';
 
 import { DomainError, parseMarketplace, parseProductSortField, ValidationError, type Marketplace } from '@ecommerce-amazon/domain';
@@ -64,7 +65,16 @@ function handleError(error: unknown, reply: FastifyReply) {
 export async function registerRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases } = container;
 
-  app.get('/health', async () => ({ status: 'ok' }));
+  app.get('/health', () => ({ status: 'ok' }));
+
+  app.get('/health/ready', async (_request, reply) => {
+    try {
+      await container.db.execute(sql`SELECT 1`);
+      return { status: 'ok' };
+    } catch {
+      return reply.status(503).send({ status: 'unavailable' });
+    }
+  });
 
   app.get('/go/:slug', async (request, reply) => {
     try {

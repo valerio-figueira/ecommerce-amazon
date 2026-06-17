@@ -1,5 +1,7 @@
 'use client';
 
+import { adminClientFetch } from '@/lib/api/admin-client';
+
 import { FolderOpen, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
@@ -38,7 +40,7 @@ export function ArticleCategoryListManager({
   const [deleteTarget, setDeleteTarget] = useState<ArticleCategorySummary | null>(null);
 
   const refresh = useCallback(async () => {
-    const response = await fetch('/api/admin/article-categories', { cache: 'no-store' });
+    const response = await adminClientFetch('/api/admin/article-categories', { cache: 'no-store' });
     if (!response.ok) throw new Error('Falha ao carregar categorias');
     const payload: unknown = await response.json();
     const parsed = articleCategoriesResponseSchema.safeParse(payload);
@@ -59,7 +61,7 @@ export function ArticleCategoryListManager({
   async function confirmDelete(): Promise<void> {
     if (!deleteTarget) return;
     try {
-      const response = await fetch(`/api/admin/article-categories/${deleteTarget.id}`, {
+      const response = await adminClientFetch(`/api/admin/article-categories/${deleteTarget.id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

@@ -117,6 +117,8 @@ export {
 } from './use-cases/admin-category/UpdateCategory.js';
 export { GetWishlist } from './use-cases/wishlist/GetWishlist.js';
 export { AuthenticateOperator } from './use-cases/admin-auth/AuthenticateOperator.js';
+export { ValidateOperatorSession } from './use-cases/admin-auth/ValidateOperatorSession.js';
+export type { ValidatedOperatorSession } from './use-cases/admin-auth/ValidateOperatorSession.js';
 export { GetOperatorProfile } from './use-cases/admin-profile/GetOperatorProfile.js';
 export type { OperatorProfileDto } from './use-cases/admin-profile/GetOperatorProfile.js';
 export { UpdateOperatorProfile } from './use-cases/admin-profile/UpdateOperatorProfile.js';
