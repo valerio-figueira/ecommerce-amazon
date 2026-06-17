@@ -11,6 +11,7 @@ export default defineConfig({
             'packages/domain/**/*.test.ts',
             'packages/application/**/*.test.ts',
             'packages/shared/**/*.test.ts',
+            'apps/admin/src/**/*.test.ts',
           ],
           environment: 'node',
         },

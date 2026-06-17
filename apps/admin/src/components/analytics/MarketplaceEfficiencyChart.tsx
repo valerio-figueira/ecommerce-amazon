@@ -22,12 +22,31 @@ type MarketplaceEfficiencyItem = {
   sharePercent: number;
   catalogCount: number;
   catalogSharePercent: number;
-  clickIndex: number | null;
+  clickIndex?: number | null | undefined;
 };
 
 type MarketplaceEfficiencyChartProps = {
   data: MarketplaceEfficiencyItem[];
 };
+
+type MarketplaceEfficiencyChartRow = {
+  marketplace: string;
+  sharePercent: number;
+  catalogSharePercent: number;
+  clickIndex: number | null;
+  clickCount: number;
+  catalogCount: number;
+};
+
+function isMarketplaceEfficiencyRow(value: unknown): value is MarketplaceEfficiencyChartRow {
+  if (typeof value !== 'object' || value === null) return false;
+  return (
+    'catalogSharePercent' in value &&
+    'catalogCount' in value &&
+    'sharePercent' in value &&
+    'clickCount' in value
+  );
+}
 
 function formatTooltipValue(value: unknown, name: unknown): [string, string] {
   const numeric = typeof value === 'number' ? value : Number(value);
@@ -87,8 +106,8 @@ export function MarketplaceEfficiencyChart({
                 labelFormatter={(label) => String(label)}
                 content={({ active, payload, label }) => {
                   if (!active || !payload || payload.length === 0) return null;
-                  const row = payload[0]?.payload as (typeof chartData)[number] | undefined;
-                  if (!row) return null;
+                  const row: unknown = payload[0]?.payload;
+                  if (!isMarketplaceEfficiencyRow(row)) return null;
 
                   return (
                     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs shadow-sm">

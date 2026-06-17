@@ -14,7 +14,7 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Aba **Imagens** (após Especificações): upload gerenciado (`POST /admin/media/images`) com recorte 1:1 + galeria ordenada + URL externa opcional
 - Especificações dinâmicas por categoria (`specs_normalized`) na aba **Especificações**
 - `short_description` híbrida: gerada dos prós na API + textarea editável no admin
-- `long_description_html`: editor HTML manual (sem botão de IA)
+- `long_description_html`: editor rico TipTap (modo Visual + aba Código HTML) na aba Análise Editorial
 - Meta tags SEO automatizadas na vitrine; sobrescrita opcional na aba SEO Avançado
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
@@ -50,8 +50,21 @@ Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/
 | Campo | Admin | Backend |
 |-------|-------|---------|
 | `short_description` | Textarea pré-preenchida a partir dos prós | Se vazio no save, API gera dos prós |
-| `long_description_html` | Textarea HTML + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
+| `long_description_html` | Editor TipTap (Visual + Código HTML) + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
 | `specs_normalized` | Aba **Especificações** → seção **Especificações do Produto** | JSON `Record<string, string>`; alimenta comparador e tabela de specs na vitrine |
+
+### Editor rico — `long_description_html`
+
+Componentes: [`ProductLongDescriptionEditor.tsx`](../apps/admin/src/components/products/ProductLongDescriptionEditor.tsx), [`ProductEditorToolbar.tsx`](../apps/admin/src/components/products/ProductEditorToolbar.tsx). Primitivos compartilhados com artigos em [`apps/admin/src/components/editor/`](../apps/admin/src/components/editor/).
+
+| Recurso | Detalhe |
+|---------|---------|
+| Modos | **Visual** (TipTap) e **Código HTML** (colar saída de IA) |
+| Toolbar | H3, negrito/itálico/riscado, listas, tabela, link |
+| Fluxo IA | ✨ copiar prompt → colar na aba HTML → revisar em Visual → salvar |
+| Persistência | `string` HTML em `long_description_html` (sem migration) |
+| Limite | Contador 50.000 caracteres no form (Zod `max(50000)`) |
+| Vitrine | `prose` + `dangerouslySetInnerHTML` em `/produtos/[slug]` (inalterado) |
 
 ## Especificações por categoria
 
@@ -168,6 +181,9 @@ Schemas Zod: [`packages/shared/src/admin/product-schemas.ts`](../packages/shared
 | Presenter admin | `apps/api/src/adapters/presenters/product.presenter.ts` |
 | BFF admin | `apps/admin/src/app/api/admin/products/route.ts` |
 | Formulário | `apps/admin/src/components/products/ProductForm.tsx` |
+| Análise editorial | `apps/admin/src/components/products/ProductAnalysisSection.tsx` |
+| Editor rico (review) | `apps/admin/src/components/products/ProductLongDescriptionEditor.tsx` |
+| Editor compartilhado | `apps/admin/src/components/editor/` |
 | Galeria / upload | `apps/admin/src/components/products/ProductImagesSection.tsx` |
 | Specs por categoria | `apps/admin/src/components/products/ProductSpecsForm.tsx` |
 | Templates de specs | `packages/shared/src/product/spec-templates.ts` |

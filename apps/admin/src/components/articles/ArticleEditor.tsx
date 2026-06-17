@@ -6,13 +6,13 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useEffect, useRef, useState } from 'react';
 
-import { Textarea } from '@/components/ui/input';
+import { RichTextEditorHtmlPane } from '@/components/editor/RichTextEditorHtmlPane';
+import {
+  RichTextEditorShell,
+} from '@/components/editor/RichTextEditorShell';
+import type { RichTextEditorMode } from '@/components/editor/RichTextEditorModeTabs';
 import { listProductsClient, type ProductPickerOption } from '@/lib/api/cms-pages-client';
 
-import {
-  ArticleEditorModeTabs,
-  type ArticleEditorMode,
-} from './ArticleEditorModeTabs';
 import { ArticleEditorToolbar } from './ArticleEditorToolbar';
 import { CompareInsertModal } from './CompareInsertModal';
 import {
@@ -34,10 +34,10 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
   const [products, setProducts] = useState<ProductPickerOption[]>([]);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
-  const [mode, setMode] = useState<ArticleEditorMode>('visual');
+  const [mode, setMode] = useState<RichTextEditorMode>('visual');
   const [htmlDraft, setHtmlDraft] = useState(value);
   const htmlTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const modeRef = useRef<ArticleEditorMode>(mode);
+  const modeRef = useRef<RichTextEditorMode>(mode);
   modeRef.current = mode;
 
   const editor = useEditor({
@@ -90,7 +90,7 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
     }
   }, [editor, value, mode, htmlDraft]);
 
-  function handleModeChange(nextMode: ArticleEditorMode): void {
+  function handleModeChange(nextMode: RichTextEditorMode): void {
     if (nextMode === mode) return;
 
     if (nextMode === 'html') {
@@ -158,33 +158,30 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <div className="flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-2 py-1.5">
-        <ArticleEditorToolbar
-          editor={editor}
-          onInsertProduct={() => setProductModalOpen(true)}
-          onInsertCompare={() => setCompareModalOpen(true)}
-          formatDisabled={mode === 'html'}
-        />
-        <ArticleEditorModeTabs mode={mode} onModeChange={handleModeChange} />
-      </div>
-
-      {mode === 'visual' ? (
-        <EditorContent
-          editor={editor}
-          className="prose prose-sm max-w-none px-3 py-2 focus:outline-none [&_.ProseMirror]:min-h-[320px] [&_.ProseMirror]:outline-none [&_.ProseMirror_h2]:text-lg [&_.ProseMirror_h2]:font-semibold [&_.ProseMirror_h3]:text-base [&_.ProseMirror_h3]:font-semibold"
-        />
-      ) : (
-        <Textarea
-          ref={htmlTextareaRef}
-          value={htmlDraft}
-          onChange={(event) => handleHtmlChange(event.target.value)}
-          spellCheck={false}
-          rows={18}
-          className="min-h-[320px] resize-y rounded-none border-0 bg-gray-50 px-3 py-3 font-mono text-sm leading-relaxed text-neutral-800 whitespace-pre-wrap shadow-none focus-visible:ring-2 focus-visible:ring-[var(--admin-focus-ring)]"
-          aria-label="Código HTML do artigo"
-        />
-      )}
+    <>
+      <RichTextEditorShell
+        mode={mode}
+        onModeChange={handleModeChange}
+        toolbar={
+          <ArticleEditorToolbar
+            editor={editor}
+            onInsertProduct={() => setProductModalOpen(true)}
+            onInsertCompare={() => setCompareModalOpen(true)}
+            formatDisabled={mode === 'html'}
+          />
+        }
+        visualContent={
+          <EditorContent editor={editor} className="admin-rich-editor__prose admin-rich-editor__prose--article" />
+        }
+        htmlContent={
+          <RichTextEditorHtmlPane
+            ref={htmlTextareaRef}
+            value={htmlDraft}
+            onChange={handleHtmlChange}
+            ariaLabel="Código HTML do artigo"
+          />
+        }
+      />
 
       <ProductSearchModal
         open={productModalOpen}
@@ -198,6 +195,6 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
         products={products}
         onInsert={insertCompare}
       />
-    </div>
+    </>
   );
 }

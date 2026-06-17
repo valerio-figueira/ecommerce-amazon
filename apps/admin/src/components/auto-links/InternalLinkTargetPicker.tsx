@@ -65,7 +65,12 @@ export function InternalLinkTargetPicker({
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent): void {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      const target = event.target;
+      if (
+        target instanceof Node &&
+        containerRef.current &&
+        !containerRef.current.contains(target)
+      ) {
         setPanelOpen(false);
       }
     }

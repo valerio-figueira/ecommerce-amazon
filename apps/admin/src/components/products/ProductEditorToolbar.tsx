@@ -3,43 +3,54 @@
 import type { Editor } from '@tiptap/react';
 import {
   Bold,
-  Columns2,
-  Heading2,
   Heading3,
   Italic,
+  Link2,
   List,
   ListOrdered,
-  Package,
   Strikethrough,
+  Table2,
 } from 'lucide-react';
 
 import {
   ToolbarButton,
   ToolbarSeparator,
-  ToolbarTextButton,
 } from '@/components/editor/toolbar-primitives';
 import { useEditorToolbarState } from '@/components/editor/useEditorToolbarState';
 import { cn } from '@/lib/utils';
 
-type ArticleEditorToolbarProps = {
+type ProductEditorToolbarProps = {
   editor: Editor | null;
-  onInsertProduct: () => void;
-  onInsertCompare: () => void;
   formatDisabled?: boolean;
 };
 
-export function ArticleEditorToolbar({
+export function ProductEditorToolbar({
   editor,
-  onInsertProduct,
-  onInsertCompare,
   formatDisabled = false,
-}: ArticleEditorToolbarProps): React.JSX.Element {
+}: ProductEditorToolbarProps): React.JSX.Element {
   useEditorToolbarState(editor);
 
   const run = (command: () => void): void => {
     if (!editor || formatDisabled) return;
     command();
   };
+
+  function handleLink(): void {
+    if (!editor || formatDisabled) return;
+
+    const linkAttrs = editor.getAttributes('link');
+    const previousUrl =
+      typeof linkAttrs['href'] === 'string' ? linkAttrs['href'] : undefined;
+    const url = window.prompt('URL do link', previousUrl ?? 'https://');
+    if (url === null) return;
+
+    if (url.trim() === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
+  }
 
   return (
     <div
@@ -49,15 +60,7 @@ export function ArticleEditorToolbar({
       )}
     >
       <ToolbarButton
-        title="Título H2"
-        active={editor?.isActive('heading', { level: 2 }) ?? false}
-        disabled={formatDisabled || !editor}
-        onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 2 }).run())}
-      >
-        <Heading2 className="h-4 w-4" />
-      </ToolbarButton>
-      <ToolbarButton
-        title="Título H3"
+        title="Título de seção (H3)"
         active={editor?.isActive('heading', { level: 3 }) ?? false}
         disabled={formatDisabled || !editor}
         onClick={() => run(() => editor?.chain().focus().toggleHeading({ level: 3 }).run())}
@@ -113,22 +116,30 @@ export function ArticleEditorToolbar({
 
       <ToolbarSeparator />
 
-      <ToolbarTextButton
-        title="Inserir produto (/produto)"
+      <ToolbarButton
+        title="Inserir tabela"
+        active={editor?.isActive('table') ?? false}
         disabled={formatDisabled || !editor}
-        onClick={onInsertProduct}
+        onClick={() =>
+          run(() =>
+            editor
+              ?.chain()
+              .focus()
+              .insertTable({ rows: 4, cols: 2, withHeaderRow: true })
+              .run(),
+          )
+        }
       >
-        <Package className="h-4 w-4" />
-        <span className="hidden sm:inline">Produto</span>
-      </ToolbarTextButton>
-      <ToolbarTextButton
-        title="Inserir tabela comparativa"
-        disabled={!formatDisabled && !editor}
-        onClick={onInsertCompare}
+        <Table2 className="h-4 w-4" />
+      </ToolbarButton>
+      <ToolbarButton
+        title="Inserir ou editar link"
+        active={editor?.isActive('link') ?? false}
+        disabled={formatDisabled || !editor}
+        onClick={handleLink}
       >
-        <Columns2 className="h-4 w-4" />
-        <span className="hidden sm:inline">Comparar</span>
-      </ToolbarTextButton>
+        <Link2 className="h-4 w-4" />
+      </ToolbarButton>
     </div>
   );
 }

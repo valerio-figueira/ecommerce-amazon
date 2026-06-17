@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import type { AdminPageSummary } from '@ecommerce-amazon/domain';
-import { BlockType, PageStatus } from '@ecommerce-amazon/domain';
+import { BlockType, PageKind, PageStatus } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 
@@ -14,6 +14,7 @@ const adminPageSummarySchema = z.object({
   slug: z.string(),
   title: z.string(),
   status: z.nativeEnum(PageStatus),
+  pageKind: z.nativeEnum(PageKind),
 });
 
 const adminPagesSchema = z.array(adminPageSummarySchema);

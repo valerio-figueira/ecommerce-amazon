@@ -1850,3 +1850,250 @@ body.admin-login-page {
   color: white;
   user-select: none;
 }
+
+/* Rich text editor (articles + product review) */
+.admin-rich-editor {
+  overflow: hidden;
+  border: 1px solid var(--admin-gray);
+  border-radius: 0.5rem;
+  background: var(--admin-surface);
+}
+
+.admin-rich-editor__toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--admin-gray);
+  background: var(--admin-bg);
+  padding: 0.35rem 0.5rem;
+}
+
+.admin-rich-editor__toolbar {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.admin-rich-editor__toolbar.is-format-disabled .admin-rich-editor__toolbar-button {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.admin-rich-editor__toolbar-separator {
+  display: block;
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.25rem;
+  flex-shrink: 0;
+  background: var(--admin-gray);
+}
+
+.admin-rich-editor__toolbar-button {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-rich-editor__toolbar-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-primary) 8%, var(--admin-surface));
+  color: var(--admin-navy);
+}
+
+.admin-rich-editor__toolbar-button.is-active {
+  background: color-mix(in srgb, var(--admin-primary) 12%, var(--admin-surface));
+  color: var(--admin-navy);
+}
+
+.admin-rich-editor__toolbar-button:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 1px;
+}
+
+.admin-rich-editor__toolbar-button:disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.admin-rich-editor__toolbar-text-button {
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0 0.5rem;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-rich-editor__toolbar-text-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-primary) 8%, var(--admin-surface));
+  color: var(--admin-navy);
+}
+
+.admin-rich-editor__toolbar-text-button:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 1px;
+}
+
+.admin-rich-editor__toolbar-text-button:disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.admin-rich-editor__mode-tabs {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-left: auto;
+  border: 1px solid var(--admin-gray);
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--admin-gray) 35%, var(--admin-surface));
+  padding: 0.125rem;
+}
+
+.admin-rich-editor__mode-tab {
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-rich-editor__mode-tab.is-active {
+  background: var(--admin-surface);
+  color: var(--admin-navy);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-navy) 8%, transparent);
+}
+
+.admin-rich-editor__mode-tab:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 1px;
+}
+
+.admin-rich-editor__body {
+  background: var(--admin-surface);
+}
+
+.admin-rich-editor__prose {
+  max-width: none;
+  padding: 0.75rem;
+}
+
+.admin-rich-editor__prose .ProseMirror {
+  min-height: 280px;
+  outline: none;
+  color: var(--admin-navy);
+  line-height: 1.6;
+}
+
+.admin-rich-editor__prose--article .ProseMirror {
+  min-height: 320px;
+}
+
+.admin-rich-editor__prose .ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--admin-text-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.admin-rich-editor__prose .ProseMirror h2 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.admin-rich-editor__prose .ProseMirror h3 {
+  margin: 0.875rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.admin-rich-editor__prose .ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.admin-rich-editor__prose .ProseMirror ul,
+.admin-rich-editor__prose .ProseMirror ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.admin-rich-editor__prose .ProseMirror a {
+  color: var(--admin-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.admin-rich-editor__prose .ProseMirror table {
+  width: 100%;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.admin-rich-editor__prose .ProseMirror th,
+.admin-rich-editor__prose .ProseMirror td {
+  border: 1px solid var(--admin-gray);
+  padding: 0.5rem 0.625rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-rich-editor__prose .ProseMirror th {
+  background: var(--admin-bg);
+  font-weight: 600;
+}
+
+.admin-rich-editor__prose .ProseMirror .selectedCell {
+  background: color-mix(in srgb, var(--admin-primary) 10%, var(--admin-surface));
+}
+
+.admin-rich-editor__html-pane {
+  min-height: 280px;
+  resize: vertical;
+  border: 0;
+  border-radius: 0;
+  background: var(--admin-bg);
+  padding: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--admin-navy);
+  white-space: pre-wrap;
+  box-shadow: none;
+}
+
+.admin-rich-editor__prose--article + .admin-rich-editor__html-pane,
+.admin-rich-editor__body .admin-rich-editor__html-pane {
+  min-height: 320px;
+}
+
+.admin-rich-editor__html-pane:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--admin-primary);
+}

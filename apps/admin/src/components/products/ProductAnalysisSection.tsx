@@ -5,6 +5,8 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { DynamicStringList } from '@/components/products/DynamicStringList';
+import { ProductLongDescriptionEditor } from '@/components/products/ProductLongDescriptionEditor';
+import { ProductLlmPromptHelper } from '@/components/products/ProductLlmPromptHelper';
 import {
   FormControl,
   FormDescription,
@@ -15,12 +17,14 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/input';
 import type { ProductFormValues } from '@/lib/product-form-values';
-import { ProductLlmPromptHelper } from '@/components/products/ProductLlmPromptHelper';
 import { buildShortDescriptionFromPros } from '@ecommerce-amazon/shared/seo';
+
+const LONG_DESCRIPTION_MAX = 50000;
 
 export function ProductAnalysisSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
   const pros = useWatch({ control: form.control, name: 'pros' }) ?? [];
+  const longDescriptionHtml = useWatch({ control: form.control, name: 'longDescriptionHtml' }) ?? '';
   const shortDescriptionTouched = useRef(false);
 
   useEffect(() => {
@@ -36,6 +40,14 @@ export function ProductAnalysisSection(): React.JSX.Element {
       form.setValue('shortDescription', generated, { shouldDirty: false });
     }
   }, [form, pros]);
+
+  const charCount = longDescriptionHtml.length;
+  const charCountClass =
+    charCount > LONG_DESCRIPTION_MAX
+      ? 'text-red-600'
+      : charCount > LONG_DESCRIPTION_MAX * 0.9
+        ? 'text-amber-700'
+        : 'text-[color:var(--admin-text-muted)]';
 
   return (
     <CmsFormSection title="Análise editorial">
@@ -103,22 +115,24 @@ export function ProductAnalysisSection(): React.JSX.Element {
         render={({ field }) => (
           <FormItem>
             <div className="flex items-center gap-2">
-              <FormLabel>Análise completa (HTML)</FormLabel>
+              <FormLabel>Análise completa</FormLabel>
               <ProductLlmPromptHelper />
             </div>
             <FormControl>
-              <Textarea
-                rows={14}
-                className="font-mono text-xs leading-relaxed"
-                placeholder="<h3>Visão geral</h3><p>Escreva a análise detalhada do produto...</p>"
+              <ProductLongDescriptionEditor
                 value={field.value ?? ''}
                 onChange={field.onChange}
               />
             </FormControl>
-            <FormDescription>
-              Review estruturado em HTML (h3, p, strong, table). Preencha manualmente ou use o ícone
-              ✨ ao lado para copiar um prompt pronto para IA externa.
-            </FormDescription>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <FormDescription>
+                Review estruturado com editor visual ou aba <strong>Código HTML</strong> para colar
+                saída da IA (✨). Tags suportadas: h3, p, strong, table, ul, li e links.
+              </FormDescription>
+              <p className={`text-xs tabular-nums ${charCountClass}`} aria-live="polite">
+                {charCount.toLocaleString('pt-BR')} / {LONG_DESCRIPTION_MAX.toLocaleString('pt-BR')}
+              </p>
+            </div>
             <FormMessage />
           </FormItem>
         )}

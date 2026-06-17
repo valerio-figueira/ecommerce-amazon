@@ -255,7 +255,7 @@ export function BentoHubMixForm({
                   <FormLabel>Categoria</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    value={readString(field.value) || undefined}
+                    value={readString(field.value) ?? ''}
                   >
                     <FormControl>
                       <SelectTrigger>
