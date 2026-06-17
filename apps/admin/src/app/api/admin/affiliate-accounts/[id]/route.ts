@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
-import { updateAffiliateAccount } from '@/lib/api/affiliate-accounts';
+import { deleteAffiliateAccount, updateAffiliateAccount } from '@/lib/api/affiliate-accounts';
 import { updateAffiliateAccountBodySchema } from '@ecommerce-amazon/shared/admin';
 
 type RouteContext = {
@@ -14,6 +14,18 @@ export async function PATCH(request: Request, context: RouteContext) {
     const body: unknown = await request.json();
     const parsed = updateAffiliateAccountBodySchema.parse(body);
     const result = await updateAffiliateAccount(id, parsed);
+    return NextResponse.json(result);
+  } catch (error) {
+    const status = resolveBffStatus(error, 400);
+    const message = getBffErrorMessage(error);
+    return NextResponse.json({ error: message }, { status });
+  }
+}
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  try {
+    const { id } = await context.params;
+    const result = await deleteAffiliateAccount(id);
     return NextResponse.json(result);
   } catch (error) {
     const status = resolveBffStatus(error, 400);

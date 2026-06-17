@@ -6,7 +6,7 @@ Plano de referência: [`.cursor/plans/admin_config_operacional_5464f04d.plan.md`
 
 Hub operacional em `/configuracoes` do painel CMS:
 
-- **Contas de afiliado** — listar, editar tag, validar manualmente (checklist PRD §4.2)
+- **Contas de afiliado** — CRUD: listar, criar, editar tag, validar manualmente, suspender/reativar, excluir (checklist PRD §4.2)
 - **Preferências CMS/plataforma** — feature flags persistidos em `site_settings`
 - **Operadores** — listar, convidar, role, ativar/desativar (somente admin)
 - **Saúde da plataforma** — flags de env, gate de escala, últimos `sync_job_logs` com falha
@@ -63,7 +63,9 @@ Contrato Zod: `packages/shared/src/admin/site-settings-schemas.ts`
 | Método | Rota | Acesso |
 |--------|------|--------|
 | GET | `/admin/affiliate-accounts` | autenticado |
+| POST | `/admin/affiliate-accounts` | admin |
 | PATCH | `/admin/affiliate-accounts/:id` | admin |
+| DELETE | `/admin/affiliate-accounts/:id` | admin |
 | GET | `/admin/operators` | admin |
 | POST | `/admin/operators` | admin |
 | PATCH | `/admin/operators/:id` | admin |
@@ -80,13 +82,17 @@ Contrato Zod: `packages/shared/src/admin/site-settings-schemas.ts`
 
 Promoção para `active` exige `checklistConfirmed: true` no PATCH da conta.
 
+`POST /admin/affiliate-accounts` body: `{ marketplace, affiliateTag }` — cria conta com status `pending_manual_validation`. Uma conta por marketplace (índice único).
+
+`DELETE /admin/affiliate-accounts/:id` — remove conta; redirecionamentos do marketplace ficam sem tag até nova conta.
+
 ## UI admin
 
 Rota: [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](../apps/admin/src/app/(dashboard)/configuracoes/page.tsx)
 
 Componentes em `apps/admin/src/components/settings/`:
 
-- `AffiliateAccountsPanel` — cards por marketplace, dialog de validação
+- `AffiliateAccountsPanel` — cards por marketplace, criar (sheet), validar, suspender, excluir
 - `SiteSettingsPanel` — switches de feature flags
 - `OperatorsPanel` — CRUD operadores (admin only)
 - `OperationalHealthPanel` — chips env + falhas de sync

@@ -646,7 +646,9 @@ Implementação: [`admin-settings-routes.ts`](../apps/api/src/adapters/http/rout
 | Método | Rota | Acesso |
 |--------|------|--------|
 | GET | `/admin/affiliate-accounts` | JWT |
+| POST | `/admin/affiliate-accounts` | JWT admin |
 | PATCH | `/admin/affiliate-accounts/:id` | JWT admin |
+| DELETE | `/admin/affiliate-accounts/:id` | JWT admin |
 | GET | `/admin/operators` | JWT admin |
 | POST | `/admin/operators` | JWT admin |
 | PATCH | `/admin/operators/:id` | JWT admin |

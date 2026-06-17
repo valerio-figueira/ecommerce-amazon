@@ -11,6 +11,7 @@ import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
   affiliateAccountsListResponseSchema,
   changeOperatorPasswordBodySchema,
+  createAffiliateAccountBodySchema,
   createOperatorBodySchema,
   operationalStatusResponseSchema,
   operatorsListResponseSchema,
@@ -57,6 +58,17 @@ export async function registerAdminSettingsRoutes(
     }
   });
 
+  app.post('/admin/affiliate-accounts', async (request, reply) => {
+    try {
+      await requireAdminOperator(request, container);
+      const body = createAffiliateAccountBodySchema.parse(request.body);
+      const result = await useCases.createAffiliateAccount.execute(body);
+      return reply.status(201).send(result);
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
   app.patch('/admin/affiliate-accounts/:id', async (request, reply) => {
     try {
       await requireAdminOperator(request, container);
@@ -74,6 +86,19 @@ export async function registerAdminSettingsRoutes(
         ...body,
       });
 
+      return reply.send(result);
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
+  app.delete('/admin/affiliate-accounts/:id', async (request, reply) => {
+    try {
+      await requireAdminOperator(request, container);
+      const params = request.params as { id: string };
+      const result = await useCases.deleteAffiliateAccount.execute({
+        accountId: params.id,
+      });
       return reply.send(result);
     } catch (error) {
       return handleSettingsError(error, reply);

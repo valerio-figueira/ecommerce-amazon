@@ -29,4 +29,10 @@ export const updateAffiliateAccountBodySchema = z.object({
   checklistConfirmed: z.boolean().optional(),
 });
 
+export const createAffiliateAccountBodySchema = z.object({
+  marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']),
+  affiliateTag: z.string().trim().min(1).max(120),
+});
+
+export type CreateAffiliateAccountBody = z.infer<typeof createAffiliateAccountBodySchema>;
 export type UpdateAffiliateAccountBody = z.infer<typeof updateAffiliateAccountBodySchema>;

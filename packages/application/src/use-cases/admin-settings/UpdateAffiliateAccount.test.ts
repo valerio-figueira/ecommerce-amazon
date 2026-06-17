@@ -23,7 +23,9 @@ describe('UpdateAffiliateAccount', () => {
       findById: vi.fn().mockResolvedValue(account),
       findAll: vi.fn(),
       findByMarketplace: vi.fn(),
+      create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     };
 
     const gateService = {
@@ -56,6 +58,7 @@ describe('UpdateAffiliateAccount', () => {
         ),
       ]),
       findByMarketplace: vi.fn(),
+      create: vi.fn(),
       update: vi.fn().mockResolvedValue(
         new AffiliateAccount(
           account.id,
@@ -67,6 +70,7 @@ describe('UpdateAffiliateAccount', () => {
           'Evidência de teste',
         ),
       ),
+      delete: vi.fn(),
     };
 
     const gateService = {
@@ -92,7 +96,9 @@ describe('UpdateAffiliateAccount', () => {
       findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findByMarketplace: vi.fn(),
+      create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     };
 
     const gateService = {

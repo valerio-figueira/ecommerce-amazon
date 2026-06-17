@@ -5,6 +5,7 @@ import {
   EntityNotFoundError,
   parseMarketplace,
   type AffiliateAccountRepository,
+  type CreateAffiliateAccountData,
   type Marketplace,
   type UpdateAffiliateAccountData,
 } from '@ecommerce-amazon/domain';
@@ -46,6 +47,24 @@ export class DrizzleAffiliateAccountRepository implements AffiliateAccountReposi
     return this.mapRow(row);
   }
 
+  async create(data: CreateAffiliateAccountData): Promise<AffiliateAccount> {
+    const rows = await this.db
+      .insert(schema.affiliateAccounts)
+      .values({
+        marketplace: data.marketplace,
+        affiliateTag: data.affiliateTag,
+        status: data.status,
+      })
+      .returning();
+
+    const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to create affiliate account');
+    }
+
+    return this.mapRow(row);
+  }
+
   async update(id: string, data: UpdateAffiliateAccountData): Promise<AffiliateAccount> {
     const patch: Partial<typeof schema.affiliateAccounts.$inferInsert> = {};
 
@@ -67,6 +86,17 @@ export class DrizzleAffiliateAccountRepository implements AffiliateAccountReposi
     }
 
     return this.mapRow(row);
+  }
+
+  async delete(id: string): Promise<void> {
+    const rows = await this.db
+      .delete(schema.affiliateAccounts)
+      .where(eq(schema.affiliateAccounts.id, id))
+      .returning({ id: schema.affiliateAccounts.id });
+
+    if (rows.length === 0) {
+      throw new EntityNotFoundError('AffiliateAccount', id);
+    }
   }
 
   private mapRow(row: typeof schema.affiliateAccounts.$inferSelect): AffiliateAccount {

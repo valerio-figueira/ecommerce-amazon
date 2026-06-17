@@ -55,6 +55,11 @@ describe('BuildBatchCheckoutRedirect', () => {
           AffiliateAccountStatus.ACTIVE,
         ),
       ),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     };
 
     const gateService = {
@@ -102,6 +107,11 @@ describe('BuildBatchCheckoutRedirect', () => {
           AffiliateAccountStatus.PENDING,
         ),
       ),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     };
 
     const gateService = {
@@ -137,6 +147,11 @@ describe('BuildBatchCheckoutRedirect', () => {
 
     const affiliateAccountRepository: AffiliateAccountRepository = {
       findByMarketplace: vi.fn().mockResolvedValue(null),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     };
 
     const gateService = {

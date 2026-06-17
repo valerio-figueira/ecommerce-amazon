@@ -92,7 +92,9 @@ import {
   ListSitemapEntries,
   AffiliateScaleGateService,
   ListAffiliateAccounts,
+  CreateAffiliateAccount,
   UpdateAffiliateAccount,
+  DeleteAffiliateAccount,
   ListOperators,
   CreateOperator,
   UpdateOperatorAccess,
@@ -422,7 +424,15 @@ export function buildApiContainer(env = loadEnv()) {
       getSitemapMeta: new GetSitemapMeta(sitemapRepository),
       listSitemapEntries: new ListSitemapEntries(sitemapRepository),
       listAffiliateAccounts: new ListAffiliateAccounts(affiliateAccountRepository),
+      createAffiliateAccount: new CreateAffiliateAccount(
+        affiliateAccountRepository,
+        affiliateScaleGateService,
+      ),
       updateAffiliateAccount: new UpdateAffiliateAccount(
+        affiliateAccountRepository,
+        affiliateScaleGateService,
+      ),
+      deleteAffiliateAccount: new DeleteAffiliateAccount(
         affiliateAccountRepository,
         affiliateScaleGateService,
       ),
