@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { type UseFormReturn, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -30,23 +30,27 @@ type CategoryCascadeSelectProps = {
 export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
   const categoryId = form.watch('categoryId');
+  const level1 = form.watch('categoryCascadeLevel1');
+  const level2 = form.watch('categoryCascadeLevel2');
+  const level3 = form.watch('categoryCascadeLevel3');
 
   const roots = useMemo(
     () => options.filter((option) => option.depth === 0),
     [options],
   );
 
-  const selectedPath = useMemo(() => resolvePath(categoryId, options), [categoryId, options]);
-
-  const [level1, setLevel1] = useState<string | undefined>(selectedPath[0]);
-  const [level2, setLevel2] = useState<string | undefined>(selectedPath[1]);
-  const [level3, setLevel3] = useState<string | undefined>(selectedPath[2]);
-
   useEffect(() => {
-    setLevel1(selectedPath[0]);
-    setLevel2(selectedPath[1]);
-    setLevel3(selectedPath[2]);
-  }, [selectedPath]);
+    if (!categoryId || level1 || options.length === 0) {
+      return;
+    }
+
+    const path = resolvePath(categoryId, options);
+    setCascadeLevels(form, {
+      level1: path[0],
+      level2: path[1],
+      level3: path[2],
+    });
+  }, [categoryId, form, level1, options]);
 
   const level2Options = useMemo(
     () => (level1 ? options.filter((option) => option.parentId === level1) : []),
@@ -64,16 +68,12 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
 
   function handleLevel1Change(value: string) {
     if (value === NONE_VALUE) {
-      setLevel1(undefined);
-      setLevel2(undefined);
-      setLevel3(undefined);
+      setCascadeLevels(form, {});
       setCategoryValue(undefined);
       return;
     }
 
-    setLevel1(value);
-    setLevel2(undefined);
-    setLevel3(undefined);
+    setCascadeLevels(form, { level1: value });
 
     const option = options.find((item) => item.id === value);
     if (option?.isLeaf) {
@@ -85,14 +85,12 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
 
   function handleLevel2Change(value: string) {
     if (value === NONE_VALUE) {
-      setLevel2(undefined);
-      setLevel3(undefined);
+      setCascadeLevels(form, { level1 });
       setCategoryValue(undefined);
       return;
     }
 
-    setLevel2(value);
-    setLevel3(undefined);
+    setCascadeLevels(form, { level1, level2: value });
 
     const option = options.find((item) => item.id === value);
     if (option?.isLeaf) {
@@ -104,12 +102,12 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
 
   function handleLevel3Change(value: string) {
     if (value === NONE_VALUE) {
-      setLevel3(undefined);
+      setCascadeLevels(form, { level1, level2 });
       setCategoryValue(undefined);
       return;
     }
 
-    setLevel3(value);
+    setCascadeLevels(form, { level1, level2, level3: value });
     setCategoryValue(value);
   }
 
@@ -182,6 +180,20 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
       )}
     />
   );
+}
+
+function setCascadeLevels(
+  form: UseFormReturn<ProductFormValues>,
+  levels: {
+    level1?: string;
+    level2?: string;
+    level3?: string;
+  },
+): void {
+  const options = { shouldDirty: true, shouldValidate: true } as const;
+  form.setValue('categoryCascadeLevel1', levels.level1, options);
+  form.setValue('categoryCascadeLevel2', levels.level2, options);
+  form.setValue('categoryCascadeLevel3', levels.level3, options);
 }
 
 function resolvePath(

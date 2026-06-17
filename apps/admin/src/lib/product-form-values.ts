@@ -2,7 +2,13 @@ import type { AdminProductDetail } from '@ecommerce-amazon/shared/admin';
 import type { z } from 'zod';
 import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
 
-export type ProductFormValues = z.input<typeof createProductBodySchema>;
+export type ProductFormCascadeFields = {
+  categoryCascadeLevel1?: string;
+  categoryCascadeLevel2?: string;
+  categoryCascadeLevel3?: string;
+};
+
+export type ProductFormValues = z.input<typeof createProductBodySchema> & ProductFormCascadeFields;
 
 export function adminProductDetailToFormValues(product: AdminProductDetail): ProductFormValues {
   const visible: boolean = product.visible;

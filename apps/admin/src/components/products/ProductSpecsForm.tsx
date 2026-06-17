@@ -1,7 +1,7 @@
 'use client';
 
 import { Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
@@ -19,12 +19,29 @@ type CustomSpecRow = {
   value: string;
 };
 
+function createRowId(): string {
+  return `spec-row-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 function createCustomRow(key = '', value = ''): CustomSpecRow {
   return {
-    id: `${key || 'draft'}-${Math.random().toString(36).slice(2, 9)}`,
+    id: createRowId(),
     key,
     value,
   };
+}
+
+function specsToCustomRows(
+  specs: Record<string, string>,
+  templateKeys: string[],
+): CustomSpecRow[] {
+  return Object.entries(specs)
+    .filter(([key]) => !templateKeys.includes(key))
+    .map(([key, value]) => ({
+      id: createRowId(),
+      key,
+      value: value ?? '',
+    }));
 }
 
 export function ProductSpecsForm(): React.JSX.Element {
@@ -39,28 +56,54 @@ export function ProductSpecsForm(): React.JSX.Element {
   );
   const templateKeys = useMemo(() => resolveSpecTemplateForSlugChain(slugChain), [slugChain]);
 
-  const customKeys = useMemo(
-    () => Object.keys(specsNormalized).filter((key) => !templateKeys.includes(key)),
-    [specsNormalized, templateKeys],
-  );
+  const [customRows, setCustomRows] = useState<CustomSpecRow[]>([]);
+  const hydratedRef = useRef(false);
+  const previousCategoryIdRef = useRef(categoryId);
 
-  const [draftCustomRows, setDraftCustomRows] = useState<CustomSpecRow[]>([]);
+  useEffect(() => {
+    if (hydratedRef.current) {
+      return;
+    }
 
-  const visibleCustomRows = useMemo(() => {
-    const persistedRows = customKeys.map((key) => ({
-      id: `custom-${key}`,
-      key,
-      value: specsNormalized[key] ?? '',
-      isDraft: false,
-    }));
-    const draftRows = draftCustomRows
-      .filter((row) => !row.key.trim() || !customKeys.includes(row.key.trim()))
-      .map((row) => ({ ...row, isDraft: true }));
-    return [...persistedRows, ...draftRows];
-  }, [customKeys, draftCustomRows, specsNormalized]);
+    if (categoryId && categoryOptions.length === 0) {
+      return;
+    }
+
+    const rows = specsToCustomRows(form.getValues('specsNormalized') ?? {}, templateKeys);
+    setCustomRows(rows);
+    hydratedRef.current = true;
+  }, [categoryId, categoryOptions.length, form, templateKeys]);
+
+  useEffect(() => {
+    if (previousCategoryIdRef.current === categoryId) {
+      return;
+    }
+
+    previousCategoryIdRef.current = categoryId;
+    setCustomRows((rows) => rows.filter((row) => !templateKeys.includes(row.key.trim())));
+  }, [categoryId, templateKeys]);
 
   function setSpecs(next: Record<string, string>): void {
     form.setValue('specsNormalized', next, { shouldDirty: true, shouldValidate: true });
+  }
+
+  function syncCustomRowsToForm(rows: CustomSpecRow[]): void {
+    const next: Record<string, string> = {};
+
+    for (const key of templateKeys) {
+      if (specsNormalized[key] !== undefined) {
+        next[key] = specsNormalized[key];
+      }
+    }
+
+    for (const row of rows) {
+      const trimmedKey = row.key.trim();
+      if (trimmedKey && !templateKeys.includes(trimmedKey)) {
+        next[trimmedKey] = row.value;
+      }
+    }
+
+    setSpecs(next);
   }
 
   function updateTemplateValue(key: string, value: string): void {
@@ -71,50 +114,21 @@ export function ProductSpecsForm(): React.JSX.Element {
   }
 
   function updateCustomRow(rowId: string, nextKey: string, nextValue: string): void {
-    const row = visibleCustomRows.find((item) => item.id === rowId);
-    if (!row) {
-      return;
-    }
-
-    const previousKey = row.key.trim();
-    const trimmedKey = nextKey.trim();
-
-    if (row.isDraft && !trimmedKey) {
-      setDraftCustomRows((current) =>
-        current.map((item) =>
-          item.id === rowId ? { ...item, key: nextKey, value: nextValue } : item,
-        ),
-      );
-      return;
-    }
-
-    const next = { ...specsNormalized };
-
-    if (previousKey && previousKey !== trimmedKey) {
-      delete next[previousKey];
-    }
-
-    if (trimmedKey) {
-      next[trimmedKey] = nextValue;
-    }
-
-    setSpecs(next);
-    setDraftCustomRows((current) => current.filter((item) => item.id !== rowId));
+    const nextRows = customRows.map((row) =>
+      row.id === rowId ? { ...row, key: nextKey, value: nextValue } : row,
+    );
+    setCustomRows(nextRows);
+    syncCustomRowsToForm(nextRows);
   }
 
   function removeCustomRow(rowId: string): void {
-    const row = visibleCustomRows.find((item) => item.id === rowId);
-    if (row?.key.trim()) {
-      const next = { ...specsNormalized };
-      delete next[row.key.trim()];
-      setSpecs(next);
-    }
-
-    setDraftCustomRows((current) => current.filter((item) => item.id !== rowId));
+    const nextRows = customRows.filter((row) => row.id !== rowId);
+    setCustomRows(nextRows);
+    syncCustomRowsToForm(nextRows);
   }
 
   function addCustomRow(): void {
-    setDraftCustomRows((current) => [...current, createCustomRow()]);
+    setCustomRows((current) => [...current, createCustomRow()]);
   }
 
   return (
@@ -150,14 +164,14 @@ export function ProductSpecsForm(): React.JSX.Element {
       <div className="space-y-3 border-t border-[var(--admin-gray)] pt-4">
         <p className="text-sm font-medium text-[var(--admin-navy)]">Atributos customizados</p>
 
-        {visibleCustomRows.length === 0 ? (
+        {customRows.length === 0 ? (
           <p className="text-xs text-[var(--admin-text-muted)]">
             Nenhum atributo customizado. Use o botão abaixo para adicionar pares chave/valor
             extras.
           </p>
         ) : null}
 
-        {visibleCustomRows.map((row) => (
+        {customRows.map((row) => (
           <div key={row.id} className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <Input
               aria-label="Chave do atributo customizado"
