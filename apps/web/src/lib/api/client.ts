@@ -45,13 +45,14 @@ export async function apiFetch(
   path: string,
   init?: ApiFetchInit,
 ): Promise<unknown> {
-  const headers = new Headers(init?.headers);
-  headers.set('Content-Type', 'application/json');
-  if (init?.sessionId) {
-    headers.set('x-session-id', init.sessionId);
+  const { sessionId, next, ...fetchInit } = init ?? {};
+  const headers = new Headers(fetchInit.headers);
+  if (fetchInit.body !== undefined && fetchInit.body !== null) {
+    headers.set('Content-Type', 'application/json');
   }
-
-  const { sessionId: _sessionId, next, ...fetchInit } = init ?? {};
+  if (sessionId) {
+    headers.set('x-session-id', sessionId);
+  }
 
   const response = await fetch(`${API_URL}${path}`, {
     ...fetchInit,
