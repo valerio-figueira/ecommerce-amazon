@@ -2,10 +2,11 @@
 
 import { Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ArticleCategoryPublic } from '@ecommerce-amazon/shared/admin';
 
+import { useArticleListingPending } from '@/components/articles/ArticleListingPendingContext';
 import { cn } from '@/lib/utils';
 
 type ArticleListingToolbarProps = {
@@ -31,7 +32,7 @@ export function ArticleListingToolbar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const { isPending, startListingTransition } = useArticleListingPending();
   const [searchValue, setSearchValue] = useState(activeSearch);
   const skipSearchDebounce = useRef(true);
 
@@ -63,11 +64,11 @@ export function ArticleListingToolbar({
       }
 
       const query = params.toString();
-      startTransition(() => {
+      startListingTransition(() => {
         router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
       });
     },
-    [pathname, router, searchParams],
+    [pathname, router, searchParams, startListingTransition],
   );
 
   useEffect(() => {

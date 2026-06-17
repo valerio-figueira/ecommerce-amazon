@@ -6,10 +6,8 @@ import type { Metadata } from 'next';
 
 import { AboutPageContent } from '@/components/about/AboutPageContent';
 import { AboutPageJsonLd } from '@/components/about/AboutPageJsonLd';
-import {
-  fetchInstitutionalAboutPage,
-  fetchPublicTeamMembers,
-} from '@/lib/api/institutional';
+import { getInstitutionalAboutPage } from '@/lib/api/cached-fetchers';
+import { fetchPublicTeamMembers } from '@/lib/api/institutional';
 import { getServerBrandConfig } from '@/lib/site-url';
 
 export const revalidate = 86400;
@@ -17,7 +15,7 @@ export const revalidate = 86400;
 export async function generateMetadata(): Promise<Metadata> {
   const brand = getServerBrandConfig();
   try {
-    const content = await fetchInstitutionalAboutPage();
+    const content = await getInstitutionalAboutPage();
     return buildAboutPageMetadata(brand, content);
   } catch {
     return buildAboutPageMetadata(brand, buildDefaultAboutPageContent(brand));
@@ -26,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage(): Promise<React.JSX.Element> {
   const [content, teamMembers] = await Promise.all([
-    fetchInstitutionalAboutPage(),
+    getInstitutionalAboutPage(),
     fetchPublicTeamMembers(),
   ]);
 

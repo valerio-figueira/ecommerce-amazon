@@ -17,21 +17,15 @@ import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCategoryTree } from '@/lib/api/categories';
+import { getCategory } from '@/lib/api/cached-fetchers';
 import { apiFetchParsed, isNotFoundError } from '@/lib/api/client';
-import { fetchOrNotFound } from '@/lib/api/safe-fetch';
 import {
-  categoryDetailSchema,
   productsPageSchema,
-  type CategoryDetailDto,
   type ProductListItemDto,
 } from '@/lib/api/schemas';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
-
-async function getCategory(slug: string): Promise<CategoryDetailDto | null> {
-  return fetchOrNotFound(`/categories/${slug}`, categoryDetailSchema);
-}
 
 type CategoryProductsResult = {
   items: ProductListItemDto[];

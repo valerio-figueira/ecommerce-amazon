@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
 
+import { useArticleListingPending } from '@/components/articles/ArticleListingPendingContext';
 import { cn } from '@/lib/utils';
 
 type ArticleListingPaginationProps = {
@@ -32,7 +32,7 @@ export function ArticleListingPagination({
 }: ArticleListingPaginationProps): React.JSX.Element | null {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const { isPending, startListingTransition } = useArticleListingPending();
 
   if (totalPages <= 1) {
     return null;
@@ -50,7 +50,7 @@ export function ArticleListingPagination({
           <Link
             href={buildPageHref(pathname, searchParams, page - 1)}
             className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
-            onClick={() => startTransition(() => undefined)}
+            onClick={() => startListingTransition(() => undefined)}
           >
             Anterior
           </Link>
@@ -63,7 +63,7 @@ export function ArticleListingPagination({
           <Link
             href={buildPageHref(pathname, searchParams, page + 1)}
             className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
-            onClick={() => startTransition(() => undefined)}
+            onClick={() => startListingTransition(() => undefined)}
           >
             Próxima
           </Link>

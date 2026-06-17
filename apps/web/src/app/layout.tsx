@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { buildRootMetadata } from '@ecommerce-amazon/shared/seo';
@@ -5,6 +6,8 @@ import type { Metadata } from 'next';
 
 import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
 import { Footer } from '@/components/layout/Footer';
+import { HeaderSkeleton } from '@/components/loading/HeaderSkeleton';
+import { NavigationPendingBar } from '@/components/navigation/NavigationPendingBar';
 import { getServerBrandConfig } from '@/lib/site-url';
 
 import { Providers } from './providers';
@@ -34,8 +37,13 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
+          <Suspense fallback={null}>
+            <NavigationPendingBar />
+          </Suspense>
           <div className="flex min-h-screen flex-col">
-            <SiteHeaderShell />
+            <Suspense fallback={<HeaderSkeleton />}>
+              <SiteHeaderShell />
+            </Suspense>
             <div className="flex-1">{children}</div>
             <Footer />
           </div>

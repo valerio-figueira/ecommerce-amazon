@@ -1,10 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import {
-  articlePublicDetailSchema,
   autoLinksResponseSchema,
-  resolveArticleUpdatedAtIso,
-  type ArticlePublicDetail,
 } from '@ecommerce-amazon/shared/admin';
 import {
   buildArticleJsonLd,
@@ -19,24 +16,11 @@ import { ArticleRelatedGrid } from '@/components/articles/ArticleRelatedGrid';
 import { ArticleSeoAnchor } from '@/components/articles/ArticleSeoAnchor';
 import { TrackEngagement } from '@/components/analytics/TrackEngagement';
 import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
+import { getArticle } from '@/lib/api/cached-fetchers';
 import { apiFetchParsed } from '@/lib/api/client';
-import { fetchOrNotFound } from '@/lib/api/safe-fetch';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
-
-async function getArticle(slug: string): Promise<ArticlePublicDetail | null> {
-  const article = await fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
-  if (!article) {
-    return null;
-  }
-
-  return {
-    ...article,
-    cluster: article.cluster ?? null,
-    updatedAt: resolveArticleUpdatedAtIso(article),
-  };
-}
 
 async function getAutoLinks() {
   try {
@@ -76,7 +60,7 @@ export async function generateMetadata({
       siteName: brand.name,
       ...(article.publishedAt ? { publishedTime: article.publishedAt } : {}),
       ...(article.updatedAt ?? article.publishedAt
-        ? { modifiedTime: resolveArticleUpdatedAtIso(article) }
+        ? { modifiedTime: article.updatedAt ?? article.publishedAt }
         : {}),
       ...(article.coverImageUrl ? { images: [{ url: article.coverImageUrl }] } : {}),
     },
@@ -101,7 +85,7 @@ export default async function ArtigoPage({
     title: article.title,
     excerpt: article.excerpt,
     publishedAt: article.publishedAt,
-    updatedAt: resolveArticleUpdatedAtIso(article),
+    updatedAt: article.updatedAt,
     coverImageUrl: article.coverImageUrl,
     author: article.author,
     categoryName: article.category?.name ?? null,

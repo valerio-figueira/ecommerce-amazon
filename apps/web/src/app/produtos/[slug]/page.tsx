@@ -12,16 +12,12 @@ import { ProductRating } from '@/components/product/ProductRating';
 import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
 import { ProductSpecsTable } from '@/components/product/ProductSpecsTable';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
-import { fetchOrNotFound } from '@/lib/api/safe-fetch';
-import { productDetailSchema, type ProductDetailDto, type ProductListItemDto } from '@/lib/api/schemas';
+import { getProduct } from '@/lib/api/cached-fetchers';
+import { type ProductListItemDto } from '@/lib/api/schemas';
 import { marketplaceLabel } from '@/lib/format';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
-
-async function getProduct(slug: string): Promise<ProductDetailDto | null> {
-  return fetchOrNotFound(`/products/${slug}`, productDetailSchema);
-}
 
 export async function generateMetadata({
   params,

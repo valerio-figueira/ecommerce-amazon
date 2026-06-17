@@ -10,14 +10,10 @@ import {
 
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
-import { fetchCuratedCollection } from '@/lib/api/collections';
+import { getCollection } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
-
-async function getCollection(slug: string) {
-  return fetchCuratedCollection(slug);
-}
 
 export async function generateMetadata({
   params,

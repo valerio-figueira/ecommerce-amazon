@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 
-import { ArticleCard } from '@/components/articles/ArticleCard';
+import { ArticleListingGrid } from '@/components/articles/ArticleListingGrid';
 import { ArticleListingPagination } from '@/components/articles/ArticleListingPagination';
+import { ArticleListingPendingProvider } from '@/components/articles/ArticleListingPendingContext';
 import { ArticleListingToolbar } from '@/components/articles/ArticleListingToolbar';
 import type {
   ArticleCategoryPublic,
@@ -24,30 +25,22 @@ export function ArticleListingView({
   const totalPages = Math.max(1, Math.ceil(data.total / data.limit));
 
   return (
-    <div className="space-y-8">
-      <Suspense fallback={null}>
-        <ArticleListingToolbar
-          categories={categories}
-          activeCategory={activeCategory}
-          activeSearch={activeSearch}
-        />
-      </Suspense>
+    <ArticleListingPendingProvider>
+      <div className="space-y-8">
+        <Suspense fallback={null}>
+          <ArticleListingToolbar
+            categories={categories}
+            activeCategory={activeCategory}
+            activeSearch={activeSearch}
+          />
+        </Suspense>
 
-      {data.items.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {data.items.map((article) => (
-            <ArticleCard key={article.slug} article={article} showExcerpt />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-[var(--radius)] border border-dashed border-neutral-300 bg-white px-6 py-12 text-center">
-          <p className="text-sm text-neutral-500">Nenhum artigo encontrado.</p>
-        </div>
-      )}
+        <ArticleListingGrid items={data.items} />
 
-      <Suspense fallback={null}>
-        <ArticleListingPagination page={data.page} totalPages={totalPages} />
-      </Suspense>
-    </div>
+        <Suspense fallback={null}>
+          <ArticleListingPagination page={data.page} totalPages={totalPages} />
+        </Suspense>
+      </div>
+    </ArticleListingPendingProvider>
   );
 }

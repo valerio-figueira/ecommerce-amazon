@@ -1,18 +1,11 @@
 import { buildPageCanonical } from '@ecommerce-amazon/shared/seo';
-import { pageLayoutDeliverySchema, type PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 
 import { PageRenderer } from '@/components/cms/PageRenderer';
 import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
-import { fetchPageLayoutOrNull } from '@/lib/api/safe-fetch';
+import { getHomeLayout } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
-async function getHomeLayout(): Promise<PageLayoutDeliveryDto | null> {
-  const data = await fetchPageLayoutOrNull('home');
-  if (!data) {
-    return null;
-  }
-  return pageLayoutDeliverySchema.parse(data);
-}
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<import('next').Metadata> {
   const layout = await getHomeLayout();
