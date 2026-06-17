@@ -25,6 +25,7 @@ Copie [`.env.example`](../.env.example) para `.env` na raiz do monorepo.
 | `ADMIN_SEED_EMAIL` | `admin@vitrine.local` | Operador seed |
 | `ADMIN_SEED_PASSWORD` | `vitrine-admin` | Senha operador seed |
 | `PASSWORD_PEPPER` | (dev placeholder, min. 16 chars) | Pepper do bcrypt — **obrigatório alterar em produção**; após mudar, rode `npm run db:seed` |
+| `ENCRYPTION_KEY` | (dev placeholder, 32 bytes base64) | Cofre de credenciais marketplace — gerar com `openssl rand -base64 32`; ver [admin-marketplace-credentials.md](./admin-marketplace-credentials.md) |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3000` | Fetch do browser/SSR |
 | `API_INTERNAL_URL` | `http://localhost:3000` | Rewrite `/go/:slug` no Next.js |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | URLs absolutas no JSON-LD |

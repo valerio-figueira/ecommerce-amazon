@@ -656,6 +656,10 @@ Implementação: [`admin-settings-routes.ts`](../apps/api/src/adapters/http/rout
 | GET | `/admin/site-settings` | JWT |
 | PATCH | `/admin/site-settings` | JWT admin |
 | GET | `/admin/operational-status` | JWT |
+| GET | `/admin/marketplace-credentials` | JWT |
+| PUT | `/admin/marketplace-credentials/:marketplace` | JWT admin |
+| DELETE | `/admin/marketplace-credentials/:marketplace` | JWT admin |
+| POST | `/admin/marketplace-credentials/:marketplace/test` | JWT admin |
 
 ### Público
 

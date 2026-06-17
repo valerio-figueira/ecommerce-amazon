@@ -103,6 +103,11 @@ import {
   UpdateSiteSettings,
   GetPublicSiteSettings,
   GetOperationalStatus,
+  GetMarketplaceCredentialsStatus,
+  SaveMarketplaceCredentials,
+  DeleteMarketplaceCredentials,
+  TestMarketplaceConnectivity,
+  MarketplaceCredentialResolver,
 } from '@ecommerce-amazon/application';
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
@@ -134,6 +139,7 @@ import type { ClickEventRepository, EngagementEventRepository } from '@ecommerce
 import { DrizzleArticleCategoryRepository } from '../persistence/repositories/drizzle-article-category.repository.js';
 import { DrizzleContentClusterRepository } from '../persistence/repositories/drizzle-content-cluster.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
+import { DrizzleMarketplaceApiCredentialRepository } from '../persistence/repositories/drizzle-marketplace-api-credential.repository.js';
 import { DrizzleSiteSettingsRepository } from '../persistence/repositories/drizzle-site-settings.repository.js';
 import { DrizzleOperatorRepository } from '../persistence/repositories/drizzle-operator.repository.js';
 import { DrizzleAutoLinkRepository } from '../persistence/repositories/drizzle-auto-link.repository.js';
@@ -149,6 +155,9 @@ import { GoogleAnalyticsDataGateway } from '../analytics/google-analytics-data.g
 import { BcryptPasswordHasher } from '../auth/bcrypt-password.hasher.js';
 import { JwtAuthTokenService } from '../auth/jwt-auth-token.service.js';
 import { createObjectStorage } from '../storage/object-storage.factory.js';
+import { createCredentialCipher } from '../security/aes-gcm-credential-cipher.js';
+import { AmazonPaApiConnectivityGateway } from '../marketplace/amazon/amazon-pa-api-connectivity.gateway.js';
+import { ShopeeOpenApiConnectivityGateway } from '../marketplace/shopee/shopee-open-api-connectivity.gateway.js';
 
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -218,6 +227,17 @@ export function buildApiContainer(env = loadEnv()) {
 
   const ga4Gateway = new GoogleAnalyticsDataGateway();
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
+  const marketplaceCredentialRepository = new DrizzleMarketplaceApiCredentialRepository(db);
+  const credentialCipher = createCredentialCipher(env.ENCRYPTION_KEY);
+  const marketplaceCredentialResolver = new MarketplaceCredentialResolver(
+    marketplaceCredentialRepository,
+    credentialCipher,
+    cache,
+  );
+  const marketplaceConnectivityGateways = [
+    new AmazonPaApiConnectivityGateway(),
+    new ShopeeOpenApiConnectivityGateway(),
+  ];
   const siteSettingsRepository = new DrizzleSiteSettingsRepository(db);
   const syncJobLogRepository = new DrizzleSyncJobLogRepository(db);
   const operatorRepository = new DrizzleOperatorRepository(db);
@@ -446,6 +466,25 @@ export function buildApiContainer(env = loadEnv()) {
       getOperationalStatus: new GetOperationalStatus(
         affiliateAccountRepository,
         syncJobLogRepository,
+        marketplaceCredentialRepository,
+      ),
+      getMarketplaceCredentialsStatus: new GetMarketplaceCredentialsStatus(
+        marketplaceCredentialRepository,
+      ),
+      saveMarketplaceCredentials: new SaveMarketplaceCredentials(
+        marketplaceCredentialRepository,
+        credentialCipher,
+        marketplaceCredentialResolver,
+      ),
+      deleteMarketplaceCredentials: new DeleteMarketplaceCredentials(
+        marketplaceCredentialRepository,
+        marketplaceCredentialResolver,
+      ),
+      testMarketplaceConnectivity: new TestMarketplaceConnectivity(
+        marketplaceCredentialRepository,
+        marketplaceCredentialResolver,
+        marketplaceConnectivityGateways,
+        affiliateAccountRepository,
       ),
     },
     services: {

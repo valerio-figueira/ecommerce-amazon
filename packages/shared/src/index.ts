@@ -63,6 +63,10 @@ const envSchemaBase = z.object({
     .string()
     .min(16)
     .default('dev-pepper-change-in-production-min-16-chars'),
+  ENCRYPTION_KEY: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.string().default('AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE='),
+  ),
   REVALIDATE_SECRET: z.string().default(''),
   WEB_PUBLIC_URL: z.string().url().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),

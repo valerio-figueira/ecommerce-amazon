@@ -92,8 +92,8 @@ export class UpdateInstitutionalPage {
 
     const updated = await this.pageRepository.updateInstitutionalContent(existing.layout.id, {
       content: content as unknown as Record<string, unknown>,
-      seoTitle: input.seoTitle,
-      seoDescription: input.seoDescription,
+      ...(input.seoTitle !== undefined ? { seoTitle: input.seoTitle } : {}),
+      ...(input.seoDescription !== undefined ? { seoDescription: input.seoDescription } : {}),
       ...(input.status !== undefined ? { status: input.status } : {}),
       ...(publishedAt ? { publishedAt } : {}),
     });

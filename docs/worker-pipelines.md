@@ -67,8 +67,9 @@ sequenceDiagram
 ```
 
 1. Rate limiter Redis por marketplace (`rate:amazon`, `rate:shopee`)
-2. `MarketplaceFetcher.fetchProductsBatch(externalIds)`
-3. `Product.updatePrice()` no domain
+2. `MarketplaceCredentialResolver` — cache Redis `vitrine:marketplace-credentials:{marketplace}` → decrypt DB (ver [admin-marketplace-credentials.md](./admin-marketplace-credentials.md))
+3. `MarketplaceFetcher.fetchProductsBatch(externalIds)` — Amazon PA-API / Shopee Open API quando credenciais configuradas
+4. `Product.updatePrice()` no domain
 4. Unit of work: produto + `price_snapshots`
 5. `CacheInvalidator.invalidateProducts([ids])`
 6. Eventos → fila `domain_events` (email **não** inline)

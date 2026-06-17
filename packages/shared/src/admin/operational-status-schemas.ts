@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
 import { affiliateAccountStatusSchema } from './affiliate-account-schemas.js';
+import { marketplaceCredentialHealthStatusSchema } from './marketplace-credentials-schemas.js';
+
+export const operationalMarketplaceCredentialSchema = z.object({
+  marketplace: z.enum(['amazon_br', 'shopee_br']),
+  healthStatus: marketplaceCredentialHealthStatusSchema,
+  configured: z.boolean(),
+  healthMessage: z.string().nullable(),
+});
 
 export const operationalEnvFlagsSchema = z.object({
   resendConfigured: z.boolean(),
@@ -32,6 +40,7 @@ export const syncJobFailureSchema = z.object({
 export const operationalStatusResponseSchema = z.object({
   env: operationalEnvFlagsSchema,
   affiliateGate: affiliateGateStatusSchema,
+  marketplaceCredentials: z.array(operationalMarketplaceCredentialSchema),
   recentSyncFailures: z.array(syncJobFailureSchema),
 });
 

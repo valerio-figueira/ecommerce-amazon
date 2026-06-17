@@ -84,6 +84,8 @@ describe('createObjectStorage', () => {
       JWT_EXPIRES_IN: '8h',
       ADMIN_SEED_EMAIL: 'admin@vitrine.local',
       ADMIN_SEED_PASSWORD: 'vitrine-admin',
+      PASSWORD_PEPPER: 'test-pepper-min-16-chars',
+      ENCRYPTION_KEY: 'AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=',
       REVALIDATE_SECRET: '',
       WEB_PUBLIC_URL: 'http://localhost:3001',
       SITE_NAME: 'Vitrine',

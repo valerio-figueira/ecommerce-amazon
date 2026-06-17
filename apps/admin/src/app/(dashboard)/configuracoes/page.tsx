@@ -4,6 +4,7 @@ import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { OperationalSettingsManager } from '@/components/settings/OperationalSettingsManager';
 import { listAffiliateAccounts } from '@/lib/api/affiliate-accounts';
+import { listMarketplaceCredentials } from '@/lib/api/marketplace-credentials';
 import { getOperationalStatus } from '@/lib/api/operational-status';
 import { listOperators } from '@/lib/api/operators';
 import { getOperatorProfile } from '@/lib/api/profile';
@@ -18,11 +19,13 @@ export const metadata = {
 
 export default async function ConfiguracoesPage(): Promise<React.JSX.Element> {
   const profile = await getOperatorProfile();
-  const [affiliateAccounts, siteSettings, operationalStatus] = await Promise.all([
-    listAffiliateAccounts(),
-    getSiteSettings(),
-    getOperationalStatus(),
-  ]);
+  const [affiliateAccounts, marketplaceCredentials, siteSettings, operationalStatus] =
+    await Promise.all([
+      listAffiliateAccounts(),
+      listMarketplaceCredentials(),
+      getSiteSettings(),
+      getOperationalStatus(),
+    ]);
 
   const operators = profile.role === 'admin' ? await listOperators() : [];
 
@@ -39,6 +42,7 @@ export default async function ConfiguracoesPage(): Promise<React.JSX.Element> {
         <OperationalSettingsManager
           profile={profile}
           affiliateAccounts={affiliateAccounts}
+          marketplaceCredentials={marketplaceCredentials}
           siteSettings={siteSettings}
           operationalStatus={operationalStatus}
           operators={operators}

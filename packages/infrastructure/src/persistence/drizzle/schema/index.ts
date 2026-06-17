@@ -378,6 +378,20 @@ export const affiliateAccounts = pgTable('affiliate_accounts', {
   validationNotes: text('validation_notes'),
 });
 
+export const marketplaceApiCredentials = pgTable('marketplace_api_credentials', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  marketplace: marketplaceEnum('marketplace').notNull().unique(),
+  authType: text('auth_type').notNull(),
+  credentialsEncrypted: text('credentials_encrypted').notNull(),
+  publicMetadata: jsonb('public_metadata').$type<Record<string, unknown>>().notNull().default({}),
+  healthStatus: text('health_status').notNull().default('not_configured'),
+  healthMessage: text('health_message'),
+  lastHealthCheckAt: timestamp('last_health_check_at', { withTimezone: true }),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid('updated_by').references(() => operators.id, { onDelete: 'set null' }),
+});
+
 export const operatorStatusEnum = pgEnum('operator_status', ['active', 'disabled']);
 export const operatorRoleEnum = pgEnum('operator_role', ['admin', 'editor']);
 export const teamPublicRoleEnum = pgEnum('team_public_role', ['founder', 'member']);

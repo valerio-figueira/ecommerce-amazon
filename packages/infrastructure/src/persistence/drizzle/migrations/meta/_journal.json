@@ -148,6 +148,13 @@
       "when": 1719849600000,
       "tag": "0020_affiliate_accounts_marketplace_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1719936000000,
+      "tag": "0021_marketplace_api_credentials",
+      "breakpoints": true
     }
   ]
 }

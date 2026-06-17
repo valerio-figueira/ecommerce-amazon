@@ -10,6 +10,7 @@ export class RedisBufferedClickEventRepository implements ClickEventRepository {
   async record(event: {
     productId: string;
     origin: string;
+    marketplace?: string;
     sessionId?: string;
     blockId?: string;
     articleId?: string;

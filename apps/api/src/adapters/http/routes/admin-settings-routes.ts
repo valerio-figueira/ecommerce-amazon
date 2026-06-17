@@ -6,6 +6,7 @@ import {
   DomainError,
   EntityNotFoundError,
   ValidationError,
+  parseMarketplace,
 } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
@@ -13,19 +14,46 @@ import {
   changeOperatorPasswordBodySchema,
   createAffiliateAccountBodySchema,
   createOperatorBodySchema,
+  marketplaceConnectivityTestBodySchema,
+  marketplaceConnectivityTestResponseSchema,
+  marketplaceCredentialMarketplaceSchema,
+  marketplaceCredentialsListResponseSchema,
   operationalStatusResponseSchema,
   operatorsListResponseSchema,
+  saveAmazonCredentialsBodySchema,
+  saveShopeeCredentialsBodySchema,
   siteSettingsResponseSchema,
   updateAffiliateAccountBodySchema,
   updateOperatorAccessBodySchema,
   updateSiteSettingsBodySchema,
 } from '@ecommerce-amazon/shared/admin';
 
+import { createConnectivityTestRateLimiter } from '../connectivity-test-rate-limiter.js';
 import { handleAdminError } from '../admin-error-handler.js';
 import {
   handleAdminAuthorizationError,
   requireAdminOperator,
 } from '../require-admin-operator.js';
+
+const connectivityTestRateLimiter = createConnectivityTestRateLimiter();
+
+function resolveClientIp(request: { ip: string; headers: Record<string, unknown> }): string {
+  const forwarded = request.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.length > 0) {
+    return forwarded.split(',')[0]?.trim() || request.ip;
+  }
+  return request.ip;
+}
+
+function parseMarketplaceCredentialsBody(
+  marketplace: 'amazon_br' | 'shopee_br',
+  body: unknown,
+) {
+  if (marketplace === 'amazon_br') {
+    return saveAmazonCredentialsBodySchema.parse(body);
+  }
+  return saveShopeeCredentialsBodySchema.parse(body);
+}
 
 function handleSettingsError(error: unknown, reply: FastifyReply) {
   const authResponse = handleAdminAuthorizationError(error, reply);
@@ -216,6 +244,113 @@ export async function registerAdminSettingsRoutes(
 
       const result = await useCases.getOperationalStatus.execute();
       return reply.send(operationalStatusResponseSchema.parse(result));
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
+  app.get('/admin/marketplace-credentials', async (request, reply) => {
+    try {
+      const operatorId = request.adminOperator?.id;
+      if (!operatorId) {
+        return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
+      }
+
+      const result = await useCases.getMarketplaceCredentialsStatus.execute();
+      return reply.send(marketplaceCredentialsListResponseSchema.parse(result));
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
+  app.put('/admin/marketplace-credentials/:marketplace', async (request, reply) => {
+    try {
+      await requireAdminOperator(request, container);
+      const operatorId = request.adminOperator?.id;
+      if (!operatorId) {
+        return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
+      }
+
+      const params = request.params as { marketplace: string };
+      const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
+      if (marketplace === 'mercadolivre_br') {
+        return reply.status(400).send({
+          error: 'Mercado Livre OAuth será disponibilizado na Fase 3',
+          code: 'VALIDATION_ERROR',
+        });
+      }
+
+      const credentials = parseMarketplaceCredentialsBody(marketplace, request.body);
+      const result = await useCases.saveMarketplaceCredentials.execute({
+        marketplace: parseMarketplace(marketplace),
+        credentials,
+        updatedBy: operatorId,
+      });
+
+      return reply.send(result);
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
+  app.delete('/admin/marketplace-credentials/:marketplace', async (request, reply) => {
+    try {
+      await requireAdminOperator(request, container);
+      const params = request.params as { marketplace: string };
+      const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
+      if (marketplace === 'mercadolivre_br') {
+        return reply.status(400).send({
+          error: 'Mercado Livre OAuth será disponibilizado na Fase 3',
+          code: 'VALIDATION_ERROR',
+        });
+      }
+
+      const result = await useCases.deleteMarketplaceCredentials.execute({
+        marketplace: parseMarketplace(marketplace),
+      });
+      return reply.send(result);
+    } catch (error) {
+      return handleSettingsError(error, reply);
+    }
+  });
+
+  app.post('/admin/marketplace-credentials/:marketplace/test', async (request, reply) => {
+    try {
+      await requireAdminOperator(request, container);
+      const clientIp = resolveClientIp(request);
+      const rateLimit = connectivityTestRateLimiter.check(clientIp);
+      if (!rateLimit.allowed) {
+        return reply
+          .status(429)
+          .header('Retry-After', String(rateLimit.retryAfterSeconds))
+          .send({ error: 'Muitos testes de conectividade. Tente novamente em instantes.' });
+      }
+
+      connectivityTestRateLimiter.recordAttempt(clientIp);
+
+      const params = request.params as { marketplace: string };
+      const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
+      if (marketplace === 'mercadolivre_br') {
+        return reply.status(400).send({
+          error: 'Mercado Livre OAuth será disponibilizado na Fase 3',
+          code: 'VALIDATION_ERROR',
+        });
+      }
+
+      const body = marketplaceConnectivityTestBodySchema.parse(request.body ?? {});
+      const credentials =
+        body?.credentials && marketplace === 'amazon_br'
+          ? saveAmazonCredentialsBodySchema.parse(body.credentials)
+          : body?.credentials && marketplace === 'shopee_br'
+            ? saveShopeeCredentialsBodySchema.parse(body.credentials)
+            : undefined;
+
+      const result = await useCases.testMarketplaceConnectivity.execute({
+        marketplace: parseMarketplace(marketplace),
+        ...(credentials ? { credentials } : {}),
+      });
+
+      return reply.send(marketplaceConnectivityTestResponseSchema.parse(result));
     } catch (error) {
       return handleSettingsError(error, reply);
     }

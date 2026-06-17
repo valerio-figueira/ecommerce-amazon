@@ -34,6 +34,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [about-contact-pages.md](./about-contact-pages.md) | `/sobre` (CMS) + `/contato`: E-E-A-T, equipe, JSON-LD |
 | [admin-about-page.md](./admin-about-page.md) | Editor Admin da página Sobre (`/paginas/sobre`) |
 | [admin-operational-settings.md](./admin-operational-settings.md) | Configurações operacionais (`/configuracoes`): afiliado, operadores, site_settings |
+| [admin-marketplace-credentials.md](./admin-marketplace-credentials.md) | Cofre de credenciais PA-API/Shopee: criptografia, Redis, aba Integrações |
 | [cms-category-bento-grid.md](./cms-category-bento-grid.md) | Bloco `category_bento_grid`: grade bento de categorias |
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |

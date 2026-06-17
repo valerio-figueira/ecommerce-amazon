@@ -6,6 +6,7 @@ import {
   ProcessTriggeredAlerts,
   FlushTelemetryBuffer,
   AffiliateScaleGateService,
+  MarketplaceCredentialResolver,
 } from '@ecommerce-amazon/application';
 import type { DomainEventMessage } from '@ecommerce-amazon/domain';
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
@@ -40,8 +41,10 @@ import {
   DrizzleEngagementEventRepository,
 } from '../persistence/repositories/drizzle-content.repository.js';
 import { DrizzleAffiliateAccountRepository } from '../persistence/repositories/drizzle-affiliate-account.repository.js';
+import { DrizzleMarketplaceApiCredentialRepository } from '../persistence/repositories/drizzle-marketplace-api-credential.repository.js';
 import { DrizzleSiteSettingsRepository } from '../persistence/repositories/drizzle-site-settings.repository.js';
 import { RedisTelemetryBufferStore } from '../telemetry/redis-telemetry-buffer.store.js';
+import { createCredentialCipher } from '../security/aes-gcm-credential-cipher.js';
 
 export function buildWorkerContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
@@ -57,7 +60,14 @@ export function buildWorkerContainer(env = loadEnv()) {
   const clickRepository = new DrizzleClickEventRepository(db);
   const engagementRepository = new DrizzleEngagementEventRepository(db);
   const affiliateAccountRepository = new DrizzleAffiliateAccountRepository(db);
+  const marketplaceCredentialRepository = new DrizzleMarketplaceApiCredentialRepository(db);
   const siteSettingsRepository = new DrizzleSiteSettingsRepository(db);
+  const credentialCipher = createCredentialCipher(env.ENCRYPTION_KEY);
+  const marketplaceCredentialResolver = new MarketplaceCredentialResolver(
+    marketplaceCredentialRepository,
+    credentialCipher,
+    cache,
+  );
   const affiliateScaleGateService = new AffiliateScaleGateService(
     siteSettingsRepository,
     affiliateAccountRepository,
@@ -65,8 +75,12 @@ export function buildWorkerContainer(env = loadEnv()) {
   );
 
   const fetcherFactory = new DefaultMarketplaceFetcherFactory([
-    new AmazonFetcherStrategy(),
-    new ShopeeFetcherStrategy(),
+    new AmazonFetcherStrategy(
+      marketplaceCredentialResolver,
+      affiliateAccountRepository,
+      env.AMAZON_AFFILIATE_TAG,
+    ),
+    new ShopeeFetcherStrategy(marketplaceCredentialResolver),
     new MercadoLivreFetcherStrategy(),
   ]);
 
@@ -141,6 +155,7 @@ export function buildWorkerContainer(env = loadEnv()) {
     rateLimiter,
     fetcherFactory,
     productRepository,
+    marketplaceCredentialResolver,
   };
 }
 

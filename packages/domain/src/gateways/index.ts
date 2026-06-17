@@ -55,6 +55,20 @@ export interface CacheStore {
 }
 
 export type { EventBus } from './event-bus.js';
+export type { CredentialCipher } from './credential-cipher.js';
+export type {
+  MarketplaceConnectivityGateway,
+  MarketplaceConnectivityResult,
+  AmazonStaticCredentials,
+  ShopeeStaticCredentials,
+  MarketplaceStaticCredentials,
+} from './marketplace-connectivity.js';
+export type {
+  MarketplaceCredentialResolverPort,
+  ResolvedAmazonCredentials,
+  ResolvedShopeeCredentials,
+  ResolvedMarketplaceCredentials,
+} from './marketplace-credential-resolver.js';
 
 export interface CacheInvalidator {
   invalidateProducts(productIds: string[]): Promise<void>;

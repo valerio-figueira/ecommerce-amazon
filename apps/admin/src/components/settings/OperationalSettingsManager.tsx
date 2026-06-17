@@ -1,11 +1,12 @@
 'use client';
 
-import { Link2, Settings, Shield, SlidersHorizontal, Users } from 'lucide-react';
+import { Link2, Plug, Settings, Shield, SlidersHorizontal, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type {
   AffiliateAccountDto,
+  MarketplaceCredentialStatusDto,
   OperationalStatusResponse,
   OperatorProfile,
   OperatorSummary,
@@ -13,15 +14,17 @@ import type {
 } from '@ecommerce-amazon/shared/admin';
 
 import { AffiliateAccountsPanel } from './AffiliateAccountsPanel';
+import { MarketplaceIntegrationsPanel } from './MarketplaceIntegrationsPanel';
 import { OperationalHealthPanel } from './OperationalHealthPanel';
 import { OperatorsPanel } from './OperatorsPanel';
 import { SiteSettingsPanel } from './SiteSettingsPanel';
 
-type SettingsTab = 'affiliate' | 'preferences' | 'operators' | 'health';
+type SettingsTab = 'affiliate' | 'integrations' | 'preferences' | 'operators' | 'health';
 
 type OperationalSettingsManagerProps = {
   profile: OperatorProfile;
   affiliateAccounts: AffiliateAccountDto[];
+  marketplaceCredentials: MarketplaceCredentialStatusDto[];
   siteSettings: SiteSettingsResponse;
   operationalStatus: OperationalStatusResponse;
   operators: OperatorSummary[];
@@ -30,6 +33,7 @@ type OperationalSettingsManagerProps = {
 export function OperationalSettingsManager({
   profile,
   affiliateAccounts,
+  marketplaceCredentials,
   siteSettings,
   operationalStatus,
   operators,
@@ -37,10 +41,10 @@ export function OperationalSettingsManager({
   const isAdmin = profile.role === 'admin';
   const [activeTab, setActiveTab] = useState<SettingsTab>('affiliate');
 
-  const tabCount = isAdmin ? 4 : 3;
+  const tabCount = isAdmin ? 5 : 4;
 
   const availableTabs = useMemo(() => {
-    const tabs: SettingsTab[] = ['affiliate', 'preferences'];
+    const tabs: SettingsTab[] = ['affiliate', 'integrations', 'preferences'];
     if (isAdmin) tabs.push('operators');
     tabs.push('health');
     return tabs;
@@ -63,7 +67,7 @@ export function OperationalSettingsManager({
           <p className="cms-panel-meta">
             <strong>Governança da plataforma</strong>
             <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
-              Contas de afiliado, operadores, feature flags e saúde operacional.
+              Contas de afiliado, integrações de API, operadores, feature flags e saúde operacional.
             </span>
           </p>
         </div>
@@ -78,6 +82,10 @@ export function OperationalSettingsManager({
             <TabsTrigger value="affiliate" className="inline-flex items-center gap-2">
               <Link2 className="h-4 w-4" />
               Contas de afiliado
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="inline-flex items-center gap-2">
+              <Plug className="h-4 w-4" />
+              Integrações
             </TabsTrigger>
             <TabsTrigger value="preferences" className="inline-flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4" />
@@ -112,6 +120,29 @@ export function OperationalSettingsManager({
             </div>
           </div>
           <AffiliateAccountsPanel initialItems={affiliateAccounts} canManage={isAdmin} />
+        </TabsContent>
+
+        <TabsContent value="integrations">
+          <div className="cms-float-panel cms-vitrine-panel">
+            <div className="cms-panel-head">
+              <h2 className="cms-panel-title">
+                <Plug className="mr-2 inline h-4 w-4" />
+                Integrações de API
+              </h2>
+              <p className="cms-panel-meta">
+                <strong>Cofre de credenciais</strong>
+                <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                  Chaves criptografadas para o worker sincronizar preços com Amazon e Shopee.
+                </span>
+              </p>
+            </div>
+          </div>
+          <MarketplaceIntegrationsPanel
+            initialItems={marketplaceCredentials}
+            affiliateAccounts={affiliateAccounts}
+            canManage={isAdmin}
+            onGoToAffiliateTab={() => setActiveTab('affiliate')}
+          />
         </TabsContent>
 
         <TabsContent value="preferences">

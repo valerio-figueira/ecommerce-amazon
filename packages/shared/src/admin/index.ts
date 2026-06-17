@@ -13,3 +13,4 @@ export * from './site-settings-schemas.js';
 export * from './affiliate-account-schemas.js';
 export * from './operator-management-schemas.js';
 export * from './operational-status-schemas.js';
+export * from './marketplace-credentials-schemas.js';

@@ -1,15 +1,20 @@
 import {
   AffiliateAccountStatus,
+  Marketplace,
   type AffiliateAccountRepository,
+  type MarketplaceApiCredentialRepository,
   type SyncJobLogRepository,
 } from '@ecommerce-amazon/domain';
 import { loadEnv } from '@ecommerce-amazon/shared';
 import type { OperationalStatusResponse } from '@ecommerce-amazon/shared/admin';
 
+const MANAGED_MARKETPLACES = [Marketplace.AMAZON_BR, Marketplace.SHOPEE_BR] as const;
+
 export class GetOperationalStatus {
   constructor(
     private readonly affiliateAccountRepository: AffiliateAccountRepository,
     private readonly syncJobLogRepository: SyncJobLogRepository,
+    private readonly marketplaceCredentialRepository: MarketplaceApiCredentialRepository,
   ) {}
 
   async execute(): Promise<OperationalStatusResponse> {
@@ -20,6 +25,11 @@ export class GetOperationalStatus {
     const pendingMarketplaces = accounts
       .filter((account) => account.status === AffiliateAccountStatus.PENDING)
       .map((account) => account.marketplace);
+
+    const credentialRecords = await this.marketplaceCredentialRepository.findAll();
+    const credentialByMarketplace = new Map(
+      credentialRecords.map((record) => [record.marketplace, record]),
+    );
 
     const recentSyncFailures = await this.syncJobLogRepository.findRecent({
       limit: 10,
@@ -40,6 +50,15 @@ export class GetOperationalStatus {
           status: account.status as 'pending_manual_validation' | 'active' | 'suspended',
         })),
       },
+      marketplaceCredentials: MANAGED_MARKETPLACES.map((marketplace) => {
+        const record = credentialByMarketplace.get(marketplace);
+        return {
+          marketplace,
+          configured: Boolean(record),
+          healthStatus: record?.healthStatus ?? 'not_configured',
+          healthMessage: record?.healthMessage ?? null,
+        };
+      }),
       recentSyncFailures: recentSyncFailures.map((log) => ({
         id: log.id,
         jobType: log.jobType,

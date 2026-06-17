@@ -7,6 +7,17 @@ type OperationalHealthPanelProps = {
   status: OperationalStatusResponse;
 };
 
+const MARKETPLACE_LABELS: Record<string, string> = {
+  amazon_br: 'Amazon PA-API',
+  shopee_br: 'Shopee Open API',
+};
+
+function credentialStatusLabel(status: string): string {
+  if (status === 'connected') return 'Conectado';
+  if (status === 'error') return 'Erro';
+  return 'Não configurado';
+}
+
 export function OperationalHealthPanel({
   status,
 }: OperationalHealthPanelProps): React.JSX.Element {
@@ -21,6 +32,16 @@ export function OperationalHealthPanel({
         <HealthChip label="Resend" ok={status.env.resendConfigured} />
         <HealthChip label="GA4 Data API" ok={status.env.ga4Configured} />
         <HealthChip label={`Storage: ${status.env.storageDriver}`} ok />
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {status.marketplaceCredentials.map((credential) => (
+          <HealthChip
+            key={credential.marketplace}
+            label={`${MARKETPLACE_LABELS[credential.marketplace] ?? credential.marketplace}: ${credentialStatusLabel(credential.healthStatus)}`}
+            ok={credential.healthStatus === 'connected'}
+          />
+        ))}
       </div>
 
       {!status.affiliateGate.readyForScale ? (
@@ -51,6 +72,11 @@ export function OperationalHealthPanel({
               <p className="text-xs text-[var(--admin-text-muted)]">
                 {new Date(job.startedAt).toLocaleString('pt-BR')}
               </p>
+              {job.errors.length > 0 ? (
+                <pre className="mt-2 overflow-x-auto rounded bg-neutral-50 p-2 text-xs text-red-800">
+                  {JSON.stringify(job.errors, null, 2)}
+                </pre>
+              ) : null}
             </article>
           ))}
         </div>

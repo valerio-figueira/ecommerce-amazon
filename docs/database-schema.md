@@ -246,6 +246,7 @@ Migration: [`0015_click_attribution.sql`](../packages/infrastructure/src/persist
 |--------|-----|
 | `sync_job_logs` | auditoria pipelines worker |
 | `affiliate_accounts` | tag afiliado por marketplace (único); `status` inclui `pending_manual_validation`; `validation_notes` |
+| `marketplace_api_credentials` | chaves de API criptografadas por marketplace (unique); `health_status`, `public_metadata` — ver [admin-marketplace-credentials.md](./admin-marketplace-credentials.md) |
 | `site_settings` | single-row JSONB — feature flags CMS/plataforma (ver [admin-operational-settings.md](./admin-operational-settings.md)) |
 | `operators` | operadores CMS; `email` único, `avatar_url`, `bio` varchar(250), `role` enum (`admin`, `editor`), `status` enum (`active`, `disabled`), `job_title`, `social_links` jsonb, `show_on_team`, `team_sort_order`, `team_public_role` enum (`founder`, `member`) |
 

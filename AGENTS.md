@@ -46,6 +46,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-profile-phase1.md](docs/admin-profile-phase1.md) | Perfil operador, avatar upload, storage plugável |
 | [docs/admin-about-page.md](docs/admin-about-page.md) | Editor CMS da página Sobre (`/paginas/sobre`) |
 | [docs/admin-operational-settings.md](docs/admin-operational-settings.md) | Configurações operacionais: gate afiliado, operadores, `site_settings` |
+| [docs/admin-marketplace-credentials.md](docs/admin-marketplace-credentials.md) | Cofre de credenciais marketplace (PA-API, Shopee Open API), aba Integrações |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |

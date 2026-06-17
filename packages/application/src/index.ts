@@ -163,6 +163,7 @@ export {
 } from './use-cases/admin-media/validate-admin-image.js';
 export { buildAdminImageObjectKey } from './use-cases/admin-media/build-admin-image-object-key.js';
 export { AffiliateScaleGateService } from './services/AffiliateScaleGateService.js';
+export { MarketplaceCredentialResolver } from './services/MarketplaceCredentialResolver.js';
 export { ListAffiliateAccounts } from './use-cases/admin-settings/ListAffiliateAccounts.js';
 export { CreateAffiliateAccount } from './use-cases/admin-settings/CreateAffiliateAccount.js';
 export { UpdateAffiliateAccount } from './use-cases/admin-settings/UpdateAffiliateAccount.js';
@@ -175,3 +176,7 @@ export { GetSiteSettings } from './use-cases/admin-settings/GetSiteSettings.js';
 export { UpdateSiteSettings } from './use-cases/admin-settings/UpdateSiteSettings.js';
 export { GetPublicSiteSettings } from './use-cases/admin-settings/GetPublicSiteSettings.js';
 export { GetOperationalStatus } from './use-cases/admin-settings/GetOperationalStatus.js';
+export { GetMarketplaceCredentialsStatus } from './use-cases/admin-settings/GetMarketplaceCredentialsStatus.js';
+export { SaveMarketplaceCredentials } from './use-cases/admin-settings/SaveMarketplaceCredentials.js';
+export { DeleteMarketplaceCredentials } from './use-cases/admin-settings/DeleteMarketplaceCredentials.js';
+export { TestMarketplaceConnectivity } from './use-cases/admin-settings/TestMarketplaceConnectivity.js';
