@@ -1,7 +1,9 @@
 'use client';
 
-import { Link2, Settings, Shield, Users } from 'lucide-react';
+import { Link2, Settings, Shield, SlidersHorizontal, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type {
   AffiliateAccountDto,
   OperationalStatusResponse,
@@ -14,6 +16,8 @@ import { AffiliateAccountsPanel } from './AffiliateAccountsPanel';
 import { OperationalHealthPanel } from './OperationalHealthPanel';
 import { OperatorsPanel } from './OperatorsPanel';
 import { SiteSettingsPanel } from './SiteSettingsPanel';
+
+type SettingsTab = 'affiliate' | 'preferences' | 'operators' | 'health';
 
 type OperationalSettingsManagerProps = {
   profile: OperatorProfile;
@@ -31,6 +35,22 @@ export function OperationalSettingsManager({
   operators,
 }: OperationalSettingsManagerProps): React.JSX.Element {
   const isAdmin = profile.role === 'admin';
+  const [activeTab, setActiveTab] = useState<SettingsTab>('affiliate');
+
+  const tabCount = isAdmin ? 4 : 3;
+
+  const availableTabs = useMemo(() => {
+    const tabs: SettingsTab[] = ['affiliate', 'preferences'];
+    if (isAdmin) tabs.push('operators');
+    tabs.push('health');
+    return tabs;
+  }, [isAdmin]);
+
+  function handleTabChange(value: string): void {
+    if (availableTabs.includes(value as SettingsTab)) {
+      setActiveTab(value as SettingsTab);
+    }
+  }
 
   return (
     <section className="cms-editor-section">
@@ -49,41 +69,93 @@ export function OperationalSettingsManager({
         </div>
       </div>
 
-      <div className="cms-float-panel cms-vitrine-panel">
-        <div className="cms-panel-head">
-          <h2 className="cms-panel-title">
-            <Link2 className="mr-2 inline h-4 w-4" />
-            Contas de afiliado
-          </h2>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <div className="cms-float-panel cms-blocks-panel">
+          <p className="cms-blocks-panel__meta">
+            Seções · <strong>{tabCount} abas</strong>
+          </p>
+          <TabsList>
+            <TabsTrigger value="affiliate" className="inline-flex items-center gap-2">
+              <Link2 className="h-4 w-4" />
+              Contas de afiliado
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="inline-flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4" />
+              Preferências
+            </TabsTrigger>
+            {isAdmin ? (
+              <TabsTrigger value="operators" className="inline-flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Operadores
+              </TabsTrigger>
+            ) : null}
+            <TabsTrigger value="health" className="inline-flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Saúde
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
-      <AffiliateAccountsPanel initialItems={affiliateAccounts} canManage={isAdmin} />
 
-      <SiteSettingsPanel initialSettings={siteSettings} canManage={isAdmin} />
-
-      {isAdmin ? (
-        <>
+        <TabsContent value="affiliate">
           <div className="cms-float-panel cms-vitrine-panel">
             <div className="cms-panel-head">
               <h2 className="cms-panel-title">
-                <Users className="mr-2 inline h-4 w-4" />
-                Operadores
+                <Link2 className="mr-2 inline h-4 w-4" />
+                Contas de afiliado
               </h2>
+              <p className="cms-panel-meta">
+                <strong>Gate de escala PRD §4.2</strong>
+                <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                  Valide tags, ative marketplaces e controle redirecionamentos `/go`.
+                </span>
+              </p>
             </div>
           </div>
-          <OperatorsPanel initialItems={operators} />
-        </>
-      ) : null}
+          <AffiliateAccountsPanel initialItems={affiliateAccounts} canManage={isAdmin} />
+        </TabsContent>
 
-      <div className="cms-float-panel cms-vitrine-panel">
-        <div className="cms-panel-head">
-          <h2 className="cms-panel-title">
-            <Shield className="mr-2 inline h-4 w-4" />
-            Saúde da plataforma
-          </h2>
-        </div>
-      </div>
-      <OperationalHealthPanel status={operationalStatus} />
+        <TabsContent value="preferences">
+          <SiteSettingsPanel initialSettings={siteSettings} canManage={isAdmin} />
+        </TabsContent>
+
+        {isAdmin ? (
+          <TabsContent value="operators">
+            <div className="cms-float-panel cms-vitrine-panel">
+              <div className="cms-panel-head">
+                <h2 className="cms-panel-title">
+                  <Users className="mr-2 inline h-4 w-4" />
+                  Operadores
+                </h2>
+                <p className="cms-panel-meta">
+                  <strong>Equipe CMS</strong>
+                  <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                    Convide editores, defina papéis e gerencie acessos ao painel.
+                  </span>
+                </p>
+              </div>
+            </div>
+            <OperatorsPanel initialItems={operators} />
+          </TabsContent>
+        ) : null}
+
+        <TabsContent value="health">
+          <div className="cms-float-panel cms-vitrine-panel">
+            <div className="cms-panel-head">
+              <h2 className="cms-panel-title">
+                <Shield className="mr-2 inline h-4 w-4" />
+                Saúde da plataforma
+              </h2>
+              <p className="cms-panel-meta">
+                <strong>Status operacional</strong>
+                <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
+                  Variáveis de ambiente, gate de escala e falhas recentes de sync.
+                </span>
+              </p>
+            </div>
+          </div>
+          <OperationalHealthPanel status={operationalStatus} />
+        </TabsContent>
+      </Tabs>
     </section>
   );
 }

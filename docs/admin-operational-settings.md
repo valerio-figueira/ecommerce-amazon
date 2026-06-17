@@ -90,6 +90,8 @@ Promoção para `active` exige `checklistConfirmed: true` no PATCH da conta.
 
 Rota: [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](../apps/admin/src/app/(dashboard)/configuracoes/page.tsx)
 
+Layout em abas (`OperationalSettingsManager`): painel intro + navegação por abas, cada aba com painéis flutuantes próprios (padrão `ProductForm`).
+
 Componentes em `apps/admin/src/components/settings/`:
 
 - `AffiliateAccountsPanel` — cards por marketplace, criar (sheet), validar, suspender, excluir
