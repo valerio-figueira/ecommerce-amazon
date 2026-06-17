@@ -30,9 +30,13 @@ export interface PageRepository {
   findInstitutionalBySlug(slug: string): Promise<InstitutionalPageResult | null>;
   updateInstitutionalContent(
     pageId: string,
-    content: Record<string, unknown>,
-    seoTitle?: string | null,
-    seoDescription?: string | null,
+    payload: {
+      content: Record<string, unknown>;
+      seoTitle?: string | null;
+      seoDescription?: string | null;
+      status?: PageLayout['status'];
+      publishedAt?: Date;
+    },
   ): Promise<InstitutionalPageResult>;
   findPageById(pageId: string): Promise<PageWithBlocksResult | null>;
   listPages(): Promise<AdminPageSummary[]>;

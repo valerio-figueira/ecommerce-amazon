@@ -1,10 +1,18 @@
-import { PageKind, PageStatus, type PageRepository } from '@ecommerce-amazon/domain';
+import {
+  EntityNotFoundError,
+  PageKind,
+  PageStatus,
+  type PageRepository,
+  type PublicWebRevalidator,
+} from '@ecommerce-amazon/domain';
 import {
   resolveAboutPageContent,
   type AboutPageContent,
   type InstitutionalPageResponse,
 } from '@ecommerce-amazon/shared/about';
 import type { BrandConfig } from '@ecommerce-amazon/shared/config/brand';
+
+import { buildInstitutionalPagePublicPath } from '../../cache/public-cache.helpers.js';
 
 export class GetPublishedInstitutionalPage {
   constructor(private readonly pageRepository: PageRepository) {}
@@ -56,25 +64,43 @@ export class GetAdminInstitutionalPage {
 }
 
 export class UpdateInstitutionalPage {
-  constructor(private readonly pageRepository: PageRepository) {}
+  constructor(
+    private readonly pageRepository: PageRepository,
+    private readonly webRevalidator: PublicWebRevalidator,
+  ) {}
 
   async execute(input: {
     slug: string;
     content: AboutPageContent;
     seoTitle?: string | null;
     seoDescription?: string | null;
-  }): Promise<InstitutionalPageResponse> {
+    status?: PageStatus;
+  }): Promise<InstitutionalPageResponse & { status: PageStatus; pageKind: PageKind }> {
     const existing = await this.pageRepository.findInstitutionalBySlug(input.slug);
     if (!existing) {
-      throw new Error(`Institutional page not found: ${input.slug}`);
+      throw new EntityNotFoundError('InstitutionalPage', input.slug);
     }
 
-    const updated = await this.pageRepository.updateInstitutionalContent(
-      existing.layout.id,
-      input.content as unknown as Record<string, unknown>,
-      input.seoTitle,
-      input.seoDescription,
-    );
+    const content: AboutPageContent = {
+      ...input.content,
+      lastUpdated: new Date().toISOString().slice(0, 10),
+    };
+
+    const shouldPublish = input.status === PageStatus.PUBLISHED;
+    const publishedAt =
+      shouldPublish && !existing.layout.publishedAt ? new Date() : undefined;
+
+    const updated = await this.pageRepository.updateInstitutionalContent(existing.layout.id, {
+      content: content as unknown as Record<string, unknown>,
+      seoTitle: input.seoTitle,
+      seoDescription: input.seoDescription,
+      ...(input.status !== undefined ? { status: input.status } : {}),
+      ...(publishedAt ? { publishedAt } : {}),
+    });
+
+    await this.webRevalidator.revalidate({
+      paths: [buildInstitutionalPagePublicPath(input.slug)],
+    });
 
     return {
       layout: {
@@ -83,7 +109,9 @@ export class UpdateInstitutionalPage {
         seoDescription: updated.layout.seoDescription ?? null,
         updatedAt: updated.layout.updatedAt.toISOString(),
       },
-      content: input.content,
+      content,
+      status: updated.layout.status,
+      pageKind: updated.layout.pageKind,
     };
   }
 }

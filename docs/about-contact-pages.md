@@ -26,13 +26,16 @@ Páginas institucionais `/sobre` e `/contato` na vitrine pública, com conteúdo
 | `#equipe` | Cards de operadores (`show_on_team=true`) |
 | `#proximos-passos` | Link suave para `/artigos` |
 
-### API pública
+### API
 
 | Método | Rota | Resposta |
 |--------|------|----------|
-| GET | `/institutional-pages/:slug` | `{ layout, content: AboutPageContent }` |
+| GET | `/institutional-pages/:slug` | `{ layout, content: AboutPageContent }` (só `published`) |
 | GET | `/team` | `{ members: PublicTeamMember[] }` |
 | GET | `/admin/institutional-pages/:slug` | Mesmo + `status`, `pageKind` (JWT) |
+| PATCH | `/admin/institutional-pages/:slug` | Atualiza `content`, SEO e `status` (JWT) |
+
+Ver também [admin-about-page.md](./admin-about-page.md) para o editor no painel.
 
 ### Operadores — perfil público
 
@@ -54,6 +57,7 @@ Novos campos em `operators` (editáveis em Admin `/perfil`):
 | Web Contato | [`apps/web/src/app/contato/page.tsx`](../apps/web/src/app/contato/page.tsx) |
 | UI Sobre | [`AboutPageContent.tsx`](../apps/web/src/components/about/AboutPageContent.tsx) |
 | Admin perfil | [`ProfileForm.tsx`](../apps/admin/src/components/profile/ProfileForm.tsx) |
+| Admin editor Sobre | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx) — ver [admin-about-page.md](./admin-about-page.md) |
 | Migrations | `0017_operator_public_profile.sql`, `0018_institutional_pages.sql` |
 | Seed | [`seed.ts`](../packages/infrastructure/src/persistence/drizzle/seed.ts) — `seedAboutPage`, operador demo |
 
@@ -73,7 +77,7 @@ flowchart LR
 
 - `sanitizeInstitutionalHtml` via `isomorphic-dompurify` (allowlist restrita).
 - `SafeInstitutionalHtml` re-sanitiza no render.
-- `parseAboutPageContent` sanitiza no save Admin (fase futura).
+- `parseAboutPageContent` sanitiza no save Admin (`PATCH /admin/institutional-pages/:slug`).
 
 ## JSON-LD
 
@@ -85,7 +89,7 @@ flowchart LR
 npm run db:migrate && npm run db:seed
 npm run build -w @ecommerce-amazon/shared
 npm test -w @ecommerce-amazon/shared -- src/about src/seo/site-json-ld.test.ts
-npm test -w @ecommerce-amazon/application -- UpdateOperatorProfile AuthenticateOperator
+npm test -w @ecommerce-amazon/application -- src/use-cases/institutional/UpdateInstitutionalPage.test.ts
 
 # Com API (:3000) e web (:3001):
 curl -s http://localhost:3000/institutional-pages/sobre | jq '.content.heroTitle'
@@ -94,17 +98,16 @@ curl -sI http://localhost:3001/sobre | head
 curl -sI http://localhost:3001/contato | head
 ```
 
-Admin: `/perfil` → ativar **Exibir na página Sobre** → revisar `/sobre`.
+Admin: `/paginas` → **Editar conteúdo** na Sobre, ou `/perfil` → **Exibir na página Sobre** para equipe.
 
 ## Fora de escopo (próxima fase)
 
-- **AboutPageEditor** em `/paginas/sobre` (PATCH admin + preview draft)
+- Preview `?preview=draft` na vitrine
 - `/contato` editável via CMS
 - Página individual `/autores/[slug]`
 - Formulário de contato com backend
 
 ## Próximos passos
 
-1. Implementar editor CMS da Sobre no Admin (fase 5 do plano).
-2. Entregar rota `/cupons` na vitrine (quando existir, operador pode adicionar link via CMS futuro).
-3. Revisão jurídica humana do copy default antes de go-live.
+1. Entregar rota `/cupons` na vitrine (operador pode adicionar link em Próximos passos).
+2. Revisão jurídica humana do copy default antes de go-live.

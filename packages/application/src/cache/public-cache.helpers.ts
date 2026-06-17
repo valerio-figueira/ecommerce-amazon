@@ -31,3 +31,9 @@ export function buildArticleCategoryPublicPaths(
 export function buildCmsPagePublicPath(slug: string): string {
   return slug === 'home' ? '/' : `/paginas/${slug}`;
 }
+
+export function buildInstitutionalPagePublicPath(slug: string): string {
+  if (slug === 'sobre') return '/sobre';
+  if (slug === 'contato') return '/contato';
+  return `/${slug}`;
+}

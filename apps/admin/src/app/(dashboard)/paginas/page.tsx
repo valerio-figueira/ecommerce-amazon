@@ -1,4 +1,4 @@
-import { PageStatus } from '@ecommerce-amazon/domain';
+import { PageKind, PageStatus } from '@ecommerce-amazon/domain';
 import { ChevronRight, FileText, Layers } from 'lucide-react';
 import Link from 'next/link';
 
@@ -81,6 +81,9 @@ export default async function PaginasPage(): Promise<React.JSX.Element> {
                           >
                             {page.status === PageStatus.PUBLISHED ? 'Publicada' : 'Rascunho'}
                           </span>
+                          <span className="cms-status-pill border border-[var(--admin-gray)] bg-white text-[var(--admin-text-muted)]">
+                            {page.pageKind === PageKind.INSTITUTIONAL ? 'Institucional' : 'Blocos'}
+                          </span>
                         </div>
                         <p className="mt-0.5 font-mono text-xs text-[var(--admin-text-muted)]">
                           /{page.slug}
@@ -90,7 +93,9 @@ export default async function PaginasPage(): Promise<React.JSX.Element> {
 
                     <Button asChild variant="primary" size="sm" className="shrink-0">
                       <Link href={`/paginas/${page.slug}`}>
-                        Editar blocos
+                        {page.pageKind === PageKind.INSTITUTIONAL
+                          ? 'Editar conteúdo'
+                          : 'Editar blocos'}
                         <ChevronRight className="h-3.5 w-3.5" aria-hidden />
                       </Link>
                     </Button>

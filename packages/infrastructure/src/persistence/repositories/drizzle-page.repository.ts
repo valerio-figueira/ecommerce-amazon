@@ -134,16 +134,22 @@ export class DrizzlePageRepository implements PageRepository {
 
   async updateInstitutionalContent(
     pageId: string,
-    content: Record<string, unknown>,
-    seoTitle?: string | null,
-    seoDescription?: string | null,
+    payload: {
+      content: Record<string, unknown>;
+      seoTitle?: string | null;
+      seoDescription?: string | null;
+      status?: PageStatus;
+      publishedAt?: Date;
+    },
   ): Promise<InstitutionalPageResult> {
     const rows = await this.db
       .update(schema.pages)
       .set({
-        institutionalContent: content,
-        ...(seoTitle !== undefined ? { seoTitle } : {}),
-        ...(seoDescription !== undefined ? { seoDescription } : {}),
+        institutionalContent: payload.content,
+        ...(payload.seoTitle !== undefined ? { seoTitle: payload.seoTitle } : {}),
+        ...(payload.seoDescription !== undefined ? { seoDescription: payload.seoDescription } : {}),
+        ...(payload.status !== undefined ? { status: payload.status } : {}),
+        ...(payload.publishedAt !== undefined ? { publishedAt: payload.publishedAt } : {}),
         updatedAt: new Date(),
       })
       .where(and(eq(schema.pages.id, pageId), eq(schema.pages.pageKind, PageKind.INSTITUTIONAL)))

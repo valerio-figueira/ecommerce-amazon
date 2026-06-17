@@ -44,6 +44,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-dashboard-phase1.md](docs/admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
 | [docs/admin-profile-phase1.md](docs/admin-profile-phase1.md) | Perfil operador, avatar upload, storage plugável |
+| [docs/admin-about-page.md](docs/admin-about-page.md) | Editor CMS da página Sobre (`/paginas/sobre`) |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
 | [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |

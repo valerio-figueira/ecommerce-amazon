@@ -15,7 +15,7 @@ export function parseJwtExpiresInToSeconds(value: string): number {
 
   const amount = Number(match[1]);
   const unit = match[2] ?? 'h';
-  const multiplier = UNIT_SECONDS[unit] ?? UNIT_SECONDS.h;
+  const multiplier = UNIT_SECONDS[unit] ?? 60 * 60;
 
   return amount * multiplier;
 }

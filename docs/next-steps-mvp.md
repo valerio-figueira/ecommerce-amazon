@@ -112,7 +112,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 | `CURATED_COLLECTION` no admin | ✅ (form existe) |
 | Admin CRUD cupons | ❌ stub |
 | Admin configurações operacionais | ❌ stub |
-| Editor visual da página Sobre (`/paginas/sobre`) | ❌ (fase futura do plano `about_contact_pages`) |
+| Editor CMS página Sobre (`/paginas/sobre`) | ✅ ver [admin-about-page.md](./admin-about-page.md) |
 
 ---
 
@@ -121,7 +121,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 | Plano | O que falta |
 |-------|-------------|
 | [`analytics_integration_ga4`](.cursor/plans/analytics_integration_ga4_bec34d62.plan.md) | GA4 na vitrine web (`@next/third-parties`, eventos `trackAffiliateClick`, views produto/artigo) — hoje só first-party + GA4 Data API no admin |
-| [`about_contact_pages`](.cursor/plans/about_contact_pages_d59258c4.plan.md) | Editor admin da página Sobre |
+| [`about_contact_pages`](.cursor/plans/about_contact_pages_d59258c4.plan.md) | Concluído (editor Admin fase 5) |
 
 Planos já **completed** incluem: arquitetura, home CMS, produtos/artigos admin, go-redirect, SEO audit, content clusters, comparativos em artigos, navegação instantânea, security hardening, etc.
 

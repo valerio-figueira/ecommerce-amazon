@@ -83,3 +83,23 @@ export const institutionalPageResponseSchema = z.object({
 });
 
 export type InstitutionalPageResponse = z.infer<typeof institutionalPageResponseSchema>;
+
+export const institutionalPageStatusSchema = z.enum(['draft', 'published']);
+
+export const institutionalPageKindSchema = z.enum(['block_layout', 'institutional']);
+
+export const updateInstitutionalPageBodySchema = z.object({
+  content: aboutPageContentSchema,
+  seoTitle: z.string().max(160).nullable().optional(),
+  seoDescription: z.string().max(320).nullable().optional(),
+  status: institutionalPageStatusSchema.optional(),
+});
+
+export type UpdateInstitutionalPageBody = z.infer<typeof updateInstitutionalPageBodySchema>;
+
+export const adminInstitutionalPageResponseSchema = institutionalPageResponseSchema.extend({
+  status: institutionalPageStatusSchema,
+  pageKind: institutionalPageKindSchema,
+});
+
+export type AdminInstitutionalPageResponse = z.infer<typeof adminInstitutionalPageResponseSchema>;

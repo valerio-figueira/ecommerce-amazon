@@ -383,7 +383,7 @@ export function buildApiContainer(env = loadEnv()) {
       getPublicTeamMembers: new GetPublicTeamMembers(operatorRepository),
       getPublishedInstitutionalPage: new GetPublishedInstitutionalPage(pageRepository),
       getAdminInstitutionalPage: new GetAdminInstitutionalPage(pageRepository),
-      updateInstitutionalPage: new UpdateInstitutionalPage(pageRepository),
+      updateInstitutionalPage: new UpdateInstitutionalPage(pageRepository, webRevalidator),
       getClickAnalyticsOverview: new GetClickAnalyticsOverview(analyticsRepository),
       getClicksByOrigin: new GetClicksByOrigin(analyticsRepository),
       getClicksByMarketplace: new GetClicksByMarketplace(analyticsRepository),

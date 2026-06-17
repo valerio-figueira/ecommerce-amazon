@@ -1,9 +1,12 @@
 import { notFound } from 'next/navigation';
 
+import { AboutPageEditor } from '@/components/about/AboutPageEditor';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { CMSBlockOrderManager } from '@/components/cms/CMSBlockOrderManager';
-import { getAdminPageLayout } from '@/lib/api/cms-pages';
+import { getAdminInstitutionalPage } from '@/lib/api/institutional-pages';
+import { getAdminPageLayout, listAdminPages } from '@/lib/api/cms-pages';
+import { PageKind } from '@ecommerce-amazon/domain';
 
 type PageEditorProps = {
   params: Promise<{ slug: string }>;
@@ -11,6 +14,47 @@ type PageEditorProps = {
 
 export default async function PageEditorPage({ params }: PageEditorProps): Promise<React.JSX.Element> {
   const { slug } = await params;
+
+  let pages: Awaited<ReturnType<typeof listAdminPages>> = [];
+  try {
+    pages = await listAdminPages();
+  } catch {
+    notFound();
+  }
+
+  const pageSummary = pages.find((page) => page.slug === slug);
+  if (!pageSummary) {
+    notFound();
+  }
+
+  if (pageSummary.pageKind === PageKind.INSTITUTIONAL) {
+    let institutionalPage: Awaited<ReturnType<typeof getAdminInstitutionalPage>>;
+    try {
+      institutionalPage = await getAdminInstitutionalPage(slug);
+    } catch {
+      notFound();
+    }
+
+    return (
+      <>
+        <AdminPageHeader
+          title={pageSummary.title}
+          breadcrumbs={[
+            { label: 'Painel', href: '/' },
+            { label: 'Páginas', href: '/paginas' },
+            { label: pageSummary.title },
+          ]}
+        />
+        <AdminPageCard>
+          <AboutPageEditor
+            slug={slug}
+            pageTitle={pageSummary.title}
+            initialData={institutionalPage}
+          />
+        </AdminPageCard>
+      </>
+    );
+  }
 
   let layout: Awaited<ReturnType<typeof getAdminPageLayout>>;
   try {
