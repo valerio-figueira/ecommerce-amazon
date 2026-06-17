@@ -1017,10 +1017,14 @@ async function seedOperator(
     .where(eq(schema.operators.id, SEED_OPERATOR_ID))
     .limit(1);
 
+  const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
+  const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
+
   if (existing.length > 0) {
     await db
       .update(schema.operators)
       .set({
+        passwordHash,
         avatarUrl: PEXELS.authorAvatar,
         bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
         role: 'admin',
@@ -1034,12 +1038,9 @@ async function seedOperator(
         updatedAt: new Date(),
       })
       .where(eq(schema.operators.id, SEED_OPERATOR_ID));
-    logger.info('Operator seed profile updated', { email: env.ADMIN_SEED_EMAIL });
+    logger.info('Operator seed profile and password updated', { email: env.ADMIN_SEED_EMAIL });
     return;
   }
-
-  const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
-  const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
 
   await db.insert(schema.operators).values({
     id: SEED_OPERATOR_ID,
