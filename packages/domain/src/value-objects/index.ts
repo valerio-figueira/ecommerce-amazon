@@ -100,6 +100,14 @@ export class Email {
   }
 }
 
+export type {
+  BlockVisibilitySetting,
+  SiteSettings,
+  SiteSettingsCms,
+  SiteSettingsFeatures,
+  SiteSettingsSeo,
+} from './SiteSettings.js';
+
 export class AffiliateLink {
   private constructor(
     readonly url: string,

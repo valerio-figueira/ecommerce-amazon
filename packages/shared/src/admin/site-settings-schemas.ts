@@ -1,3 +1,4 @@
+import type { SiteSettings } from '@ecommerce-amazon/domain';
 import { z } from 'zod';
 
 export const blockVisibilitySettingSchema = z.enum(['all', 'desktop', 'mobile']);
@@ -21,9 +22,9 @@ export const siteSettingsSchema = z.object({
   features: siteSettingsFeaturesSchema,
   seo: siteSettingsSeoSchema,
   cms: siteSettingsCmsSchema,
-});
+}) satisfies z.ZodType<SiteSettings>;
 
-export type SiteSettings = z.infer<typeof siteSettingsSchema>;
+export type { SiteSettings };
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   features: {

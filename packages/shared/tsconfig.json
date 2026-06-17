@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
+    "baseUrl": ".",
     "paths": {
       "@ecommerce-amazon/shared": ["./src/index.ts"],
       "@ecommerce-amazon/shared/*": ["./src/*"]
@@ -11,5 +12,5 @@
   },
   "references": [{ "path": "../domain" }],
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["dist", "node_modules", "src/**/*.test.ts"]
 }

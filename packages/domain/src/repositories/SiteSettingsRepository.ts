@@ -1,4 +1,4 @@
-import type { SiteSettings } from '@ecommerce-amazon/shared/admin';
+import type { SiteSettings } from '../value-objects/SiteSettings.js';
 
 export type SiteSettingsRecord = {
   settings: SiteSettings;
