@@ -111,7 +111,7 @@ export function ProductCard({
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <Link
                 href={detailHref}
-                className="text-base font-semibold leading-snug text-neutral-900 hover:underline"
+                className="block min-w-0 truncate text-base font-semibold leading-snug text-neutral-900 hover:underline"
               >
                 {product.title}
               </Link>
@@ -190,7 +190,7 @@ export function ProductCard({
         <div className="flex shrink-0 flex-col gap-0.5">
           <Link
             href={detailHref}
-            className="line-clamp-2 shrink-0 text-sm font-semibold leading-snug hover:underline"
+            className="block min-w-0 truncate shrink-0 text-sm font-semibold leading-snug hover:underline"
           >
             {product.title}
           </Link>
