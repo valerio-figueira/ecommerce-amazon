@@ -108,41 +108,38 @@ export function ProductCard({
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-3">
-            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-              <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:gap-2">
-                <Link
-                  href={detailHref}
-                  className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
-                >
-                  {product.title}
-                </Link>
-                <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
-                <PriceDisplay
-                  price={product.price}
-                  strikethrough={product.price.strikethrough}
-                  compact
-                />
-                <ProductEditorialProsCons
-                  pros={pros}
-                  cons={cons}
-                  maxPros={2}
-                  maxCons={1}
-                  className="text-xs sm:text-sm"
-                />
-              </div>
-              <ProductCardActions
-                product={product}
-                sessionId={sessionId}
-                blockId={blockId}
-                articleId={articleId}
-                collectionId={collectionId}
-                clickOrigin={clickOrigin}
-                {...(placement !== undefined ? { placement } : {})}
-                editorial
-                className="w-full sm:w-auto"
-                {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+            <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
+              <Link
+                href={detailHref}
+                className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
+              >
+                {product.title}
+              </Link>
+              <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
+              <PriceDisplay
+                price={product.price}
+                strikethrough={product.price.strikethrough}
+                compact
+              />
+              <ProductEditorialProsCons
+                pros={pros}
+                cons={cons}
+                maxPros={2}
+                maxCons={1}
+                className="text-xs sm:text-sm"
               />
             </div>
+            <ProductCardActions
+              product={product}
+              sessionId={sessionId}
+              blockId={blockId}
+              articleId={articleId}
+              collectionId={collectionId}
+              clickOrigin={clickOrigin}
+              {...(placement !== undefined ? { placement } : {})}
+              editorial
+              {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+            />
           </div>
         </div>
       </article>

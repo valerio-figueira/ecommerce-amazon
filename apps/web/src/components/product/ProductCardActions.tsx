@@ -22,7 +22,7 @@ type ProductCardActionsProps = {
   utmDefaults?: Record<string, string>;
   className?: string;
   compact?: boolean;
-  /** Editorial embed: fixed-width stacked CTAs on the right column of the card. */
+  /** Editorial embed: stacked CTAs below card content; capped width on desktop. */
   editorial?: boolean;
 };
 
@@ -42,22 +42,25 @@ export function ProductCardActions({
   const isStale = product.price.isStale || product.price.amount === null;
   const marketplace = marketplaceLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
+  const editorialStackGap =
+    'flex w-full flex-col items-stretch gap-2 sm:w-fit sm:items-start sm:gap-2.5';
   const stackGap = editorial
-    ? 'flex w-full shrink-0 flex-col gap-2 sm:w-52 sm:gap-2.5'
+    ? editorialStackGap
     : compact
       ? 'space-y-1'
       : 'space-y-2';
+  const editorialButtonClass = 'px-4 py-2.5 text-sm';
   const buttonClass = editorial
-    ? 'px-4 py-2.5 text-sm'
+    ? editorialButtonClass
     : compact
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
   const primaryButtonClass = editorial
-    ? 'px-4 py-2.5 text-sm'
+    ? editorialButtonClass
     : compact
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
-  const widthClass = 'w-full';
+  const widthClass = editorial ? 'w-full sm:w-auto sm:whitespace-nowrap' : 'w-full';
 
   if (isStale) {
     return (
@@ -81,7 +84,7 @@ export function ProductCardActions({
           href={detailHref}
           className={cn(
             'text-xs font-medium text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline',
-            editorial ? 'text-center text-sm' : 'block text-center',
+            editorial ? 'text-center text-sm sm:text-left' : 'block text-center',
           )}
         >
           Ver análise
