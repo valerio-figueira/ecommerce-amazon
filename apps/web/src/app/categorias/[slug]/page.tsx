@@ -203,7 +203,6 @@ export default async function CategoryPage({
 
       {category.children.length > 0 && (
         <section className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold">Subcategorias</h2>
           <div className="flex flex-wrap gap-2">
             {category.children.map((child) => (
               <Link

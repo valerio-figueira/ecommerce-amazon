@@ -1,5 +1,3 @@
-import { RefreshCw } from 'lucide-react';
-
 import type { ProductListItemDto } from '@/lib/api/types';
 import { formatHoursSinceUpdated } from '@/lib/product-badges';
 import { cn } from '@/lib/utils';
@@ -16,24 +14,12 @@ export function PriceDisplay({
   strikethrough,
   className,
   compact = false,
-}: PriceDisplayProps): React.JSX.Element {
-  const minHeight = compact ? 'min-h-[1.25rem]' : 'min-h-[48px]';
-
+}: PriceDisplayProps): React.JSX.Element | null {
   if (price.isStale || price.amount === null) {
-    return (
-      <div className={cn('flex flex-col justify-center', minHeight, className)}>
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 rounded-md bg-amber-50 font-medium text-amber-700',
-            compact ? 'px-1.5 py-1 text-[10px]' : 'gap-1.5 px-2 py-1.5 text-xs',
-          )}
-        >
-          <RefreshCw className={cn('shrink-0', compact ? 'h-3 w-3' : 'h-3.5 w-3.5')} aria-hidden />
-          Consultar preço atualizado
-        </span>
-      </div>
-    );
+    return null;
   }
+
+  const minHeight = compact ? 'min-h-[1.25rem]' : 'min-h-[48px]';
 
   return (
     <div className={cn('flex flex-col', minHeight, compact ? 'gap-0' : 'justify-center gap-0.5', className)}>
