@@ -1,0 +1,37 @@
+# Traefik static config — HTTPS phase (domínio válido + Let's Encrypt).
+# deploy/scripts/deploy.sh usa este arquivo quando TLS_ENABLED=true.
+#
+# Fluxo: visitante em :80 é redirecionado para :443; ACME HTTP challenge responde em :80.
+
+api:
+  dashboard: false
+
+entryPoints:
+  web:
+    address: ':80'
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ':443'
+
+providers:
+  docker:
+    swarmMode: true
+    exposedByDefault: false
+    network: ${TRAEFIK_DOCKER_NETWORK}
+    watch: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: ${ACME_EMAIL}
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+
+log:
+  level: INFO

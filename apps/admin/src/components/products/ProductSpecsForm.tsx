@@ -35,7 +35,7 @@ function createCustomRow(key = '', value = ''): CustomSpecRow {
 
 function specsToCustomRows(
   specs: Record<string, string>,
-  templateKeys: string[],
+  templateKeys: readonly string[],
 ): CustomSpecRow[] {
   return Object.entries(specs)
     .filter(([key]) => !templateKeys.includes(key))

@@ -1,0 +1,53 @@
+# syntax=docker/dockerfile:1
+#
+# Admin CMS (Next.js standalone) — served at /admin via Traefik + basePath.
+#
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/worker/package.json apps/worker/
+COPY apps/web/package.json apps/web/
+COPY apps/admin/package.json apps/admin/
+COPY packages/domain/package.json packages/domain/
+COPY packages/shared/package.json packages/shared/
+COPY packages/application/package.json packages/application/
+COPY packages/infrastructure/package.json packages/infrastructure/
+
+RUN npm ci
+
+FROM deps AS build
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SITE_URL
+ARG WEB_PUBLIC_URL
+ARG SITE_NAME
+ARG ADMIN_BASE_PATH=/admin
+
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV WEB_PUBLIC_URL=${WEB_PUBLIC_URL}
+ENV SITE_NAME=${SITE_NAME}
+ENV ADMIN_BASE_PATH=${ADMIN_BASE_PATH}
+
+COPY tsconfig.base.json turbo.json ./
+COPY packages ./packages
+COPY apps ./apps
+
+RUN find . -name 'tsconfig.tsbuildinfo' -delete && npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV ADMIN_PORT=3002
+
+COPY --from=build /app/apps/admin/.next/standalone ./
+COPY --from=build /app/apps/admin/.next/static ./apps/admin/.next/static
+
+WORKDIR /app/apps/admin
+EXPOSE 3002
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3002/admin/login >/dev/null 2>&1 || wget -qO- http://127.0.0.1:3002/login >/dev/null || exit 1
+
+CMD ["node", "server.js"]

@@ -99,8 +99,8 @@ export async function registerAdminInstitutionalRoutes(
       const result = await useCases.updateInstitutionalPage.execute({
         slug,
         content,
-        seoTitle: body.seoTitle,
-        seoDescription: body.seoDescription,
+        ...(body.seoTitle !== undefined ? { seoTitle: body.seoTitle } : {}),
+        ...(body.seoDescription !== undefined ? { seoDescription: body.seoDescription } : {}),
         ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
       });
 

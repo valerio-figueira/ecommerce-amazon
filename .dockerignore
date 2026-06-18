@@ -1,0 +1,30 @@
+# Dependencies and build artifacts (rebuilt inside the image)
+node_modules
+**/node_modules
+**/.next
+**/dist
+coverage
+.turbo
+
+# Secrets and local data — never bake into images
+.env
+.env.*
+!.env.example
+uploads
+**/uploads
+
+# Git and editor noise
+.git
+.gitignore
+.cursor
+**/*.md
+!packages/infrastructure/src/persistence/drizzle/migrations/**/*.sql
+
+# CI/deploy configs are not needed at build time
+.github
+deploy
+
+# Test artifacts
+**/*.test.ts
+**/*.test.tsx
+vitest.config.ts

@@ -9,6 +9,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | Documento | Conteúdo |
 |-----------|----------|
 | [dev-setup.md](./dev-setup.md) | Ambiente local, PostgreSQL, Redis, Docker/Podman, env, troubleshooting |
+| [deployment-swarm.md](./deployment-swarm.md) | Produção MVP: Docker Swarm, Traefik, GHCR, GitHub Actions, secrets |
 
 ### Arquitetura e modelo
 

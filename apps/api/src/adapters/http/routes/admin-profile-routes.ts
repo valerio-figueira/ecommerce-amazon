@@ -61,10 +61,17 @@ export async function registerAdminProfileRoutes(
         name: body.name,
         bio: body.bio ?? null,
         jobTitle: body.jobTitle ?? null,
-        socialLinks: body.socialLinks ?? null,
+        socialLinks: body.socialLinks
+          ? {
+              ...(body.socialLinks.linkedin ? { linkedin: body.socialLinks.linkedin } : {}),
+              ...(body.socialLinks.instagram ? { instagram: body.socialLinks.instagram } : {}),
+              ...(body.socialLinks.x ? { x: body.socialLinks.x } : {}),
+              ...(body.socialLinks.telegram ? { telegram: body.socialLinks.telegram } : {}),
+            }
+          : null,
         showOnTeam: body.showOnTeam ?? false,
         teamSortOrder: body.teamSortOrder ?? null,
-        publicTeamRole: body.publicTeamRole ?? TeamPublicRole.MEMBER,
+        publicTeamRole: (body.publicTeamRole ?? TeamPublicRole.MEMBER) as TeamPublicRole,
       });
 
       return reply.send(result);

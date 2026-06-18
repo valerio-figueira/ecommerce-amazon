@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+#
+# BullMQ worker — same monorepo build chain as API, no HTTP port exposed.
+#
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/worker/package.json apps/worker/
+COPY apps/web/package.json apps/web/
+COPY apps/admin/package.json apps/admin/
+COPY packages/domain/package.json packages/domain/
+COPY packages/shared/package.json packages/shared/
+COPY packages/application/package.json packages/application/
+COPY packages/infrastructure/package.json packages/infrastructure/
+
+RUN npm ci
+
+FROM deps AS build
+COPY tsconfig.base.json turbo.json ./
+COPY packages ./packages
+COPY apps ./apps
+
+RUN find . -name 'tsconfig.tsbuildinfo' -delete && npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/worker ./apps/worker
+
+# No HTTP endpoint — verify the Node process is alive.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD pgrep -f "apps/worker/dist/main.js" >/dev/null || exit 1
+
+CMD ["node", "apps/worker/dist/main.js"]

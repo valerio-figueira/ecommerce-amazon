@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+#
+# One-shot Drizzle migrations — run via deploy/scripts/migrate.sh before stack deploy.
+# Uses tsx (devDependency) to execute migrate.ts; migrations live next to source, not dist.
+#
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/worker/package.json apps/worker/
+COPY apps/web/package.json apps/web/
+COPY apps/admin/package.json apps/admin/
+COPY packages/domain/package.json packages/domain/
+COPY packages/shared/package.json packages/shared/
+COPY packages/application/package.json packages/application/
+COPY packages/infrastructure/package.json packages/infrastructure/
+
+# tsx is a devDependency required to run migrate.ts and seed.ts.
+RUN npm ci
+
+FROM deps AS build
+COPY tsconfig.base.json turbo.json ./
+COPY packages ./packages
+COPY apps ./apps
+
+RUN find . -name 'tsconfig.tsbuildinfo' -delete && npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/packages ./packages
+
+# Default command — override to seed with: npm run db:seed
+CMD ["npm", "run", "db:migrate"]

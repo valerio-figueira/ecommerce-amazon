@@ -18,8 +18,16 @@ const siteUrl =
   process.env['NEXT_PUBLIC_SITE_URL'] ??
   `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
 
+// Production Swarm serves admin at /admin via Traefik; leave unset for local dev (localhost:3002).
+const adminBasePath = process.env['ADMIN_BASE_PATH']?.trim() ?? '';
+
 const nextConfig: NextConfig = {
+  ...(adminBasePath ? { basePath: adminBasePath } : {}),
   output: 'standalone',
+  // Lint runs in GitHub Actions quality job; Docker build must not duplicate it.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   allowedDevOrigins: ['localhost', '127.0.0.1', ...devOrigins],
   env: {
     NEXT_PUBLIC_SITE_NAME: siteName,

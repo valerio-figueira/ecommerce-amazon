@@ -145,16 +145,16 @@ export function parseProductSeoLlmResponse(raw: string): ProductSeoLlmResponse {
 
   const record = parsed as Record<string, unknown>;
   const metaTitleRaw =
-    typeof record.metaTitle === 'string'
-      ? record.metaTitle
-      : typeof record.seoTitle === 'string'
-        ? record.seoTitle
+    typeof record['metaTitle'] === 'string'
+      ? record['metaTitle']
+      : typeof record['seoTitle'] === 'string'
+        ? record['seoTitle']
         : '';
   const metaDescriptionRaw =
-    typeof record.metaDescription === 'string'
-      ? record.metaDescription
-      : typeof record.seoDescription === 'string'
-        ? record.seoDescription
+    typeof record['metaDescription'] === 'string'
+      ? record['metaDescription']
+      : typeof record['seoDescription'] === 'string'
+        ? record['seoDescription']
         : '';
 
   const metaTitle = metaTitleRaw.trim();

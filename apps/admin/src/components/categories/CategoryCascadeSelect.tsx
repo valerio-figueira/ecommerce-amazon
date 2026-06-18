@@ -48,9 +48,9 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
 
     const path = resolvePath(categoryId, options);
     setCascadeLevels(form, {
-      level1: path[0],
-      level2: path[1],
-      level3: path[2],
+      ...(path[0] !== undefined ? { level1: path[0] } : {}),
+      ...(path[1] !== undefined ? { level2: path[1] } : {}),
+      ...(path[2] !== undefined ? { level3: path[2] } : {}),
     });
   }, [categoryId, form, level1, options]);
 
@@ -190,9 +190,9 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
 function setCascadeLevels(
   form: UseFormReturn<ProductFormValues>,
   levels: {
-    level1?: string;
-    level2?: string;
-    level3?: string;
+    level1?: string | undefined;
+    level2?: string | undefined;
+    level3?: string | undefined;
   },
 ): void {
   const options = { shouldDirty: true, shouldValidate: true } as const;

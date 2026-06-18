@@ -5,6 +5,8 @@ import {
   AuthenticationError,
   DomainError,
   EntityNotFoundError,
+  OperatorRole,
+  OperatorStatus,
   ValidationError,
   parseMarketplace,
 } from '@ecommerce-amazon/domain';
@@ -90,7 +92,10 @@ export async function registerAdminSettingsRoutes(
     try {
       await requireAdminOperator(request, container);
       const body = createAffiliateAccountBodySchema.parse(request.body);
-      const result = await useCases.createAffiliateAccount.execute(body);
+      const result = await useCases.createAffiliateAccount.execute({
+        marketplace: parseMarketplace(body.marketplace),
+        affiliateTag: body.affiliateTag,
+      });
       return reply.status(201).send(result);
     } catch (error) {
       return handleSettingsError(error, reply);
@@ -111,7 +116,12 @@ export async function registerAdminSettingsRoutes(
       const result = await useCases.updateAffiliateAccount.execute({
         accountId: params.id,
         operatorEmail,
-        ...body,
+        ...(body.affiliateTag !== undefined ? { affiliateTag: body.affiliateTag } : {}),
+        ...(body.status !== undefined ? { status: body.status } : {}),
+        ...(body.validationNotes !== undefined ? { validationNotes: body.validationNotes } : {}),
+        ...(body.checklistConfirmed !== undefined
+          ? { checklistConfirmed: body.checklistConfirmed }
+          : {}),
       });
 
       return reply.send(result);
@@ -147,7 +157,12 @@ export async function registerAdminSettingsRoutes(
     try {
       await requireAdminOperator(request, container);
       const body = createOperatorBodySchema.parse(request.body);
-      const result = await useCases.createOperator.execute(body);
+      const result = await useCases.createOperator.execute({
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        role: body.role as OperatorRole,
+      });
       return reply.status(201).send(result);
     } catch (error) {
       return handleSettingsError(error, reply);
@@ -167,7 +182,8 @@ export async function registerAdminSettingsRoutes(
       const result = await useCases.updateOperatorAccess.execute({
         operatorId: params.id,
         actorId,
-        ...body,
+        ...(body.role !== undefined ? { role: body.role as OperatorRole } : {}),
+        ...(body.status !== undefined ? { status: body.status as OperatorStatus } : {}),
       });
 
       return reply.send(result);

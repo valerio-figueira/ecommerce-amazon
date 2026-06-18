@@ -1,0 +1,233 @@
+# Deploy production — build imagens GHCR, SSH na VPS, migrate e stack Swarm.
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_seed:
+        description: Run db:seed after deploy (first bootstrap only)
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  GHCR_IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vitrine
+          POSTGRES_PASSWORD: vitrine
+          POSTGRES_DB: vitrine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vitrine -d vitrine"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: test
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: vitrine
+      POSTGRES_PASSWORD: vitrine
+      POSTGRES_DB: vitrine
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Integration tests
+        run: npm run test:integration
+
+  build_and_push:
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: api
+            file: docker/Dockerfile.api
+          - app: worker
+            file: docker/Dockerfile.worker
+          - app: migrate
+            file: docker/Dockerfile.migrate
+          - app: web
+            file: docker/Dockerfile.web
+          - app: admin
+            file: docker/Dockerfile.admin
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: meta
+        run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # NEXT_PUBLIC_* são baked no build — rebuild obrigatório ao mudar PUBLIC_BASE_URL.
+      - name: Build and push ${{ matrix.app }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.file }}
+          push: true
+          tags: |
+            ${{ env.GHCR_IMAGE_PREFIX }}/vitrine-${{ matrix.app }}:${{ steps.meta.outputs.tag }}
+            ${{ env.GHCR_IMAGE_PREFIX }}/vitrine-${{ matrix.app }}:latest
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.PUBLIC_BASE_URL }}/api
+            NEXT_PUBLIC_SITE_URL=${{ secrets.PUBLIC_BASE_URL }}
+            WEB_PUBLIC_URL=${{ secrets.PUBLIC_BASE_URL }}
+            API_INTERNAL_URL=http://api:3000
+            SITE_NAME=${{ secrets.SITE_NAME }}
+            STORAGE_PUBLIC_BASE_URL=${{ secrets.PUBLIC_BASE_URL }}/api/uploads
+            ADMIN_BASE_PATH=/admin
+
+  deploy_production:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: meta
+        run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Copy deploy manifests to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_SSH_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          source: deploy/
+          target: /opt/vitrine/
+          strip_components: 0
+
+      # Injeta secrets no .env remoto e executa deploy (pull → stack → migrate → smoke).
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tag }}
+          GHCR_IMAGE_PREFIX: ${{ env.GHCR_IMAGE_PREFIX }}
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+          TLS_ENABLED: ${{ secrets.TLS_ENABLED }}
+          ACME_EMAIL: ${{ secrets.ACME_EMAIL }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          PASSWORD_PEPPER: ${{ secrets.PASSWORD_PEPPER }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          COMPANY_LEGAL_NAME: ${{ secrets.COMPANY_LEGAL_NAME }}
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          SITE_TAGLINE: ${{ secrets.SITE_TAGLINE }}
+          AMAZON_AFFILIATE_TAG: ${{ secrets.AMAZON_AFFILIATE_TAG }}
+          SHOPEE_AFFILIATE_ID: ${{ secrets.SHOPEE_AFFILIATE_ID }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ADMIN_SEED_EMAIL: ${{ secrets.ADMIN_SEED_EMAIL }}
+          ADMIN_SEED_PASSWORD: ${{ secrets.ADMIN_SEED_PASSWORD }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+          RUN_SEED: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_seed || 'false' }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          envs: IMAGE_TAG,GHCR_IMAGE_PREFIX,GHCR_PULL_TOKEN,PUBLIC_BASE_URL,TLS_ENABLED,ACME_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,JWT_SECRET,JWT_EXPIRES_IN,PASSWORD_PEPPER,ENCRYPTION_KEY,REVALIDATE_SECRET,CORS_ORIGINS,SITE_NAME,COMPANY_LEGAL_NAME,CONTACT_EMAIL,SITE_TAGLINE,AMAZON_AFFILIATE_TAG,SHOPEE_AFFILIATE_ID,EMAIL_FROM,RESEND_API_KEY,ADMIN_SEED_EMAIL,ADMIN_SEED_PASSWORD,GA4_PROPERTY_ID,GA4_SERVICE_ACCOUNT_JSON,RUN_SEED
+          script: |
+            set -euo pipefail
+            APP_DIR=/opt/vitrine
+            DEPLOY_DIR="${APP_DIR}/deploy"
+
+            # Login GHCR na VPS para docker pull (PAT read:packages ou GITHUB_TOKEN de máquina).
+            if [ -n "${GHCR_PULL_TOKEN:-}" ]; then
+              echo "${GHCR_PULL_TOKEN}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+            fi
+
+            export APP_DIR
+            bash "${DEPLOY_DIR}/scripts/render-env.sh"
+            export IMAGE_TAG GHCR_IMAGE_PREFIX
+            bash "${DEPLOY_DIR}/scripts/deploy.sh"
+
+            if [ "${RUN_SEED}" = "true" ]; then
+              bash "${DEPLOY_DIR}/scripts/seed.sh"
+            fi
+
+      - name: Rollback hint on failure
+        if: failure()
+        run: |
+          echo "::warning::Deploy falhou. Rollback manual: ssh na VPS e execute"
+          echo "  docker service rollback vitrine_api"
+          echo "  docker service rollback vitrine_web"
+          echo "  docker service rollback vitrine_admin"
+          echo "  docker service rollback vitrine_worker"

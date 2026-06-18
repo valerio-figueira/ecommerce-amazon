@@ -239,8 +239,8 @@ export function MarketplaceIntegrationsPanel({
                 value={amazonAccessKeyId}
                 onChange={(event) => setAmazonAccessKeyId(event.target.value)}
                 placeholder={
-                  amazonMetadata?.accessKeyIdLast4
-                    ? `••••${String(amazonMetadata.accessKeyIdLast4)}`
+                  amazonMetadata?.['accessKeyIdLast4']
+                    ? `••••${String(amazonMetadata['accessKeyIdLast4'])}`
                     : 'AKIA...'
                 }
                 disabled={!canManage}
@@ -292,7 +292,7 @@ export function MarketplaceIntegrationsPanel({
                   savingMarketplace === 'amazon_br' ||
                   !amazonAccessKeyId.trim() ||
                   !amazonSecretKey.trim() ||
-                  lastTestOk.amazon_br !== true
+                  lastTestOk['amazon_br'] !== true
                 }
               >
                 {savingMarketplace === 'amazon_br' ? 'Salvando…' : 'Salvar Amazon'}
@@ -339,8 +339,8 @@ export function MarketplaceIntegrationsPanel({
                 value={shopeePartnerId}
                 onChange={(event) => setShopeePartnerId(event.target.value)}
                 placeholder={
-                  shopeeStatus?.publicMetadata?.partnerId
-                    ? String(shopeeStatus.publicMetadata.partnerId)
+                  shopeeStatus?.publicMetadata?.['partnerId']
+                    ? String(shopeeStatus.publicMetadata['partnerId'])
                     : 'Partner ID'
                 }
                 disabled={!canManage}
@@ -380,7 +380,7 @@ export function MarketplaceIntegrationsPanel({
                   savingMarketplace === 'shopee_br' ||
                   !shopeePartnerId.trim() ||
                   !shopeePartnerKey.trim() ||
-                  lastTestOk.shopee_br !== true
+                  lastTestOk['shopee_br'] !== true
                 }
               >
                 {savingMarketplace === 'shopee_br' ? 'Salvando…' : 'Salvar Shopee'}

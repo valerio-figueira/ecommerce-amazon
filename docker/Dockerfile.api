@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+#
+# Fastify API — multi-stage build for the monorepo.
+# Runtime serves routes at / (Traefik strips /api at the edge).
+#
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Copy workspace manifests first — maximises Docker layer cache on dependency-only changes.
+COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/worker/package.json apps/worker/
+COPY apps/web/package.json apps/web/
+COPY apps/admin/package.json apps/admin/
+COPY packages/domain/package.json packages/domain/
+COPY packages/shared/package.json packages/shared/
+COPY packages/application/package.json packages/application/
+COPY packages/infrastructure/package.json packages/infrastructure/
+
+RUN npm ci
+
+FROM deps AS build
+COPY tsconfig.base.json turbo.json ./
+COPY packages ./packages
+COPY apps ./apps
+
+# Build completo na ordem correta do monorepo (domain → … → api).
+# Remove tsbuildinfo stale para builds limpos em CI/Docker.
+RUN find . -name 'tsconfig.tsbuildinfo' -delete && npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/api ./apps/api
+
+EXPOSE 3000
+
+# Internal healthcheck hits Fastify directly (no /api prefix inside the container).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health/ready || exit 1
+
+CMD ["node", "apps/api/dist/main.js"]

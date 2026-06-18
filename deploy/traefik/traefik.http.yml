@@ -1,0 +1,24 @@
+# Traefik static config — HTTP-only phase (IP público, sem TLS).
+# Let's Encrypt não emite certificados para IPs; use traefik.https.yml após configurar domínio.
+#
+# deploy/scripts/deploy.sh copia este arquivo para /opt/vitrine/traefik/traefik.yml quando TLS_ENABLED=false.
+
+api:
+  dashboard: false
+
+entryPoints:
+  # Única entrada pública na fase MVP por IP.
+  web:
+    address: ':80'
+
+providers:
+  docker:
+    # Swarm mode: lê labels em deploy.labels dos serviços.
+    swarmMode: true
+    exposedByDefault: false
+    # Rede overlay onde os apps expõem portas internas (substituída pelo deploy.sh).
+    network: ${TRAEFIK_DOCKER_NETWORK}
+    watch: true
+
+log:
+  level: INFO

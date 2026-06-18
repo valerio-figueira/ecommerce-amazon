@@ -6,8 +6,8 @@ import { getSiteBaseUrl } from '@/lib/site-url';
 
 async function isIndexingBlocked(): Promise<boolean> {
   const apiUrl =
-    process.env.API_INTERNAL_URL ??
-    process.env.NEXT_PUBLIC_API_URL ??
+    process.env['API_INTERNAL_URL'] ??
+    process.env['NEXT_PUBLIC_API_URL'] ??
     'http://localhost:3000';
 
   try {

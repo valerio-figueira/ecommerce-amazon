@@ -1,0 +1,278 @@
+# Docker Swarm stack — vitrine MVP (path routing: /, /api, /admin).
+# Renderizado por deploy/scripts/deploy.sh via envsubst antes de `docker stack deploy`.
+#
+# Variáveis obrigatórias no ambiente: ver deploy/scripts/render-env.sh e docs/deployment-swarm.md
+
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      # Config estática montada do host (http ou https conforme TLS_ENABLED).
+      - '--configFile=/etc/traefik/traefik.yml'
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      # Porta 443 só é publicada quando TLS_ENABLED=true (deploy.sh ajusta o stack renderizado).
+      ${TRAEFIK_HTTPS_PORT_BLOCK}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/vitrine/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik_letsencrypt:/letsencrypt
+    networks:
+      - vitrine_net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vitrine_net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 384M
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis_data:/data
+    networks:
+      - vitrine_net
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 192M
+        reservations:
+          memory: 96M
+      restart_policy:
+        condition: on-failure
+
+  api:
+    image: ${GHCR_IMAGE_PREFIX}/vitrine-api:${IMAGE_TAG}
+    environment:
+      NODE_ENV: production
+      API_PORT: '3000'
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      REDIS_URL: ${REDIS_URL}
+      REDIS_CACHE_DB: ${REDIS_CACHE_DB}
+      REDIS_QUEUE_DB: ${REDIS_QUEUE_DB}
+      REDIS_TELEMETRY_DB: ${REDIS_TELEMETRY_DB}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      PASSWORD_PEPPER: ${PASSWORD_PEPPER}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET}
+      WEB_PUBLIC_URL: ${WEB_PUBLIC_URL}
+      SITE_NAME: ${SITE_NAME}
+      COMPANY_LEGAL_NAME: ${COMPANY_LEGAL_NAME}
+      CONTACT_EMAIL: ${CONTACT_EMAIL}
+      SITE_TAGLINE: ${SITE_TAGLINE}
+      AMAZON_AFFILIATE_TAG: ${AMAZON_AFFILIATE_TAG}
+      SHOPEE_AFFILIATE_ID: ${SHOPEE_AFFILIATE_ID}
+      EMAIL_FROM: ${EMAIL_FROM}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      STORAGE_DRIVER: ${STORAGE_DRIVER}
+      STORAGE_PUBLIC_BASE_URL: ${STORAGE_PUBLIC_BASE_URL}
+      STORAGE_LOCAL_ROOT: /app/uploads
+      GA4_PROPERTY_ID: ${GA4_PROPERTY_ID}
+      GA4_SERVICE_ACCOUNT_JSON: ${GA4_SERVICE_ACCOUNT_JSON}
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - vitrine_net
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
+        # /api/* → StripPrefix /api → Fastify na raiz interna.
+        - traefik.http.routers.vitrine-api.rule=PathPrefix(`/api`)
+        - traefik.http.routers.vitrine-api.entrypoints=${TRAEFIK_ENTRYPOINT}
+        - traefik.http.routers.vitrine-api.priority=30
+        - traefik.http.middlewares.vitrine-api-strip.stripprefix.prefixes=/api
+        - traefik.http.routers.vitrine-api.middlewares=vitrine-api-strip
+        - traefik.http.services.vitrine-api.loadbalancer.server.port=3000
+        ${TRAEFIK_API_TLS_LABELS}
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+      restart_policy:
+        condition: on-failure
+
+  worker:
+    image: ${GHCR_IMAGE_PREFIX}/vitrine-worker:${IMAGE_TAG}
+    environment:
+      NODE_ENV: production
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      REDIS_URL: ${REDIS_URL}
+      REDIS_CACHE_DB: ${REDIS_CACHE_DB}
+      REDIS_QUEUE_DB: ${REDIS_QUEUE_DB}
+      REDIS_TELEMETRY_DB: ${REDIS_TELEMETRY_DB}
+      TELEMETRY_BUFFER_ENABLED: ${TELEMETRY_BUFFER_ENABLED}
+      TELEMETRY_FLUSH_BATCH_SIZE: ${TELEMETRY_FLUSH_BATCH_SIZE}
+      TELEMETRY_FLUSH_CRON: ${TELEMETRY_FLUSH_CRON}
+      TELEMETRY_BUFFER_MAX_LEN: ${TELEMETRY_BUFFER_MAX_LEN}
+      JWT_SECRET: ${JWT_SECRET}
+      PASSWORD_PEPPER: ${PASSWORD_PEPPER}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      AMAZON_AFFILIATE_TAG: ${AMAZON_AFFILIATE_TAG}
+      SHOPEE_AFFILIATE_ID: ${SHOPEE_AFFILIATE_ID}
+      EMAIL_FROM: ${EMAIL_FROM}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      STORAGE_DRIVER: ${STORAGE_DRIVER}
+      STORAGE_PUBLIC_BASE_URL: ${STORAGE_PUBLIC_BASE_URL}
+      STORAGE_LOCAL_ROOT: /app/uploads
+    networks:
+      - vitrine_net
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+      restart_policy:
+        condition: on-failure
+
+  web:
+    image: ${GHCR_IMAGE_PREFIX}/vitrine-web:${IMAGE_TAG}
+    environment:
+      NODE_ENV: production
+      WEB_PORT: '3001'
+      PORT: '3001'
+    networks:
+      - vitrine_net
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
+        # Catch-all / — prioridade menor que /api e /admin.
+        - traefik.http.routers.vitrine-web.rule=PathPrefix(`/`)
+        - traefik.http.routers.vitrine-web.entrypoints=${TRAEFIK_ENTRYPOINT}
+        - traefik.http.routers.vitrine-web.priority=10
+        - traefik.http.services.vitrine-web.loadbalancer.server.port=3001
+        ${TRAEFIK_WEB_TLS_LABELS}
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+      restart_policy:
+        condition: on-failure
+
+  admin:
+    image: ${GHCR_IMAGE_PREFIX}/vitrine-admin:${IMAGE_TAG}
+    environment:
+      NODE_ENV: production
+      ADMIN_PORT: '3002'
+      PORT: '3002'
+    networks:
+      - vitrine_net
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
+        # Next.js basePath=/admin — sem StripPrefix no Traefik.
+        - traefik.http.routers.vitrine-admin.rule=PathPrefix(`/admin`)
+        - traefik.http.routers.vitrine-admin.entrypoints=${TRAEFIK_ENTRYPOINT}
+        - traefik.http.routers.vitrine-admin.priority=20
+        - traefik.http.services.vitrine-admin.loadbalancer.server.port=3002
+        ${TRAEFIK_ADMIN_TLS_LABELS}
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+      restart_policy:
+        condition: on-failure
+
+networks:
+  vitrine_net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+  traefik_letsencrypt:
