@@ -37,6 +37,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/api-rest.md](docs/api-rest.md) | Contrato REST (rotas, Zod, DTOs) |
 | [docs/worker-pipelines.md](docs/worker-pipelines.md) | Filas BullMQ, pipelines A–D |
 | [docs/cms-home-phase1.md](docs/cms-home-phase1.md) | Home CMS, blocos, schemas, web |
+| [docs/cms-weekly-trends-block.md](docs/cms-weekly-trends-block.md) | Bloco tendências da semana (produtos/artigos, 7d) |
 | [docs/wishlist-retention-lgpd.md](docs/wishlist-retention-lgpd.md) | Batch checkout, cookies LGPD, cancelamento alertas |
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/admin-security.md](docs/admin-security.md) | Segurança admin: fail-closed, pepper, rate limit |

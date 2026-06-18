@@ -14,6 +14,7 @@ import {
   curatedCollectionPropsSchema,
   dynamicProductGridPropsSchema,
   parseBlockProps,
+  weeklyTrendsPropsSchema,
   type BentoHubMixRendered,
   type BentoHubMixRenderedSlot1,
   type BentoHubMixSlot1Props,
@@ -30,6 +31,7 @@ import {
 } from '../../services/apply-price-compliance.js';
 import type { GetCuratedCollection } from '../content/GetCuratedCollection.js';
 import type { ListProducts } from '../product/ListProducts.js';
+import type { GetWeeklyTrends } from '../trends/GetWeeklyTrends.js';
 
 function toBlockDto(block: PageBlock): PageBlockDeliveryDto {
   return {
@@ -58,6 +60,7 @@ function stripRenderedData(layout: PageLayoutDeliveryDto): PageLayoutDeliveryDto
         renderedCollection: _renderedCollection,
         renderedCollections: _renderedCollections,
         renderedBentoHubMix: _renderedBentoHubMix,
+        renderedWeeklyTrends: _renderedWeeklyTrends,
         ...block
       }) => block,
     ),
@@ -99,6 +102,7 @@ export class GetPublishedPageLayout {
     private readonly contentRepository: ContentRepository,
     private readonly productRepository: ProductRepository,
     private readonly categoryRepository: CategoryRepository,
+    private readonly getWeeklyTrends: GetWeeklyTrends,
   ) {}
 
   async execute(slug: string): Promise<GetPublishedPageLayoutResult | null> {
@@ -152,7 +156,27 @@ export class GetPublishedPageLayout {
       return this.hydrateBentoHubMixBlock(block);
     }
 
+    if (block.type === BlockType.WEEKLY_TRENDS) {
+      return this.hydrateWeeklyTrendsBlock(block);
+    }
+
     return block;
+  }
+
+  private async hydrateWeeklyTrendsBlock(
+    block: PageBlockDeliveryDto,
+  ): Promise<PageBlockDeliveryDto> {
+    const props = weeklyTrendsPropsSchema.parse(block.props);
+    const rendered = await this.getWeeklyTrends.execute(props);
+
+    if (!rendered) {
+      return block;
+    }
+
+    return {
+      ...block,
+      renderedWeeklyTrends: rendered,
+    };
   }
 
   private async hydrateCuratedCollectionBlock(

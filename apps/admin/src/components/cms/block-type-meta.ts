@@ -88,6 +88,11 @@ export const BLOCK_TYPE_META: Record<BlockType, BlockTypeMeta> = {
     icon: LayoutPanelLeft,
     accentClass: 'bg-violet-100 text-violet-900',
   },
+  [BlockType.WEEKLY_TRENDS]: {
+    label: BLOCK_TYPE_LABELS[BlockType.WEEKLY_TRENDS],
+    icon: Sparkles,
+    accentClass: 'bg-fuchsia-100 text-fuchsia-900',
+  },
 };
 
 export function getBlockTypeMeta(type: BlockType): BlockTypeMeta {

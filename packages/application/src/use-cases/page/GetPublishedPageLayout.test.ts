@@ -24,6 +24,12 @@ function createMockGetCuratedCollection() {
   };
 }
 
+function createMockGetWeeklyTrends() {
+  return {
+    execute: vi.fn().mockResolvedValue(null),
+  };
+}
+
 function createLayoutDeps(
   productRepository: ReturnType<typeof createMockProductRepository>,
   overrides: {
@@ -157,6 +163,7 @@ describe('GetPublishedPageLayout', () => {
       deps.contentRepository,
       deps.productRepository,
       deps.categoryRepository,
+      createMockGetWeeklyTrends(),
     );
     const layout = await useCase.execute('home');
 
@@ -217,6 +224,7 @@ describe('GetPublishedPageLayout', () => {
       deps.contentRepository,
       deps.productRepository,
       deps.categoryRepository,
+      createMockGetWeeklyTrends(),
     );
     const layout = await useCase.execute('home');
 
@@ -326,6 +334,7 @@ describe('GetPublishedPageLayout', () => {
       deps.contentRepository,
       deps.productRepository,
       deps.categoryRepository,
+      createMockGetWeeklyTrends(),
     );
 
     const layout = await useCase.execute('home');
@@ -439,6 +448,7 @@ describe('GetPublishedPageLayout', () => {
       deps.contentRepository,
       deps.productRepository,
       deps.categoryRepository,
+      createMockGetWeeklyTrends(),
     );
 
     const layout = await useCase.execute('home');

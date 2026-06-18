@@ -16,6 +16,7 @@ import { HeroSplitBlock } from '@/components/blocks/HeroSplitBlock';
 import { ProductGridBlock } from '@/components/blocks/ProductGridBlock';
 import { RichTextBlock } from '@/components/blocks/RichTextBlock';
 import { SpacerBlock } from '@/components/blocks/SpacerBlock';
+import { WeeklyTrendsBlock } from '@/components/blocks/WeeklyTrendsBlock';
 
 export type BlockComponentProps = {
   block: PageBlockDeliveryDto;
@@ -40,4 +41,5 @@ export const BlockRegistry: Record<
   [BlockType.SPACER]: SpacerBlock,
   [BlockType.DYNAMIC_PRODUCT_GRID]: DynamicProductGridBlock,
   [BlockType.BENTO_HUB_MIX]: BentoHubMixBlock,
+  [BlockType.WEEKLY_TRENDS]: WeeklyTrendsBlock,
 };

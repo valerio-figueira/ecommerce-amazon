@@ -9,6 +9,7 @@ export const ClickPlacement = {
   CMS_BENTO_LIST: 'cms.bento_list',
   CMS_BENTO_ARTICLE: 'cms.bento_article',
   CMS_CURATED_COLLECTION: 'cms.curated_collection',
+  CMS_WEEKLY_TRENDS: 'cms.weekly_trends',
   PRODUCT_DETAIL_CTA: 'product.detail_cta',
   PRODUCT_SIMILAR: 'product.similar',
   CATEGORY_LISTING: 'category.listing',
@@ -40,6 +41,7 @@ export const ENGAGEMENT_PLACEMENT_VALUES = [
   ClickPlacement.ARTICLE_LISTING,
   ClickPlacement.ARTICLE_RELATED,
   ClickPlacement.CMS_BENTO_ARTICLE,
+  ClickPlacement.CMS_WEEKLY_TRENDS,
 ] as const;
 
 export type EngagementPlacementValue = (typeof ENGAGEMENT_PLACEMENT_VALUES)[number];

@@ -197,7 +197,7 @@ export function ProductCard({
           <ProductRating rating={product.rating} reviewCount={product.reviewCount} className="shrink-0" />
         </div>
         {isCompact ? <div className="min-h-0 flex-1" aria-hidden /> : null}
-        <div className={cn('flex shrink-0 flex-col gap-1', !isCompact && 'mt-0.5')}>
+        <div className={cn('flex shrink-0 flex-col gap-1.5', isCompact ? 'mt-1.5' : 'mt-2')}>
           <PriceDisplay
             price={product.price}
             strikethrough={product.price.strikethrough}

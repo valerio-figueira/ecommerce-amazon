@@ -16,6 +16,7 @@ import {
   mergePlacementBreakdown,
   mergeTopClickedProducts,
   mergeConvertingArticles,
+  mergeTopArticlesByEvent,
 } from '../../telemetry/telemetry-merge.js';
 
 export class CompositeAnalyticsRepository
@@ -129,5 +130,18 @@ export class CompositeAnalyticsRepository
       this.bufferStore.getPendingAggregates(from, to),
     ]);
     return mergeEditorialFunnel(pgMetrics, pending);
+  }
+
+  async getTopArticlesByEvent(
+    from: Date,
+    to: Date,
+    eventType: string,
+    limit: number,
+  ) {
+    const [pgItems, pending] = await Promise.all([
+      this.pgAnalytics.getTopArticlesByEvent(from, to, eventType, limit),
+      this.bufferStore.getPendingAggregates(from, to),
+    ]);
+    return mergeTopArticlesByEvent(pgItems, pending, eventType, limit);
   }
 }

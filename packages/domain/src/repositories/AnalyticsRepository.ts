@@ -124,6 +124,12 @@ export interface AnalyticsRepository {
 
 export interface EngagementAnalyticsRepository {
   getEditorialFunnel(from: Date, to: Date): Promise<EditorialFunnelMetrics>;
+  getTopArticlesByEvent(
+    from: Date,
+    to: Date,
+    eventType: string,
+    limit: number,
+  ): Promise<EditorialFunnelArticleStage[]>;
   getPendingEventCount(from: Date, to: Date): Promise<number>;
 }
 

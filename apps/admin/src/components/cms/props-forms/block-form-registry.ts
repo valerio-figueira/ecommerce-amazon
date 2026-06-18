@@ -11,6 +11,7 @@ import {
   productGridPropsSchema,
   richTextPropsSchema,
   spacerPropsSchema,
+  weeklyTrendsPropsSchema,
 } from '@ecommerce-amazon/shared/cms';
 import type { z } from 'zod';
 
@@ -59,6 +60,7 @@ export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, 
   [BlockType.COUPON_STRIP]: null,
   [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
   [BlockType.BENTO_HUB_MIX]: bentoHubMixPropsSchema,
+  [BlockType.WEEKLY_TRENDS]: weeklyTrendsPropsSchema,
   [BlockType.RICH_TEXT]: richTextPropsSchema,
   [BlockType.BANNER]: bannerPropsSchema,
   [BlockType.SPACER]: spacerPropsSchema,

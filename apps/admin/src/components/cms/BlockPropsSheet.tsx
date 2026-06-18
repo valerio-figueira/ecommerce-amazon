@@ -26,6 +26,7 @@ import { BentoHubMixForm } from '@/components/cms/props-forms/BentoHubMixForm';
 import { FeaturedProductForm } from '@/components/cms/props-forms/FeaturedProductForm';
 import { HeroCarouselForm } from '@/components/cms/props-forms/HeroCarouselForm';
 import { ProductGridForm } from '@/components/cms/props-forms/ProductGridForm';
+import { WeeklyTrendsForm } from '@/components/cms/props-forms/WeeklyTrendsForm';
 import {
   getSchemaForBlockType,
   normalizeFormValues,
@@ -121,6 +122,8 @@ function BlockFormBody({
       return <CuratedCollectionForm control={control} />;
     case BlockType.DYNAMIC_PRODUCT_GRID:
       return <DynamicGridForm control={control} categories={categories} />;
+    case BlockType.WEEKLY_TRENDS:
+      return <WeeklyTrendsForm control={control} />;
     case BlockType.BENTO_HUB_MIX:
       return (
         <BentoHubMixForm

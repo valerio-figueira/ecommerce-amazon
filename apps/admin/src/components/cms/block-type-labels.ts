@@ -11,6 +11,7 @@ import {
   productGridPropsSchema,
   richTextPropsSchema,
   spacerPropsSchema,
+  weeklyTrendsPropsSchema,
 } from '@ecommerce-amazon/shared/cms';
 
 import { isEditableBlockType } from '@/components/cms/props-forms/block-form-registry';
@@ -29,6 +30,7 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   [BlockType.SPACER]: 'Espaçador',
   [BlockType.DYNAMIC_PRODUCT_GRID]: 'Ofertas Relâmpago',
   [BlockType.BENTO_HUB_MIX]: 'Hub Bento Mix',
+  [BlockType.WEEKLY_TRENDS]: 'Tendências da semana',
 };
 
 export const EDITABLE_BLOCK_TYPES: BlockType[] = [
@@ -38,6 +40,7 @@ export const EDITABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.CATEGORY_PILLS,
   BlockType.CATEGORY_BENTO_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.WEEKLY_TRENDS,
   BlockType.BENTO_HUB_MIX,
   BlockType.CURATED_COLLECTION,
   BlockType.RICH_TEXT,
@@ -57,6 +60,7 @@ export const ADDABLE_BLOCK_TYPES: BlockType[] = [
   BlockType.CATEGORY_PILLS,
   BlockType.PRODUCT_GRID,
   BlockType.DYNAMIC_PRODUCT_GRID,
+  BlockType.WEEKLY_TRENDS,
   BlockType.CURATED_COLLECTION,
   BlockType.COUPON_STRIP,
   BlockType.BANNER,
@@ -178,6 +182,8 @@ export function getDefaultBlockProps(type: BlockType): unknown {
           listTitle: 'Top Games',
         },
       });
+    case BlockType.WEEKLY_TRENDS:
+      return weeklyTrendsPropsSchema.parse({});
     default:
       return {};
   }

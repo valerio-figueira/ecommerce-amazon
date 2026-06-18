@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { bentoHubMixPropsSchema, dynamicProductGridPropsSchema } from './block-schemas.js';
+import { bentoHubMixPropsSchema, dynamicProductGridPropsSchema, weeklyTrendsPropsSchema } from './block-schemas.js';
 
 describe('dynamicProductGridPropsSchema', () => {
   it('applies defaults for sortBy and limit', () => {
@@ -85,5 +85,32 @@ describe('bentoHubMixPropsSchema', () => {
         },
       }),
     ).toThrow();
+  });
+});
+
+describe('weeklyTrendsPropsSchema', () => {
+  it('applies defaults for title, tabs and limits', () => {
+    const parsed = weeklyTrendsPropsSchema.parse({});
+
+    expect(parsed.title).toBe('Tendências da semana');
+    expect(parsed.defaultTab).toBe('products');
+    expect(parsed.showTabToggle).toBe(true);
+    expect(parsed.limit).toBe(8);
+    expect(parsed.minItems).toBe(3);
+  });
+
+  it('accepts custom CTA fields', () => {
+    const parsed = weeklyTrendsPropsSchema.parse({
+      title: 'Em alta esta semana',
+      defaultTab: 'articles',
+      showTabToggle: false,
+      productsCtaHref: '/categorias/games',
+      articlesCtaLabel: 'Ler mais artigos',
+    });
+
+    expect(parsed.defaultTab).toBe('articles');
+    expect(parsed.showTabToggle).toBe(false);
+    expect(parsed.productsCtaHref).toBe('/categorias/games');
+    expect(parsed.articlesCtaLabel).toBe('Ler mais artigos');
   });
 });

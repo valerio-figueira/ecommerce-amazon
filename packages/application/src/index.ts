@@ -90,6 +90,7 @@ export {
 } from './use-cases/analytics/GetAttributionAnalytics.js';
 export { ResolveAffiliateRedirect } from './use-cases/affiliate/ResolveAffiliateRedirect.js';
 export { GetPublishedPageLayout } from './use-cases/page/GetPublishedPageLayout.js';
+export { GetWeeklyTrends } from './use-cases/trends/GetWeeklyTrends.js';
 export { SavePageBlock } from './use-cases/admin-cms/SavePageBlock.js';
 export { DeletePageBlock } from './use-cases/admin-cms/DeletePageBlock.js';
 export { UpdatePageBlocksOrder } from './use-cases/admin-cms/UpdatePageBlocksOrder.js';

@@ -39,6 +39,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) | Bloco `dynamic_product_grid`, Admin use cases, BFF `renderedData` |
 | [cms-flash-deals-home.md](./cms-flash-deals-home.md) | Layout Home: Ofertas Relâmpago, carrossel de descontos, remoção hero split |
 | [cms-bento-hub-mix.md](./cms-bento-hub-mix.md) | Bloco `bento_hub_mix`: grid assimétrico 3 slots, BFF hydration, admin preview |
+| [cms-weekly-trends-block.md](./cms-weekly-trends-block.md) | Bloco `weekly_trends`: tendências 7d produtos/artigos, toggle CMS, analytics first-party |
 | [go-redirect-seo.md](./go-redirect-seo.md) | Redirect `/go`, JSON-LD produto, interlinkagem SEO |
 | [seo-technical-phase1.md](./seo-technical-phase1.md) | Metadados globais, sitemap paginado, robots, crawl budget, CWV |
 | [product-detail-page.md](./product-detail-page.md) | Detalhe `/produtos/[slug]`: galeria, análise editorial, ficha técnica |

@@ -31,6 +31,7 @@ import {
   RecordClickEvent,
   RecordEngagementEvent,
   GetPublishedPageLayout,
+  GetWeeklyTrends,
   ListCategoryTree,
   GetCategoryBySlug,
   ListAdminCategories,
@@ -267,6 +268,13 @@ export function buildApiContainer(env = loadEnv()) {
     cache,
   );
 
+  const getWeeklyTrends = new GetWeeklyTrends(
+    analyticsRepository,
+    analyticsRepository,
+    productRepository,
+    contentRepository,
+  );
+
   return {
     logger,
     env,
@@ -333,6 +341,7 @@ export function buildApiContainer(env = loadEnv()) {
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),
       recordEngagementEvent: new RecordEngagementEvent(engagementRepository),
+      getWeeklyTrends,
       getPublishedPageLayout: new GetPublishedPageLayout(
         pageRepository,
         cache,
@@ -342,6 +351,7 @@ export function buildApiContainer(env = loadEnv()) {
         contentRepository,
         productRepository,
         categoryRepository,
+        getWeeklyTrends,
       ),
       listCategoryTree: new ListCategoryTree(categoryRepository),
       getCategoryBySlug: new GetCategoryBySlug(categoryRepository),

@@ -250,7 +250,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
       })
       .from(schema.clickEvents)
       .innerJoin(schema.products, eq(schema.clickEvents.productId, schema.products.id))
-      .where(clickDateFilter(from, to))
+      .where(and(clickDateFilter(from, to), eq(schema.products.visible, true)))
       .groupBy(
         schema.products.id,
         schema.products.slug,
@@ -352,16 +352,8 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
     const embedAffiliateClicks = Number(affiliateClicksRow?.total ?? 0);
 
     const [topCardClicks, topPageViews, topAffiliateClicks] = await Promise.all([
-      this.getTopArticlesByEngagementEvent(
-        from,
-        to,
-        EngagementEventType.ARTICLE_CARD_CLICK,
-      ),
-      this.getTopArticlesByEngagementEvent(
-        from,
-        to,
-        EngagementEventType.ARTICLE_PAGE_VIEW,
-      ),
+      this.getTopArticlesByEvent(from, to, EngagementEventType.ARTICLE_CARD_CLICK, 5),
+      this.getTopArticlesByEvent(from, to, EngagementEventType.ARTICLE_PAGE_VIEW, 5),
       this.getTopArticlesByAffiliateClicks(from, to),
     ]);
 
@@ -377,11 +369,11 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
     };
   }
 
-  private async getTopArticlesByEngagementEvent(
+  async getTopArticlesByEvent(
     from: Date,
     to: Date,
     eventType: string,
-    limit = 5,
+    limit: number,
   ): Promise<EditorialFunnelArticleStage[]> {
     const rows = await this.db
       .select({
@@ -395,7 +387,13 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
         schema.contentArticles,
         eq(schema.contentEngagementEvents.articleId, schema.contentArticles.id),
       )
-      .where(and(engagementDateFilter(from, to), eq(schema.contentEngagementEvents.eventType, eventType)))
+      .where(
+        and(
+          engagementDateFilter(from, to),
+          eq(schema.contentEngagementEvents.eventType, eventType),
+          eq(schema.contentArticles.status, 'published'),
+        ),
+      )
       .groupBy(
         schema.contentArticles.id,
         schema.contentArticles.slug,

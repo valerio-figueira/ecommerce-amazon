@@ -273,6 +273,7 @@ function mergeFunnelArticleStages(
   pgItems: EditorialFunnelArticleStage[],
   pending: PendingTelemetryAggregates,
   eventType: string,
+  limit = 5,
 ): EditorialFunnelArticleStage[] {
   const counts = new Map<string, EditorialFunnelArticleStage>();
   for (const item of pgItems) {
@@ -295,7 +296,16 @@ function mergeFunnelArticleStages(
     });
   }
 
-  return [...counts.values()].sort((left, right) => right.count - left.count).slice(0, 5);
+  return [...counts.values()].sort((left, right) => right.count - left.count).slice(0, limit);
+}
+
+export function mergeTopArticlesByEvent(
+  pgItems: EditorialFunnelArticleStage[],
+  pending: PendingTelemetryAggregates,
+  eventType: string,
+  limit: number,
+): EditorialFunnelArticleStage[] {
+  return mergeFunnelArticleStages(pgItems, pending, eventType, limit);
 }
 
 function mergeAffiliateArticleStages(

@@ -12,6 +12,7 @@ export enum BlockType {
   SPACER = 'spacer',
   DYNAMIC_PRODUCT_GRID = 'dynamic_product_grid',
   BENTO_HUB_MIX = 'bento_hub_mix',
+  WEEKLY_TRENDS = 'weekly_trends',
 }
 
 export enum PageStatus {
