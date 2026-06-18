@@ -72,12 +72,12 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          'group relative overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white p-4 shadow-sm',
+          'group relative overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white p-3 shadow-sm sm:p-4',
           className,
         )}
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-          <div className="relative w-full shrink-0 sm:max-w-[160px]">
+        <div className="flex gap-3 sm:gap-4">
+          <div className="relative w-28 shrink-0 sm:w-40">
             <Link
               href={detailHref}
               className="relative block aspect-square w-full overflow-hidden rounded-xl bg-[var(--muted)]"
@@ -88,48 +88,61 @@ export function ProductCard({
                   alt={product.title}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="160px"
+                  sizes="(max-width:640px) 112px, 160px"
                 />
               )}
               <ProductEditorialBadges product={product} />
               <MarketplaceBadge
                 marketplace={product.marketplace}
-                className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-white/95 px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm"
+                className="absolute bottom-1 left-1 z-10 rounded-md bg-white/95 px-1.5 py-0.5 text-[10px] font-semibold shadow-sm backdrop-blur-sm sm:bottom-1.5 sm:left-1.5 sm:px-2 sm:text-xs"
               />
             </Link>
             <button
               type="button"
               aria-label={saved ? 'Remover da lista' : 'Salvar na lista'}
-              className="absolute right-1.5 top-1.5 z-20 rounded-full bg-white/90 p-1.5 shadow-sm"
+              className="absolute right-1 top-1 z-20 rounded-full bg-white/90 p-1 shadow-sm sm:right-1.5 sm:top-1.5 sm:p-1.5"
               onClick={toggleWishlist}
             >
               <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
             </button>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              <Link
-                href={detailHref}
-                className="block min-w-0 truncate text-base font-semibold leading-snug text-neutral-900 hover:underline"
-              >
-                {product.title}
-              </Link>
-              <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
-              <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} compact />
-              <ProductEditorialProsCons pros={pros} cons={cons} maxPros={2} maxCons={1} />
+          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:gap-2">
+                <Link
+                  href={detailHref}
+                  className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
+                >
+                  {product.title}
+                </Link>
+                <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
+                <PriceDisplay
+                  price={product.price}
+                  strikethrough={product.price.strikethrough}
+                  compact
+                />
+                <ProductEditorialProsCons
+                  pros={pros}
+                  cons={cons}
+                  maxPros={2}
+                  maxCons={1}
+                  className="text-xs sm:text-sm"
+                />
+              </div>
+              <ProductCardActions
+                product={product}
+                sessionId={sessionId}
+                blockId={blockId}
+                articleId={articleId}
+                collectionId={collectionId}
+                clickOrigin={clickOrigin}
+                {...(placement !== undefined ? { placement } : {})}
+                editorial
+                className="w-full sm:w-auto"
+                {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+              />
             </div>
-            <ProductCardActions
-              product={product}
-              sessionId={sessionId}
-              blockId={blockId}
-              articleId={articleId}
-              collectionId={collectionId}
-              clickOrigin={clickOrigin}
-              {...(placement !== undefined ? { placement } : {})}
-              editorial
-              {...(utmDefaults !== undefined ? { utmDefaults } : {})}
-            />
           </div>
         </div>
       </article>
@@ -194,7 +207,12 @@ export function ProductCard({
           >
             {product.title}
           </Link>
-          <ProductRating rating={product.rating} reviewCount={product.reviewCount} className="shrink-0" />
+          <ProductRating
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            className="shrink-0"
+            compact={isCompact}
+          />
         </div>
         {isCompact ? <div className="min-h-0 flex-1" aria-hidden /> : null}
         <div className={cn('flex shrink-0 flex-col gap-1.5', isCompact ? 'mt-1.5' : 'mt-2')}>

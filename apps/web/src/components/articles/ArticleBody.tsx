@@ -62,7 +62,7 @@ export function ArticleBody({
         return (
           <aside
             key={`product-${segment.slug}-${index}`}
-            className="not-prose my-8"
+            className="not-prose my-6 sm:my-8"
             aria-label="Produto recomendado"
           >
             <ArticleProductEmbed slug={segment.slug} product={product} articleId={article.id} />

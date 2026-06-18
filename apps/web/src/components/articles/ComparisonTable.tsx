@@ -171,14 +171,14 @@ function MobileProductCard({
 
   if (!product) {
     return (
-      <article className="min-w-[240px] shrink-0 rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
+      <article className="flex min-w-[240px] shrink-0 flex-col rounded-[var(--radius)] border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
         Produto &quot;{slug}&quot; indisponível no catálogo local.
       </article>
     );
   }
 
   return (
-    <article className="min-w-[240px] shrink-0 rounded-[var(--radius)] border border-neutral-200 bg-white p-4 shadow-sm">
+    <article className="flex min-w-[260px] shrink-0 flex-col rounded-[var(--radius)] border border-neutral-200 bg-white p-3 shadow-sm sm:min-w-[280px] sm:p-4">
       <ProductHeaderCell product={product} />
       <div className="mt-3">
         <ComparisonBadgesCell badges={badges} />
@@ -192,20 +192,21 @@ function MobileProductCard({
         ))}
       </dl>
       <div className="mt-4 border-t border-neutral-100 pt-3">
-        <ProductEditorialProsCons pros={product.pros} cons={product.cons} />
+        <ProductEditorialProsCons pros={product.pros} cons={product.cons} className="text-xs sm:text-sm" />
       </div>
-      <div className="mt-3">
+      <div className="mt-auto shrink-0 pt-3">
         <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
-      </div>
-      <div className="mt-4">
-        <ProductCardActions
-          product={product}
-          sessionId={sessionId}
-          clickOrigin="comparador"
-          placement={ClickPlacement.ARTICLE_COMPARISON}
-          articleId={articleId}
-          editorial
-        />
+        <div className="mt-4">
+          <ProductCardActions
+            product={product}
+            sessionId={sessionId}
+            clickOrigin="comparador"
+            placement={ClickPlacement.ARTICLE_COMPARISON}
+            articleId={articleId}
+            editorial
+            className="w-full"
+          />
+        </div>
       </div>
     </article>
   );
@@ -233,7 +234,7 @@ export function ComparisonTable({
   return (
     <div aria-label="Comparativo de produtos">
       <div className="md:hidden -mx-4 overflow-x-auto px-4">
-        <div className="flex flex-row gap-4 pb-2">
+        <div className="flex flex-row items-stretch gap-4 pb-2">
           {products.map((product, index) => (
             <MobileProductCard
               key={`mobile-${slugs[index] ?? index}`}
@@ -319,7 +320,7 @@ export function ComparisonTable({
             <TableRow>
               <TableCell className="font-medium text-neutral-600">Ação</TableCell>
               {products.map((product, index) => (
-                <TableCell key={`action-${slugs[index] ?? index}`}>
+                <TableCell key={`action-${slugs[index] ?? index}`} className="align-bottom">
                   {product ? (
                     <ProductCardActions
                       product={product}
@@ -328,6 +329,7 @@ export function ComparisonTable({
                       placement={ClickPlacement.ARTICLE_COMPARISON}
                       articleId={articleId}
                       editorial
+                      className="w-full"
                     />
                   ) : (
                     '—'

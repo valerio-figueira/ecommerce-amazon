@@ -43,17 +43,17 @@ export function ProductCardActions({
   const marketplace = marketplaceLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
   const stackGap = editorial
-    ? 'flex w-52 shrink-0 flex-col gap-2.5 self-end sm:self-auto'
+    ? 'flex w-full shrink-0 flex-col gap-2 sm:w-52 sm:gap-2.5'
     : compact
       ? 'space-y-1'
       : 'space-y-2';
   const buttonClass = editorial
-    ? 'px-5 py-2.5 text-sm'
+    ? 'px-4 py-2.5 text-sm'
     : compact
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
   const primaryButtonClass = editorial
-    ? 'px-5 py-2.5 text-sm'
+    ? 'px-4 py-2.5 text-sm'
     : compact
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';

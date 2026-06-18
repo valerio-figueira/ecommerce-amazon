@@ -1,10 +1,13 @@
 import { Check, X } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
+
 type ProductEditorialProsConsProps = {
   pros?: string[] | undefined;
   cons?: string[] | undefined;
   maxPros?: number;
   maxCons?: number;
+  className?: string;
 };
 
 export function ProductEditorialProsCons({
@@ -12,6 +15,7 @@ export function ProductEditorialProsCons({
   cons = [],
   maxPros = 2,
   maxCons = 1,
+  className,
 }: ProductEditorialProsConsProps): React.JSX.Element | null {
   const visiblePros = pros.map((item) => item.trim()).filter(Boolean).slice(0, maxPros);
   const visibleCons = cons.map((item) => item.trim()).filter(Boolean).slice(0, maxCons);
@@ -21,7 +25,7 @@ export function ProductEditorialProsCons({
   }
 
   return (
-    <div className="space-y-2 text-sm">
+    <div className={cn('space-y-1.5 sm:space-y-2', className)}>
       {visiblePros.length > 0 ? (
         <ul className="m-0 list-none space-y-1 p-0">
           {visiblePros.map((item) => (

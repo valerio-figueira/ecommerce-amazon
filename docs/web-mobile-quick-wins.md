@@ -40,7 +40,7 @@ flowchart LR
 
 ### Grid de categorias
 
-`grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4` em listagem e skeleton — cards default legíveis com dois CTAs full-width.
+`grid-cols-2` até 549px → `min-[550px]:grid-cols-3` → `min-[830px]:grid-cols-4`, com `ProductCard variant="compact"`.
 
 ### Navegação editorial
 

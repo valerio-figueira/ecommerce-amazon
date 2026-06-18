@@ -28,7 +28,9 @@ parseArticleShortcodes(linkedHtml)
 
 ## Embed editorial (`[[product:slug]]`)
 
-- **Layout:** horizontal (`flex-row` no desktop), imagem `max-w-[160px]`, mobile empilha.
+- **Layout:** horizontal desde o mobile — imagem `w-28` (112px) à esquerda, conteúdo + CTAs à direita; a partir de `sm` imagem `w-40` (160px) e CTAs em coluna lateral (`w-52`).
+- **Título:** até 2 linhas (`line-clamp-2`).
+- **CTAs:** full-width no mobile; cenário A (card → detalhe) e B (botão → marketplace).
 - **Prós/contras:** até 2 prós + 1 contra via `ProductEditorialProsCons`.
 - **Tipografia:** ilha `not-prose` dentro do `prose` contínuo — texto do artigo flui sem blocos fragmentados.
 - **CTA:** `clickOrigin="embed"`; cenários A/B conforme regras de conversão (preço stale sem urgência).

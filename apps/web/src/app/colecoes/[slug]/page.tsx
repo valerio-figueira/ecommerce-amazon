@@ -134,14 +134,15 @@ export default async function CuratedCollectionPage({
 
       <section className="space-y-8">
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 min-[550px]:grid-cols-3 min-[550px]:gap-4 min-[830px]:grid-cols-4 min-[830px]:gap-6">
             {products.map((product, index) => (
               <div key={product.id} className="relative">
-                <div className="absolute -left-3 -top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-xs font-bold text-white shadow-md">
+                <div className="absolute -left-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-neutral-900 text-[10px] font-bold text-white shadow-md md:-left-3 md:-top-3 md:h-7 md:w-7 md:text-xs">
                   {rankOffset + index + 1}
                 </div>
                 <ProductCard
                   product={product}
+                  variant="compact"
                   clickOrigin="coleção"
                   placement={ClickPlacement.COLLECTION_PAGE}
                   collectionId={collection.id}
