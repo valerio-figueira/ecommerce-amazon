@@ -26,6 +26,7 @@ import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,
   CollectionSlugParamsSchema,
+  GetCuratedCollectionQuerySchema,
   ComparisonTokenParamsSchema,
   ConfirmPriceAlertParamsSchema,
   CancelPriceAlertParamsSchema,
@@ -432,9 +433,18 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
   app.get('/collections/:slug', async (request, reply) => {
     try {
       const { slug } = CollectionSlugParamsSchema.parse(request.params);
-      const result = await useCases.getCuratedCollection.execute(slug);
+      const query = GetCuratedCollectionQuerySchema.parse(request.query);
+      const page = query.page ?? 1;
+      const pageSize = query.pageSize ?? 24;
+      const result = await useCases.getCuratedCollection.execute(slug, { page, pageSize });
       if (!result) return reply.status(404).send({ error: 'Collection not found' });
-      return reply.send(toCuratedCollectionDto(result.collection, result.products));
+      return reply.send(
+        toCuratedCollectionDto(result.collection, result.products, {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+        }),
+      );
     } catch (error) {
       return handleError(error, reply);
     }

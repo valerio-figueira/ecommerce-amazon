@@ -1,14 +1,25 @@
 import {
   CuratedCollection,
+  PriceComplianceService,
   type CacheStore,
   type CuratedCollectionRepository,
   type Product,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 
+import { applyPriceComplianceToProducts } from '../../services/apply-price-compliance.js';
+
 export type CuratedCollectionResult = {
   collection: CuratedCollection;
   products: Product[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export type GetCuratedCollectionOptions = {
+  page?: number;
+  pageSize?: number;
 };
 
 type CachedCollectionShell = {
@@ -96,9 +107,13 @@ export class GetCuratedCollection {
     private readonly collectionRepository: CuratedCollectionRepository,
     private readonly productRepository: ProductRepository,
     private readonly cache: CacheStore,
+    private readonly compliance = new PriceComplianceService(),
   ) {}
 
-  async execute(slug: string): Promise<CuratedCollectionResult | null> {
+  async execute(
+    slug: string,
+    options?: GetCuratedCollectionOptions,
+  ): Promise<CuratedCollectionResult | null> {
     const cacheKey = `vitrine:collection:slug:${slug}`;
     const cached = await this.cache.get(cacheKey);
 
@@ -114,10 +129,24 @@ export class GetCuratedCollection {
     }
 
     const products = await this.productRepository.findByIds(shell.productIds);
+    const orderedProducts = orderProducts(shell.productIds, products);
+    applyPriceComplianceToProducts(orderedProducts, this.compliance);
+
+    const total = orderedProducts.length;
+    const page = options?.page ?? 1;
+    const pageSize = options?.pageSize ?? total;
+    const start = (page - 1) * pageSize;
+    const paginatedProducts =
+      options?.pageSize !== undefined
+        ? orderedProducts.slice(start, start + pageSize)
+        : orderedProducts;
 
     return {
       collection: collectionFromShell(shell),
-      products: orderProducts(shell.productIds, products),
+      products: paginatedProducts,
+      total,
+      page,
+      pageSize: options?.pageSize !== undefined ? pageSize : total,
     };
   }
 }

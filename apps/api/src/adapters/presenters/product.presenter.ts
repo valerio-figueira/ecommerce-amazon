@@ -231,11 +231,15 @@ export type CuratedCollectionDto = {
     updatedAt: string;
   };
   products: ProductListItemDto[];
+  total: number;
+  page: number;
+  pageSize: number;
 };
 
 export function toCuratedCollectionDto(
   collection: CuratedCollection,
   products: Product[],
+  pagination: { total: number; page: number; pageSize: number },
 ): CuratedCollectionDto {
   const updatedAt =
     collection.updatedAt instanceof Date
@@ -255,5 +259,8 @@ export function toCuratedCollectionDto(
       updatedAt,
     },
     products: products.map(toProductListItemDto),
+    total: pagination.total,
+    page: pagination.page,
+    pageSize: pagination.pageSize,
   };
 }

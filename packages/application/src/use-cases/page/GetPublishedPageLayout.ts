@@ -24,6 +24,10 @@ import {
 } from '@ecommerce-amazon/shared/cms';
 
 import { toProductDeliveryItem } from '../../mappers/product-delivery.mapper.js';
+import {
+  applyPriceComplianceToProduct,
+  applyPriceComplianceToProducts,
+} from '../../services/apply-price-compliance.js';
 import type { GetCuratedCollection } from '../content/GetCuratedCollection.js';
 import type { ListProducts } from '../product/ListProducts.js';
 
@@ -280,6 +284,7 @@ export class GetPublishedPageLayout {
   private async resolveBentoSlot2(productId: string): Promise<ProductDeliveryItem | null> {
     const product = await this.productRepository.findById(productId);
     if (!product) return null;
+    applyPriceComplianceToProduct(product);
     return toProductDeliveryItem(product);
   }
 
@@ -310,11 +315,11 @@ export class GetPublishedPageLayout {
     const byId = new Map<string, (typeof productsById)[number]>(
       productsById.map((product) => [product.id, product]),
     );
-    const products = slot.productIds
+    const manualProducts = slot.productIds
       .map((id) => byId.get(id))
-      .filter((product): product is NonNullable<typeof product> => product !== undefined)
-      .map(toProductDeliveryItem)
-      .slice(0, 3);
+      .filter((product): product is NonNullable<typeof product> => product !== undefined);
+    applyPriceComplianceToProducts(manualProducts);
+    const products = manualProducts.map(toProductDeliveryItem).slice(0, 3);
 
     return {
       mode: 'products',

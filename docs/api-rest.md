@@ -333,7 +333,9 @@ Lista resumida de coleções (picker CMS).
 
 Coleção curada com produtos ordenados + metadados UTM.
 
-**Response:** `CuratedCollectionDto` — `{ collection: {...}, products: ProductListItemDto[] }`
+**Query:** `page` (default 1), `pageSize` (default 24, máx. 100)
+
+**Response:** `CuratedCollectionDto` — `{ collection: {...}, products: ProductListItemDto[], total, page, pageSize }`
 
 ### Admin — `/admin/collections`
 

@@ -34,6 +34,9 @@ export const curatedCollectionDetailSchema = z.object({
     updatedAt: z.string(),
   }),
   products: z.array(productListItemSchema),
+  total: z.number(),
+  page: z.number(),
+  pageSize: z.number(),
 });
 
 export type CuratedCollectionDetailDto = z.infer<typeof curatedCollectionDetailSchema>;

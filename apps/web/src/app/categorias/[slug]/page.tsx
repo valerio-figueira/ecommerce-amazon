@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import {
   buildCategoryBreadcrumbJsonLd,
@@ -14,6 +15,7 @@ import {
 
 import { CategoryProductsError } from '@/components/category/CategoryProductsError';
 import { CategorySidebarTree } from '@/components/category/CategorySidebarTree';
+import { ListingPagination } from '@/components/listing/ListingPagination';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { fetchCategoryTree } from '@/lib/api/categories';
@@ -23,27 +25,43 @@ import {
   productsPageSchema,
   type ProductListItemDto,
 } from '@/lib/api/schemas';
+import { totalListingPages, VITRINE_LISTING_PAGE_SIZE } from '@/lib/listing';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
 type CategoryProductsResult = {
   items: ProductListItemDto[];
+  total: number;
+  page: number;
+  pageSize: number;
   error: boolean;
 };
 
-async function getCategoryProducts(slug: string): Promise<CategoryProductsResult> {
+async function getCategoryProducts(
+  slug: string,
+  page: number,
+): Promise<CategoryProductsResult> {
   try {
-    const result = await apiFetchParsed(
-      `/products?category=${encodeURIComponent(slug)}&visibleOnly=true&pageSize=24`,
-      productsPageSchema,
-    );
-    return { items: result.items, error: false };
+    const params = new URLSearchParams({
+      category: slug,
+      visibleOnly: 'true',
+      pageSize: String(VITRINE_LISTING_PAGE_SIZE),
+      page: String(page),
+    });
+    const result = await apiFetchParsed(`/products?${params.toString()}`, productsPageSchema);
+    return {
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      error: false,
+    };
   } catch (error) {
     if (isNotFoundError(error)) {
-      return { items: [], error: false };
+      return { items: [], total: 0, page, pageSize: VITRINE_LISTING_PAGE_SIZE, error: false };
     }
-    return { items: [], error: true };
+    return { items: [], total: 0, page, pageSize: VITRINE_LISTING_PAGE_SIZE, error: true };
   }
 }
 
@@ -86,13 +104,17 @@ export async function generateMetadata({
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<React.JSX.Element> {
   const { slug } = await params;
+  const sp = await searchParams;
+  const page = parseListingPage(sp);
   const [category, productsResult, categoryTree] = await Promise.all([
     getCategory(slug),
-    getCategoryProducts(slug),
+    getCategoryProducts(slug, page),
     fetchCategoryTree().catch(() => []),
   ]);
 
@@ -100,7 +122,8 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const { items: products, error: productsError } = productsResult;
+  const { items: products, total, pageSize, error: productsError } = productsResult;
+  const totalPages = totalListingPages(total, pageSize);
   const siteBaseUrl = getSiteBaseUrl();
   const breadcrumbJsonLd = buildCategoryBreadcrumbJsonLd({
     siteBaseUrl,
@@ -174,7 +197,7 @@ export default async function CategoryPage({
           {category.label}
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
-          {category.productCount} produto{category.productCount === 1 ? '' : 's'} nesta categoria
+          {total} produto{total === 1 ? '' : 's'} nesta categoria
         </p>
       </header>
 
@@ -196,7 +219,7 @@ export default async function CategoryPage({
         </section>
       )}
 
-      <section className="mb-12">
+      <section className="mb-12 space-y-8">
         {productsError ? (
           <CategoryProductsError />
         ) : products.length > 0 ? (
@@ -215,6 +238,14 @@ export default async function CategoryPage({
             Nenhum produto visível nesta categoria no momento.
           </p>
         )}
+
+        <Suspense fallback={null}>
+          <ListingPagination
+            page={page}
+            totalPages={totalPages}
+            ariaLabel="Paginação de produtos da categoria"
+          />
+        </Suspense>
       </section>
 
       {category.descriptionHtml && (

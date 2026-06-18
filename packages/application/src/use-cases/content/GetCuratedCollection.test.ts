@@ -79,6 +79,9 @@ describe('GetCuratedCollection', () => {
     const result = await useCase.execute('setup-gamer');
 
     expect(result?.products.map((product) => product.id)).toEqual([PRODUCT_B_ID, PRODUCT_A_ID]);
+    expect(result?.total).toBe(2);
+    expect(result?.page).toBe(1);
+    expect(result?.pageSize).toBe(2);
     expect(cache.set).toHaveBeenCalledOnce();
   });
 
@@ -126,5 +129,112 @@ describe('GetCuratedCollection', () => {
     expect(productRepository.findByIds).toHaveBeenCalledWith([PRODUCT_B_ID, PRODUCT_A_ID]);
     expect(result?.products.map((product) => product.id)).toEqual([PRODUCT_B_ID, PRODUCT_A_ID]);
     expect(result?.collection.updatedAt).toBeInstanceOf(Date);
+  });
+
+  it('marks products stale when price was not refreshed within 24h', async () => {
+    const collection = CuratedCollection.create({
+      id: COLLECTION_ID,
+      slug: 'setup-gamer',
+      title: 'Setup Gamer',
+      description: 'Guia completo',
+      coverImageUrl: 'https://example.com/cover.jpg',
+      campaignOrigin: 'organico',
+      utmDefaults: {},
+      productIds: [PRODUCT_A_ID],
+      ctaText: 'Ver coleção',
+    });
+
+    const staleUpdatedAt = new Date(Date.now() - 25 * 60 * 60 * 1000);
+    const staleProduct = Product.create({
+      id: PRODUCT_A_ID,
+      marketplace: Marketplace.AMAZON_BR,
+      externalId: 'EXT-stale',
+      slug: 'product-stale',
+      titleClean: 'Product stale',
+      titleRaw: 'Product stale raw',
+      price: Price.create({
+        amount: 100,
+        currency: 'BRL',
+        updatedAt: staleUpdatedAt,
+        isStale: false,
+      }),
+      affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/test', 'amazon_br'),
+      images: [],
+      specsNormalized: {},
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      tags: [],
+      createdAt: new Date(),
+    });
+
+    const collectionRepository = {
+      findBySlug: vi.fn().mockResolvedValue(collection),
+    };
+    const productRepository = {
+      findByIds: vi.fn().mockResolvedValue([staleProduct]),
+    };
+    const cache = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn(),
+      del: vi.fn(),
+      increment: vi.fn(),
+      getVersion: vi.fn(),
+      incrementVersion: vi.fn(),
+    };
+
+    const useCase = new GetCuratedCollection(
+      collectionRepository as never,
+      productRepository as never,
+      cache,
+    );
+    const result = await useCase.execute('setup-gamer');
+
+    expect(result?.products[0]?.shouldShowPrice).toBe(false);
+    expect(result?.products[0]?.price.isStale).toBe(true);
+  });
+
+  it('paginates products while preserving editorial order', async () => {
+    const collection = CuratedCollection.create({
+      id: COLLECTION_ID,
+      slug: 'setup-gamer',
+      title: 'Setup Gamer',
+      description: 'Guia completo',
+      coverImageUrl: 'https://example.com/cover.jpg',
+      campaignOrigin: 'organico',
+      utmDefaults: {},
+      productIds: [PRODUCT_B_ID, PRODUCT_A_ID],
+      ctaText: 'Ver coleção',
+    });
+
+    const collectionRepository = {
+      findBySlug: vi.fn().mockResolvedValue(collection),
+    };
+    const productRepository = {
+      findByIds: vi.fn().mockResolvedValue([
+        createProduct(PRODUCT_A_ID, 'product-a'),
+        createProduct(PRODUCT_B_ID, 'product-b'),
+      ]),
+    };
+    const cache = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn(),
+      del: vi.fn(),
+      increment: vi.fn(),
+      getVersion: vi.fn(),
+      incrementVersion: vi.fn(),
+    };
+
+    const useCase = new GetCuratedCollection(
+      collectionRepository as never,
+      productRepository as never,
+      cache,
+    );
+    const result = await useCase.execute('setup-gamer', { page: 2, pageSize: 1 });
+
+    expect(result?.total).toBe(2);
+    expect(result?.page).toBe(2);
+    expect(result?.pageSize).toBe(1);
+    expect(result?.products).toHaveLength(1);
+    expect(result?.products[0]?.id).toBe(PRODUCT_A_ID);
   });
 });

@@ -36,8 +36,8 @@ export const getCategory = cache(async (slug: string): Promise<CategoryDetailDto
 });
 
 export const getCollection = cache(
-  async (slug: string): Promise<CuratedCollectionDetailDto | null> => {
-    return fetchCuratedCollection(slug);
+  async (slug: string, page = 1): Promise<CuratedCollectionDetailDto | null> => {
+    return fetchCuratedCollection(slug, { page });
   },
 );
 

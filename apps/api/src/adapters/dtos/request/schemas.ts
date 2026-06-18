@@ -113,6 +113,11 @@ export const CollectionSlugParamsSchema = z.object({
   slug: z.string().min(1),
 });
 
+export const GetCuratedCollectionQuerySchema = z.object({
+  page: z.coerce.number().int().positive().optional(),
+  pageSize: z.coerce.number().int().positive().max(100).optional(),
+});
+
 export const CouponMarketplaceParamsSchema = z.object({
   marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']),
 });

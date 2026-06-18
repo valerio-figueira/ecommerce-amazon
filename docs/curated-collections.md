@@ -44,7 +44,7 @@ Upload de capa: `POST /admin/media/images` (multipart, campo `image`) → `{ url
 | Contexto | Componente | Conteúdo |
 |----------|------------|----------|
 | Bloco `curated_collection` (home) | `CollectionProductCard` + `CuratedCollectionSlide` | Carrossel de coleções; cada slide com capa, 2 produtos overlay, CTA da coleção |
-| Página `/colecoes/[slug]` | `ProductCard` | Grid completo com preço, análise e wishlist |
+| Página `/colecoes/[slug]` | `ProductCard` | Grid paginado (24/página) com preço, análise e wishlist |
 
 ### Props do bloco CMS
 
@@ -75,8 +75,8 @@ sequenceDiagram
   Admin->>API: POST /admin/collections
   API->>API: save pivot sort_order
 
-  Web->>API: GET /collections/setup-gamer
-  API-->>Web: collection + ordered products
+  Web->>API: GET /collections/setup-gamer?page=1&pageSize=24
+  API-->>Web: collection + ordered products + pagination
 
   Web->>Web: render /colecoes/setup-gamer
 ```
@@ -112,6 +112,15 @@ BFF admin: `POST /api/admin/media/images` (proxy multipart).
 
 Cache: `vitrine:collection:slug:{slug}` (TTL 600s). Invalidação em writes admin.
 
+## Paginação pública
+
+| Rota | Tamanho | Query |
+|------|---------|-------|
+| `/colecoes/[slug]` | 24 | `?page=2` |
+| `/categorias/[slug]` | 24 | `?page=2` |
+
+Numeração editorial nas coleções continua entre páginas (ex.: página 2 começa no item 25). Páginas > 1 recebem `noindex` via `buildFacetedListingMetadata`.
+
 ## Como testar
 
 ```bash
@@ -125,7 +134,7 @@ pnpm dev
 
 1. Admin → **Coleções** → criar/editar coleção com produtos ordenados
 2. Testar upload de capa (escolher arquivo → recortar 4:3 → salvar coleção)
-3. Abrir `/colecoes/setup-gamer-iniciante` — grid numerado e disclaimer afiliado
+3. Abrir `/colecoes/setup-gamer-iniciante` — grid numerado, paginação (`?page=2`) e disclaimer afiliado
 3. CMS → adicionar bloco **Coleção Curada** na home — preview + CTA "Ver coleção"
 4. Clicar CTA marketplace — `POST /events/click` com `origin: coleção`
 

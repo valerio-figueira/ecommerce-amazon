@@ -1,47 +1,58 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import {
   buildCuratedCollectionBreadcrumbJsonLd,
   buildCuratedCollectionJsonLd,
+  buildFacetedListingMetadata,
   buildNotFoundMetadata,
   buildPageCanonical,
+  parseListingPage,
 } from '@ecommerce-amazon/shared/seo';
 
+import { ListingPagination } from '@/components/listing/ListingPagination';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { getCollection } from '@/lib/api/cached-fetchers';
+import { totalListingPages } from '@/lib/listing';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<import('next').Metadata> {
   const { slug } = await params;
-  const data = await getCollection(slug);
+  const sp = await searchParams;
+  const page = parseListingPage(sp);
+  const data = await getCollection(slug, page);
   if (!data) {
     return buildNotFoundMetadata('Coleção não encontrada');
   }
 
   const brand = getServerBrandConfig();
-  const canonical = buildPageCanonical(`/colecoes/${data.collection.slug}`, brand);
+  const canonicalPath = `/colecoes/${data.collection.slug}`;
 
-  return {
+  return buildFacetedListingMetadata({
     title: data.collection.title,
     description: data.collection.description,
-    alternates: { canonical },
+    canonicalPath,
+    brand,
+    page,
     openGraph: {
       title: data.collection.title,
       description: data.collection.description,
-      url: canonical,
+      url: buildPageCanonical(canonicalPath, brand),
       ...(data.collection.coverImageUrl
         ? { images: [{ url: data.collection.coverImageUrl }] }
         : {}),
     },
-  };
+  });
 }
 
 function formatUpdatedAt(iso: string): string {
@@ -54,24 +65,30 @@ function formatUpdatedAt(iso: string): string {
 
 export default async function CuratedCollectionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<React.JSX.Element> {
   const { slug } = await params;
-  const data = await getCollection(slug);
+  const sp = await searchParams;
+  const page = parseListingPage(sp);
+  const data = await getCollection(slug, page);
 
   if (!data) {
     notFound();
   }
 
-  const { collection, products } = data;
+  const { collection, products, total, pageSize } = data;
+  const totalPages = totalListingPages(total, pageSize);
+  const rankOffset = (page - 1) * pageSize;
   const siteBaseUrl = getSiteBaseUrl();
   const jsonLd = buildCuratedCollectionJsonLd({
     siteBaseUrl,
     slug: collection.slug,
     title: collection.title,
     description: collection.description,
-    productCount: products.length,
+    productCount: total,
     updatedAt: collection.updatedAt,
   });
   const breadcrumbJsonLd = buildCuratedCollectionBreadcrumbJsonLd({
@@ -108,29 +125,44 @@ export default async function CuratedCollectionPage({
         </h1>
         <p className="text-lg leading-relaxed text-neutral-600">{collection.description}</p>
         <p className="text-sm text-neutral-500">
-          Atualizado em {formatUpdatedAt(collection.updatedAt)}
+          {total} produto{total === 1 ? '' : 's'} · Atualizado em{' '}
+          {formatUpdatedAt(collection.updatedAt)}
         </p>
       </header>
 
       <hr className="border-neutral-100" />
 
-      <section>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((product, index) => (
-            <div key={product.id} className="relative">
-              <div className="absolute -left-3 -top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-xs font-bold text-white shadow-md">
-                {index + 1}
+      <section className="space-y-8">
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((product, index) => (
+              <div key={product.id} className="relative">
+                <div className="absolute -left-3 -top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-xs font-bold text-white shadow-md">
+                  {rankOffset + index + 1}
+                </div>
+                <ProductCard
+                  product={product}
+                  clickOrigin="coleção"
+                  placement={ClickPlacement.COLLECTION_PAGE}
+                  collectionId={collection.id}
+                  utmDefaults={collection.utmDefaults}
+                />
               </div>
-              <ProductCard
-                product={product}
-                clickOrigin="coleção"
-                placement={ClickPlacement.COLLECTION_PAGE}
-                collectionId={collection.id}
-                utmDefaults={collection.utmDefaults}
-              />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-lg border border-dashed px-4 py-10 text-center text-neutral-500">
+            Nenhum produto nesta página.
+          </p>
+        )}
+
+        <Suspense fallback={null}>
+          <ListingPagination
+            page={page}
+            totalPages={totalPages}
+            ariaLabel="Paginação da coleção"
+          />
+        </Suspense>
       </section>
     </main>
   );
