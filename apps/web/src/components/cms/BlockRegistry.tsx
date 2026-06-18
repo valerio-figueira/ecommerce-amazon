@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactElement } from 'react';
 
 import { BlockType } from '@ecommerce-amazon/domain';
 import type { PageBlockDeliveryDto } from '@ecommerce-amazon/shared/cms';
@@ -10,10 +10,10 @@ import { CategoryPillsBlock } from '@/components/blocks/CategoryPillsBlock';
 import { CouponStripBlock } from '@/components/blocks/CouponStripBlock';
 import { CuratedCollectionBlock } from '@/components/blocks/CuratedCollectionBlock';
 import { DynamicProductGridBlock } from '@/components/blocks/DynamicProductGridBlock';
-import { FeaturedProductBlock } from '@/components/blocks/FeaturedProductBlock';
+import { FeaturedProductBlockServer } from '@/components/blocks/FeaturedProductBlockServer';
 import { HeroCarouselBlock } from '@/components/blocks/HeroCarouselBlock';
 import { HeroSplitBlock } from '@/components/blocks/HeroSplitBlock';
-import { ProductGridBlock } from '@/components/blocks/ProductGridBlock';
+import { ProductGridBlockServer } from '@/components/blocks/ProductGridBlockServer';
 import { RichTextBlock } from '@/components/blocks/RichTextBlock';
 import { SpacerBlock } from '@/components/blocks/SpacerBlock';
 import { WeeklyTrendsBlock } from '@/components/blocks/WeeklyTrendsBlock';
@@ -26,11 +26,13 @@ export type BlockComponentProps = {
 
 export const BlockRegistry: Record<
   BlockType,
-  ComponentType<BlockComponentProps> | undefined
+  | ComponentType<BlockComponentProps>
+  | ((props: BlockComponentProps) => Promise<ReactElement>)
+  | undefined
 > = {
   [BlockType.HERO_CAROUSEL]: HeroCarouselBlock,
-  [BlockType.FEATURED_PRODUCT]: FeaturedProductBlock,
-  [BlockType.PRODUCT_GRID]: ProductGridBlock,
+  [BlockType.FEATURED_PRODUCT]: FeaturedProductBlockServer,
+  [BlockType.PRODUCT_GRID]: ProductGridBlockServer,
   [BlockType.CATEGORY_PILLS]: CategoryPillsBlock,
   [BlockType.CATEGORY_BENTO_GRID]: CategoryBentoGridBlock,
   [BlockType.HERO_SPLIT]: HeroSplitBlock,

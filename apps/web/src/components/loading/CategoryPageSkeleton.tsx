@@ -29,12 +29,6 @@ export function CategoryPageSkeleton(): React.JSX.Element {
             <Skeleton className="h-4 w-32" />
           </header>
 
-          <div className="mb-8 flex flex-wrap gap-2" aria-hidden>
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-9 w-28 rounded-full" />
-            ))}
-          </div>
-
           <ProductGridSkeleton count={8} />
         </div>
       </div>

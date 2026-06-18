@@ -28,16 +28,13 @@ export function ProductDetailSkeleton(): React.JSX.Element {
         </div>
       </div>
 
-      <div className="mt-8 space-y-4" aria-hidden>
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="h-24 w-full rounded-xl" />
-      </div>
-
-      <div className="mt-8 space-y-3" aria-hidden>
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
+      <div className="mt-8 border-t border-neutral-100 pt-8" aria-hidden>
+        <Skeleton className="mb-4 h-6 w-40" />
+        <div className="flex gap-4 overflow-hidden">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-48 min-w-[200px] flex-[0_0_200px] rounded-xl" />
+          ))}
+        </div>
       </div>
     </main>
   );

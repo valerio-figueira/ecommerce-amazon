@@ -14,10 +14,14 @@ import { CategoryPillsRow } from '@/components/blocks/CategoryPillsRow';
 import { useCategoryFilter } from '@/components/cms/CategoryFilterContext';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
 import { apiFetchParsed } from '@/lib/api/client';
-import { productsPageSchema } from '@/lib/api/schemas';
+import { productsPageSchema, type ProductsPageDto } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_CATALOG_SLUG = 'home-office';
+
+type ProductGridBlockProps = BlockComponentProps & {
+  initialProducts?: ProductsPageDto;
+};
 
 function findLinkedPillsBlock(
   blocksById: Record<string, BlockComponentProps['block']>,
@@ -49,7 +53,8 @@ function resolveCatalogHref(
 export function ProductGridBlock({
   block,
   blocksById,
-}: BlockComponentProps): React.JSX.Element {
+  initialProducts,
+}: ProductGridBlockProps): React.JSX.Element {
   const props = productGridPropsSchema.parse(block.props);
   const { categorySlug } = useCategoryFilter();
   const activeCategory = categorySlug ?? props.categorySlug ?? undefined;
@@ -66,9 +71,15 @@ export function ProductGridBlock({
   queryParams.set('sort', props.sort);
   queryParams.set('visibleOnly', 'true');
 
+  const isDefaultQuery =
+    activeCategory === (props.categorySlug ?? undefined) &&
+    !categorySlug;
+
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['products', activeCategory, props.sort, props.pageSize, props.marketplace, 'home-visible'],
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
+    initialData: isDefaultQuery ? initialProducts : undefined,
+    staleTime: isDefaultQuery && initialProducts ? 60_000 : 0,
   });
 
   const catalogHref = useMemo(

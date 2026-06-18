@@ -17,12 +17,19 @@ import { ProductCardActions } from '@/components/product/ProductCardActions';
 import { ProductEditorialBadges } from '@/components/product/ProductEditorialBadges';
 import { ProductRating } from '@/components/product/ProductRating';
 import { apiFetchParsed } from '@/lib/api/client';
-import { productListItemSchema } from '@/lib/api/schemas';
+import { productListItemSchema, type ProductListItemDto } from '@/lib/api/schemas';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 
 const FEATURED_MIN_HEIGHT = 'min-h-[320px]';
 
-export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.Element | null {
+type FeaturedProductBlockProps = BlockComponentProps & {
+  initialProduct?: ProductListItemDto;
+};
+
+export function FeaturedProductBlock({
+  block,
+  initialProduct,
+}: FeaturedProductBlockProps): React.JSX.Element | null {
   const props = featuredProductPropsSchema.parse(block.props);
   const { sessionId } = useWishlist();
 
@@ -31,6 +38,8 @@ export function FeaturedProductBlock({ block }: BlockComponentProps): React.JSX.
     queryKey: ['product', slug],
     queryFn: () => apiFetchParsed(`/products/${slug ?? ''}`, productListItemSchema),
     enabled: Boolean(slug),
+    initialData: initialProduct,
+    staleTime: initialProduct ? 60_000 : 0,
   });
 
   if (!slug) {

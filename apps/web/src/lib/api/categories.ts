@@ -1,3 +1,5 @@
+import { unstable_cache } from 'next/cache';
+
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
 
 import { apiFetchParsed, getApiUrl } from '@/lib/api/client';
@@ -10,14 +12,24 @@ export async function fetchCategoryTree(): Promise<CategoryTreeNodeDto[]> {
   return result.items;
 }
 
+export const getCachedCategoryTree = unstable_cache(fetchCategoryTree, ['category-tree'], {
+  revalidate: 600,
+});
+
 export async function fetchCategoryNavTree(): Promise<CategoryNavNode[]> {
   try {
-    const tree = await fetchCategoryTree();
+    const tree = await getCachedCategoryTree();
     return tree.map(toCategoryNavNode);
   } catch {
     return [];
   }
 }
+
+export const getCachedCategoryNavTree = unstable_cache(
+  fetchCategoryNavTree,
+  ['category-nav-tree'],
+  { revalidate: 600 },
+);
 
 function toCategoryNavNode(node: CategoryTreeNodeDto): CategoryNavNode {
   return {

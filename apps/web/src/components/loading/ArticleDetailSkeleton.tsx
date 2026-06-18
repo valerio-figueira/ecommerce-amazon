@@ -1,31 +1,11 @@
+import { ArticleDetailHeroSkeleton } from '@/components/loading/ArticleDetailHeroSkeleton';
 import { LoadingAnnouncer } from '@/components/loading/LoadingAnnouncer';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export function ArticleDetailSkeleton(): React.JSX.Element {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 md:px-6" aria-busy="true">
       <LoadingAnnouncer />
-
-      <header className="mb-10 space-y-4" aria-hidden>
-        <Skeleton className="aspect-[21/9] rounded-[var(--radius)]" />
-        <div className="space-y-3">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-4/5" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-3/4" />
-        </div>
-      </header>
-
-      <div className="space-y-4" aria-hidden>
-        {Array.from({ length: 8 }).map((_, index) => (
-          <Skeleton key={index} className="h-4 w-full" />
-        ))}
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="mt-6 h-48 w-full rounded-xl" />
-        {Array.from({ length: 4 }).map((_, index) => (
-          <Skeleton key={`p-${index}`} className="h-4 w-full" />
-        ))}
-      </div>
+      <ArticleDetailHeroSkeleton />
     </main>
   );
 }

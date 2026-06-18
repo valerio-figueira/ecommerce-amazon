@@ -1,19 +1,26 @@
+import { Suspense } from 'react';
+
 import {
   buildFacetedListingMetadata,
   hasArticleFacetParams,
   parseListingPage,
 } from '@ecommerce-amazon/shared/seo';
 
-import { ArticleListingView } from '@/components/articles/ArticleListingView';
 import {
-  fetchPublicArticleCategories,
-  fetchPublishedArticles,
-} from '@/lib/api/articles';
+  ArticleListingGridSection,
+} from '@/components/articles/ArticleListingGridSection';
+import { ArticleListingPendingProvider } from '@/components/articles/ArticleListingPendingContext';
+import {
+  ArticleListingHeader,
+  ArticleListingToolbarSection,
+} from '@/components/articles/ArticleListingToolbarSection';
+import { ArtigosPageTitle } from '@/components/articles/ArtigosPageTitle';
+import { ArticleListingGridSkeleton } from '@/components/loading/ArticleListingGridSkeleton';
+import { ArticleListingToolbarSkeleton } from '@/components/loading/ArticleListingToolbarSkeleton';
+import { LoadingAnnouncer } from '@/components/loading/LoadingAnnouncer';
 import { getServerBrandConfig } from '@/lib/site-url';
 
 export const revalidate = 300;
-
-const PAGE_SIZE = 12;
 
 type ArtigosPageProps = {
   searchParams: Promise<{
@@ -48,46 +55,30 @@ export async function generateMetadata({
   });
 }
 
-export default async function ArtigosPage({
-  searchParams,
-}: ArtigosPageProps): Promise<React.JSX.Element> {
-  const params = await searchParams;
-  const page = parseListingPage(params);
-  const activeCategory = params.categoria?.trim() || null;
-  const activeSearch = params.q?.trim() || '';
-
-  const [data, categoriesResponse] = await Promise.all([
-    fetchPublishedArticles({
-      page,
-      limit: PAGE_SIZE,
-      ...(activeCategory ? { category: activeCategory } : {}),
-      ...(activeSearch ? { search: activeSearch } : {}),
-    }),
-    fetchPublicArticleCategories(),
-  ]);
-
-  const activeCategoryLabel = activeCategory
-    ? categoriesResponse.items.find((item) => item.slug === activeCategory)?.name ?? activeCategory
-    : null;
-
+export default function ArtigosPage({ searchParams }: ArtigosPageProps): React.JSX.Element {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
-      {activeCategoryLabel ? (
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
-            {activeCategoryLabel}
-          </h1>
-        </header>
-      ) : (
-        <h1 className="sr-only">Artigos</h1>
-      )}
+    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10" aria-busy="true">
+      <LoadingAnnouncer />
 
-      <ArticleListingView
-        data={data}
-        categories={categoriesResponse.items}
-        activeCategory={activeCategory}
-        activeSearch={activeSearch}
-      />
+      <Suspense fallback={null}>
+        <ArticleListingHeader searchParams={searchParams} />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <ArtigosPageTitle searchParams={searchParams} />
+      </Suspense>
+
+      <ArticleListingPendingProvider>
+        <div className="space-y-8">
+          <Suspense fallback={<ArticleListingToolbarSkeleton />}>
+            <ArticleListingToolbarSection searchParams={searchParams} />
+          </Suspense>
+
+          <Suspense fallback={<ArticleListingGridSkeleton />}>
+            <ArticleListingGridSection searchParams={searchParams} />
+          </Suspense>
+        </div>
+      </ArticleListingPendingProvider>
     </main>
   );
 }

@@ -15,14 +15,6 @@ export function CollectionPageSkeleton(): React.JSX.Element {
         <Skeleton className="h-4 w-36" />
       </div>
 
-      <header className="max-w-3xl space-y-4" aria-hidden>
-        <Skeleton className="h-6 w-36 rounded" />
-        <Skeleton className="h-12 w-full max-w-xl" />
-        <Skeleton className="h-6 w-full" />
-        <Skeleton className="h-6 w-4/5" />
-        <Skeleton className="h-4 w-40" />
-      </header>
-
       <hr className="border-neutral-100" aria-hidden />
 
       <section aria-hidden>
