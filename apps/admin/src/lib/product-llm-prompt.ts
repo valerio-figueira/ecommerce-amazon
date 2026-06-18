@@ -10,11 +10,167 @@ export type ProductLlmPromptInput = {
   affiliateLink?: string | undefined;
 };
 
+export type ProductSeoLlmPromptInput = {
+  titleClean: string;
+  marketplace: string;
+  categoryPathLabel: string;
+  editorialScore: number;
+  pros: string[];
+  cons: string[];
+  shortDescription: string;
+  specsNormalized: Record<string, string>;
+  autoMetaTitle: string;
+  autoMetaDescription: string;
+  metaTitle?: string | undefined;
+  metaDescription?: string | undefined;
+};
+
+export type ProductSeoLlmResponse = {
+  metaTitle: string;
+  metaDescription: string;
+};
+
+const PRODUCT_META_TITLE_MAX = 200;
+const PRODUCT_META_DESCRIPTION_MAX = 320;
+
 function formatBulletList(items: string[], emptyFallback: string): string {
   if (items.length === 0) {
     return emptyFallback;
   }
   return items.map((item) => `- ${item}`).join('\n');
+}
+
+function formatSpecsList(specs: Record<string, string>): string {
+  const entries = Object.entries(specs).filter(([key, value]) => key.trim() && value.trim());
+  if (entries.length === 0) {
+    return '- (nenhuma especificação preenchida no formulário)';
+  }
+  return entries
+    .slice(0, 12)
+    .map(([key, value]) => `- ${key}: ${value}`)
+    .join('\n');
+}
+
+export function buildProductSeoLlmPrompt(input: ProductSeoLlmPromptInput): string {
+  const title = input.titleClean.trim() || '[Título do produto]';
+  const marketplace = adminMarketplaceLabel(input.marketplace);
+  const pros = formatBulletList(input.pros, '- (preencha os prós no formulário)');
+  const cons = formatBulletList(input.cons, '- (preencha os contras no formulário)');
+  const specs = formatSpecsList(input.specsNormalized);
+  const score =
+    Number.isFinite(input.editorialScore) && input.editorialScore > 0
+      ? `${input.editorialScore.toFixed(1)}/10`
+      : 'Não informada';
+  const shortDescription = input.shortDescription.trim() || '(vazio — pode ser gerado dos prós)';
+  const currentTitle = input.metaTitle?.trim() || '(vazio — vitrine usará o automático)';
+  const currentDescription =
+    input.metaDescription?.trim() || '(vazio — vitrine usará o automático)';
+
+  return `Você é um especialista em SEO on-page para uma vitrine editorial de afiliados no Brasil (Amazon, Shopee e Mercado Livre). Escreva em português do Brasil, tom informativo, confiável e editorial — sem clickbait, sem inventar preços/cupons e sem urgência falsa.
+
+## Produto
+- Nome (palavra-chave principal): ${title}
+- Marketplace parceiro: ${marketplace}
+- Categoria vertical: ${input.categoryPathLabel}
+- Nota editorial da equipe: ${score}
+
+## Contexto editorial já cadastrado
+### Prós
+${pros}
+
+### Contras
+${cons}
+
+### Apresentação rápida
+${shortDescription}
+
+### Especificações relevantes
+${specs}
+
+## Metadados atuais no admin (referência)
+- Meta Title sobrescrito: ${currentTitle}
+- Meta Description sobrescrita: ${currentDescription}
+
+## Templates automáticos do sistema (ponto de partida — melhore, não copie literalmente)
+- Title automático: ${input.autoMetaTitle}
+- Description automática: ${input.autoMetaDescription}
+
+## Sua tarefa
+Gere **somente** um bloco JSON válido (sem markdown, sem \`\`\` fences) com exatamente estas chaves:
+
+{
+  "metaTitle": "...",
+  "metaDescription": "..."
+}
+
+### Regras para metaTitle
+- Alvo: ≤ 60 caracteres visíveis no Google (máximo técnico ${PRODUCT_META_TITLE_MAX}).
+- Inclua o nome do produto (${title}) no início ou perto dele.
+- Comunique análise editorial / prós e contras / ofertas curadas — sem "Compre agora" genérico.
+- Pode usar sufixo discreto (ex.: "| Análise e Ofertas") se couber no limite.
+- Evite CAPS LOCK, emojis e promessas não sustentadas pelos prós/contras acima.
+
+### Regras para metaDescription
+- Alvo: 140–160 caracteres para snippet do Google (máximo técnico ${PRODUCT_META_DESCRIPTION_MAX}).
+- Resuma a proposta de valor editorial: para quem é, destaques honestos e convite a comparar preço no ${marketplace}.
+- Mencione curadoria, análise ou monitoramento de preço de forma natural — **não** invente desconto, cupom, estoque ou countdown.
+- CTA transparente se necessário: "Ver preço na ${marketplace}" — nunca "Compre agora" genérico.
+- Não repita o metaTitle inteiro; complemente com benefício e intenção de busca.
+
+### Conformidade (obrigatório)
+- Proibido: preço fictício, cupom não verificado, "últimas unidades", "X pessoas comprando", superlativos vazios.
+- Baseie-se apenas nos prós, contras e specs fornecidos; não invente especificações técnicas.
+- Otimize para buscas informacionais e transacionais moderadas (review + onde comprar).
+
+Responda **somente** com o JSON final, sem explicações antes ou depois.`;
+}
+
+export function parseProductSeoLlmResponse(raw: string): ProductSeoLlmResponse {
+  const trimmed = raw.trim();
+  const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error('JSON não encontrado na resposta. Cole o objeto retornado pela IA.');
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw new Error('JSON inválido. Verifique se a IA retornou apenas o objeto metaTitle/metaDescription.');
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('Formato inesperado na resposta da IA.');
+  }
+
+  const record = parsed as Record<string, unknown>;
+  const metaTitleRaw =
+    typeof record.metaTitle === 'string'
+      ? record.metaTitle
+      : typeof record.seoTitle === 'string'
+        ? record.seoTitle
+        : '';
+  const metaDescriptionRaw =
+    typeof record.metaDescription === 'string'
+      ? record.metaDescription
+      : typeof record.seoDescription === 'string'
+        ? record.seoDescription
+        : '';
+
+  const metaTitle = metaTitleRaw.trim();
+  const metaDescription = metaDescriptionRaw.trim();
+
+  if (!metaTitle) {
+    throw new Error('O JSON deve conter metaTitle (ou seoTitle) não vazio.');
+  }
+  if (!metaDescription) {
+    throw new Error('O JSON deve conter metaDescription (ou seoDescription) não vazio.');
+  }
+
+  return {
+    metaTitle: metaTitle.slice(0, PRODUCT_META_TITLE_MAX),
+    metaDescription: metaDescription.slice(0, PRODUCT_META_DESCRIPTION_MAX),
+  };
 }
 
 export function buildProductReviewLlmPrompt(input: ProductLlmPromptInput): string {

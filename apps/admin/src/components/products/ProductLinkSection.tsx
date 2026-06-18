@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import {
   FormControl,
   FormDescription,
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import { adminMarketplaceLabel } from '@/lib/product-admin-format';
 import type { ProductFormValues } from '@/lib/product-form-values';
 import { parseMarketplaceProductUrl } from '@ecommerce-amazon/shared/marketplace';
@@ -57,7 +59,9 @@ export function ProductLinkSection({
         name="affiliateLink"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Cole a URL completa do produto</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.affiliateLink}>
+              <FormLabel>Cole a URL completa do produto</FormLabel>
+            </ProductFormLabelRow>
             <FormControl>
               <Input
                 placeholder="Cole o link da Amazon, Shopee ou Mercado Livre aqui..."
@@ -81,7 +85,9 @@ export function ProductLinkSection({
           name="marketplace"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Parceiro detectado</FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.marketplace}>
+                <FormLabel>Parceiro detectado</FormLabel>
+              </ProductFormLabelRow>
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
@@ -110,7 +116,9 @@ export function ProductLinkSection({
           name="externalId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ID identificado (código do produto)</FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.externalId}>
+                <FormLabel>ID identificado (código do produto)</FormLabel>
+              </ProductFormLabelRow>
               <FormControl>
                 <Input
                   {...field}

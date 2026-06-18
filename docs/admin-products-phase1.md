@@ -16,6 +16,8 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - `short_description` híbrida: gerada dos prós na API + textarea editável no admin
 - `long_description_html`: editor rico TipTap (modo Visual + aba Código HTML) na aba Análise Editorial
 - Meta tags SEO automatizadas na vitrine; sobrescrita opcional na aba SEO Avançado
+- Tooltips contextuais (ⓘ) em todos os campos do formulário; contadores SEO na aba SEO Avançado
+- Assistente **Gerar SEO com IA**: prompt contextual + aplicar JSON nos campos `metaTitle` / `metaDescription`
 - API admin: `GET /admin/products`, `POST /admin/products`
 - Enum `mercadolivre_br` no domínio, Drizzle e fetcher stub
 - Migration `0006_mercadolivre_br.sql`
@@ -44,6 +46,9 @@ Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/
 | Vitrine | `resolveProductMetaTitle` / `resolveProductMetaDescription` no `generateMetadata` |
 | Padrão automático | `{titleClean} \| Análise, Prós, Contras e Ofertas` + frase padrão com nome do produto |
 | Admin | Aba **SEO Avançado** — sobrescrita opcional; vazio = automação na vitrine |
+| Contadores | Meta Title e Meta Description: `N / limite` (60 e 160 — alvo Google); `maxLength` 200 e 320 (Zod) |
+| Tooltips | Ícone ⓘ ao lado dos rótulos — textos em [`product-form-hints.ts`](../apps/admin/src/lib/product-form-hints.ts); componentes `FieldHint`, `ProductFormLabelRow` |
+| Assistente IA SEO | Botão **Gerar SEO com IA** → modal com prompt (`buildProductSeoLlmPrompt`) + colar JSON + **Aplicar no formulário** (`ProductSeoLlmPromptHelper.tsx`) |
 
 ## Apresentação e review
 

@@ -6,10 +6,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Button } from '@/components/ui/button';
+import { FieldHint } from '@/components/ui/field-hint';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
 import { buildCategorySlugChain } from '@/lib/api/categories-utils';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 import { resolveSpecTemplateForSlugChain } from '@ecommerce-amazon/shared/product/spec-templates';
 
@@ -147,6 +149,10 @@ export function ProductSpecsForm(): React.JSX.Element {
 
       {templateKeys.length > 0 ? (
         <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-[var(--admin-navy)]">Especificações sugeridas</p>
+            <FieldHint text={PRODUCT_FORM_HINTS.specsTemplate} />
+          </div>
           {templateKeys.map((key) => (
             <div key={key} className="space-y-1.5">
               <Label htmlFor={`spec-template-${key}`}>{key}</Label>
@@ -162,7 +168,10 @@ export function ProductSpecsForm(): React.JSX.Element {
       ) : null}
 
       <div className="space-y-3 border-t border-[var(--admin-gray)] pt-4">
-        <p className="text-sm font-medium text-[var(--admin-navy)]">Atributos customizados</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-[var(--admin-navy)]">Atributos customizados</p>
+          <FieldHint text={PRODUCT_FORM_HINTS.specsCustom} />
+        </div>
 
         {customRows.length === 0 ? (
           <p className="text-xs text-[var(--admin-text-muted)]">

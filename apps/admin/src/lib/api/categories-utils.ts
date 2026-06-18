@@ -135,3 +135,23 @@ function depthIndent(depth: number): string {
   if (depth === 0) return '';
   return `${'│  '.repeat(depth - 1)}├─ `;
 }
+
+export function buildCategoryPathLabel(
+  categoryId: string | undefined,
+  options: CategoryFlatOption[],
+): string {
+  if (!categoryId) {
+    return 'Não informada';
+  }
+
+  const byId = new Map(options.map((option) => [option.id, option]));
+  const labels: string[] = [];
+  let current = byId.get(categoryId);
+
+  while (current) {
+    labels.unshift(current.label);
+    current = current.parentId ? byId.get(current.parentId) : undefined;
+  }
+
+  return labels.length > 0 ? labels.join(' > ') : 'Não informada';
+}

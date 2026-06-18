@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { DynamicStringList } from '@/components/products/DynamicStringList';
+import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import { ProductLongDescriptionEditor } from '@/components/products/ProductLongDescriptionEditor';
 import { ProductLlmPromptHelper } from '@/components/products/ProductLlmPromptHelper';
 import {
@@ -16,6 +17,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/input';
+import { FieldHint } from '@/components/ui/field-hint';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 import { buildShortDescriptionFromPros } from '@ecommerce-amazon/shared/seo';
 
@@ -56,7 +59,9 @@ export function ProductAnalysisSection(): React.JSX.Element {
         name="pros"
         render={() => (
           <FormItem>
-            <FormLabel>Prós</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.pros}>
+              <FormLabel>Prós</FormLabel>
+            </ProductFormLabelRow>
             <DynamicStringList
               name="pros"
               addLabel="Adicionar pró"
@@ -72,7 +77,9 @@ export function ProductAnalysisSection(): React.JSX.Element {
         name="cons"
         render={() => (
           <FormItem>
-            <FormLabel>Contras</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.cons}>
+              <FormLabel>Contras</FormLabel>
+            </ProductFormLabelRow>
             <DynamicStringList
               name="cons"
               addLabel="Adicionar contra"
@@ -88,7 +95,9 @@ export function ProductAnalysisSection(): React.JSX.Element {
         name="shortDescription"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Apresentação rápida</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.shortDescription}>
+              <FormLabel>Apresentação rápida</FormLabel>
+            </ProductFormLabelRow>
             <FormControl>
               <Textarea
                 rows={3}
@@ -116,6 +125,7 @@ export function ProductAnalysisSection(): React.JSX.Element {
           <FormItem>
             <div className="flex items-center gap-2">
               <FormLabel>Análise completa</FormLabel>
+              <FieldHint text={PRODUCT_FORM_HINTS.longDescription} />
               <ProductLlmPromptHelper />
             </div>
             <FormControl>

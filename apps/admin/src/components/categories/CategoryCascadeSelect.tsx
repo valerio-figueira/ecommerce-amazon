@@ -18,7 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { FieldHint } from '@/components/ui/field-hint';
 import type { CategoryFlatOption } from '@/lib/api/categories';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 const NONE_VALUE = '__none__';
@@ -117,7 +119,10 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
       name="categoryId"
       render={() => (
         <FormItem>
-          <FormLabel>Categoria</FormLabel>
+          <div className="flex items-center gap-2">
+            <FormLabel>Categoria</FormLabel>
+            <FieldHint text={PRODUCT_FORM_HINTS.category} />
+          </div>
           <div className="grid gap-3 sm:max-w-md">
             <Select value={level1 ?? NONE_VALUE} onValueChange={handleLevel1Change}>
               <FormControl>

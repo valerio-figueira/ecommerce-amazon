@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { CategoryCascadeSelect } from '@/components/categories/CategoryCascadeSelect';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import {
   FormControl,
   FormDescription,
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 export function ProductEssentialsSection(): React.JSX.Element {
@@ -27,7 +29,9 @@ export function ProductEssentialsSection(): React.JSX.Element {
         name="titleClean"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Título limpo do produto</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.titleClean}>
+              <FormLabel>Título limpo do produto</FormLabel>
+            </ProductFormLabelRow>
             <FormControl>
               <Input placeholder="Ex: Cadeira Ergonômica DT3 Rhino" {...field} />
             </FormControl>
@@ -43,7 +47,9 @@ export function ProductEssentialsSection(): React.JSX.Element {
         name="editorialScore"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nota editorial (0 a 10)</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.editorialScore}>
+              <FormLabel>Nota editorial (0 a 10)</FormLabel>
+            </ProductFormLabelRow>
             <FormControl>
               <Input
                 type="number"

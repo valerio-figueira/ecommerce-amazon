@@ -3,6 +3,7 @@
 import { useFormContext } from 'react-hook-form';
 
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import {
   FormControl,
   FormDescription,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 export function ProductPriceSection(): React.JSX.Element {
@@ -33,7 +35,9 @@ export function ProductPriceSection(): React.JSX.Element {
           name="strikethroughPrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço de tabela / riscado (opcional)</FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.strikethroughPrice}>
+                <FormLabel>Preço de tabela / riscado (opcional)</FormLabel>
+              </ProductFormLabelRow>
               <FormControl>
                 <Input
                   type="number"
@@ -57,7 +61,9 @@ export function ProductPriceSection(): React.JSX.Element {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Preço de venda atual</FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.price}>
+                <FormLabel>Preço de venda atual</FormLabel>
+              </ProductFormLabelRow>
               <FormControl>
                 <Input
                   type="number"
@@ -80,9 +86,11 @@ export function ProductPriceSection(): React.JSX.Element {
         render={({ field }) => (
           <FormItem className="flex flex-row items-center justify-between rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] p-4">
             <div className="space-y-1">
-              <FormLabel className="normal-case tracking-normal">
-                Exibir valor numérico na vitrine?
-              </FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.shouldShowPrice}>
+                <FormLabel className="normal-case tracking-normal">
+                  Exibir valor numérico na vitrine?
+                </FormLabel>
+              </ProductFormLabelRow>
               <FormDescription>
                 Ative apenas se você tiver certeza de que este preço mudará pouco. Se desativar, o
                 site exibirá automaticamente o botão &quot;Consultar preço atualizado&quot;, o que
@@ -102,7 +110,9 @@ export function ProductPriceSection(): React.JSX.Element {
         render={({ field }) => (
           <FormItem className="flex flex-row items-center justify-between rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] p-4">
             <div className="space-y-1">
-              <FormLabel className="normal-case tracking-normal">Exibir na home?</FormLabel>
+              <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.visible}>
+                <FormLabel className="normal-case tracking-normal">Exibir na home?</FormLabel>
+              </ProductFormLabelRow>
               <FormDescription>
                 Quando desativado, o produto deixa de aparecer nos blocos da home (grids e destaque).
                 Continua visível no painel admin e acessível pela página de detalhe.
@@ -120,7 +130,9 @@ export function ProductPriceSection(): React.JSX.Element {
         name="availability"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Disponibilidade</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.availability}>
+              <FormLabel>Disponibilidade</FormLabel>
+            </ProductFormLabelRow>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="sm:max-w-xs">

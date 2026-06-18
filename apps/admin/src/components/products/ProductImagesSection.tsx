@@ -7,6 +7,7 @@ import { useFormContext } from 'react-hook-form';
 import { AdminImageCropDialog } from '@/components/admin/AdminImageCropDialog';
 import { AdminImageFilePicker } from '@/components/admin/AdminImageFilePicker';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { uploadAdminImageClient } from '@/lib/api/admin-media-client';
+import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 const IMAGE_ASPECT = 1;
@@ -137,10 +139,11 @@ export function ProductImagesSection(): React.JSX.Element {
         name="images"
         render={() => (
           <FormItem>
-            <FormLabel>Imagens do produto</FormLabel>
+            <ProductFormLabelRow hint={PRODUCT_FORM_HINTS.images}>
+              <FormLabel>Imagens do produto</FormLabel>
+            </ProductFormLabelRow>
             <FormDescription>
-              A primeira imagem é a capa na vitrine, listagens e galeria do detalhe. Use upload
-              gerenciado ou URLs HTTPS externas.
+              Envie arquivos com recorte quadrado ou cole URLs HTTPS do marketplace ou CDN.
             </FormDescription>
 
             <div className="space-y-4 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-4">
