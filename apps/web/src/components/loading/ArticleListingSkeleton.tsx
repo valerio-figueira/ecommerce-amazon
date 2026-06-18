@@ -4,12 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function ArticleListingSkeleton(): React.JSX.Element {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 md:px-6" aria-busy="true">
+    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10" aria-busy="true">
       <LoadingAnnouncer />
-
-      <header className="mb-8" aria-hidden>
-        <Skeleton className="h-10 w-48 max-w-xs" />
-      </header>
 
       <div className="space-y-8">
         <div className="space-y-4" aria-hidden>

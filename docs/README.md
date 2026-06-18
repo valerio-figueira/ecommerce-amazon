@@ -29,6 +29,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [wishlist-retention-lgpd.md](./wishlist-retention-lgpd.md) | Batch checkout, banner cookies, cancelamento de alertas, `DELETE /wishlist` |
 | [web-error-handling.md](./web-error-handling.md) | Erros 404/500 pt-BR, boundaries de blocos CMS, `ApiError` |
 | [web-loading-skeletons.md](./web-loading-skeletons.md) | Skeletons de rota (`loading.tsx`) na vitrine — feedback de navegação |
+| [web-mobile-quick-wins.md](./web-mobile-quick-wins.md) | Quick wins mobile: grid categorias, nav editorial, CTA sticky, safe-area |
 | [brand-config.md](./brand-config.md) | Marca centralizada: nome, URL, contato, helpers de título |
 | [legal-pages.md](./legal-pages.md) | `/legal`: privacidade LGPD, termos, afiliados, cookies |
 | [about-contact-pages.md](./about-contact-pages.md) | `/sobre` (CMS) + `/contato`: E-E-A-T, equipe, JSON-LD |

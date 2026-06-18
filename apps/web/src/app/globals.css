@@ -29,6 +29,10 @@ button:disabled,
   cursor: not-allowed;
 }
 
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
 /* Category sidebar tree (/categorias) */
 .category-sidebar-tree__list {
   list-style: none;
@@ -197,12 +201,19 @@ button:disabled,
 
 .category-catalog-drawer__panel {
   position: fixed;
-  inset: 0 auto 0 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   z-index: 61;
   width: min(20rem, 88vw);
+  height: 100dvh;
+  max-height: 100dvh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: #ffffff;
   padding: 1rem;
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
   box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
 }
 

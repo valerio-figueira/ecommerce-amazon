@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle, buildNotFoundMetadata } from '@ecommerce-amazon/shared/seo';
 
 import { ProductDetailAffiliateCta } from '@/components/product/ProductDetailAffiliateCta';
+import { ProductDetailStickyCta } from '@/components/product/ProductDetailStickyCta';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysis';
@@ -64,9 +65,9 @@ export default async function ProductPage({
   const similarProducts: ProductListItemDto[] = product.similarProducts ?? [];
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
+    <main className="mx-auto max-w-5xl px-4 py-8 pb-28 md:pb-8">
       <ProductJsonLd product={product} siteBaseUrl={siteBaseUrl} />
-      <nav className="mb-6 text-sm text-neutral-500">
+      <nav className="mb-6 overflow-x-auto text-sm text-neutral-500 whitespace-nowrap">
         <Link href="/">Home</Link>
         {product.category && (
           <>
@@ -124,6 +125,11 @@ export default async function ProductPage({
       <p className="mt-8 text-xs text-neutral-500">
         Links comerciais transparentes. Preços podem variar no marketplace parceiro.
       </p>
+      <ProductDetailStickyCta
+        productId={product.id}
+        slug={product.slug}
+        marketplace={product.marketplace}
+      />
     </main>
   );
 }

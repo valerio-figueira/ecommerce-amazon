@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { buildRootMetadata } from '@ecommerce-amazon/shared/seo';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import { SiteHeaderShell } from '@/components/layout/SiteHeaderShell';
 import { Footer } from '@/components/layout/Footer';
@@ -26,6 +26,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   ...buildRootMetadata(getServerBrandConfig()),
   twitter: { card: 'summary_large_image' },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

@@ -37,7 +37,7 @@ export function ProductImageGallery({
         ) : null}
       </div>
       {images.length > 1 ? (
-        <div className="mt-4 flex gap-2">
+        <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1">
           {images.map((image, index) => (
             <button
               key={image}

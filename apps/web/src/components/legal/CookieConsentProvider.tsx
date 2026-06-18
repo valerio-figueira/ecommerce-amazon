@@ -63,7 +63,7 @@ export function CookieConsentProvider({
       {children}
       {bannerVisible && (
         <div
-          className="fixed inset-x-0 bottom-0 z-[60] border-t border-neutral-200 bg-white/95 p-4 shadow-lg backdrop-blur"
+          className="fixed inset-x-0 bottom-0 z-[60] border-t border-neutral-200 bg-white/95 px-4 pt-4 shadow-lg backdrop-blur pb-safe"
           role="dialog"
           aria-label="Consentimento de cookies"
         >

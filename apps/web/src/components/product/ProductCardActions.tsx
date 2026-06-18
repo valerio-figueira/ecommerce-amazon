@@ -50,12 +50,12 @@ export function ProductCardActions({
   const buttonClass = editorial
     ? 'px-5 py-2.5 text-sm'
     : compact
-      ? 'px-3 py-1.5 text-[11px]'
+      ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
   const primaryButtonClass = editorial
     ? 'px-5 py-2.5 text-sm'
     : compact
-      ? 'px-3 py-1.5 text-[11px]'
+      ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
   const widthClass = 'w-full';
 

@@ -13,6 +13,12 @@ export function Footer(): React.JSX.Element {
       </p>
       <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
         <Link
+          href="/artigos"
+          className="underline decoration-gray-300 underline-offset-2 transition-colors hover:text-gray-500 hover:decoration-gray-400"
+        >
+          Artigos
+        </Link>
+        <Link
           href="/sobre"
           className="underline decoration-gray-300 underline-offset-2 transition-colors hover:text-gray-500 hover:decoration-gray-400"
         >
