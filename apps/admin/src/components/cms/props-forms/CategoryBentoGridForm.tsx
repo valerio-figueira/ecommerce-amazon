@@ -6,6 +6,7 @@ import { useFormContext, useWatch, type Control } from 'react-hook-form';
 
 import type { BlockFormValues } from '@/components/cms/forms/BlockPropsForm';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import {
   ALL_CATEGORY_VALUE,
   type CategoryBentoTileFormValue,
@@ -154,9 +155,12 @@ function BentoTileCard({
               <FormItem>
                 <FormLabel>Imagem</FormLabel>
                 <FormControl>
-                  <Input {...field} value={readString(field.value)} placeholder="https://…" />
+                  <CmsHybridImageField
+                    value={readString(field.value)}
+                    onChange={field.onChange}
+                    preset="bentoTile"
+                  />
                 </FormControl>
-                <FormDescription>Cole o link da foto do produto ou categoria.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

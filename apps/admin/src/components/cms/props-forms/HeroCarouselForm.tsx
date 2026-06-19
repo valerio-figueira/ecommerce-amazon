@@ -12,11 +12,11 @@ import {
   readUnknownArrayItem,
   type HeroSlideFormValue,
 } from '@/components/cms/props-forms/block-form-registry';
+import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import { ProductPicker } from '@/components/cms/props-forms/ProductPicker';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -133,9 +133,12 @@ function HeroSlideCard({
               <FormItem>
                 <FormLabel>Imagem de fundo</FormLabel>
                 <FormControl>
-                  <Input {...imageField} value={readString(imageField.value)} />
+                  <CmsHybridImageField
+                    value={readString(imageField.value)}
+                    onChange={imageField.onChange}
+                    preset="heroSlide"
+                  />
                 </FormControl>
-                <FormDescription>Cole o link da foto (1200×800 recomendado).</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

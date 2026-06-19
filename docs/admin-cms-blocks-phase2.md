@@ -32,7 +32,7 @@ Blocos da home seed com edição visual leigo-friendly (sem alterar schemas Zod 
 | `DYNAMIC_PRODUCT_GRID` | `DynamicGridForm` | Texto, regras de seleção, layout (já existia) |
 | `BANNER` / `RICH_TEXT` / `SPACER` | `BlockPropsForm` | Seções `CmsFormSection` com copy leigo |
 
-**Componentes compartilhados:** `ProductPicker`, `CategoryMultiSelect`, `PresetChipPicker`, `block-form-registry.ts` (schemas editáveis, normalização e sanitização antes do parse Zod).
+**Componentes compartilhados:** `ProductPicker`, `CategoryMultiSelect`, `PresetChipPicker`, `CmsHybridImageField` (upload + URL externa, como artigos/coleções), `block-form-registry.ts` (schemas editáveis, normalização e sanitização antes do parse Zod).
 
 **Clientes de leitura:** `listCategoriesClient()` (`GET /categories`), `listProductsClient()` (`GET /products?pageSize=50`).
 
@@ -110,7 +110,7 @@ Contrato detalhado: [api-rest.md](./api-rest.md).
 
 [`HeroCarouselForm.tsx`](../apps/admin/src/components/cms/props-forms/HeroCarouselForm.tsx):
 
-- Slides: adicionar/remover, imagem URL, título, subtítulo
+- Slides: adicionar/remover, imagem (upload ou URL via `CmsHybridImageField`), título, subtítulo
 - Destino do botão: sem botão / link / produto (`ProductPicker`)
 - Comportamento: autoplay Sim/Não, velocidade 4s / 6s / 8s
 

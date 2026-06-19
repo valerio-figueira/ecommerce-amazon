@@ -13,6 +13,7 @@ import {
 } from '@/components/cms/props-forms/bento-hub-mix-form-meta';
 import { CollectionIdPicker } from '@/components/cms/props-forms/CollectionIdPicker';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import { ProductIdPicker } from '@/components/cms/props-forms/ProductIdPicker';
 import { ProductMultiPicker } from '@/components/cms/props-forms/ProductMultiPicker';
 import { getCategoryDisplayLabel } from '@/components/cms/props-forms/dynamic-grid-form-meta';
@@ -176,16 +177,16 @@ export function BentoHubMixForm({
                 Imagem de capa{slot1Type === 'article' ? '' : ' (opcional)'}
               </FormLabel>
               <FormControl>
-                <Input
-                  {...field}
+                <CmsHybridImageField
                   value={readString(field.value)}
-                  placeholder="https://…"
+                  onChange={field.onChange}
+                  preset="coverWide"
                 />
               </FormControl>
               <FormDescription>
                 {slot1Type === 'article'
-                  ? 'Obrigatório para artigos — não há capa no catálogo editorial.'
-                  : 'Deixe em branco para usar a capa da coleção.'}
+                  ? 'Obrigatório para artigos — envie ou informe a URL. Não há capa no catálogo editorial.'
+                  : 'Deixe em branco para usar a capa da coleção, ou envie/informe uma imagem customizada.'}
               </FormDescription>
               <FormMessage />
             </FormItem>

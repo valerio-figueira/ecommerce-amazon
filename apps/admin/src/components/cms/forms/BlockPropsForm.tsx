@@ -4,6 +4,7 @@ import type { Control } from 'react-hook-form';
 
 import type { CategoryBentoTileFormValue, HeroSlideFormValue } from '@/components/cms/props-forms/block-form-registry';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import { Input, Textarea } from '@/components/ui/input';
 import {
   Select,
@@ -100,11 +101,14 @@ export function BannerFormFields({
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Link da imagem</FormLabel>
+              <FormLabel>Imagem do banner</FormLabel>
               <FormControl>
-                <Input {...field} value={readString(field.value)} placeholder="https://…" />
+                <CmsHybridImageField
+                  value={readString(field.value)}
+                  onChange={field.onChange}
+                  preset="banner"
+                />
               </FormControl>
-              <FormDescription>Cole a URL da imagem que aparecerá no banner.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
