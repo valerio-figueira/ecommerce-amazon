@@ -26,6 +26,7 @@ const baseInput = {
   titleClean: 'Cadeira Ergonômica Pro X',
   images: ['https://example.com/image.jpg'],
   editorialScore: 8.5,
+  tags: [],
   pros: ['Confortável'],
   cons: ['Preço alto'],
   price: 899.9,

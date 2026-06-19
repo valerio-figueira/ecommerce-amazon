@@ -26,6 +26,7 @@ const baseInput = {
   titleClean: 'Cadeira Ergonômica Atualizada',
   images: ['https://example.com/image.jpg'],
   editorialScore: 9,
+  tags: [],
   pros: ['Confortável'],
   cons: [],
   price: 799.9,
@@ -181,6 +182,60 @@ describe('UpdateProduct', () => {
     });
 
     expect(existing.visible).toBe(false);
+  });
+
+  it('updates rating, review count and tags', async () => {
+    const existing = createExistingProduct();
+    const productRepository = createMockProductRepository({
+      findBySlug: vi.fn().mockResolvedValue(existing),
+      findByExternalId: vi.fn().mockResolvedValue(existing),
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const useCase = new UpdateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      createMockPriceSnapshotRepository(),
+      createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
+    );
+
+    await useCase.execute('cadeira-ergonomica-pro-x', {
+      ...baseInput,
+      rating: 4.6,
+      reviewCount: 128,
+      tags: ['ergonomica', 'home-office'],
+      titleRaw: 'Cadeira Gamer Ergonômica Original Amazon',
+    });
+
+    expect(existing.rating).toBe(4.6);
+    expect(existing.reviewCount).toBe(128);
+    expect(existing.tags).toEqual(['ergonomica', 'home-office']);
+    expect(existing.titleRaw).toBe('Cadeira Gamer Ergonômica Original Amazon');
+  });
+
+  it('clears rating and review count when omitted from payload', async () => {
+    const existing = createExistingProduct();
+    existing.rating = 4.5;
+    existing.reviewCount = 50;
+    const productRepository = createMockProductRepository({
+      findBySlug: vi.fn().mockResolvedValue(existing),
+      findByExternalId: vi.fn().mockResolvedValue(existing),
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const useCase = new UpdateProduct(
+      productRepository,
+      createMockCategoryRepository(),
+      createMockPriceSnapshotRepository(),
+      createMockCacheInvalidator(),
+      createMockPublicWebRevalidator(),
+    );
+
+    await useCase.execute('cadeira-ergonomica-pro-x', baseInput);
+
+    expect(existing.rating).toBeUndefined();
+    expect(existing.reviewCount).toBeUndefined();
   });
 
   it('throws EntityNotFoundError when slug is missing', async () => {

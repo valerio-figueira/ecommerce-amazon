@@ -13,6 +13,7 @@ export const createProductBodySchema = z
     marketplace: marketplaceSchema,
     externalId: z.string().min(1),
     titleClean: z.string().min(3).max(200),
+    titleRaw: z.string().max(500).optional(),
     categoryId: z.string().uuid().optional(),
     slug: z
       .string()
@@ -26,6 +27,14 @@ export const createProductBodySchema = z
       )
       .pipe(z.array(z.string().url())),
     editorialScore: z.number().min(0).max(10),
+    rating: z.number().min(0).max(5).optional(),
+    reviewCount: z.number().int().min(0).optional(),
+    tags: z
+      .array(z.string())
+      .default([])
+      .transform((items) =>
+        items.map((item) => item.trim()).filter((item) => item.length > 0),
+      ),
     pros: z
       .array(z.string())
       .default([])
@@ -82,9 +91,13 @@ export const adminProductDetailSchema = z.object({
   marketplace: marketplaceSchema,
   externalId: z.string(),
   titleClean: z.string(),
+  titleRaw: z.string().optional(),
   categoryId: z.string().uuid().optional(),
   images: z.array(z.string().url()),
   editorialScore: z.number().min(0).max(10),
+  rating: z.number().min(0).max(5).optional(),
+  reviewCount: z.number().int().min(0).optional(),
+  tags: z.array(z.string()),
   pros: z.array(z.string()),
   cons: z.array(z.string()),
   shortDescription: z.string().optional(),

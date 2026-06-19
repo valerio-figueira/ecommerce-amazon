@@ -77,9 +77,13 @@ export type AdminProductDetailDto = {
   marketplace: string;
   externalId: string;
   titleClean: string;
+  titleRaw?: string | undefined;
   categoryId?: string | undefined;
   images: string[];
   editorialScore: number;
+  rating?: number | undefined;
+  reviewCount?: number | undefined;
+  tags: string[];
   pros: string[];
   cons: string[];
   shortDescription?: string | undefined;
@@ -252,8 +256,12 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     marketplace: product.marketplace,
     externalId: product.externalId,
     titleClean: product.titleClean,
+    ...(product.titleRaw !== product.titleClean ? { titleRaw: product.titleRaw } : {}),
     images: product.images,
     editorialScore: product.editorialScore / 10,
+    ...(product.rating !== undefined ? { rating: product.rating } : {}),
+    ...(product.reviewCount !== undefined ? { reviewCount: product.reviewCount } : {}),
+    tags: product.tags,
     pros: product.pros ?? [],
     cons: product.cons ?? [],
     ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),

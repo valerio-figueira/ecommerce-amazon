@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
 type DynamicStringListProps = {
-  name: 'pros' | 'cons';
+  name: 'pros' | 'cons' | 'tags';
   addLabel: string;
   placeholder: string;
 };

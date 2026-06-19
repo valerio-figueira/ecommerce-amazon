@@ -12,10 +12,18 @@ export const PRODUCT_FORM_HINTS = {
     'Código único no marketplace (ex.: ASIN na Amazon). Usado para sincronizar preço e metadados no worker.',
   titleClean:
     'Nome editorial exibido na vitrine e na página do produto. Evite códigos internos e textos promocionais do marketplace.',
+  titleRaw:
+    'Título original do marketplace (opcional). Se vazio, usa o título limpo. Útil para referência quando o worker sincronizar metadados.',
   category:
     'Escolha a subcategoria folha mais específica. Define templates de especificações e ajuda na navegação e SEO da vitrine.',
   editorialScore:
     'Nota de 0 a 10 da sua curadoria. Acima de 8,0 o produto pode receber o selo "Escolha editorial" na vitrine.',
+  rating:
+    'Nota média do marketplace (0 a 5). Exibida na vitrine e usada no selo "Top avaliado" (≥ 4,5 com 50+ avaliações).',
+  reviewCount:
+    'Quantidade de avaliações no marketplace. Complementa a nota para estrelas e selos na vitrine.',
+  tags:
+    'Etiquetas internas para organização (ex.: gamer, home-office). Não aparecem na vitrine pública no MVP.',
   strikethroughPrice:
     'Preço de referência opcional (ex.: "De R$"). Só exibido se "Exibir valor numérico" estiver ativo e o preço não estiver desatualizado.',
   price:

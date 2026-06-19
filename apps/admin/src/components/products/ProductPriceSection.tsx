@@ -142,6 +142,7 @@ export function ProductPriceSection(): React.JSX.Element {
               <SelectContent>
                 <SelectItem value="in_stock">Em estoque</SelectItem>
                 <SelectItem value="out_of_stock">Fora de estoque</SelectItem>
+                <SelectItem value="unknown">Desconhecido</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

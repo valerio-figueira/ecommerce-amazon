@@ -21,6 +21,7 @@ import {
   filterNonEmptyStrings,
   parseProductAvailability,
   resolveEditorialContentFields,
+  resolveOptionalTrimmed,
   resolveProductLink,
   toStoredEditorialScore,
 } from './product-form.helpers.js';
@@ -130,10 +131,13 @@ export class UpdateProduct {
     const editorialContent = resolveEditorialContentFields(input, filteredPros);
 
     product.titleClean = input.titleClean.trim();
-    product.titleRaw = input.titleClean.trim();
+    product.titleRaw = resolveOptionalTrimmed(input.titleRaw) ?? input.titleClean.trim();
     product.affiliateLink = createAffiliateLink(input);
     product.images = filteredImages;
     product.editorialScore = toStoredEditorialScore(input.editorialScore);
+    product.rating = input.rating;
+    product.reviewCount = input.reviewCount;
+    product.tags = filterNonEmptyStrings(input.tags);
     product.availability = parseProductAvailability(input.availability);
     product.price = price;
     product.pros = filteredPros.length > 0 ? filteredPros : undefined;

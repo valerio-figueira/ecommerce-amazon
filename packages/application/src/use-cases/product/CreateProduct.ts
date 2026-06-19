@@ -22,6 +22,7 @@ import {
   parseProductAvailability,
   resolveProductLink,
   resolveEditorialContentFields,
+  resolveOptionalTrimmed,
   toStoredEditorialScore,
 } from './product-form.helpers.js';
 import { assertCategoryIsLeaf } from '../category/category.helpers.js';
@@ -71,7 +72,7 @@ export class CreateProduct {
       externalId,
       slug,
       titleClean: input.titleClean.trim(),
-      titleRaw: input.titleClean.trim(),
+      titleRaw: resolveOptionalTrimmed(input.titleRaw) ?? input.titleClean.trim(),
       price,
       ...(input.strikethroughPrice !== undefined && input.strikethroughPrice > 0
         ? { strikethroughPrice: input.strikethroughPrice }
@@ -81,7 +82,9 @@ export class CreateProduct {
       specsNormalized: input.specsNormalized ?? [],
       editorialScore: toStoredEditorialScore(input.editorialScore),
       availability: parseProductAvailability(input.availability),
-      tags: [],
+      tags: filterNonEmptyStrings(input.tags),
+      ...(input.rating !== undefined ? { rating: input.rating } : {}),
+      ...(input.reviewCount !== undefined ? { reviewCount: input.reviewCount } : {}),
       ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
       ...(editorialContent.shortDescription !== undefined
         ? { shortDescription: editorialContent.shortDescription }
