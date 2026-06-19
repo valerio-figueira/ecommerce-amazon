@@ -18,6 +18,7 @@ export type ListAdminProductsClientParams = {
   page?: number;
   pageSize?: number;
   marketplace?: string;
+  search?: string;
 };
 
 export async function listAdminProductsClient(
@@ -27,6 +28,7 @@ export async function listAdminProductsClient(
   if (params.page !== undefined) search.set('page', String(params.page));
   if (params.pageSize !== undefined) search.set('pageSize', String(params.pageSize));
   if (params.marketplace !== undefined) search.set('marketplace', params.marketplace);
+  if (params.search !== undefined && params.search.length > 0) search.set('search', params.search);
 
   const query = search.toString();
   const path = query.length > 0 ? `/api/admin/products?${query}` : '/api/admin/products';

@@ -11,3 +11,20 @@ export function adminMarketplaceLabel(marketplace: string): string {
 export function formatEditorialScore(storedScore: number): string {
   return (storedScore / 10).toFixed(1);
 }
+
+type AdminPriceLike = {
+  amount: number | null;
+  currency: string;
+  isStale: boolean;
+};
+
+export function formatAdminProductPrice(price: AdminPriceLike): string {
+  if (price.isStale || price.amount === null) {
+    return 'Preço oculto na vitrine';
+  }
+
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: price.currency || 'BRL',
+  }).format(price.amount);
+}

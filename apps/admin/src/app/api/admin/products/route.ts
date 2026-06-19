@@ -10,11 +10,13 @@ export async function GET(request: Request) {
     const page = url.searchParams.get('page');
     const pageSize = url.searchParams.get('pageSize');
     const marketplace = url.searchParams.get('marketplace');
+    const search = url.searchParams.get('search');
 
     const products = await listAdminProducts({
       ...(page !== null ? { page: Number(page) } : {}),
       ...(pageSize !== null ? { pageSize: Number(pageSize) } : {}),
       ...(marketplace !== null ? { marketplace } : {}),
+      ...(search !== null && search.length > 0 ? { search } : {}),
     });
     return NextResponse.json(products);
   } catch (error) {

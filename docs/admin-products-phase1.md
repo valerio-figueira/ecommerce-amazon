@@ -6,7 +6,7 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 
 ## O quê foi entregue
 
-- Listagem de produtos em `/produtos` (admin)
+- Listagem de produtos em `/produtos` (admin) — **grid no padrão da vitrine web**, busca por título/slug, paginação (12 por página)
 - Formulário de criação em `/produtos/novo`
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
@@ -114,6 +114,17 @@ Componentes: `ProductSpecsForm.tsx`, `product-specs-form-state.ts`, hook `useAdm
 - Listagem admin (`GET /admin/products`) usa `ListAdminProducts` — **não** filtra por `visible`.
 - Vitrine pública filtra `visible` apenas nos blocos da home e em `GET /products?visibleOnly=true`.
 
+## Listagem admin (`/produtos`)
+
+| Recurso | Detalhe |
+|---------|---------|
+| Layout | Grid alinhado à vitrine web (`ProductCard` compact): imagem 4:3, 2–4 colunas (550px / 830px) |
+| Busca | Campo com debounce 300ms; query `search` na API (título ou slug) |
+| Paginação | 12 itens/página; componente `AdminPagination` com intervalo “Mostrando X–Y de N” e números de página |
+| Card | Thumbnail 4:3, badge marketplace sobre a imagem, título `text-sm`, preço compacto, pills de status, CTA Editar |
+| Componentes | `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx` |
+| BFF | `GET /api/admin/products?page&pageSize&search` |
+
 ## Imagens do produto
 
 | Camada | Comportamento |
@@ -219,7 +230,7 @@ Schemas Zod: [`packages/shared/src/admin/product-schemas.ts`](../packages/shared
 | Galeria / upload | `apps/admin/src/components/products/ProductImagesSection.tsx` |
 | Specs por categoria | `apps/admin/src/components/products/ProductSpecsForm.tsx` |
 | Templates de specs | `packages/shared/src/product/spec-templates.ts` |
-| Listagem | `apps/admin/src/app/(dashboard)/produtos/page.tsx` |
+| Listagem | `apps/admin/src/app/(dashboard)/produtos/page.tsx`, `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx` |
 
 ## Como testar
 
@@ -233,7 +244,7 @@ npm run dev:admin  # :3002
 2. **Produtos** → **Novo produto**
 3. Colar URL Amazon/Shopee/ML — verificar marketplace e ID detectados
 4. Aba **Imagens**: enviar arquivo ou URL; reordenar; salvar
-5. Confirmar listagem em `/produtos` e vitrine pública em `/produtos/{slug}` (web :3001)
+5. Confirmar listagem em `/produtos` (busca, paginação, cards) e vitrine pública em `/produtos/{slug}` (web :3001)
 
 ## Próximos passos
 

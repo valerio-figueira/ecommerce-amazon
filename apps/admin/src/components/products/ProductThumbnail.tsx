@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 type ProductThumbnailProps = {
   src?: string | undefined;
   alt: string;
-  size?: 'xs' | 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md' | 'cover';
   className?: string;
 };
 
@@ -16,12 +16,14 @@ const sizeClasses: Record<NonNullable<ProductThumbnailProps['size']>, string> = 
   xs: 'h-10 w-10 rounded-md',
   sm: 'h-12 w-12 rounded-lg',
   md: 'h-16 w-16 rounded-xl',
+  cover: 'h-full w-full rounded-none border-0',
 };
 
 const iconSizes: Record<NonNullable<ProductThumbnailProps['size']>, string> = {
   xs: 'h-4 w-4',
   sm: 'h-5 w-5',
   md: 'h-6 w-6',
+  cover: 'h-8 w-8',
 };
 
 export function ProductThumbnail({

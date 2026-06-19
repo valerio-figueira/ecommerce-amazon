@@ -759,6 +759,133 @@ body.admin-login-page {
   text-align: center;
 }
 
+.admin-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 550px) {
+  .admin-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 830px) {
+  .admin-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.admin-product-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(24, 42, 90, 0.08);
+  background: var(--admin-bg);
+  box-shadow: 0 1px 2px rgba(24, 42, 90, 0.06);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.admin-product-card:hover {
+  border-color: color-mix(in srgb, var(--admin-primary) 22%, var(--admin-gray));
+  box-shadow: 0 4px 14px rgba(13, 110, 253, 0.1);
+}
+
+.admin-product-card__media-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.admin-product-card__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--admin-accent-subtle);
+}
+
+.admin-product-card__marketplace {
+  position: absolute;
+  bottom: 0.375rem;
+  left: 0.375rem;
+  z-index: 1;
+  max-width: calc(100% - 0.75rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 0.375rem;
+  background: rgb(255 255 255 / 0.95);
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-navy-deep);
+  box-shadow: 0 1px 2px rgba(24, 42, 90, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.admin-product-card__body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.admin-product-card__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.375;
+  color: var(--admin-navy-deep);
+}
+
+.admin-product-card__meta {
+  margin: 0.125rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--admin-text-muted);
+}
+
+.admin-product-card__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.375rem;
+}
+
+.admin-product-card__spacer {
+  min-height: 0;
+  flex: 1;
+}
+
+.admin-product-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+}
+
+.admin-product-card__price {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
 .cms-type-picker-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
