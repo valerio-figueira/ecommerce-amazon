@@ -254,33 +254,71 @@ export class DrizzleContentRepository implements ContentRepository {
     return rows;
   }
 
-  async listAdminSummaries(status?: ArticleStatus) {
-    const baseQuery = this.db
-      .select({
-        id: schema.contentArticles.id,
-        slug: schema.contentArticles.slug,
-        title: schema.contentArticles.title,
-        excerpt: schema.contentArticles.excerpt,
-        status: schema.contentArticles.status,
-        coverImageUrl: schema.contentArticles.coverImageUrl,
-        updatedAt: schema.contentArticles.updatedAt,
-      })
-      .from(schema.contentArticles);
+  async listAdminArticles(options: {
+    status?: ArticleStatus;
+    search?: string;
+    page: number;
+    pageSize: number;
+  }) {
+    const whereClause = this.buildAdminArticlesWhere(options.status, options.search);
+    const offset = (options.page - 1) * options.pageSize;
 
-    const rows = await (status
-      ? baseQuery.where(eq(schema.contentArticles.status, status))
-      : baseQuery
-    ).orderBy(asc(schema.contentArticles.updatedAt));
+    const [rows, totalRows] = await Promise.all([
+      this.db
+        .select({
+          id: schema.contentArticles.id,
+          slug: schema.contentArticles.slug,
+          title: schema.contentArticles.title,
+          excerpt: schema.contentArticles.excerpt,
+          status: schema.contentArticles.status,
+          coverImageUrl: schema.contentArticles.coverImageUrl,
+          updatedAt: schema.contentArticles.updatedAt,
+        })
+        .from(schema.contentArticles)
+        .where(whereClause)
+        .orderBy(desc(schema.contentArticles.updatedAt))
+        .limit(options.pageSize)
+        .offset(offset),
+      this.db
+        .select({ total: count() })
+        .from(schema.contentArticles)
+        .where(whereClause),
+    ]);
 
-    return rows.map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      title: row.title,
-      excerpt: row.excerpt,
-      status: row.status as ArticleStatus,
-      coverImageUrl: row.coverImageUrl,
-      updatedAt: row.updatedAt,
-    }));
+    return {
+      items: rows.map((row) => ({
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        excerpt: row.excerpt,
+        status: row.status as ArticleStatus,
+        coverImageUrl: row.coverImageUrl,
+        updatedAt: row.updatedAt,
+      })),
+      total: Number(totalRows[0]?.total ?? 0),
+    };
+  }
+
+  private buildAdminArticlesWhere(status?: ArticleStatus, search?: string) {
+    const conditions = [];
+
+    if (status) {
+      conditions.push(eq(schema.contentArticles.status, status));
+    }
+
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
+      const pattern = `%${trimmedSearch}%`;
+      conditions.push(
+        or(
+          ilike(schema.contentArticles.title, pattern),
+          ilike(schema.contentArticles.excerpt, pattern),
+          ilike(schema.contentArticles.slug, pattern),
+        )!,
+      );
+    }
+
+    return conditions.length > 0 ? and(...conditions) : undefined;
   }
 
   async saveArticle(article: import('@ecommerce-amazon/domain').ContentArticle): Promise<void> {

@@ -2,7 +2,6 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
 
 import {
-  ArticleStatus,
   ConflictError,
   DomainError,
   EntityNotFoundError,
@@ -11,6 +10,7 @@ import {
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
   articleIdParamsSchema,
+  adminListArticlesQuerySchema,
   createArticleBodySchema,
   updateArticleBodySchema,
 } from '@ecommerce-amazon/shared/admin';
@@ -42,17 +42,23 @@ export async function registerAdminArticleRoutes(
 
   app.get('/admin/articles', async (request, reply) => {
     try {
-      const query = request.query as { picker?: string; status?: string };
+      const query = request.query as { picker?: string };
       if (query.picker === 'true') {
         const result = await useCases.listAdminArticles.executePublishedPicker();
         return reply.send(result);
       }
 
-      const status =
-        query.status === ArticleStatus.DRAFT || query.status === ArticleStatus.PUBLISHED
-          ? query.status
-          : undefined;
-      const result = await useCases.listAdminArticles.execute(status);
+      const parsed = adminListArticlesQuerySchema.parse(request.query);
+      const filters: Parameters<typeof useCases.listAdminArticles.execute>[0] = {};
+      if (parsed.page !== undefined) filters.page = parsed.page;
+      if (parsed.pageSize !== undefined) filters.pageSize = parsed.pageSize;
+      if (parsed.search !== undefined && parsed.search.length > 0) {
+        filters.search = parsed.search;
+      }
+      if (parsed.status !== undefined) {
+        filters.status = parsed.status;
+      }
+      const result = await useCases.listAdminArticles.execute(filters);
       return reply.send(result);
     } catch (error) {
       return handleAdminArticleError(error, reply);

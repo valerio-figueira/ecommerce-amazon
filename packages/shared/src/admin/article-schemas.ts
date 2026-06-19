@@ -31,6 +31,22 @@ export const adminArticlesResponseSchema = z.object({
   items: z.array(adminArticleSummarySchema),
 });
 
+export const adminArticlesListResponseSchema = z.object({
+  items: z.array(adminArticleSummarySchema),
+  total: z.number(),
+  page: z.number(),
+  pageSize: z.number(),
+});
+
+export type AdminArticlesListResponse = z.infer<typeof adminArticlesListResponseSchema>;
+
+export const adminListArticlesQuerySchema = z.object({
+  page: z.coerce.number().int().positive().optional(),
+  pageSize: z.coerce.number().int().positive().max(100).optional(),
+  search: z.string().trim().max(100).optional(),
+  status: articleStatusSchema.optional(),
+});
+
 export const adminArticleDetailSchema = z.object({
   id: z.string().uuid(),
   slug: articleSlugSchema,

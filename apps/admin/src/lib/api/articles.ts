@@ -1,9 +1,9 @@
 import {
   adminArticleDetailSchema,
-  adminArticlesResponseSchema,
+  adminArticlesListResponseSchema,
   createArticleResponseSchema,
   type AdminArticleDetail,
-  type AdminArticleSummary,
+  type AdminArticlesListResponse,
   type CreateArticleBody,
   type CreateArticleResponse,
   type UpdateArticleBody,
@@ -22,15 +22,25 @@ const adminArticlePickerResponseSchema = z.object({
   ),
 });
 
+export type ListAdminArticlesParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+};
+
 export async function listAdminArticles(
-  status?: string,
-): Promise<AdminArticleSummary[]> {
-  const query = status ? `?status=${encodeURIComponent(status)}` : '';
-  const response = await adminFetchParsed(
-    `/admin/articles${query}`,
-    adminArticlesResponseSchema,
-  );
-  return response.items;
+  params: ListAdminArticlesParams = {},
+): Promise<AdminArticlesListResponse> {
+  const search = new URLSearchParams();
+  if (params.page !== undefined) search.set('page', String(params.page));
+  if (params.pageSize !== undefined) search.set('pageSize', String(params.pageSize));
+  if (params.search !== undefined && params.search.length > 0) search.set('search', params.search);
+  if (params.status !== undefined) search.set('status', params.status);
+
+  const query = search.toString();
+  const path = query.length > 0 ? `/admin/articles?${query}` : '/admin/articles';
+  return adminFetchParsed(path, adminArticlesListResponseSchema);
 }
 
 export async function listAdminArticlePicker(): Promise<

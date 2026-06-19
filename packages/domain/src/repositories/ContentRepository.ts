@@ -47,11 +47,20 @@ export type PublishedArticleCategoryOption = {
   slug: string;
 };
 
+export type ListAdminArticlesOptions = {
+  status?: ArticleStatus;
+  search?: string;
+  page: number;
+  pageSize: number;
+};
+
 export interface ContentRepository {
   findArticleBySlug(slug: string): Promise<ContentArticle | null>;
   findArticleById(id: string): Promise<ContentArticle | null>;
   listPublishedSummaries(): Promise<ArticleSummary[]>;
-  listAdminSummaries(status?: ArticleStatus): Promise<AdminArticleSummary[]>;
+  listAdminArticles(
+    options: ListAdminArticlesOptions,
+  ): Promise<{ items: AdminArticleSummary[]; total: number }>;
   findRelatedPublishedByCategory(
     categoryId: string,
     excludeArticleId: string,

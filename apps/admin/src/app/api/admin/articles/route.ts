@@ -16,9 +16,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ items });
     }
 
-    const status = searchParams.get('status') ?? undefined;
-    const items = await listAdminArticles(status);
-    return NextResponse.json({ items });
+    const page = searchParams.get('page');
+    const pageSize = searchParams.get('pageSize');
+    const search = searchParams.get('search');
+    const status = searchParams.get('status');
+
+    const articles = await listAdminArticles({
+      ...(page !== null ? { page: Number(page) } : {}),
+      ...(pageSize !== null ? { pageSize: Number(pageSize) } : {}),
+      ...(search !== null && search.length > 0 ? { search } : {}),
+      ...(status !== null ? { status } : {}),
+    });
+    return NextResponse.json(articles);
   } catch (error) {
     const status = getBffErrorStatus(error);
     const message = getBffErrorMessage(error);

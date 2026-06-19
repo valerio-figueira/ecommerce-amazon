@@ -1,12 +1,12 @@
 import { adminClientFetch } from './admin-client';
 import {
   adminArticleDetailSchema,
-  adminArticlesResponseSchema,
+  adminArticlesListResponseSchema,
   createArticleBodySchema,
   createArticleResponseSchema,
   updateArticleBodySchema,
   type AdminArticleDetail,
-  type AdminArticleSummary,
+  type AdminArticlesListResponse,
   type CreateArticleBody,
   type CreateArticleResponse,
   type UpdateArticleBody,
@@ -25,14 +25,28 @@ async function readErrorMessage(response: Response): Promise<string> {
   return `Request failed (${response.status})`;
 }
 
+export type ListAdminArticlesClientParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+};
+
 export async function listAdminArticlesClient(
-  status?: string,
-): Promise<AdminArticleSummary[]> {
-  const query = status ? `?status=${encodeURIComponent(status)}` : '';
-  const response = await adminClientFetch(`/api/admin/articles${query}`, { cache: 'no-store' });
+  params: ListAdminArticlesClientParams = {},
+): Promise<AdminArticlesListResponse> {
+  const search = new URLSearchParams();
+  if (params.page !== undefined) search.set('page', String(params.page));
+  if (params.pageSize !== undefined) search.set('pageSize', String(params.pageSize));
+  if (params.search !== undefined && params.search.length > 0) search.set('search', params.search);
+  if (params.status !== undefined) search.set('status', params.status);
+
+  const query = search.toString();
+  const path = query.length > 0 ? `/api/admin/articles?${query}` : '/api/admin/articles';
+  const response = await adminClientFetch(path, { cache: 'no-store' });
   if (!response.ok) throw new Error(await readErrorMessage(response));
   const data: unknown = await response.json();
-  return adminArticlesResponseSchema.parse(data).items;
+  return adminArticlesListResponseSchema.parse(data);
 }
 
 export async function getAdminArticleClient(id: string): Promise<AdminArticleDetail> {

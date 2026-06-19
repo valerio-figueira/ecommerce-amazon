@@ -1,9 +1,10 @@
 'use client';
 
-import { Newspaper, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Newspaper, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { AdminPagination } from '@/components/admin/AdminPagination';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,30 +16,86 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { deleteAdminArticleClient, listAdminArticlesClient } from '@/lib/api/articles-client';
-import { ArticleStatus } from '@ecommerce-amazon/domain';
-import type { AdminArticleSummary } from '@ecommerce-amazon/shared/admin';
+import type { AdminArticlesListResponse, AdminArticleSummary } from '@ecommerce-amazon/shared/admin';
+
+import { ArticleListCard } from './ArticleListCard';
 
 type ArticleListManagerProps = {
-  initialItems: AdminArticleSummary[];
+  initialData: AdminArticlesListResponse;
 };
 
-function statusLabel(status: ArticleStatus): string {
-  return status === ArticleStatus.PUBLISHED ? 'Publicado' : 'Rascunho';
-}
+const DEFAULT_PAGE_SIZE = 12;
 
 export function ArticleListManager({
-  initialItems,
+  initialData,
 }: ArticleListManagerProps): React.JSX.Element {
   const adminToast = useAdminToast();
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState(initialData.items);
+  const [total, setTotal] = useState(initialData.total);
+  const [page, setPage] = useState(initialData.page);
+  const [pageSize] = useState(initialData.pageSize || DEFAULT_PAGE_SIZE);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AdminArticleSummary | null>(null);
+  const skipSearchDebounce = useRef(true);
 
-  const refresh = useCallback(async () => {
-    const nextItems = await listAdminArticlesClient();
-    setItems(nextItems);
-  }, []);
+  const refresh = useCallback(
+    async (params?: { page?: number; search?: string }) => {
+      setLoading(true);
+      try {
+        const nextPage = params?.page ?? page;
+        const nextSearch = params?.search ?? search;
+        const result = await listAdminArticlesClient({
+          page: nextPage,
+          pageSize,
+          ...(nextSearch.length > 0 ? { search: nextSearch } : {}),
+        });
+        setItems(result.items);
+        setTotal(result.total);
+        setPage(result.page);
+      } catch (error) {
+        adminToast.error(error instanceof Error ? error.message : 'Falha ao carregar artigos');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [adminToast, page, pageSize, search],
+  );
+
+  useEffect(() => {
+    if (skipSearchDebounce.current) {
+      skipSearchDebounce.current = false;
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const nextSearch = searchInput.trim();
+      setSearch(nextSearch);
+      setLoading(true);
+      void listAdminArticlesClient({
+        page: 1,
+        pageSize,
+        ...(nextSearch.length > 0 ? { search: nextSearch } : {}),
+      })
+        .then((result) => {
+          setItems(result.items);
+          setTotal(result.total);
+          setPage(result.page);
+        })
+        .catch((error: unknown) => {
+          adminToast.error(error instanceof Error ? error.message : 'Falha ao carregar artigos');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [adminToast, pageSize, searchInput]);
 
   async function confirmDelete(): Promise<void> {
     if (!deleteTarget) return;
@@ -51,6 +108,14 @@ export function ArticleListManager({
       adminToast.error(error instanceof Error ? error.message : 'Falha ao excluir artigo');
     }
   }
+
+  function goToPage(nextPage: number): void {
+    void refresh({ page: nextPage });
+  }
+
+  const hasSearch = search.length > 0;
+  const emptyCatalog = !hasSearch && total === 0 && items.length === 0;
+  const emptySearch = hasSearch && total === 0;
 
   return (
     <section className="cms-editor-section">
@@ -67,22 +132,41 @@ export function ArticleListManager({
             </span>
           </p>
         </div>
-        <div className="cms-panel-actions">
-          <span className="text-sm text-[var(--admin-text-muted)]">
-            <strong>{items.length}</strong> artigo{items.length === 1 ? '' : 's'}
+
+        <div className="cms-panel-actions flex-wrap gap-2">
+          <div className="relative mr-auto min-w-[220px] max-w-sm flex-1">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-text-muted)]"
+              aria-hidden
+            />
+            <Input
+              type="search"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder="Buscar por título, resumo ou slug…"
+              className="pl-9"
+              aria-label="Buscar artigos"
+            />
+          </div>
+
+          <span className="text-xs text-[var(--admin-text-muted)]">
+            <strong className="text-[var(--admin-navy)]">{total}</strong> artigo
+            {total === 1 ? '' : 's'}
+            {hasSearch ? ' encontrado(s)' : ''}
           </span>
-          <Button asChild variant="outline">
+
+          <Button asChild variant="outline" size="sm">
             <Link href="/artigos/categorias">Categorias</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="sm">
             <Link href="/content-clusters">Clusters</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="sm">
             <Link href="/auto-links">Auto-Links</Link>
           </Button>
-          <Button asChild>
+          <Button asChild variant="primary" size="sm">
             <Link href="/artigos/novo">
-              <Plus className="mr-1 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               Novo artigo
             </Link>
           </Button>
@@ -91,48 +175,69 @@ export function ArticleListManager({
 
       <div className="cms-float-panel cms-blocks-panel">
         <p className="cms-blocks-panel__meta">
-          Listagem editorial · <strong>{items.length} itens</strong>
+          {hasSearch ? (
+            <>
+              Resultados para &quot;{search}&quot; · <strong>{total}</strong>{' '}
+              {total === 1 ? 'item' : 'itens'}
+            </>
+          ) : (
+            <>
+              Listagem editorial · <strong>{total}</strong>{' '}
+              {total === 1 ? 'item' : 'itens'}
+            </>
+          )}
+          {loading ? ' · atualizando…' : ''}
         </p>
 
-        {items.length === 0 ? (
-          <p className="text-sm text-[var(--admin-text-muted)]">
-            Nenhum artigo cadastrado ainda.
-          </p>
+        {emptyCatalog ? (
+          <div className="cms-empty-state">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--admin-accent-muted)] text-[var(--admin-primary)]">
+              <Newspaper className="h-5 w-5" aria-hidden />
+            </div>
+            <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
+              Nenhum artigo cadastrado
+            </p>
+            <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--admin-text-muted)]">
+              Crie guias, reviews e comparativos editoriais com embeds de produtos.
+            </p>
+            <Button asChild variant="primary" size="sm" className="mt-4">
+              <Link href="/artigos/novo">
+                <Plus className="h-4 w-4" />
+                Criar primeiro artigo
+              </Link>
+            </Button>
+          </div>
+        ) : emptySearch ? (
+          <div className="cms-empty-state">
+            <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
+              Nenhum artigo encontrado
+            </p>
+            <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--admin-text-muted)]">
+              Tente outro termo de busca ou crie um novo artigo.
+            </p>
+          </div>
         ) : (
-          <ul className="cms-block-list">
-            {items.map((item) => (
-              <li key={item.id} className="cms-block-card cms-block-card--plain">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="font-medium">{item.title}</p>
-                    <p className="text-xs text-[var(--admin-text-muted)]">
-                      /artigos/{item.slug} · {statusLabel(item.status)}
-                    </p>
-                    {item.excerpt ? (
-                      <p className="mt-1 text-sm text-[var(--admin-text-muted)]">{item.excerpt}</p>
-                    ) : null}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/artigos/${item.id}`}>
-                        <Pencil className="mr-1 h-4 w-4" />
-                        Editar
-                      </Link>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => setDeleteTarget(item)}
-                    >
-                      <Trash2 className="mr-1 h-4 w-4" />
-                      Excluir
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="admin-article-grid" aria-busy={loading} aria-live="polite">
+              {items.map((article) => (
+                <ArticleListCard
+                  key={article.id}
+                  article={article}
+                  onDelete={setDeleteTarget}
+                />
+              ))}
+            </div>
+
+            <AdminPagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              loading={loading}
+              itemLabel={total === 1 ? 'artigo' : 'artigos'}
+              onPageChange={goToPage}
+              className="mt-5"
+            />
+          </>
         )}
       </div>
 

@@ -7,17 +7,18 @@ import { listAdminArticles } from '@/lib/api/articles';
 import { getServerBrandConfig } from '@/lib/brand';
 
 const brand = getServerBrandConfig();
+const DEFAULT_PAGE_SIZE = 12;
 
 export const metadata = {
   title: formatAdminPageTitle('Artigos', brand),
 };
 
-export default async function ArtigosPage() {
-  let items: Awaited<ReturnType<typeof listAdminArticles>> = [];
+export default async function ArtigosPage(): Promise<React.JSX.Element> {
+  let initialData: Awaited<ReturnType<typeof listAdminArticles>> | null = null;
   let apiUnavailable = false;
 
   try {
-    items = await listAdminArticles();
+    initialData = await listAdminArticles({ page: 1, pageSize: DEFAULT_PAGE_SIZE });
   } catch {
     apiUnavailable = true;
   }
@@ -40,9 +41,9 @@ export default async function ArtigosPage() {
             Não foi possível carregar os artigos. Verifique se a API está em execução e tente
             atualizar a página.
           </div>
-        ) : (
-          <ArticleListManager initialItems={items} />
-        )}
+        ) : initialData ? (
+          <ArticleListManager initialData={initialData} />
+        ) : null}
       </AdminPageCard>
     </>
   );
