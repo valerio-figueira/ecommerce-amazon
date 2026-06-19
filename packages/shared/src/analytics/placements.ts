@@ -16,6 +16,7 @@ export const ClickPlacement = {
   COLLECTION_PAGE: 'collection.page',
   WISHLIST_DRAWER: 'wishlist.drawer',
   COMPARISON_PAGE: 'comparison.page',
+  COMPARISON_RELATED: 'comparison.related',
 } as const;
 
 export type ClickPlacementValue = (typeof ClickPlacement)[keyof typeof ClickPlacement];

@@ -3,6 +3,7 @@ import {
   FileStack,
   FolderTree,
   GitBranch,
+  GitCompare,
   Layers,
   LayoutDashboard,
   Link2,
@@ -27,6 +28,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: '/content-clusters', label: 'Clusters', icon: GitBranch },
   { href: '/auto-links', label: 'Auto-Links', icon: Link2 },
   { href: '/colecoes', label: 'Coleções', icon: Layers },
+  { href: '/comparacoes', label: 'Comparações', icon: GitCompare },
   { href: '/cupons', label: 'Cupons', icon: Ticket },
   { href: '/configuracoes', label: 'Configurações', icon: Settings },
 ];

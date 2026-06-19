@@ -349,6 +349,19 @@ Coleção curada com produtos ordenados + metadados UTM.
 | `PATCH` | `/admin/collections/:id` | `UpdateCollectionBody` → `204` |
 | `DELETE` | `/admin/collections/:id` | `204` |
 
+### Admin — `/admin/comparisons`
+
+| Método | Rota | Body / response |
+|--------|------|-----------------|
+| `GET` | `/admin/comparisons` | `{ items: AdminComparisonSummary[] }` |
+| `GET` | `/admin/comparisons/:id` | `AdminComparisonDetail` |
+| `POST` | `/admin/comparisons` | `CreateAdminComparisonBody` → `{ id }` |
+| `PATCH` | `/admin/comparisons/:id` | `UpdateAdminComparisonBody` → `204` |
+| `POST` | `/admin/comparisons/:id/publish` | `{ slug }` → `204` |
+| `DELETE` | `/admin/comparisons/:id` | `204` |
+
+Ver [admin-comparisons-phase1.md](./admin-comparisons-phase1.md).
+
 ### Admin — `/admin/articles`
 
 | Método | Rota | Body / response |
@@ -425,9 +438,9 @@ Cupons ativos verificados.
 
 ## Comparador
 
-### `GET /comparisons/:shareToken`
+### `GET /comparisons/:identifier`
 
-Comparador persistido por token de compartilhamento. Response: `comparisonPublicDetailSchema` (`shareToken`, `editorialIntro`, `createdAt`, `products[]` como `ProductDetailDto`).
+Resolve por **UUID v4** (`shareToken`) ou **slug** (`^[a-z0-9-]+`). Response: `comparisonPublicDetailSchema` estendido (`status`, `canonicalPath`, `slug?`, `relatedProducts?`, SEO, etc.).
 
 ### `POST /comparisons`
 
@@ -692,7 +705,7 @@ Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapt
 | `WishlistRemoveParamsSchema` | DELETE |
 | `BatchCheckoutSchema` | checkout-batch |
 | `CreateComparisonSchema` | POST /comparisons |
-| `ComparisonTokenParamsSchema` | GET comparisons |
+| `ComparisonIdentifierParamsSchema` | GET comparisons |
 | `RecordClickSchema` | POST /events/click |
 | `ArticleSlugParamsSchema` | GET /articles |
 | `CollectionSlugParamsSchema` | GET /collections |

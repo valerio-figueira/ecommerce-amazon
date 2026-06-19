@@ -1,14 +1,17 @@
 import Link from 'next/link';
 
 import { ProductCard } from '@/components/product/ProductCard';
-import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
+import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/schemas';
 import { cn } from '@/lib/utils';
+import type { AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
 
 type ProductSimilarCarouselProps = {
   products: ProductListItemDto[];
   categorySlug?: string | undefined;
   categoryLabel?: string | undefined;
+  clickOrigin?: AffiliateClickOrigin;
+  placement?: ClickPlacementValue;
 };
 
 const SLIDE_CLASS =
@@ -18,6 +21,8 @@ export function ProductSimilarCarousel({
   products,
   categorySlug,
   categoryLabel,
+  clickOrigin = 'similar',
+  placement,
 }: ProductSimilarCarouselProps): React.JSX.Element | null {
   if (products.length === 0) {
     return null;
@@ -48,8 +53,8 @@ export function ProductSimilarCarousel({
           <div key={product.id} className={cn(SLIDE_CLASS, 'flex py-1')}>
             <ProductCard
               product={product}
-              clickOrigin="similar"
-              placement={ClickPlacement.PRODUCT_SIMILAR}
+              clickOrigin={clickOrigin}
+              {...(placement !== undefined ? { placement } : {})}
               variant="compact"
               className="h-full w-full"
             />

@@ -1,6 +1,6 @@
 export type ComparisonJsonLdInput = {
   siteBaseUrl: string;
-  shareToken: string;
+  canonicalPath: string;
   title: string;
   description: string;
   products: Array<{
@@ -13,7 +13,7 @@ export type ComparisonJsonLdInput = {
 export function buildComparisonPageJsonLd(
   input: ComparisonJsonLdInput,
 ): Record<string, unknown> {
-  const pageUrl = `${input.siteBaseUrl}/comparar/${input.shareToken}`;
+  const pageUrl = `${input.siteBaseUrl}${input.canonicalPath}`;
 
   return {
     '@context': 'https://schema.org',

@@ -11,11 +11,13 @@ import type { ProductDetailDto } from '@/lib/api/schemas';
 type StandaloneComparisonTableProps = {
   slugs: string[];
   products: (ProductDetailDto | null)[];
+  comparisonSlug?: string | undefined;
 };
 
 export function StandaloneComparisonTable({
   slugs,
   products,
+  comparisonSlug,
 }: StandaloneComparisonTableProps): React.JSX.Element {
   const { sessionId, addItem, consentGranted, requestConsent } = useWishlist();
   const [addingAll, setAddingAll] = useState(false);
@@ -53,6 +55,7 @@ export function StandaloneComparisonTable({
       sessionId={sessionId}
       clickOrigin="comparador"
       placement={ClickPlacement.COMPARISON_PAGE}
+      comparisonSlug={comparisonSlug}
       showMarketplace
       footerExtra={
         <Button type="button" variant="outline" disabled={addingAll} onClick={() => void handleAddAll()}>

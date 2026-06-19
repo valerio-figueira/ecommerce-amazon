@@ -3,8 +3,8 @@
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
+import { ComparisonVolatilePrice } from '@/components/comparison/ComparisonVolatilePrice';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
-import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
 import { ProductEditorialProsCons } from '@/components/product/ProductEditorialProsCons';
 import { ProductRating } from '@/components/product/ProductRating';
@@ -126,7 +126,7 @@ export function ProductHeaderCell({
       >
         {product.title}
       </Link>
-      <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} compact />
+      <ComparisonVolatilePrice product={product} compact />
     </div>
   );
 }
@@ -159,6 +159,7 @@ type ComparisonActionsProps = {
   clickOrigin: AffiliateClickOrigin;
   placement: ClickPlacementValue;
   articleId?: string | undefined;
+  comparisonSlug?: string | undefined;
 };
 
 function ComparisonActions({
@@ -167,6 +168,7 @@ function ComparisonActions({
   clickOrigin,
   placement,
   articleId,
+  comparisonSlug,
 }: ComparisonActionsProps): React.JSX.Element {
   return (
     <ProductCardActions
@@ -175,6 +177,7 @@ function ComparisonActions({
       clickOrigin={clickOrigin}
       placement={placement}
       {...(articleId !== undefined ? { articleId } : {})}
+      {...(comparisonSlug !== undefined ? { comparisonSlug } : {})}
       editorial
       className="w-full"
     />
@@ -188,6 +191,7 @@ type ComparisonTableCoreProps = {
   clickOrigin: AffiliateClickOrigin;
   placement: ClickPlacementValue;
   articleId?: string | undefined;
+  comparisonSlug?: string | undefined;
   showMarketplace?: boolean;
   footerExtra?: React.ReactNode;
 };
@@ -202,6 +206,7 @@ function MobileComparisonCard({
   placement,
   articleId,
   showMarketplace,
+  comparisonSlug,
 }: {
   product: ProductDetailDto | null;
   slug: string;
@@ -212,6 +217,7 @@ function MobileComparisonCard({
   placement: ClickPlacementValue;
   articleId?: string | undefined;
   showMarketplace?: boolean;
+  comparisonSlug?: string | undefined;
 }): React.JSX.Element {
   if (!product) {
     return (
@@ -252,6 +258,7 @@ function MobileComparisonCard({
             clickOrigin={clickOrigin}
             placement={placement}
             articleId={articleId}
+            comparisonSlug={comparisonSlug}
           />
         </div>
       </div>
@@ -266,6 +273,7 @@ export function ComparisonTableCore({
   clickOrigin,
   placement,
   articleId,
+  comparisonSlug,
   showMarketplace = false,
   footerExtra,
 }: ComparisonTableCoreProps): React.JSX.Element {
@@ -288,6 +296,7 @@ export function ComparisonTableCore({
               placement={placement}
               articleId={articleId}
               showMarketplace={showMarketplace}
+              comparisonSlug={comparisonSlug}
             />
           ))}
         </div>
@@ -383,6 +392,7 @@ export function ComparisonTableCore({
                       clickOrigin={clickOrigin}
                       placement={placement}
                       articleId={articleId}
+                      comparisonSlug={comparisonSlug}
                     />
                   ) : (
                     '—'

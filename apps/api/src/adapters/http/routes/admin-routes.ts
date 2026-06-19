@@ -7,6 +7,7 @@ import { handleAdminError } from '../admin-error-handler.js';
 import { registerAdminCmsRoutes } from './admin-cms-routes.js';
 import { registerAdminCategoryRoutes } from './admin-category-routes.js';
 import { registerAdminCollectionRoutes } from './admin-collection-routes.js';
+import { registerAdminComparisonRoutes } from './admin-comparison-routes.js';
 import { registerAdminProductRoutes } from './admin-product-routes.js';
 import { registerAdminArticleRoutes } from './admin-article-routes.js';
 import { registerAdminArticleCategoryRoutes } from './admin-article-category-routes.js';
@@ -130,6 +131,7 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
   await registerAdminCmsRoutes(app, container);
   await registerAdminCategoryRoutes(app, container);
   await registerAdminCollectionRoutes(app, container);
+  await registerAdminComparisonRoutes(app, container);
   await registerAdminProductRoutes(app, container);
   await registerAdminArticleRoutes(app, container);
   await registerAdminArticleCategoryRoutes(app, container);

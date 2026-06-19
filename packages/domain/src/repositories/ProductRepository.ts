@@ -6,6 +6,7 @@ import type { Slug } from '../value-objects/index.js';
 export type SimilarProductsCriteria = {
   categoryId: string;
   excludeProductId: string;
+  excludeProductIds?: string[];
   limit?: number;
 };
 

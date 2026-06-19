@@ -7,8 +7,8 @@ import { buildComparisonEditorialIntro } from '@ecommerce-amazon/shared/comparis
 import { apiFetchParsed } from '@/lib/api/client';
 import { getOrCreateSessionId } from '@/lib/session';
 
-export async function getComparisonByToken(shareToken: string) {
-  return apiFetchParsed(`/comparisons/${shareToken}`, comparisonPublicDetailSchema);
+export async function getComparisonByIdentifier(identifier: string) {
+  return apiFetchParsed(`/comparisons/${identifier}`, comparisonPublicDetailSchema);
 }
 
 export async function createComparison(input: {

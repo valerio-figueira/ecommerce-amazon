@@ -8,6 +8,7 @@ export function buildGoUrl(
     blockId?: string;
     articleId?: string;
     collectionId?: string;
+    comparisonSlug?: string;
     sessionId?: string;
     origin?: string;
     placement?: ClickPlacementValue;
@@ -30,6 +31,9 @@ export function buildGoUrl(
   }
   if (params?.collectionId) {
     searchParams.set('collectionId', params.collectionId);
+  }
+  if (params?.comparisonSlug) {
+    searchParams.set('comparisonSlug', params.comparisonSlug);
   }
   if (params?.sessionId) {
     searchParams.set('sessionId', params.sessionId);

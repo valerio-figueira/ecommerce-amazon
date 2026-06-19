@@ -42,8 +42,8 @@ export const getCollection = cache(
   },
 );
 
-export const getComparison = cache(async (shareToken: string) => {
-  return fetchOrNotFound(`/comparisons/${shareToken}`, comparisonPublicDetailSchema);
+export const getComparison = cache(async (identifier: string) => {
+  return fetchOrNotFound(`/comparisons/${identifier}`, comparisonPublicDetailSchema);
 });
 
 export const getArticle = cache(async (slug: string): Promise<ArticlePublicDetail | null> => {

@@ -37,8 +37,9 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
       if (tracking.origin) {
         url.searchParams.set('utm_source', tracking.origin);
       }
-      if (tracking.blockId) {
-        url.searchParams.set('sub_id', tracking.blockId);
+      const subId = tracking.comparisonSlug ?? tracking.blockId;
+      if (subId) {
+        url.searchParams.set('sub_id', subId.slice(0, 50));
       }
       if (tracking.sessionId) {
         url.searchParams.set('utm_content', tracking.sessionId);
@@ -55,6 +56,9 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
     }
     if (tracking.origin) {
       url.searchParams.set('utm_source', tracking.origin);
+    }
+    if (tracking.comparisonSlug) {
+      url.searchParams.set('utm_campaign', tracking.comparisonSlug.slice(0, 50));
     }
     this.applyUtmParams(url, tracking);
     return url.toString();
@@ -81,7 +85,10 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
   }
 
   private composeSubTag(tracking: AffiliateTrackingParams): string | undefined {
-    const parts = [tracking.blockId, tracking.sessionId, tracking.origin].filter(
+    const comparisonSegment = tracking.comparisonSlug
+      ? `cmp_${tracking.comparisonSlug.slice(0, 50)}`
+      : undefined;
+    const parts = [comparisonSegment, tracking.blockId, tracking.sessionId, tracking.origin].filter(
       (part): part is string => part !== undefined && part.length > 0,
     );
     return parts.length > 0 ? parts.join('_') : undefined;

@@ -142,4 +142,52 @@ describe('ResolveAffiliateRedirect', () => {
       expect(result.error).toBeInstanceOf(EntityNotFoundError);
     }
   });
+
+  it('passes comparisonSlug to affiliate link builder', async () => {
+    const product = Product.create({
+      id: 'a1111111-1111-4111-8111-111111111111',
+      marketplace: Marketplace.AMAZON_BR,
+      externalId: 'B001',
+      slug: 'cadeira-ergonomica-home-office',
+      titleClean: 'Cadeira',
+      titleRaw: 'Cadeira Raw',
+      price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
+      affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/B001', 'amazon_br'),
+      images: [],
+      specsNormalized: {},
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      tags: [],
+      createdAt: new Date(),
+    });
+
+    const buildWithTracking = vi.fn().mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21');
+    const useCase = new ResolveAffiliateRedirect(
+      createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
+      {
+        findByMarketplace: vi.fn().mockResolvedValue(
+          new AffiliateAccount(
+            'e1111111-1111-4111-8111-111111111111',
+            Marketplace.AMAZON_BR,
+            'vitrine-21',
+            AffiliateAccountStatus.ACTIVE,
+          ),
+        ),
+      },
+      { build: vi.fn(), buildBatchCheckout: vi.fn(), buildWithTracking },
+      { isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true) },
+    );
+
+    await useCase.execute({
+      slug: 'cadeira-ergonomica-home-office',
+      comparisonSlug: 'cadeira-a-vs-cadeira-b',
+    });
+
+    expect(buildWithTracking).toHaveBeenCalledWith(
+      Marketplace.AMAZON_BR,
+      'B001',
+      expect.objectContaining({ comparisonSlug: 'cadeira-a-vs-cadeira-b' }),
+      'vitrine-21',
+    );
+  });
 });

@@ -23,8 +23,9 @@ Comparador standalone na vitrine: seleção de 2–3 produtos da **mesma categor
 
 - Comparador cross-marketplace mesmo SKU
 - Badge queda 30d (campo ainda ausente no DTO público)
-- Admin CRUD de comparações curadas
-- Comparações geradas por usuários no **sitemap** (ver SEO abaixo)
+- Carrossel curado manual no admin
+
+**Fase editorial:** [admin-comparisons-phase1.md](./admin-comparisons-phase1.md) — CRUD, slug, sitemap para `published`.
 
 ## Fluxo
 
@@ -44,7 +45,7 @@ Restrições:
 | Rota | Indexação | Descrição |
 |------|-----------|-----------|
 | `/comparar?p=slug1,slug2` | `noindex, follow` | Comparativo de sessão |
-| `/comparar/[shareToken]` | `index, follow` | Link compartilhável |
+| `/comparar/[param]` | `draft`: noindex; `published`: index | Slug canônico ou token legado |
 
 ## API
 
@@ -84,8 +85,8 @@ Response (`comparisonPublicDetailSchema`):
 ## SEO
 
 - `?p=` nunca é canônico (`noindex`)
-- `/comparar/[shareToken]` tem OG + `buildComparisonPageJsonLd`
-- **Sitemap:** comparações de usuário **não** entram no sitemap neste MVP (anti-spam UGC). Fase posterior: `status: published` via admin.
+- `/comparar/[param]` — draft `noindex`; published com OG + JSON-LD canônico por slug
+- **Sitemap:** apenas comparações `published` com slug (ver [admin-comparisons-phase1.md](./admin-comparisons-phase1.md))
 
 ## Como testar
 
@@ -108,6 +109,6 @@ Vitrine:
 
 ## Próximos passos
 
-- Admin: comparações curadas com `status: published` → sitemap
 - Badge 30d na tabela quando Pipeline C expor `price_drop_pct_30d`
 - Interlinking artigo → comparador técnico standalone
+- Carrossel curado manual no admin

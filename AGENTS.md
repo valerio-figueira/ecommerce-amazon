@@ -42,7 +42,8 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-app-phase1.md](docs/admin-app-phase1.md) | Painel CMS, login JWT, shell admin |
 | [docs/admin-security.md](docs/admin-security.md) | Segurança admin: fail-closed, pepper, rate limit |
 | [docs/admin-products-phase1.md](docs/admin-products-phase1.md) | Gestão manual de produtos, parser URL, API admin |
-| [docs/admin-dashboard-phase1.md](docs/admin-dashboard-phase1.md) | Dashboard analítico: cliques, catálogo, GA4 Data API |
+| [docs/comparator-web-phase1.md](docs/comparator-web-phase1.md) | Comparador web `/comparar`, UGC, barra flutuante |
+| [docs/admin-comparisons-phase1.md](docs/admin-comparisons-phase1.md) | Admin CRUD comparações: slug, publicação, sitemap |
 | [docs/admin-articles-phase1.md](docs/admin-articles-phase1.md) | CRUD artigos editoriais, TipTap, shortcodes |
 | [docs/admin-profile-phase1.md](docs/admin-profile-phase1.md) | Perfil operador, avatar upload, storage plugável |
 | [docs/admin-about-page.md](docs/admin-about-page.md) | Editor CMS da página Sobre (`/paginas/sobre`) |

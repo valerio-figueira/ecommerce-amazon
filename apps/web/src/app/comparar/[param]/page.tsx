@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Script from 'next/script';
 
 import {
@@ -6,9 +6,12 @@ import {
   buildNotFoundMetadata,
   buildPageCanonical,
 } from '@ecommerce-amazon/shared/seo';
+import { isComparisonShareToken } from '@ecommerce-amazon/shared/comparison';
 
 import { CopyComparisonLinkButton } from '@/components/comparison/CopyComparisonLinkButton';
 import { StandaloneComparisonTable } from '@/components/comparison/StandaloneComparisonTable';
+import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
+import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { getComparison } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
@@ -26,21 +29,23 @@ function buildComparisonTitle(productTitles: string[], brandName: string): strin
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ shareToken: string }>;
+  params: Promise<{ param: string }>;
 }): Promise<import('next').Metadata> {
-  const { shareToken } = await params;
+  const { param } = await params;
   try {
-    const data = await getComparison(shareToken);
+    const data = await getComparison(param);
     if (!data) {
       return buildNotFoundMetadata('Comparativo não encontrado');
     }
     const brand = getServerBrandConfig();
-    const title = buildComparisonTitle(
-      data.products.map((product) => product.title),
-      brand.name,
-    );
-    const description = data.editorialIntro.slice(0, 160);
-    const canonicalPath = `/comparar/${shareToken}`;
+    const title =
+      data.seoTitle ??
+      buildComparisonTitle(
+        data.products.map((product) => product.title),
+        brand.name,
+      );
+    const description = data.seoDescription ?? data.editorialIntro.slice(0, 160);
+    const canonicalPath = data.canonicalPath;
     const images = data.products
       .map((product) => product.images[0] ?? product.imageUrl)
       .filter((url): url is string => Boolean(url));
@@ -49,6 +54,9 @@ export async function generateMetadata({
       title,
       description,
       alternates: { canonical: buildPageCanonical(canonicalPath, brand) },
+      ...(data.status === 'draft'
+        ? { robots: { index: false, follow: true } }
+        : { robots: { index: true, follow: true } }),
       openGraph: {
         title,
         description,
@@ -64,28 +72,34 @@ export async function generateMetadata({
 export default async function ComparePersistedPage({
   params,
 }: {
-  params: Promise<{ shareToken: string }>;
+  params: Promise<{ param: string }>;
 }): Promise<React.JSX.Element> {
-  const { shareToken } = await params;
+  const { param } = await params;
 
-  const data = await getComparison(shareToken);
+  const data = await getComparison(param);
   if (!data) {
     notFound();
+  }
+
+  if (data.status === 'published' && data.slug && isComparisonShareToken(param)) {
+    permanentRedirect(`/comparar/${data.slug}`);
   }
 
   const slugs = data.products.map((product) => product.slug);
   const brand = getServerBrandConfig();
   const siteBaseUrl = getSiteBaseUrl();
-  const pageTitle = buildComparisonTitle(
-    data.products.map((product) => product.title),
-    brand.name,
-  );
-  const pageUrl = `${siteBaseUrl}/comparar/${shareToken}`;
+  const pageTitle =
+    data.seoTitle ??
+    buildComparisonTitle(
+      data.products.map((product) => product.title),
+      brand.name,
+    );
+  const pageUrl = `${siteBaseUrl}${data.canonicalPath}`;
   const jsonLd = buildComparisonPageJsonLd({
     siteBaseUrl,
-    shareToken,
+    canonicalPath: data.canonicalPath,
     title: pageTitle,
-    description: data.editorialIntro.slice(0, 200),
+    description: (data.seoDescription ?? data.editorialIntro).slice(0, 200),
     products: data.products.map((product) => ({
       slug: product.slug,
       title: product.title,
@@ -94,6 +108,9 @@ export default async function ComparePersistedPage({
         : {}),
     })),
   });
+
+  const comparisonSlug =
+    data.status === 'published' && data.slug ? data.slug : undefined;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 pb-28">
@@ -111,7 +128,21 @@ export default async function ComparePersistedPage({
         <CopyComparisonLinkButton url={pageUrl} />
       </div>
 
-      <StandaloneComparisonTable slugs={slugs} products={data.products} />
+      <StandaloneComparisonTable
+        slugs={slugs}
+        products={data.products}
+        comparisonSlug={comparisonSlug}
+      />
+
+      {data.relatedProducts && data.relatedProducts.length >= 3 ? (
+        <ProductSimilarCarousel
+          products={data.relatedProducts}
+          categorySlug={data.categorySlug}
+          categoryLabel={data.categoryLabel}
+          clickOrigin="similar"
+          placement={ClickPlacement.COMPARISON_RELATED}
+        />
+      ) : null}
     </main>
   );
 }

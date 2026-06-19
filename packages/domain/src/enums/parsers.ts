@@ -139,11 +139,14 @@ export function parseOperatorRole(value: string): OperatorRole {
 }
 
 import { BlockType, BlockVisibility, PageStatus, ProductSortField } from './cms.js';
+import { ComparisonSource, ComparisonStatus } from './comparison.js';
 
 const BLOCK_TYPE_VALUES: ReadonlySet<string> = new Set(Object.values(BlockType));
 const PAGE_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(PageStatus));
 const BLOCK_VISIBILITY_VALUES: ReadonlySet<string> = new Set(Object.values(BlockVisibility));
 const PRODUCT_SORT_VALUES: ReadonlySet<string> = new Set(Object.values(ProductSortField));
+const COMPARISON_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(ComparisonStatus));
+const COMPARISON_SOURCE_VALUES: ReadonlySet<string> = new Set(Object.values(ComparisonSource));
 
 export function isBlockType(value: string): value is BlockType {
   return BLOCK_TYPE_VALUES.has(value);
@@ -175,6 +178,22 @@ export function isProductSortField(value: string): value is ProductSortField {
 
 export function parseProductSortField(value: string): ProductSortField {
   return isProductSortField(value) ? value : invalidEnum('product sort field', value);
+}
+
+export function isComparisonStatus(value: string): value is ComparisonStatus {
+  return COMPARISON_STATUS_VALUES.has(value);
+}
+
+export function parseComparisonStatus(value: string): ComparisonStatus {
+  return isComparisonStatus(value) ? value : invalidEnum('comparison status', value);
+}
+
+export function isComparisonSource(value: string): value is ComparisonSource {
+  return COMPARISON_SOURCE_VALUES.has(value);
+}
+
+export function parseComparisonSource(value: string): ComparisonSource {
+  return isComparisonSource(value) ? value : invalidEnum('comparison source', value);
 }
 
 import { PageKind, TeamPublicRole } from './index.js';

@@ -61,8 +61,8 @@ export const CreateComparisonSchema = z.object({
   editorialIntro: z.string().min(150),
 });
 
-export const ComparisonTokenParamsSchema = z.object({
-  shareToken: z.string().min(1),
+export const ComparisonIdentifierParamsSchema = z.object({
+  identifier: z.string().min(1),
 });
 
 export const RecordClickSchema = z.object({
@@ -104,6 +104,13 @@ export const GoQuerySchema = z.object({
   utm_source: z.string().optional(),
   utm_medium: z.string().optional(),
   utm_campaign: z.string().optional(),
+  comparisonSlug: z
+    .string()
+    .trim()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .optional(),
 });
 
 export const ArticleSlugParamsSchema = z.object({

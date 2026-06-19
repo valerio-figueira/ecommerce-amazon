@@ -25,6 +25,7 @@ export interface AffiliateTrackingParams {
   blockId?: string;
   sessionId?: string;
   origin?: string;
+  comparisonSlug?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;

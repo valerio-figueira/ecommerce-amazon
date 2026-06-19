@@ -47,6 +47,7 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [seo-technical-phase1.md](./seo-technical-phase1.md) | Metadados globais, sitemap paginado, robots, crawl budget, CWV |
 | [product-detail-page.md](./product-detail-page.md) | Detalhe `/produtos/[slug]`: galeria, análise editorial, ficha técnica |
 | [comparator-web-phase1.md](./comparator-web-phase1.md) | Comparador standalone `/comparar`, seleção por categoria, share token |
+| [admin-comparisons-phase1.md](./admin-comparisons-phase1.md) | Admin CRUD comparações: publicação, slug, SEO, sitemap |
 | [admin-app-phase1.md](./admin-app-phase1.md) | Painel CMS: login JWT, shell, rotas stub |
 | [admin-security.md](./admin-security.md) | Fail-closed, pepper, rate limit login, sessão confirmada na API |
 | [admin-products-phase1.md](./admin-products-phase1.md) | Gestão manual de produtos, parser de URL, API admin |

@@ -21,6 +21,8 @@ export default defineConfig({
             'packages/application/**/*.test.ts',
             'packages/shared/**/*.test.ts',
             'apps/admin/src/**/*.test.ts',
+            'apps/web/src/**/*.test.ts',
+            'apps/api/src/adapters/presenters/**/*.test.ts',
           ],
           environment: 'node',
         },

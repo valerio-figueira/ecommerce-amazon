@@ -40,6 +40,8 @@ export const articleTypeEnum = pgEnum('article_type', [
   'lookbook_social',
 ]);
 export const articleStatusEnum = pgEnum('article_status', ['draft', 'published']);
+export const comparisonStatusEnum = pgEnum('comparison_status', ['draft', 'published']);
+export const comparisonSourceEnum = pgEnum('comparison_source', ['user_generated', 'curated']);
 export const couponStatusEnum = pgEnum('coupon_status', ['active', 'expired', 'unverified']);
 export const discountTypeEnum = pgEnum('discount_type', ['percent', 'fixed']);
 export const snapshotSourceEnum = pgEnum('snapshot_source', ['worker_cron', 'manual_override']);
@@ -276,13 +278,28 @@ export const collectionProducts = pgTable(
   (table) => [unique('collection_products_collection_product_idx').on(table.collectionId, table.productId)],
 );
 
-export const productComparisons = pgTable('product_comparisons', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  shareToken: text('share_token').notNull().unique(),
-  sessionId: text('session_id').notNull(),
-  editorialIntro: text('editorial_intro').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const productComparisons = pgTable(
+  'product_comparisons',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    shareToken: text('share_token').notNull().unique(),
+    sessionId: text('session_id').notNull(),
+    editorialIntro: text('editorial_intro').notNull(),
+    slug: text('slug'),
+    status: comparisonStatusEnum('status').notNull().default('draft'),
+    source: comparisonSourceEnum('source').notNull().default('user_generated'),
+    seoTitle: text('seo_title'),
+    seoDescription: text('seo_description'),
+    showCategoryCarousel: boolean('show_category_carousel').notNull().default(true),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+  },
+  (table) => [
+    unique('product_comparisons_slug_idx').on(table.slug),
+    index('product_comparisons_status_idx').on(table.status),
+  ],
+);
 
 export const comparisonProducts = pgTable('comparison_products', {
   id: uuid('id').primaryKey().defaultRandom(),

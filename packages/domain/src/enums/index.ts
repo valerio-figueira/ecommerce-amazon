@@ -88,3 +88,9 @@ export enum OperatorRole {
 
 export { TeamPublicRole, PageKind } from './operator-profile.js';
 export { BlockType, PageStatus, BlockVisibility, ProductSortField } from './cms.js';
+export {
+  ComparisonStatus,
+  ComparisonSource,
+  MIN_CAROUSEL_ITEMS,
+  MIN_EDITORIAL_WORDS,
+} from './comparison.js';

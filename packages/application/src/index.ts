@@ -67,7 +67,18 @@ export {
   DeleteCuratedCollection,
 } from './use-cases/admin-collection/UpdateCuratedCollection.js';
 export { CreateComparison } from './use-cases/comparison/CreateComparison.js';
-export { GetComparisonByToken } from './use-cases/comparison/GetComparisonByToken.js';
+export { GetComparisonByIdentifier } from './use-cases/comparison/GetComparisonByIdentifier.js';
+export type { ComparisonLoadResult } from './use-cases/comparison/GetComparisonByIdentifier.js';
+export {
+  CreateCuratedComparison,
+  ListAdminComparisons,
+  GetAdminComparison,
+} from './use-cases/admin-comparison/CreateCuratedComparison.js';
+export {
+  UpdateComparison,
+  PublishComparison,
+  DeleteComparison,
+} from './use-cases/admin-comparison/UpdateComparison.js';
 export { ListActiveCoupons } from './use-cases/coupon/ListActiveCoupons.js';
 export { RecordClickEvent } from './use-cases/events/RecordClickEvent.js';
 export { RecordEngagementEvent } from './use-cases/events/RecordEngagementEvent.js';

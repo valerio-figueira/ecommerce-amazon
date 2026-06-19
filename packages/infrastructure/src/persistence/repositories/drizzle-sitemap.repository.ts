@@ -23,6 +23,10 @@ const SITEMAP_ENTRIES_SQL = sql`
     SELECT '/colecoes/' || slug, updated_at
     FROM curated_collections
     UNION ALL
+    SELECT '/comparar/' || slug, COALESCE(published_at, updated_at)
+    FROM product_comparisons
+    WHERE status = 'published' AND slug IS NOT NULL
+    UNION ALL
     SELECT '/artigos/' || slug, updated_at
     FROM content_articles
     WHERE status = 'published'

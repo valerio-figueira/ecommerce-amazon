@@ -11,6 +11,8 @@ import {
   type SyncJobLogRepository,
   Marketplace,
   SyncJobLog,
+  parseComparisonSource,
+  parseComparisonStatus,
   parseSyncJobStatus,
   parseSyncJobType,
 } from '@ecommerce-amazon/domain';
@@ -411,14 +413,9 @@ export class DrizzleCouponRepository implements CouponRepository {
 export class DrizzleProductComparisonRepository implements ProductComparisonRepository {
   constructor(private readonly db: DrizzleClient) {}
 
-  async findByShareToken(token: string) {
-    const rows = await this.db
-      .select()
-      .from(schema.productComparisons)
-      .where(eq(schema.productComparisons.shareToken, token));
-    const row = rows[0];
-    if (!row) return null;
-
+  private async loadComparisonWithProducts(
+    row: typeof schema.productComparisons.$inferSelect,
+  ): Promise<import('@ecommerce-amazon/domain').ProductComparison> {
     const products = await this.db
       .select()
       .from(schema.comparisonProducts)
@@ -428,6 +425,36 @@ export class DrizzleProductComparisonRepository implements ProductComparisonRepo
       row,
       products.sort((a, b) => a.sortOrder - b.sortOrder).map((p) => p.productId),
     );
+  }
+
+  async findById(id: string) {
+    const rows = await this.db
+      .select()
+      .from(schema.productComparisons)
+      .where(eq(schema.productComparisons.id, id));
+    const row = rows[0];
+    if (!row) return null;
+    return this.loadComparisonWithProducts(row);
+  }
+
+  async findByShareToken(token: string) {
+    const rows = await this.db
+      .select()
+      .from(schema.productComparisons)
+      .where(eq(schema.productComparisons.shareToken, token));
+    const row = rows[0];
+    if (!row) return null;
+    return this.loadComparisonWithProducts(row);
+  }
+
+  async findBySlug(slug: string) {
+    const rows = await this.db
+      .select()
+      .from(schema.productComparisons)
+      .where(eq(schema.productComparisons.slug, slug));
+    const row = rows[0];
+    if (!row) return null;
+    return this.loadComparisonWithProducts(row);
   }
 
   async findByProductIdSet(productIds: string[]) {
@@ -458,15 +485,90 @@ export class DrizzleProductComparisonRepository implements ProductComparisonRepo
     const row = comparisonRows[0];
     if (!row) return null;
 
-    const products = await this.db
-      .select()
-      .from(schema.comparisonProducts)
-      .where(eq(schema.comparisonProducts.comparisonId, row.id));
+    return this.loadComparisonWithProducts(row);
+  }
 
-    return mapComparison(
-      row,
-      products.sort((a, b) => a.sortOrder - b.sortOrder).map((p) => p.productId),
-    );
+  async listAdmin() {
+    const rows = await this.db
+      .select({
+        id: schema.productComparisons.id,
+        shareToken: schema.productComparisons.shareToken,
+        slug: schema.productComparisons.slug,
+        status: schema.productComparisons.status,
+        source: schema.productComparisons.source,
+        updatedAt: schema.productComparisons.updatedAt,
+        productId: schema.comparisonProducts.productId,
+        productTitle: schema.products.titleClean,
+        categoryLabel: schema.categories.label,
+        sortOrder: schema.comparisonProducts.sortOrder,
+      })
+      .from(schema.productComparisons)
+      .innerJoin(
+        schema.comparisonProducts,
+        eq(schema.comparisonProducts.comparisonId, schema.productComparisons.id),
+      )
+      .innerJoin(schema.products, eq(schema.products.id, schema.comparisonProducts.productId))
+      .leftJoin(schema.categories, eq(schema.categories.id, schema.products.categoryId))
+      .orderBy(desc(schema.productComparisons.updatedAt), asc(schema.comparisonProducts.sortOrder));
+
+    const byId = new Map<
+      string,
+      {
+        id: string;
+        shareToken: string;
+        slug: string | null;
+        status: string;
+        source: string;
+        updatedAt: Date;
+        productTitles: string[];
+        categoryLabel?: string | undefined;
+      }
+    >();
+
+    for (const row of rows) {
+      const existing = byId.get(row.id);
+      if (existing) {
+        existing.productTitles.push(row.productTitle);
+        if (!existing.categoryLabel && row.categoryLabel) {
+          existing.categoryLabel = row.categoryLabel;
+        }
+        continue;
+      }
+      byId.set(row.id, {
+        id: row.id,
+        shareToken: row.shareToken,
+        slug: row.slug,
+        status: row.status,
+        source: row.source,
+        updatedAt: row.updatedAt,
+        productTitles: [row.productTitle],
+        categoryLabel: row.categoryLabel ?? undefined,
+      });
+    }
+
+    return [...byId.values()].map((item) => ({
+      id: item.id,
+      shareToken: item.shareToken,
+      slug: item.slug ?? undefined,
+      status: parseComparisonStatus(item.status),
+      source: parseComparisonSource(item.source),
+      productCount: item.productTitles.length,
+      productTitles: item.productTitles,
+      categoryLabel: item.categoryLabel,
+      updatedAt: item.updatedAt,
+    }));
+  }
+
+  async slugExists(slug: string, excludeId?: string) {
+    const conditions = excludeId
+      ? and(eq(schema.productComparisons.slug, slug), ne(schema.productComparisons.id, excludeId))
+      : eq(schema.productComparisons.slug, slug);
+    const rows = await this.db
+      .select({ id: schema.productComparisons.id })
+      .from(schema.productComparisons)
+      .where(conditions)
+      .limit(1);
+    return rows.length > 0;
   }
 
   async save(comparison: import('@ecommerce-amazon/domain').ProductComparison) {
@@ -475,7 +577,15 @@ export class DrizzleProductComparisonRepository implements ProductComparisonRepo
       shareToken: comparison.shareToken,
       sessionId: comparison.sessionId,
       editorialIntro: comparison.editorialIntro,
+      slug: comparison.slug ?? null,
+      status: comparison.status,
+      source: comparison.source,
+      seoTitle: comparison.seoTitle ?? null,
+      seoDescription: comparison.seoDescription ?? null,
+      showCategoryCarousel: comparison.showCategoryCarousel,
       createdAt: comparison.createdAt,
+      updatedAt: comparison.updatedAt,
+      publishedAt: comparison.publishedAt ?? null,
     });
 
     for (let i = 0; i < comparison.productIds.length; i++) {
@@ -487,6 +597,41 @@ export class DrizzleProductComparisonRepository implements ProductComparisonRepo
         sortOrder: i,
       });
     }
+  }
+
+  async update(comparison: import('@ecommerce-amazon/domain').ProductComparison) {
+    await this.db
+      .update(schema.productComparisons)
+      .set({
+        editorialIntro: comparison.editorialIntro,
+        slug: comparison.slug ?? null,
+        status: comparison.status,
+        source: comparison.source,
+        seoTitle: comparison.seoTitle ?? null,
+        seoDescription: comparison.seoDescription ?? null,
+        showCategoryCarousel: comparison.showCategoryCarousel,
+        updatedAt: comparison.updatedAt,
+        publishedAt: comparison.publishedAt ?? null,
+      })
+      .where(eq(schema.productComparisons.id, comparison.id));
+
+    await this.db
+      .delete(schema.comparisonProducts)
+      .where(eq(schema.comparisonProducts.comparisonId, comparison.id));
+
+    for (let i = 0; i < comparison.productIds.length; i++) {
+      const productId = comparison.productIds[i];
+      if (!productId) continue;
+      await this.db.insert(schema.comparisonProducts).values({
+        comparisonId: comparison.id,
+        productId,
+        sortOrder: i,
+      });
+    }
+  }
+
+  async delete(id: string) {
+    await this.db.delete(schema.productComparisons).where(eq(schema.productComparisons.id, id));
   }
 }
 

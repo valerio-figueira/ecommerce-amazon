@@ -162,6 +162,13 @@
       "when": 1720022400000,
       "tag": "0022_weekly_trends",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1720108800000,
+      "tag": "0023_comparison_editorial",
+      "breakpoints": true
     }
   ]
 }

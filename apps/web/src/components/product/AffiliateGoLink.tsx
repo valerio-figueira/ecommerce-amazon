@@ -25,6 +25,7 @@ type AffiliateGoLinkProps = {
   blockId?: string | undefined;
   articleId?: string | undefined;
   collectionId?: string | undefined;
+  comparisonSlug?: string | undefined;
   origin?: AffiliateClickOrigin;
   placement?: ClickPlacementValue;
   pagePath?: string | undefined;
@@ -41,6 +42,7 @@ export function AffiliateGoLink({
   blockId,
   articleId,
   collectionId,
+  comparisonSlug,
   origin = 'listagem',
   placement,
   pagePath: pagePathProp,
@@ -51,31 +53,44 @@ export function AffiliateGoLink({
   variant = 'outline',
 }: AffiliateGoLinkProps): React.JSX.Element {
   const pathname = usePathname();
-  const pagePath = pagePathProp ?? pathname;
-  const [useStoredReferrer, setUseStoredReferrer] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setUseStoredReferrer(true);
+    setIsMounted(true);
   }, []);
 
-  const attribution = useStoredReferrer ? getAttribution() : null;
-  const resolvedBlockId = blockId ?? attribution?.blockId;
-  const resolvedReferrerPath = referrerPath ?? attribution?.entryPath;
+  const buildHref = (withClientTracking: boolean): string => {
+    const attribution = withClientTracking ? getAttribution() : null;
+    const resolvedBlockId = blockId ?? attribution?.blockId;
+    const resolvedReferrerPath = referrerPath ?? attribution?.entryPath;
+    const resolvedPagePath = pagePathProp ?? (withClientTracking ? pathname : undefined);
+    const resolvedSessionId =
+      withClientTracking && sessionId !== undefined && sessionId.length > 0
+        ? sessionId
+        : undefined;
 
-  const href = buildGoUrl(slug, {
-    ...(resolvedBlockId !== undefined ? { blockId: resolvedBlockId } : {}),
-    ...(articleId !== undefined ? { articleId } : {}),
-    ...(collectionId !== undefined ? { collectionId } : {}),
-    ...(sessionId !== undefined && sessionId.length > 0 ? { sessionId } : {}),
-    origin,
-    ...(placement !== undefined ? { placement } : {}),
-    pagePath,
-    ...(resolvedReferrerPath !== undefined ? { referrerPath: resolvedReferrerPath } : {}),
-    ...(utmDefaults !== undefined ? { utmDefaults } : {}),
-  });
+    return buildGoUrl(slug, {
+      ...(resolvedBlockId !== undefined ? { blockId: resolvedBlockId } : {}),
+      ...(articleId !== undefined ? { articleId } : {}),
+      ...(collectionId !== undefined ? { collectionId } : {}),
+      ...(comparisonSlug !== undefined ? { comparisonSlug } : {}),
+      ...(resolvedSessionId !== undefined ? { sessionId: resolvedSessionId } : {}),
+      origin,
+      ...(placement !== undefined ? { placement } : {}),
+      ...(resolvedPagePath !== undefined ? { pagePath: resolvedPagePath } : {}),
+      ...(resolvedReferrerPath !== undefined ? { referrerPath: resolvedReferrerPath } : {}),
+      ...(utmDefaults !== undefined ? { utmDefaults } : {}),
+    });
+  };
+
+  const href = buildHref(isMounted);
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
     event.stopPropagation();
+    const trackedHref = buildHref(true);
+    if (event.currentTarget.getAttribute('href') !== trackedHref) {
+      event.currentTarget.href = trackedHref;
+    }
   };
 
   return (

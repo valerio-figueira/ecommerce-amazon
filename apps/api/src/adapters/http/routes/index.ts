@@ -28,7 +28,7 @@ import {
   BatchCheckoutSchema,
   CollectionSlugParamsSchema,
   GetCuratedCollectionQuerySchema,
-  ComparisonTokenParamsSchema,
+  ComparisonIdentifierParamsSchema,
   ConfirmPriceAlertParamsSchema,
   CancelPriceAlertParamsSchema,
   CreateComparisonSchema,
@@ -101,6 +101,7 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
         ...(sessionId !== undefined ? { sessionId } : {}),
         origin: query.origin ?? 'redirect_go',
+        ...(query.comparisonSlug !== undefined ? { comparisonSlug: query.comparisonSlug } : {}),
         ...(query.utm_source !== undefined ? { utmSource: query.utm_source } : {}),
         ...(query.utm_medium !== undefined ? { utmMedium: query.utm_medium } : {}),
         ...(query.utm_campaign !== undefined ? { utmCampaign: query.utm_campaign } : {}),
@@ -474,12 +475,29 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     }
   });
 
-  app.get('/comparisons/:shareToken', async (request, reply) => {
+  app.get('/comparisons/:identifier', async (request, reply) => {
     try {
-      const { shareToken } = ComparisonTokenParamsSchema.parse(request.params);
-      const result = await useCases.getComparisonByToken.execute(shareToken);
+      const { identifier } = ComparisonIdentifierParamsSchema.parse(request.params);
+      const result = await useCases.getComparisonByIdentifier.execute(identifier);
       if (!result) return reply.status(404).send({ error: 'Comparison not found' });
-      return reply.send(toComparisonPublicDto(result.comparison, result.products));
+
+      const categoryIds = new Set<string>();
+      for (const product of [...result.products, ...result.relatedProducts]) {
+        if (product.categoryId) categoryIds.add(product.categoryId);
+      }
+      const categoriesById = new Map<string, { id: string; slug: string; label: string }>();
+      for (const categoryId of categoryIds) {
+        const category = await container.repositories.categoryRepository.findById(categoryId);
+        if (category) {
+          categoriesById.set(categoryId, {
+            id: category.id,
+            slug: category.slug,
+            label: category.label,
+          });
+        }
+      }
+
+      return reply.send(toComparisonPublicDto(result, categoriesById));
     } catch (error) {
       return handleError(error, reply);
     }

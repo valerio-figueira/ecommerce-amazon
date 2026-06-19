@@ -17,6 +17,7 @@ type ProductCardActionsProps = {
   blockId?: string | undefined;
   articleId?: string | undefined;
   collectionId?: string | undefined;
+  comparisonSlug?: string | undefined;
   clickOrigin?: AffiliateClickOrigin;
   placement?: ClickPlacementValue;
   utmDefaults?: Record<string, string>;
@@ -32,6 +33,7 @@ export function ProductCardActions({
   blockId,
   articleId,
   collectionId,
+  comparisonSlug,
   clickOrigin = 'listagem',
   placement,
   utmDefaults,
@@ -72,6 +74,7 @@ export function ProductCardActions({
           blockId={blockId}
           articleId={articleId}
           collectionId={collectionId}
+          comparisonSlug={comparisonSlug}
           origin={clickOrigin}
           {...(placement !== undefined ? { placement } : {})}
           {...(utmDefaults !== undefined ? { utmDefaults } : {})}
@@ -112,6 +115,7 @@ export function ProductCardActions({
         blockId={blockId}
         articleId={articleId}
         collectionId={collectionId}
+        comparisonSlug={comparisonSlug}
         origin={clickOrigin}
         {...(placement !== undefined ? { placement } : {})}
         {...(utmDefaults !== undefined ? { utmDefaults } : {})}

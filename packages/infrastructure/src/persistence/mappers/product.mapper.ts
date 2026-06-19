@@ -7,6 +7,8 @@ import {
   parseAlertStatus,
   parseArticleStatus,
   parseArticleType,
+  parseComparisonSource,
+  parseComparisonStatus,
   parseContentEmbedVariant,
   parseCouponStatus,
   parseCurrency,
@@ -276,5 +278,13 @@ export function mapComparison(
     productIds,
     editorialIntro: row.editorialIntro,
     createdAt: row.createdAt,
+    status: parseComparisonStatus(row.status),
+    source: parseComparisonSource(row.source),
+    updatedAt: row.updatedAt,
+    slug: row.slug ?? undefined,
+    seoTitle: row.seoTitle ?? undefined,
+    seoDescription: row.seoDescription ?? undefined,
+    showCategoryCarousel: row.showCategoryCarousel,
+    publishedAt: row.publishedAt ?? undefined,
   });
 }

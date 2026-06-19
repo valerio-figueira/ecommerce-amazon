@@ -8,11 +8,13 @@ import {
   ProductAvailability,
   ProductComparison,
   ValidationError,
-  type ProductComparisonRepository,
 } from '@ecommerce-amazon/domain';
 
 import { CreateComparison } from './CreateComparison.js';
-import { createMockProductRepository } from '../../test/mock-factories.js';
+import {
+  createMockComparisonRepository,
+  createMockProductRepository,
+} from '../../test/mock-factories.js';
 
 const PRODUCT_A_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const PRODUCT_B_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -39,17 +41,6 @@ function makeProduct(id: string, categoryId?: string): Product {
   });
 }
 
-function createMockComparisonRepository(
-  overrides: Partial<ProductComparisonRepository> = {},
-): ProductComparisonRepository {
-  return {
-    findByShareToken: vi.fn(),
-    findByProductIdSet: vi.fn().mockResolvedValue(null),
-    save: vi.fn().mockResolvedValue(undefined),
-    ...overrides,
-  };
-}
-
 describe('CreateComparison', () => {
   const intro =
     'Texto editorial com mais de cento e cinquenta caracteres para validar o comparador lado a lado entre produtos da mesma categoria com curadoria transparente e links afiliados.';
@@ -74,6 +65,8 @@ describe('CreateComparison', () => {
     expect(comparisonRepository.save).toHaveBeenCalledOnce();
     const saved = vi.mocked(comparisonRepository.save).mock.calls[0]?.[0] as ProductComparison;
     expect(saved.productIds).toEqual([productA.id, productB.id]);
+    expect(saved.status).toBe('draft');
+    expect(saved.source).toBe('user_generated');
   });
 
   it('returns existing comparison for same product set in different order', async () => {

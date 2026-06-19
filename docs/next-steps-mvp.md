@@ -49,7 +49,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 - **Falta:** CTA “Finalizar na Amazon (N itens)” chamando `checkout-batch`; limpeza de itens `delisted`; banner de cookies LGPD para sessão anônima.
 
 ### 3.4 Comparador lado a lado
-- **Entregue:** toggle nos cards, barra flutuante, `/comparar?p=` e `/comparar/[shareToken]` — [comparator-web-phase1.md](./comparator-web-phase1.md)
+- **Entregue:** toggle nos cards, barra flutuante, `/comparar?p=` e `/comparar/[param]` — [comparator-web-phase1.md](./comparator-web-phase1.md); gestão editorial admin — [admin-comparisons-phase1.md](./admin-comparisons-phase1.md)
 
 ### 3.5 Central de cupons
 - **Falta:** página `/cupons` (+ sub-rotas Growth `/cupons/shopee`, `/cupons/amazon`), FAQ editorial, recirculação pós-cópia, bloco CMS `COUPON_STRIP` funcional (hoje é placeholder).

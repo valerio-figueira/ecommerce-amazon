@@ -8,6 +8,7 @@ import type {
   PageCacheInvalidator,
   PageRepository,
   PriceSnapshotRepository,
+  ProductComparisonRepository,
   ProductRepository,
   PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
@@ -26,6 +27,23 @@ export function createMockProductRepository(
     findDueForCatalogSync: vi.fn(),
     save: vi.fn(),
     saveBatch: vi.fn(),
+    ...overrides,
+  };
+}
+
+export function createMockComparisonRepository(
+  overrides: Partial<ProductComparisonRepository> = {},
+): ProductComparisonRepository {
+  return {
+    findById: vi.fn(),
+    findByShareToken: vi.fn(),
+    findBySlug: vi.fn(),
+    findByProductIdSet: vi.fn().mockResolvedValue(null),
+    listAdmin: vi.fn().mockResolvedValue([]),
+    slugExists: vi.fn().mockResolvedValue(false),
+    save: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn().mockResolvedValue(undefined),
+    delete: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
