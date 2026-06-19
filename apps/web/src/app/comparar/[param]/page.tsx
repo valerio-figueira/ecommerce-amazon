@@ -17,6 +17,15 @@ import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
 
+function buildComparisonDisplayTitle(productTitles: string[]): string {
+  if (productTitles.length === 0) return 'Comparativo';
+  if (productTitles.length === 1) return productTitles[0]!;
+  if (productTitles.length === 2) {
+    return `${productTitles[0]} vs ${productTitles[1]}`;
+  }
+  return `${productTitles[0]} vs ${productTitles[1]} vs ${productTitles[2]}`;
+}
+
 function buildComparisonTitle(productTitles: string[], brandName: string): string {
   if (productTitles.length === 0) return `Comparativo | ${brandName}`;
   if (productTitles.length === 1) return `${productTitles[0]} | ${brandName}`;
@@ -88,12 +97,11 @@ export default async function ComparePersistedPage({
   const slugs = data.products.map((product) => product.slug);
   const brand = getServerBrandConfig();
   const siteBaseUrl = getSiteBaseUrl();
+  const productTitles = data.products.map((product) => product.title);
+  const displayTitle = data.seoTitle ?? buildComparisonDisplayTitle(productTitles);
   const pageTitle =
     data.seoTitle ??
-    buildComparisonTitle(
-      data.products.map((product) => product.title),
-      brand.name,
-    );
+    buildComparisonTitle(productTitles, brand.name);
   const pageUrl = `${siteBaseUrl}${data.canonicalPath}`;
   const jsonLd = buildComparisonPageJsonLd({
     siteBaseUrl,
@@ -120,28 +128,34 @@ export default async function ComparePersistedPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mb-6 space-y-4">
-        <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">{pageTitle}</h1>
-        <div className="prose prose-neutral max-w-3xl whitespace-pre-line text-sm leading-relaxed text-neutral-700 sm:text-base">
-          {data.editorialIntro}
-        </div>
-        <CopyComparisonLinkButton url={pageUrl} />
+      <div className="mx-auto w-full min-w-0 max-w-3xl">
+        <header className="mb-8 space-y-4">
+          <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">{displayTitle}</h1>
+          <div className="prose prose-neutral max-w-none whitespace-pre-line text-sm leading-relaxed text-neutral-700 sm:text-base">
+            {data.editorialIntro}
+          </div>
+          <CopyComparisonLinkButton url={pageUrl} />
+        </header>
+
+        <section aria-label="Tabela comparativa" className="min-w-0">
+          <StandaloneComparisonTable
+            slugs={slugs}
+            products={data.products}
+            comparisonSlug={comparisonSlug}
+          />
+        </section>
       </div>
 
-      <StandaloneComparisonTable
-        slugs={slugs}
-        products={data.products}
-        comparisonSlug={comparisonSlug}
-      />
-
       {data.relatedProducts && data.relatedProducts.length >= 3 ? (
-        <ProductSimilarCarousel
-          products={data.relatedProducts}
-          categorySlug={data.categorySlug}
-          categoryLabel={data.categoryLabel}
-          clickOrigin="similar"
-          placement={ClickPlacement.COMPARISON_RELATED}
-        />
+        <div className="mt-10">
+          <ProductSimilarCarousel
+            products={data.relatedProducts}
+            categorySlug={data.categorySlug}
+            categoryLabel={data.categoryLabel}
+            clickOrigin="similar"
+            placement={ClickPlacement.COMPARISON_RELATED}
+          />
+        </div>
       ) : null}
     </main>
   );

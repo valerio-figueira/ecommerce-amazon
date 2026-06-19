@@ -228,7 +228,7 @@ function MobileComparisonCard({
   }
 
   return (
-    <article className="flex min-w-[260px] shrink-0 flex-col rounded-[var(--radius)] border border-neutral-200 bg-white p-3 shadow-sm sm:min-w-[280px] sm:p-4">
+    <article className="flex min-w-[260px] shrink-0 flex-col rounded-[var(--radius)] border border-neutral-200/80 p-3 sm:min-w-[280px] sm:p-4">
       <ProductHeaderCell product={product} />
       <div className="mt-3">
         <ComparisonBadgesCell badges={badges} />
@@ -266,6 +266,8 @@ function MobileComparisonCard({
   );
 }
 
+const LABEL_COLUMN_WIDTH = '11rem';
+
 export function ComparisonTableCore({
   slugs,
   products,
@@ -281,8 +283,8 @@ export function ComparisonTableCore({
   const badgesByIndex = resolveComparisonBadges(products);
 
   return (
-    <div aria-label="Comparativo de produtos">
-      <div className="md:hidden -mx-4 overflow-x-auto px-4">
+    <div aria-label="Comparativo de produtos" className="min-w-0 w-full">
+      <div className="min-w-0 overflow-x-auto md:hidden">
         <div className="flex flex-row items-stretch gap-4 pb-2">
           {products.map((product, index) => (
             <MobileComparisonCard
@@ -302,106 +304,119 @@ export function ComparisonTableCore({
         </div>
       </div>
 
-      <div className="hidden md:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[140px]">Produto</TableHead>
-              {products.map((product, index) => (
-                <TableHead key={`head-${slugs[index] ?? index}`} className="min-w-[180px] text-center">
-                  {product ? product.title : slugs[index]}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="font-medium text-neutral-600">Resumo</TableCell>
-              {products.map((product, index) => (
-                <TableCell key={`summary-${slugs[index] ?? index}`}>
-                  <ProductHeaderCell product={product} />
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-neutral-600">Destaques</TableCell>
-              {products.map((product, index) => (
-                <TableCell key={`highlights-${slugs[index] ?? index}`}>
-                  <ComparisonBadgesCell badges={badgesByIndex.get(index) ?? []} />
-                </TableCell>
-              ))}
-            </TableRow>
-            {showMarketplace ? (
-              <TableRow>
-                <TableCell className="font-medium text-neutral-600">Marketplace</TableCell>
-                {products.map((product, index) => (
-                  <TableCell key={`marketplace-${slugs[index] ?? index}`} className="text-center">
-                    {product ? <MarketplaceBadge marketplace={product.marketplace} /> : '—'}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ) : null}
-            {specKeys.map((key) => (
-              <TableRow key={key}>
-                <TableCell className="font-medium text-neutral-600">{formatSpecKey(key)}</TableCell>
-                {products.map((product, index) => (
-                  <TableCell key={`${key}-${slugs[index] ?? index}`}>
-                    {product?.specs[key] ?? '—'}
-                  </TableCell>
-                ))}
-              </TableRow>
+      <div className="hidden min-w-0 w-full overflow-x-auto md:block">
+        <Table className="table-fixed w-full min-w-0">
+          <colgroup>
+            <col style={{ width: LABEL_COLUMN_WIDTH }} />
+            {products.map((_, index) => (
+              <col key={`col-${slugs[index] ?? index}`} />
             ))}
-            <TableRow>
-              <TableCell className="font-medium text-neutral-600">Prós e contras</TableCell>
-              {products.map((product, index) => (
-                <TableCell key={`pros-cons-${slugs[index] ?? index}`}>
-                  {product ? (
-                    <ProductEditorialProsCons pros={product.pros} cons={product.cons} />
-                  ) : (
-                    '—'
-                  )}
-                </TableCell>
+          </colgroup>
+          <TableHeader>
+              <TableRow>
+                <TableHead className="text-neutral-400">Critério</TableHead>
+                {products.map((product, index) => (
+                  <TableHead
+                    key={`head-${slugs[index] ?? index}`}
+                    className="text-center text-[11px] font-semibold normal-case tracking-normal text-neutral-500"
+                  >
+                    <span className="sr-only">{product ? product.title : slugs[index]}</span>
+                    <span aria-hidden>Produto {index + 1}</span>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium text-neutral-600">Resumo</TableCell>
+                {products.map((product, index) => (
+                  <TableCell key={`summary-${slugs[index] ?? index}`} className="text-center">
+                    <ProductHeaderCell product={product} />
+                  </TableCell>
+                ))}
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium text-neutral-600">Destaques</TableCell>
+                {products.map((product, index) => (
+                  <TableCell key={`highlights-${slugs[index] ?? index}`} className="text-center">
+                    <ComparisonBadgesCell badges={badgesByIndex.get(index) ?? []} />
+                  </TableCell>
+                ))}
+              </TableRow>
+              {showMarketplace ? (
+                <TableRow>
+                  <TableCell className="font-medium text-neutral-600">Marketplace</TableCell>
+                  {products.map((product, index) => (
+                    <TableCell key={`marketplace-${slugs[index] ?? index}`} className="text-center">
+                      {product ? <MarketplaceBadge marketplace={product.marketplace} /> : '—'}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ) : null}
+              {specKeys.map((key) => (
+                <TableRow key={key}>
+                  <TableCell className="font-medium text-neutral-600">{formatSpecKey(key)}</TableCell>
+                  {products.map((product, index) => (
+                    <TableCell
+                      key={`${key}-${slugs[index] ?? index}`}
+                      className="break-words text-center text-sm"
+                    >
+                      {product?.specs[key] ?? '—'}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-neutral-600">Avaliação</TableCell>
-              {products.map((product, index) => (
-                <TableCell key={`rating-${slugs[index] ?? index}`}>
-                  {product ? (
-                    <ProductRating
-                      rating={product.rating}
-                      reviewCount={product.reviewCount}
-                      compact
-                    />
-                  ) : (
-                    '—'
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell className="font-medium text-neutral-600">Ação</TableCell>
-              {products.map((product, index) => (
-                <TableCell key={`action-${slugs[index] ?? index}`} className="align-bottom">
-                  {product ? (
-                    <ComparisonActions
-                      product={product}
-                      sessionId={sessionId}
-                      clickOrigin={clickOrigin}
-                      placement={placement}
-                      articleId={articleId}
-                      comparisonSlug={comparisonSlug}
-                    />
-                  ) : (
-                    '—'
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableFooter>
-        </Table>
+              <TableRow>
+                <TableCell className="font-medium text-neutral-600">Prós e contras</TableCell>
+                {products.map((product, index) => (
+                  <TableCell key={`pros-cons-${slugs[index] ?? index}`} className="text-left">
+                    {product ? (
+                      <ProductEditorialProsCons pros={product.pros} cons={product.cons} />
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium text-neutral-600">Avaliação</TableCell>
+                {products.map((product, index) => (
+                  <TableCell key={`rating-${slugs[index] ?? index}`} className="text-center">
+                    {product ? (
+                      <ProductRating
+                        rating={product.rating}
+                        reviewCount={product.reviewCount}
+                        compact
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell className="font-medium text-neutral-600">Ação</TableCell>
+                {products.map((product, index) => (
+                  <TableCell key={`action-${slugs[index] ?? index}`} className="align-bottom">
+                    {product ? (
+                      <ComparisonActions
+                        product={product}
+                        sessionId={sessionId}
+                        clickOrigin={clickOrigin}
+                        placement={placement}
+                        articleId={articleId}
+                        comparisonSlug={comparisonSlug}
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableFooter>
+          </Table>
       </div>
       {footerExtra ? <div className="mt-4 flex justify-center">{footerExtra}</div> : null}
     </div>

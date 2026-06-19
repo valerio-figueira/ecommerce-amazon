@@ -1,8 +1,14 @@
 import { cn } from '@/lib/utils';
 
-function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>): React.JSX.Element {
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.HTMLAttributes<HTMLTableElement> & {
+  containerClassName?: string;
+}): React.JSX.Element {
   return (
-    <div className="relative w-full overflow-auto">
+    <div className={cn('relative w-full overflow-auto', containerClassName)}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   );
@@ -28,7 +34,10 @@ function TableFooter({
 }: React.HTMLAttributes<HTMLTableSectionElement>): React.JSX.Element {
   return (
     <tfoot
-      className={cn('border-t bg-neutral-50/80 font-medium [&>tr]:last:border-b-0', className)}
+      className={cn(
+        'border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0',
+        className,
+      )}
       {...props}
     />
   );
