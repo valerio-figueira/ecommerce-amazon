@@ -45,7 +45,7 @@ export function ProductCardActions({
   const marketplace = marketplaceLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
   const editorialStackGap =
-    'flex w-full flex-col items-stretch gap-2 sm:w-fit sm:items-start sm:gap-2.5';
+    'flex shrink-0 flex-col items-stretch justify-center gap-2 self-center sm:gap-2.5';
   const stackGap = editorial
     ? editorialStackGap
     : compact
@@ -62,7 +62,7 @@ export function ProductCardActions({
     : compact
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
-  const widthClass = editorial ? 'w-full sm:w-auto sm:whitespace-nowrap' : 'w-full';
+  const widthClass = editorial ? 'w-full whitespace-nowrap' : 'w-full';
 
   if (isStale) {
     return (
@@ -87,7 +87,7 @@ export function ProductCardActions({
           href={detailHref}
           className={cn(
             'text-xs font-medium text-neutral-500 underline-offset-2 hover:text-neutral-700 hover:underline',
-            editorial ? 'text-center text-sm sm:text-left' : 'block text-center',
+            editorial ? 'block w-full text-center text-sm' : 'block text-center',
           )}
         >
           Ver análise
@@ -101,8 +101,7 @@ export function ProductCardActions({
       <Link
         href={detailHref}
         className={cn(
-          'inline-flex items-center justify-center rounded-full bg-[var(--primary)] text-center font-semibold text-white transition-colors hover:opacity-90',
-          widthClass,
+          'flex w-full items-center justify-center rounded-full bg-[var(--primary)] text-center font-semibold text-white transition-colors hover:opacity-90',
           primaryButtonClass,
         )}
       >

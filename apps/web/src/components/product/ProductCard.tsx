@@ -88,8 +88,8 @@ export function ProductCard({
           className,
         )}
       >
-        <div className="flex gap-3 sm:gap-4">
-          <div className="relative w-28 shrink-0 sm:w-40">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="relative w-28 shrink-0 self-start sm:w-40">
             <Link
               href={detailHref}
               className="relative block aspect-square w-full overflow-hidden rounded-xl bg-[var(--muted)]"
@@ -125,40 +125,38 @@ export function ProductCard({
             ) : null}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-3">
-            <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
-              <Link
-                href={detailHref}
-                className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
-              >
-                {product.title}
-              </Link>
-              <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
-              <PriceDisplay
-                price={product.price}
-                strikethrough={product.price.strikethrough}
-                compact
-              />
-              <ProductEditorialProsCons
-                pros={pros}
-                cons={cons}
-                maxPros={2}
-                maxCons={1}
-                className="text-xs sm:text-sm"
-              />
-            </div>
-            <ProductCardActions
-              product={product}
-              sessionId={sessionId}
-              blockId={blockId}
-              articleId={articleId}
-              collectionId={collectionId}
-              clickOrigin={clickOrigin}
-              {...(placement !== undefined ? { placement } : {})}
-              editorial
-              {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5 self-start sm:gap-2">
+            <Link
+              href={detailHref}
+              className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
+            >
+              {product.title}
+            </Link>
+            <ProductRating rating={product.rating} reviewCount={product.reviewCount} compact />
+            <PriceDisplay
+              price={product.price}
+              strikethrough={product.price.strikethrough}
+              compact
+            />
+            <ProductEditorialProsCons
+              pros={pros}
+              cons={cons}
+              maxPros={2}
+              maxCons={1}
+              className="text-xs sm:text-sm"
             />
           </div>
+          <ProductCardActions
+            product={product}
+            sessionId={sessionId}
+            blockId={blockId}
+            articleId={articleId}
+            collectionId={collectionId}
+            clickOrigin={clickOrigin}
+            {...(placement !== undefined ? { placement } : {})}
+            editorial
+            {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+          />
         </div>
       </article>
     );
