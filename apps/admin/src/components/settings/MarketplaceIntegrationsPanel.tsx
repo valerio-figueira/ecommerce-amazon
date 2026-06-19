@@ -1,7 +1,7 @@
 'use client';
 
 import { Plug, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,6 +65,26 @@ export function MarketplaceIntegrationsPanel({
     return amazonStatus.publicMetadata;
   }, [amazonStatus]);
 
+  const hasInlineAmazonCredentials = Boolean(amazonAccessKeyId.trim() && amazonSecretKey.trim());
+  const hasPartialAmazonCredentials = Boolean(
+    amazonAccessKeyId.trim() !== '' || amazonSecretKey.trim() !== '',
+  );
+  const canTestAmazon = Boolean(amazonStatus?.configured || hasInlineAmazonCredentials);
+
+  const hasInlineShopeeCredentials = Boolean(shopeePartnerId.trim() && shopeePartnerKey.trim());
+  const hasPartialShopeeCredentials = Boolean(
+    shopeePartnerId.trim() !== '' || shopeePartnerKey.trim() !== '',
+  );
+  const canTestShopee = Boolean(shopeeStatus?.configured || hasInlineShopeeCredentials);
+
+  useEffect(() => {
+    setLastTestOk((current) => ({ ...current, amazon_br: false }));
+  }, [amazonAccessKeyId, amazonSecretKey]);
+
+  useEffect(() => {
+    setLastTestOk((current) => ({ ...current, shopee_br: false }));
+  }, [shopeePartnerId, shopeePartnerKey]);
+
   async function refresh(): Promise<void> {
     const next = await listMarketplaceCredentialsClient();
     setItems(next);
@@ -72,12 +92,32 @@ export function MarketplaceIntegrationsPanel({
 
   async function handleTestAmazon(): Promise<void> {
     if (!canManage) return;
+
+    const accessKeyId = amazonAccessKeyId.trim();
+    const secretAccessKey = amazonSecretKey.trim();
+
+    if (hasPartialAmazonCredentials && !hasInlineAmazonCredentials) {
+      adminToast.error(
+        'Preencha Access Key e Secret Key juntos, ou deixe vazios para testar credenciais salvas.',
+        'Falha no teste Amazon',
+      );
+      return;
+    }
+
+    if (!hasInlineAmazonCredentials && !amazonStatus?.configured) {
+      adminToast.error(
+        'Informe Access Key e Secret Key para testar novas credenciais.',
+        'Falha no teste Amazon',
+      );
+      return;
+    }
+
     setTestingMarketplace('amazon_br');
     try {
-      const result = await testMarketplaceConnectivityClient('amazon_br', {
-        accessKeyId: amazonAccessKeyId.trim(),
-        secretAccessKey: amazonSecretKey.trim(),
-      });
+      const result = await testMarketplaceConnectivityClient(
+        'amazon_br',
+        hasInlineAmazonCredentials ? { accessKeyId, secretAccessKey } : undefined,
+      );
       setLastTestOk((current) => ({ ...current, amazon_br: result.ok }));
       if (result.ok) {
         adminToast.success(result.message, 'Amazon PA-API conectada');
@@ -139,12 +179,32 @@ export function MarketplaceIntegrationsPanel({
 
   async function handleTestShopee(): Promise<void> {
     if (!canManage) return;
+
+    const partnerId = shopeePartnerId.trim();
+    const partnerKey = shopeePartnerKey.trim();
+
+    if (hasPartialShopeeCredentials && !hasInlineShopeeCredentials) {
+      adminToast.error(
+        'Preencha Partner ID e Partner Key juntos, ou deixe vazios para testar credenciais salvas.',
+        'Falha no teste Shopee',
+      );
+      return;
+    }
+
+    if (!hasInlineShopeeCredentials && !shopeeStatus?.configured) {
+      adminToast.error(
+        'Informe Partner ID e Partner Key para testar novas credenciais.',
+        'Falha no teste Shopee',
+      );
+      return;
+    }
+
     setTestingMarketplace('shopee_br');
     try {
-      const result = await testMarketplaceConnectivityClient('shopee_br', {
-        partnerId: shopeePartnerId.trim(),
-        partnerKey: shopeePartnerKey.trim(),
-      });
+      const result = await testMarketplaceConnectivityClient(
+        'shopee_br',
+        hasInlineShopeeCredentials ? { partnerId, partnerKey } : undefined,
+      );
       setLastTestOk((current) => ({ ...current, shopee_br: result.ok }));
       if (result.ok) {
         adminToast.success(result.message, 'Shopee Open API conectada');
@@ -217,7 +277,8 @@ export function MarketplaceIntegrationsPanel({
             <div>
               <h3 className="text-sm font-semibold text-[var(--admin-text)]">Amazon PA-API</h3>
               <p className="text-xs text-[var(--admin-text-muted)]">
-                Access Key e Secret Key para sincronização de preços no worker.
+                Access Key e Secret Key para sincronização de preços no worker. Com credenciais
+                salvas, o teste usa o cofre sem precisar recolar a secret key.
               </p>
             </div>
             <span className={statusClass(amazonStatus?.healthStatus ?? 'not_configured')}>
@@ -277,11 +338,7 @@ export function MarketplaceIntegrationsPanel({
                 type="button"
                 variant="outline"
                 onClick={() => void handleTestAmazon()}
-                disabled={
-                  testingMarketplace === 'amazon_br' ||
-                  !amazonAccessKeyId.trim() ||
-                  !amazonSecretKey.trim()
-                }
+                disabled={testingMarketplace === 'amazon_br' || !canTestAmazon}
               >
                 {testingMarketplace === 'amazon_br' ? 'Testando…' : 'Testar conectividade'}
               </Button>
@@ -365,11 +422,7 @@ export function MarketplaceIntegrationsPanel({
                 type="button"
                 variant="outline"
                 onClick={() => void handleTestShopee()}
-                disabled={
-                  testingMarketplace === 'shopee_br' ||
-                  !shopeePartnerId.trim() ||
-                  !shopeePartnerKey.trim()
-                }
+                disabled={testingMarketplace === 'shopee_br' || !canTestShopee}
               >
                 {testingMarketplace === 'shopee_br' ? 'Testando…' : 'Testar conectividade'}
               </Button>

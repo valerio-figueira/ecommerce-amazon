@@ -99,6 +99,8 @@ npm run dev -w @ecommerce-amazon/admin
 1. Login em `http://localhost:3002`
 2. `/configuracoes` → **Integrações**
 3. Preencher keys Amazon/Shopee → **Testar conectividade** → **Salvar**
+   - Com credenciais já salvas, **Testar conectividade** funciona com campos vazios (usa o cofre)
+   - Para rotacionar chaves, preencha Access Key + Secret Key, teste e só então salve
 4. Verificar chips no painel **Saúde**
 
 Testes unitários:
