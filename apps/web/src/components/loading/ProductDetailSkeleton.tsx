@@ -16,7 +16,7 @@ export function ProductDetailSkeleton(): React.JSX.Element {
 
       <div className="grid gap-8 md:grid-cols-2" aria-hidden>
         <Skeleton className="aspect-square rounded-2xl" />
-        <div className="flex flex-col justify-center gap-5">
+        <div className="flex flex-col gap-5">
           <Skeleton className="h-6 w-24 rounded-full" />
           <Skeleton className="h-9 w-full" />
           <Skeleton className="h-9 w-4/5" />
