@@ -34,12 +34,26 @@ export class TitleHygieneService {
 }
 
 export class ComparisonSpecMatcher {
-  getComparableKeys(products: { specsNormalized: Record<string, string> }[]): string[] {
+  getComparableKeys(products: { specsNormalized: { properties: { key: string }[] }[] }[]): string[] {
     if (products.length === 0) return [];
-    const keys = new Set(Object.keys(products[0]?.specsNormalized ?? {}));
+
+    const flattenKeys = (groups: { properties: { key: string }[] }[]): Set<string> => {
+      const keys = new Set<string>();
+      for (const group of groups) {
+        for (const property of group.properties) {
+          if (property.key.trim().length > 0) {
+            keys.add(property.key.trim());
+          }
+        }
+      }
+      return keys;
+    };
+
+    const keys = flattenKeys(products[0]?.specsNormalized ?? []);
     for (const product of products.slice(1)) {
+      const productKeys = flattenKeys(product.specsNormalized);
       for (const key of keys) {
-        if (!(key in product.specsNormalized)) {
+        if (!productKeys.has(key)) {
           keys.delete(key);
         }
       }

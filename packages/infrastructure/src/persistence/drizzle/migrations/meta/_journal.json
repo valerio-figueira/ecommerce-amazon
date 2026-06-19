@@ -169,6 +169,13 @@
       "when": 1720108800000,
       "tag": "0023_comparison_editorial",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1720195200000,
+      "tag": "0024_specs_normalized_groups",
+      "breakpoints": true
     }
   ]
 }

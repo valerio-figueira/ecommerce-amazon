@@ -25,6 +25,8 @@ import {
   WishlistItem,
 } from '@ecommerce-amazon/domain';
 
+import { parseSpecsNormalizedFromDb } from '@ecommerce-amazon/shared/product';
+
 import type { schema } from '../drizzle/client.js';
 
 type ProductRow = typeof schema.products.$inferSelect;
@@ -48,7 +50,7 @@ export function mapProductRowToDomain(row: ProductRow): Product {
     strikethroughPrice: row.priceStrikethrough ? Number(row.priceStrikethrough) : undefined,
     affiliateLink: AffiliateLink.create(row.affiliateDeepLink, row.marketplace),
     images: row.images,
-    specsNormalized: row.specsNormalized,
+    specsNormalized: parseSpecsNormalizedFromDb(row.specsNormalized),
     editorialScore: row.editorialScore,
     availability: parseProductAvailability(row.availability),
     rating: row.rating ? Number(row.rating) : undefined,

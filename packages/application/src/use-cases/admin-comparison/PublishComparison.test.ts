@@ -33,7 +33,7 @@ function makeProduct(id: string): Product {
     price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
     affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
     images: [],
-    specsNormalized: {},
+    specsNormalized: [],
     editorialScore: 80,
     availability: ProductAvailability.IN_STOCK,
     tags: [],

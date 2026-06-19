@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { ProductAdvancedSeoSection } from '@/components/products/ProductAdvancedSeoSection';
@@ -39,7 +39,7 @@ const emptyValues: ProductFormValues = {
   longDescriptionHtml: '',
   metaTitle: '',
   metaDescription: '',
-  specsNormalized: {},
+  specsNormalized: [],
   price: 0,
   shouldShowPrice: false,
   visible: true,
@@ -69,9 +69,12 @@ export function ProductForm({
     defaultValues: initialValues ?? emptyValues,
   });
 
-  const onSubmit = form.handleSubmit(async (values) => {
+  const specsSyncRef = useRef<(() => void) | null>(null);
+
+  const onSubmit = form.handleSubmit(async () => {
     try {
-      const parsed = createProductBodySchema.parse(values);
+      specsSyncRef.current?.();
+      const parsed = createProductBodySchema.parse(form.getValues());
       if (isEdit) {
         if (!slug) {
           throw new Error('Slug do produto não informado');
@@ -171,7 +174,7 @@ export function ProductForm({
               </TabsContent>
 
               <TabsContent value="specs">
-                <ProductSpecsForm />
+                <ProductSpecsForm onRegisterSync={(sync) => { specsSyncRef.current = sync; }} />
               </TabsContent>
 
               <TabsContent value="images">

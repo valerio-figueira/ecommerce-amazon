@@ -62,7 +62,7 @@ describe('CreateProduct', () => {
     expect(savedProduct.shouldShowPrice).toBe(true);
     expect(savedProduct.visible).toBe(true);
     expect(savedProduct.editorialScore).toBe(85);
-    expect(savedProduct.specsNormalized).toEqual({});
+    expect(savedProduct.specsNormalized).toEqual([]);
     expect(snapshotRepository.insertBatch).toHaveBeenCalledOnce();
     expect(cacheInvalidator.invalidateProducts).toHaveBeenCalledOnce();
   });
@@ -105,7 +105,7 @@ describe('CreateProduct', () => {
         'amazon_br',
       ),
       images: [],
-      specsNormalized: {},
+      specsNormalized: [],
       editorialScore: 50,
       availability: ProductAvailability.IN_STOCK,
       tags: [],
@@ -167,17 +167,31 @@ describe('CreateProduct', () => {
     );
     await useCase.execute({
       ...baseInput,
-      specsNormalized: {
-        Material: 'Mesh',
-        'Peso Máximo Suportado': '120 kg',
-      },
+      specsNormalized: [
+        {
+          group_id: 'detalhes_produto',
+          group_title: 'Detalhes do Produto',
+          is_collapsed_default: false,
+          properties: [
+            { key: 'Material', value: 'Mesh' },
+            { key: 'Peso Máximo Suportado', value: '120 kg' },
+          ],
+        },
+      ],
     });
 
     const savedProduct = vi.mocked(productRepository.save).mock.calls[0]?.[0] as Product;
-    expect(savedProduct.specsNormalized).toEqual({
-      Material: 'Mesh',
-      'Peso Máximo Suportado': '120 kg',
-    });
+    expect(savedProduct.specsNormalized).toEqual([
+      {
+        group_id: 'detalhes_produto',
+        group_title: 'Detalhes do Produto',
+        is_collapsed_default: false,
+        properties: [
+          { key: 'Material', value: 'Mesh' },
+          { key: 'Peso Máximo Suportado', value: '120 kg' },
+        ],
+      },
+    ]);
   });
 
   it('throws ValidationError when marketplace mismatches parsed URL', async () => {

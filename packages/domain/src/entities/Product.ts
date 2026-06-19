@@ -5,6 +5,7 @@ import {
   ProductAvailability,
 } from '../enums/index.js';
 import { AffiliateLink, Price, ProductId, Slug, toProductId, toSlug } from '../value-objects/index.js';
+import type { SpecsNormalized } from '../types/spec-group.js';
 
 export type ProductProps = {
   id: string;
@@ -19,7 +20,7 @@ export type ProductProps = {
   strikethroughPrice?: number | undefined;
   affiliateLink: AffiliateLink;
   images: string[];
-  specsNormalized: Record<string, string>;
+  specsNormalized: SpecsNormalized;
   editorialScore: number;
   availability: ProductAvailability;
   rating?: number | undefined;
@@ -50,7 +51,7 @@ export class Product {
   strikethroughPrice?: number | undefined;
   affiliateLink: AffiliateLink;
   images: string[];
-  specsNormalized: Record<string, string>;
+  specsNormalized: SpecsNormalized;
   editorialScore: number;
   availability: ProductAvailability;
   rating?: number | undefined;

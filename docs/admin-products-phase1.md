@@ -56,7 +56,7 @@ Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/
 |-------|-------|---------|
 | `short_description` | Textarea pré-preenchida a partir dos prós | Se vazio no save, API gera dos prós |
 | `long_description_html` | Editor TipTap (Visual + Código HTML) + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
-| `specs_normalized` | Aba **Especificações** → seção **Especificações do Produto** | JSON `Record<string, string>`; alimenta comparador e tabela de specs na vitrine |
+| `specs_normalized` | Aba **Especificações** → blocos dinâmicos com pares chave/valor | JSON array de grupos (`SpecGroup[]`); alimenta ficha colapsável na vitrine e `specs` flat no comparador |
 
 ### Editor rico — `long_description_html`
 
@@ -71,23 +71,38 @@ Componentes: [`ProductLongDescriptionEditor.tsx`](../apps/admin/src/components/p
 | Limite | Contador 50.000 caracteres no form (Zod `max(50000)`) |
 | Vitrine | `prose` + `dangerouslySetInnerHTML` em `/produtos/[slug]` (inalterado) |
 
-## Especificações por categoria
+## Especificações em blocos dinâmicos
 
-Templates estáticos por **slug de categoria** em [`packages/shared/src/product/spec-templates.ts`](../packages/shared/src/product/spec-templates.ts).
+Schema compartilhado: [`packages/shared/src/product/spec-groups.ts`](../packages/shared/src/product/spec-groups.ts).
+
+```json
+[
+  {
+    "group_id": "detalhes_produto",
+    "group_title": "Detalhes do Produto",
+    "is_collapsed_default": false,
+    "properties": [
+      { "key": "Nome da marca", "value": "BELLEBOX" }
+    ]
+  }
+]
+```
 
 | Comportamento | Detalhe |
 |---------------|---------|
-| Lookup | Cadeia folha → raiz (`buildCategorySlugChain` + `resolveSpecTemplateForSlugChain`) |
-| Campo no form | `specsNormalized` (react-hook-form) |
-| Template encontrado | Inputs fixos com labels do template (ex.: Switches, Layout) |
-| Sem template | Somente atributos customizados + hint |
-| Customizados | Botão **+ Adicionar atributo customizado** (par chave/valor) |
-| Edição | Valores existentes em `specs_normalized` hidratam os inputs; chaves fora do template aparecem como customizados |
-| Save | Zod remove pares com chave ou valor vazio (trim) |
+| Campo no form | `specsNormalized` (react-hook-form) — array de blocos |
+| UI admin | `ProductSpecsForm` + `ProductSpecBlockEditor` + `ProductSpecPropertyRow` |
+| Blocos | Adicionar / excluir (com confirmação) / reordenar (↑↓) |
+| Atributos | Repeater chave + valor (textarea) por bloco |
+| Colapso na vitrine | Switch **Iniciar recolhido na vitrine** → `is_collapsed_default` |
+| Template por categoria | Botão **Adicionar bloco sugerido da categoria** (`spec-templates.ts`) |
+| Foco nos inputs | Estado local no `onChange`; sync RHF em `onBlur`, mudanças estruturais e submit |
+| Save | `normalizeSpecsGroups` descarta linhas/blocos vazios; deduplica `group_id` **no escopo do produto** |
+| Legado | Migration `0024_specs_normalized_groups.sql` converte `Record<string,string>` → bloco único |
 
-**MVP — slugs com template:** `teclados-mecanicos`, `perifericos`, `cadeiras-ergonomicas`. Para expandir, adicione entradas em `CATEGORY_SPEC_TEMPLATES`.
+**MVP — slugs com template sugerido:** `teclados-mecanicos`, `perifericos`, `cadeiras-ergonomicas`.
 
-Componentes: `ProductSpecsForm.tsx`, hook `useAdminCategoryOptions.ts`.
+Componentes: `ProductSpecsForm.tsx`, `product-specs-form-state.ts`, hook `useAdminCategoryOptions.ts`.
 
 ## Visibilidade na home (`visible`)
 

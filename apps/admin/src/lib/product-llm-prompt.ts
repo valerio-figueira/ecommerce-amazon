@@ -1,4 +1,6 @@
 import { adminMarketplaceLabel } from '@/lib/product-admin-format';
+import type { SpecGroup } from '@ecommerce-amazon/shared/product';
+import { flattenSpecGroups } from '@ecommerce-amazon/shared/product';
 
 export type ProductLlmPromptInput = {
   titleClean: string;
@@ -18,7 +20,7 @@ export type ProductSeoLlmPromptInput = {
   pros: string[];
   cons: string[];
   shortDescription: string;
-  specsNormalized: Record<string, string>;
+  specsNormalized: SpecGroup[];
   autoMetaTitle: string;
   autoMetaDescription: string;
   metaTitle?: string | undefined;
@@ -40,12 +42,28 @@ function formatBulletList(items: string[], emptyFallback: string): string {
   return items.map((item) => `- ${item}`).join('\n');
 }
 
-function formatSpecsList(specs: Record<string, string>): string {
-  const entries = Object.entries(specs).filter(([key, value]) => key.trim() && value.trim());
+function formatSpecsList(groups: SpecGroup[]): string {
+  const flatSpecs = flattenSpecGroups(groups);
+  const entries = Object.entries(flatSpecs).filter(([key, value]) => key.trim() && value.trim());
   if (entries.length === 0) {
     return '- (nenhuma especificação preenchida no formulário)';
   }
-  return entries
+
+  const groupedLines: string[] = [];
+  for (const group of groups) {
+    const activeProperties = group.properties.filter(
+      (property) => property.key.trim() && property.value.trim(),
+    );
+    if (activeProperties.length === 0) {
+      continue;
+    }
+    groupedLines.push(`### ${group.group_title}`);
+    for (const property of activeProperties.slice(0, 6)) {
+      groupedLines.push(`- ${property.key}: ${property.value}`);
+    }
+  }
+
+  return groupedLines.slice(0, 16).join('\n') || entries
     .slice(0, 12)
     .map(([key, value]) => `- ${key}: ${value}`)
     .join('\n');

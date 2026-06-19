@@ -11,7 +11,7 @@ import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysi
 import { ProductImageGallery } from '@/components/product/ProductImageGallery';
 import { ProductRating } from '@/components/product/ProductRating';
 import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
-import { ProductSpecsTable } from '@/components/product/ProductSpecsTable';
+import { ProductSpecsSections } from '@/components/product/ProductSpecsSections';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
 import { getProduct } from '@/lib/api/cached-fetchers';
 import { type ProductListItemDto } from '@/lib/api/schemas';
@@ -110,7 +110,7 @@ export default async function ProductPage({
         </div>
       </div>
       <ProductDetailAnalysis pros={product.pros} cons={product.cons} />
-      <ProductSpecsTable specs={product.specs} />
+      <ProductSpecsSections specGroups={product.specGroups} />
       {product.longDescriptionHtml && (
         <section
           className="prose prose-neutral mt-8 max-w-none"

@@ -28,7 +28,14 @@ function makeProduct(id: string): Product {
     price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date('2025-06-01T12:00:00.000Z') }),
     affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
     images: ['https://cdn.example.com/image.jpg'],
-    specsNormalized: { Peso: '1 kg' },
+    specsNormalized: [
+      {
+        group_id: 'detalhes_produto',
+        group_title: 'Detalhes do Produto',
+        is_collapsed_default: false,
+        properties: [{ key: 'Peso', value: '1 kg' }],
+      },
+    ],
     editorialScore: 80,
     availability: ProductAvailability.IN_STOCK,
     tags: [],

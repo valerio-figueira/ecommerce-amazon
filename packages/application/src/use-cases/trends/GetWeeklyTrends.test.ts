@@ -30,7 +30,7 @@ function createProduct(id: string, slug: string, visible = true): Product {
     }),
     affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/B001', 'amazon_br'),
     images: ['https://example.com/img.jpg'],
-    specsNormalized: {},
+    specsNormalized: [],
     editorialScore: 50,
     availability: ProductAvailability.IN_STOCK,
     tags: [],

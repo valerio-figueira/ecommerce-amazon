@@ -32,10 +32,10 @@ export const PRODUCT_FORM_HINTS = {
     'Texto curto para cards e introdução. Se vazio ao salvar, a API monta automaticamente a partir dos prós.',
   longDescription:
     'Review completo em HTML. Use o editor visual ou cole saída da IA na aba Código HTML — tags: h3, p, strong, table, ul, li, links.',
-  specsTemplate:
-    'Campos sugeridos pela categoria. Preencha o máximo possível para comparadores e SEO técnico.',
-  specsCustom:
-    'Pares chave/valor extras além do template (ex.: garantia, voltagem). Aparecem na ficha do produto na vitrine.',
+  specsBlocks:
+    'Organize a ficha técnica em blocos colapsáveis (ex.: Detalhes, Medidas). Cada bloco agrupa pares chave/valor exibidos na vitrine.',
+  specsSuggestedBlock:
+    'Cria um bloco pré-preenchido com atributos sugeridos pela categoria. Você pode editar títulos e valores livremente.',
   images:
     'A primeira imagem é a capa na vitrine e listagens. Prefira upload quadrado 1:1 (1000×1000 px) ou URLs HTTPS externas com licença adequada.',
   metaTitle:

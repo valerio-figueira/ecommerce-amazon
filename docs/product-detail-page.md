@@ -6,7 +6,7 @@ Evolução da rota `/produtos/[slug]` para layout rico de análise editorial e r
 
 - **Hero:** galeria multi-imagem com miniaturas selecionáveis, rating, preço (incl. alerta stale), disclaimer afiliado e CTA com tracking `origin=detalhe`
 - **Análise do Especialista:** grid de prós e contras completos (sem truncamento dos cards)
-- **Ficha técnica:** tabela a partir de `specs` (`specs_normalized` no banco)
+- **Ficha técnica:** blocos colapsáveis (`<details>`/`<summary>`) a partir de `specGroups` (`specs_normalized` no banco); comparador continua usando `specs` flat derivado
 - **Descrição longa:** bloco HTML editorial existente
 - **Carrossel de similares:** produtos visíveis da mesma `category_id`, ordenados por preço ASC, excluindo o produto atual (até 12 itens)
 
@@ -48,7 +48,8 @@ Produtos sem categoria retornam `similarProducts: []` e a seção não renderiza
 | [`packages/shared/src/admin/product-schemas.ts`](../packages/shared/src/admin/product-schemas.ts) | `productPublicDetailSchema.similarProducts` |
 | [`apps/web/src/components/product/ProductImageGallery.tsx`](../apps/web/src/components/product/ProductImageGallery.tsx) | Galeria client-side com thumbs |
 | [`apps/web/src/components/product/ProductDetailAnalysis.tsx`](../apps/web/src/components/product/ProductDetailAnalysis.tsx) | Seção prós/contras |
-| [`apps/web/src/components/product/ProductSpecsTable.tsx`](../apps/web/src/components/product/ProductSpecsTable.tsx) | Ficha técnica |
+| [`apps/web/src/components/product/ProductSpecsSections.tsx`](../apps/web/src/components/product/ProductSpecsSections.tsx) | Ficha técnica colapsável por bloco |
+| [`packages/shared/src/product/spec-groups.ts`](../packages/shared/src/product/spec-groups.ts) | Schema, normalização e flatten de specs |
 
 ## Ordem das seções na página
 

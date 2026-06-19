@@ -100,7 +100,7 @@ function createProduct(
     }),
     affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/B001', 'amazon_br'),
     images: ['https://example.com/img.jpg'],
-    specsNormalized: {},
+    specsNormalized: [],
     editorialScore: 90,
     availability: ProductAvailability.IN_STOCK,
     tags: [],

@@ -33,7 +33,7 @@ function createProduct(overrides: {
     }),
     affiliateLink: AffiliateLink.create('https://amazon.com.br/dp/test', 'amazon_br'),
     images: ['https://example.com/image.jpg'],
-    specsNormalized: {},
+    specsNormalized: [],
     editorialScore: 80,
     availability: ProductAvailability.IN_STOCK,
     tags: [],

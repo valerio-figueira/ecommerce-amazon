@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { MARKETPLACE_VALUES } from '../marketplace/constants.js';
+import { normalizeSpecsGroups, specsNormalizedSchema } from '../product/spec-groups.js';
 
 export const marketplaceSchema = z.enum(MARKETPLACE_VALUES);
 
@@ -37,16 +38,7 @@ export const createProductBodySchema = z
     longDescriptionHtml: z.string().max(50000).default(''),
     metaTitle: z.string().max(200).default(''),
     metaDescription: z.string().max(320).default(''),
-    specsNormalized: z
-      .record(z.string(), z.string())
-      .default({})
-      .transform((record) =>
-        Object.fromEntries(
-          Object.entries(record)
-            .map(([key, value]) => [key.trim(), value.trim()] as const)
-            .filter(([key, value]) => key.length > 0 && value.length > 0),
-        ),
-      ),
+    specsNormalized: specsNormalizedSchema.default([]).transform((groups) => normalizeSpecsGroups(groups)),
     price: z.number().min(0),
     strikethroughPrice: z.number().min(0).optional(),
     shouldShowPrice: z.boolean(),
@@ -99,7 +91,7 @@ export const adminProductDetailSchema = z.object({
   longDescriptionHtml: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
-  specsNormalized: z.record(z.string(), z.string()),
+  specsNormalized: specsNormalizedSchema,
   price: z.number().min(0),
   strikethroughPrice: z.number().min(0).optional(),
   shouldShowPrice: z.boolean(),
@@ -195,7 +187,8 @@ export const productPublicDetailSchema = productPublicListItemSchema.extend({
   shortDescription: z.string().optional(),
   longDescriptionHtml: z.string().optional(),
   images: z.array(z.string()),
-  specs: z.record(z.string()),
+  specGroups: specsNormalizedSchema.default([]),
+  specs: z.record(z.string(), z.string()),
   pros: z.array(z.string()).optional(),
   cons: z.array(z.string()).optional(),
   metaTitle: z.string().optional(),

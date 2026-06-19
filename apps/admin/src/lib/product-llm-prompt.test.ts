@@ -15,7 +15,14 @@ describe('buildProductSeoLlmPrompt', () => {
       pros: ['Apoio lombar'],
       cons: ['Montagem demorada'],
       shortDescription: 'Cadeira para home office.',
-      specsNormalized: { Garantia: '12 meses' },
+      specsNormalized: [
+        {
+          group_id: 'detalhes_produto',
+          group_title: 'Detalhes do Produto',
+          is_collapsed_default: false,
+          properties: [{ key: 'Garantia', value: '12 meses' }],
+        },
+      ],
       autoMetaTitle: 'Cadeira DT3 — Análise e Ofertas',
       autoMetaDescription: 'Confira nossa avaliação...',
       metaTitle: '',

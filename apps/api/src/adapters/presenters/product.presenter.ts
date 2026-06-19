@@ -1,4 +1,10 @@
 import type { CuratedCollection, Product } from '@ecommerce-amazon/domain';
+import type { SpecGroup } from '@ecommerce-amazon/shared/product';
+import {
+  filterActiveSpecGroups,
+  flattenSpecGroups,
+  normalizeSpecsGroups,
+} from '@ecommerce-amazon/shared/product';
 
 export type ProductListItemDto = {
   id: string;
@@ -32,6 +38,7 @@ export type ProductDetailDto = ProductListItemDto & {
   shortDescription?: string | undefined;
   longDescriptionHtml?: string | undefined;
   images: string[];
+  specGroups: SpecGroup[];
   specs: Record<string, string>;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
@@ -79,7 +86,7 @@ export type AdminProductDetailDto = {
   longDescriptionHtml?: string | undefined;
   metaTitle?: string | undefined;
   metaDescription?: string | undefined;
-  specsNormalized: Record<string, string>;
+  specsNormalized: SpecGroup[];
   price: number;
   strikethroughPrice?: number | undefined;
   shouldShowPrice: boolean;
@@ -155,7 +162,20 @@ export async function mapProductsToListItemDtos(
   );
 }
 
+export function resolveProductSpecPresentation(product: Product): {
+  specGroups: SpecGroup[];
+  specs: Record<string, string>;
+} {
+  const normalized = normalizeSpecsGroups(product.specsNormalized);
+  const activeGroups = filterActiveSpecGroups(normalized);
+  return {
+    specGroups: activeGroups,
+    specs: flattenSpecGroups(activeGroups),
+  };
+}
+
 export function toProductDetailDto(product: Product): ProductDetailDto {
+  const { specGroups, specs } = resolveProductSpecPresentation(product);
   return {
     ...toProductListItemDto(product),
     titleRaw: product.titleRaw,
@@ -168,7 +188,8 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
       ? { longDescriptionHtml: product.longDescriptionHtml }
       : {}),
     images: product.images,
-    specs: product.specsNormalized,
+    specGroups,
+    specs,
     ...(product.pros !== undefined ? { pros: product.pros } : {}),
     ...(product.cons !== undefined ? { cons: product.cons } : {}),
     ...(product.metaTitle !== undefined ? { metaTitle: product.metaTitle } : {}),
@@ -249,7 +270,7 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     shouldShowPrice: !product.price.isStale,
     visible: product.visible,
     availability: product.availability,
-    specsNormalized: product.specsNormalized,
+    specsNormalized: normalizeSpecsGroups(product.specsNormalized),
     createdAt: product.createdAt.toISOString(),
   };
 }

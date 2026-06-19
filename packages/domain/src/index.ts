@@ -1,3 +1,4 @@
+export * from './types/spec-group.js';
 export * from './entities/ArticleCategory.js';
 export * from './entities/Category.js';
 export * from './entities/Product.js';

@@ -31,6 +31,14 @@ function makeComparisonProduct(slug: string) {
     availability: 'in_stock',
     images: ['https://cdn.example.com/image.jpg'],
     specs: { Peso: '1 kg' },
+    specGroups: [
+      {
+        group_id: 'detalhes_produto',
+        group_title: 'Detalhes do Produto',
+        is_collapsed_default: false,
+        properties: [{ key: 'Peso', value: '1 kg' }],
+      },
+    ],
     similarProducts: [],
   };
 }
@@ -82,5 +90,11 @@ describe('web API contracts', () => {
         title: 'Produto',
       }),
     ).toThrow(z.ZodError);
+  });
+
+  it('parses product detail payloads with grouped specs', () => {
+    const parsed = productDetailSchema.parse(makeComparisonProduct('cadeira'));
+    expect(parsed.specGroups).toHaveLength(1);
+    expect(parsed.specs).toEqual({ Peso: '1 kg' });
   });
 });

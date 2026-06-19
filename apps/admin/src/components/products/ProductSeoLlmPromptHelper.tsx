@@ -47,7 +47,7 @@ export function ProductSeoLlmPromptHelper(): React.JSX.Element {
   const pros = useWatch({ control: form.control, name: 'pros' }) ?? [];
   const cons = useWatch({ control: form.control, name: 'cons' }) ?? [];
   const shortDescription = useWatch({ control: form.control, name: 'shortDescription' }) ?? '';
-  const specsNormalized = useWatch({ control: form.control, name: 'specsNormalized' }) ?? {};
+  const specsNormalized = useWatch({ control: form.control, name: 'specsNormalized' }) ?? [];
   const metaTitle = useWatch({ control: form.control, name: 'metaTitle' }) ?? '';
   const metaDescription = useWatch({ control: form.control, name: 'metaDescription' }) ?? '';
 

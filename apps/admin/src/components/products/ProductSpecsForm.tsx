@@ -1,56 +1,35 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { Plus, Sparkles } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
+import { ProductSpecBlockEditor } from '@/components/products/ProductSpecBlockEditor';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Button } from '@/components/ui/button';
 import { FieldHint } from '@/components/ui/field-hint';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
 import { buildCategorySlugChain } from '@/lib/api/categories-utils';
 import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
+import {
+  buildSuggestedBlockFromTemplate,
+  createEmptyBlock,
+  hasSuggestedBlock,
+  specsNormalizedToUiState,
+  type SpecBlockState,
+  uiStateToSpecsNormalized,
+} from '@/lib/product-specs-form-state';
 import { resolveSpecTemplateForSlugChain } from '@ecommerce-amazon/shared/product/spec-templates';
 
-type CustomSpecRow = {
-  id: string;
-  key: string;
-  value: string;
+type ProductSpecsFormProps = {
+  onRegisterSync?: (syncHandler: () => void) => void;
 };
 
-function createRowId(): string {
-  return `spec-row-${Math.random().toString(36).slice(2, 11)}`;
-}
-
-function createCustomRow(key = '', value = ''): CustomSpecRow {
-  return {
-    id: createRowId(),
-    key,
-    value,
-  };
-}
-
-function specsToCustomRows(
-  specs: Record<string, string>,
-  templateKeys: readonly string[],
-): CustomSpecRow[] {
-  return Object.entries(specs)
-    .filter(([key]) => !templateKeys.includes(key))
-    .map(([key, value]) => ({
-      id: createRowId(),
-      key,
-      value: value ?? '',
-    }));
-}
-
-export function ProductSpecsForm(): React.JSX.Element {
+export function ProductSpecsForm({ onRegisterSync }: ProductSpecsFormProps): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
   const categoryOptions = useAdminCategoryOptions();
-  const categoryId = useWatch({ control: form.control, name: 'categoryId' });
-  const specsNormalized = useWatch({ control: form.control, name: 'specsNormalized' }) ?? {};
+  const categoryId = form.watch('categoryId');
 
   const slugChain = useMemo(
     () => buildCategorySlugChain(categoryId, categoryOptions),
@@ -58,160 +37,136 @@ export function ProductSpecsForm(): React.JSX.Element {
   );
   const templateKeys = useMemo(() => resolveSpecTemplateForSlugChain(slugChain), [slugChain]);
 
-  const [customRows, setCustomRows] = useState<CustomSpecRow[]>([]);
+  const [blocks, setBlocks] = useState<SpecBlockState[]>([]);
   const hydratedRef = useRef(false);
-  const previousCategoryIdRef = useRef(categoryId);
+
+  const syncToForm = useCallback((): void => {
+    form.setValue('specsNormalized', uiStateToSpecsNormalized(blocks), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [blocks, form]);
+
+  useEffect(() => {
+    onRegisterSync?.(syncToForm);
+  }, [onRegisterSync, syncToForm]);
 
   useEffect(() => {
     if (hydratedRef.current) {
       return;
     }
 
-    if (categoryId && categoryOptions.length === 0) {
+    const currentGroups = form.getValues('specsNormalized') ?? [];
+    if (currentGroups.length === 0 && !hydratedRef.current) {
+      hydratedRef.current = true;
+      setBlocks([]);
       return;
     }
 
-    const rows = specsToCustomRows(form.getValues('specsNormalized') ?? {}, templateKeys);
-    setCustomRows(rows);
+    setBlocks(specsNormalizedToUiState(currentGroups));
     hydratedRef.current = true;
-  }, [categoryId, categoryOptions.length, form, templateKeys]);
+  }, [form]);
 
-  useEffect(() => {
-    if (previousCategoryIdRef.current === categoryId) {
+  function updateBlocks(nextBlocks: SpecBlockState[]): void {
+    setBlocks(nextBlocks);
+  }
+
+  function handleBlockChange(blockId: string, nextBlock: SpecBlockState): void {
+    updateBlocks(blocks.map((block) => (block.id === blockId ? nextBlock : block)));
+  }
+
+  function handleRemoveBlock(blockId: string): void {
+    updateBlocks(blocks.filter((block) => block.id !== blockId));
+  }
+
+  function handleMoveBlock(blockId: string, direction: -1 | 1): void {
+    const index = blocks.findIndex((block) => block.id === blockId);
+    if (index < 0) {
       return;
     }
 
-    previousCategoryIdRef.current = categoryId;
-    setCustomRows((rows) => rows.filter((row) => !templateKeys.includes(row.key.trim())));
-  }, [categoryId, templateKeys]);
-
-  function setSpecs(next: Record<string, string>): void {
-    form.setValue('specsNormalized', next, { shouldDirty: true, shouldValidate: true });
-  }
-
-  function syncCustomRowsToForm(rows: CustomSpecRow[]): void {
-    const next: Record<string, string> = {};
-
-    for (const key of templateKeys) {
-      if (specsNormalized[key] !== undefined) {
-        next[key] = specsNormalized[key];
-      }
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= blocks.length) {
+      return;
     }
 
-    for (const row of rows) {
-      const trimmedKey = row.key.trim();
-      if (trimmedKey && !templateKeys.includes(trimmedKey)) {
-        next[trimmedKey] = row.value;
-      }
+    const next = [...blocks];
+    const current = next[index];
+    const target = next[targetIndex];
+    if (!current || !target) {
+      return;
     }
 
-    setSpecs(next);
+    next[index] = target;
+    next[targetIndex] = current;
+    updateBlocks(next);
+    syncToForm();
   }
 
-  function updateTemplateValue(key: string, value: string): void {
-    setSpecs({
-      ...specsNormalized,
-      [key]: value,
-    });
+  function handleAddBlock(): void {
+    updateBlocks([...blocks, createEmptyBlock('Novo bloco')]);
+    syncToForm();
   }
 
-  function updateCustomRow(rowId: string, nextKey: string, nextValue: string): void {
-    const nextRows = customRows.map((row) =>
-      row.id === rowId ? { ...row, key: nextKey, value: nextValue } : row,
-    );
-    setCustomRows(nextRows);
-    syncCustomRowsToForm(nextRows);
+  function handleAddSuggestedBlock(): void {
+    const existingGroups = uiStateToSpecsNormalized(blocks);
+    updateBlocks([
+      ...blocks,
+      buildSuggestedBlockFromTemplate(templateKeys, existingGroups),
+    ]);
+    syncToForm();
   }
 
-  function removeCustomRow(rowId: string): void {
-    const nextRows = customRows.filter((row) => row.id !== rowId);
-    setCustomRows(nextRows);
-    syncCustomRowsToForm(nextRows);
-  }
-
-  function addCustomRow(): void {
-    setCustomRows((current) => [...current, createCustomRow()]);
-  }
+  const showSuggestedBlockAction =
+    Boolean(categoryId) && templateKeys.length > 0 && !hasSuggestedBlock(blocks);
 
   return (
     <CmsFormSection title="Especificações do Produto">
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-[var(--admin-navy)]">Blocos de especificações</p>
+        <FieldHint text={PRODUCT_FORM_HINTS.specsBlocks} />
+      </div>
+
       {!categoryId ? (
         <p className="text-sm text-[var(--admin-text-muted)]">
-          Selecione uma categoria para ver especificações sugeridas.
+          Selecione uma categoria para habilitar sugestões de blocos por template.
         </p>
       ) : null}
 
-      {categoryId && templateKeys.length === 0 ? (
-        <p className="text-sm text-[var(--admin-text-muted)]">
-          Esta categoria não possui template padrão. Use atributos customizados abaixo.
+      {blocks.length === 0 ? (
+        <p className="text-xs text-[var(--admin-text-muted)]">
+          Nenhum bloco cadastrado. Adicione blocos para organizar a ficha técnica na vitrine.
         </p>
       ) : null}
 
-      {templateKeys.length > 0 ? (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-medium text-[var(--admin-navy)]">Especificações sugeridas</p>
-            <FieldHint text={PRODUCT_FORM_HINTS.specsTemplate} />
-          </div>
-          {templateKeys.map((key) => (
-            <div key={key} className="space-y-1.5">
-              <Label htmlFor={`spec-template-${key}`}>{key}</Label>
-              <Input
-                id={`spec-template-${key}`}
-                value={specsNormalized[key] ?? ''}
-                onChange={(event) => updateTemplateValue(key, event.target.value)}
-                placeholder={`Valor para ${key}`}
-              />
-            </div>
-          ))}
-        </div>
-      ) : null}
-
-      <div className="space-y-3 border-t border-[var(--admin-gray)] pt-4">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-[var(--admin-navy)]">Atributos customizados</p>
-          <FieldHint text={PRODUCT_FORM_HINTS.specsCustom} />
-        </div>
-
-        {customRows.length === 0 ? (
-          <p className="text-xs text-[var(--admin-text-muted)]">
-            Nenhum atributo customizado. Use o botão abaixo para adicionar pares chave/valor
-            extras.
-          </p>
-        ) : null}
-
-        {customRows.map((row) => (
-          <div key={row.id} className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Input
-              aria-label="Chave do atributo customizado"
-              placeholder="Chave (ex: Garantia)"
-              value={row.key}
-              onChange={(event) => updateCustomRow(row.id, event.target.value, row.value)}
-              className="sm:flex-1"
-            />
-            <Input
-              aria-label="Valor do atributo customizado"
-              placeholder="Valor (ex: 12 meses)"
-              value={row.value}
-              onChange={(event) => updateCustomRow(row.id, row.key, event.target.value)}
-              className="sm:flex-[2]"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => removeCustomRow(row.id)}
-              aria-label="Remover atributo customizado"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+      <div className="space-y-4">
+        {blocks.map((block, index) => (
+          <ProductSpecBlockEditor
+            key={block.id}
+            block={block}
+            canMoveUp={index > 0}
+            canMoveDown={index < blocks.length - 1}
+            onBlockChange={handleBlockChange}
+            onRemoveBlock={handleRemoveBlock}
+            onMoveBlock={handleMoveBlock}
+            onBlurSync={syncToForm}
+            onStructuralChange={syncToForm}
+          />
         ))}
+      </div>
 
-        <Button type="button" variant="ghost" size="sm" onClick={addCustomRow}>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={handleAddBlock}>
           <Plus className="mr-1.5 h-3.5 w-3.5" />
-          Adicionar atributo customizado
+          Adicionar novo bloco
         </Button>
+
+        {showSuggestedBlockAction ? (
+          <Button type="button" variant="ghost" size="sm" onClick={handleAddSuggestedBlock}>
+            <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+            Adicionar bloco sugerido da categoria
+          </Button>
+        ) : null}
       </div>
     </CmsFormSection>
   );

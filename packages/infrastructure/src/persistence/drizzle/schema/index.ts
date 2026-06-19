@@ -15,6 +15,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+import type { SpecGroup } from '@ecommerce-amazon/shared/product';
+
 import { articleCategories } from './article-categories.js';
 import { categories } from './categories.js';
 import { contentClusters } from './content-clusters.js';
@@ -123,7 +125,7 @@ export const products = pgTable(
     priceUpdatedAt: timestamp('price_updated_at', { withTimezone: true }).notNull(),
     affiliateDeepLink: text('affiliate_deep_link').notNull(),
     images: jsonb('images').$type<string[]>().notNull().default([]),
-    specsNormalized: jsonb('specs_normalized').$type<Record<string, string>>().notNull().default({}),
+    specsNormalized: jsonb('specs_normalized').$type<SpecGroup[]>().notNull().default([]),
     editorialScore: integer('editorial_score').notNull().default(0),
     availability: availabilityEnum('availability').notNull().default('unknown'),
     rating: decimal('rating', { precision: 3, scale: 2 }),

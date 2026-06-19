@@ -53,7 +53,7 @@ function createExistingProduct(): Product {
       'amazon_br',
     ),
     images: [],
-    specsNormalized: {},
+    specsNormalized: [],
     editorialScore: 85,
     availability: ProductAvailability.IN_STOCK,
     tags: [],
@@ -109,16 +109,30 @@ describe('UpdateProduct', () => {
 
     await useCase.execute('cadeira-ergonomica-pro-x', {
       ...baseInput,
-      specsNormalized: {
-        Switches: 'Red',
-        Layout: 'ABNT2',
-      },
+      specsNormalized: [
+        {
+          group_id: 'especificacoes',
+          group_title: 'Especificações',
+          is_collapsed_default: false,
+          properties: [
+            { key: 'Switches', value: 'Red' },
+            { key: 'Layout', value: 'ABNT2' },
+          ],
+        },
+      ],
     });
 
-    expect(existing.specsNormalized).toEqual({
-      Switches: 'Red',
-      Layout: 'ABNT2',
-    });
+    expect(existing.specsNormalized).toEqual([
+      {
+        group_id: 'especificacoes',
+        group_title: 'Especificações',
+        is_collapsed_default: false,
+        properties: [
+          { key: 'Switches', value: 'Red' },
+          { key: 'Layout', value: 'ABNT2' },
+        ],
+      },
+    ]);
   });
 
   it('marks price stale when shouldShowPrice is false', async () => {

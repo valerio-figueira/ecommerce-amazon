@@ -23,6 +23,7 @@ import {
   formatWebPageTitle,
   getBrandConfig,
 } from '@ecommerce-amazon/shared/config/brand';
+import { legacyRecordToSpecGroups } from '@ecommerce-amazon/shared/product';
 import { SEO_KEYWORD_MAP } from '@ecommerce-amazon/shared/seo';
 
 import { schema } from '../drizzle/client.js';
@@ -198,7 +199,7 @@ async function insertProductSeed(
         priceUpdatedAt: now,
         affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED001',
         images: [PEXELS.chair],
-        specsNormalized: { material: 'Mesh', peso_maximo: '120kg' },
+        specsNormalized: legacyRecordToSpecGroups({ material: 'Mesh', peso_maximo: '120kg' }),
         editorialScore: 85,
         availability: ProductAvailability.IN_STOCK,
         rating: '4.60',
@@ -225,7 +226,7 @@ async function insertProductSeed(
         priceUpdatedAt: now,
         affiliateDeepLink: 'https://shopee.com.br/headset-gamer-seed',
         images: [PEXELS.headset],
-        specsNormalized: { conexao: 'USB', surround: '7.1' },
+        specsNormalized: legacyRecordToSpecGroups({ conexao: 'USB', surround: '7.1' }),
         editorialScore: 78,
         availability: ProductAvailability.IN_STOCK,
         rating: '4.40',
@@ -699,7 +700,7 @@ async function seedCollections(
       priceUpdatedAt: now,
       affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED003',
       images: [PEXELS.keyboard],
-      specsNormalized: { switches: 'Blue', layout: 'ABNT2' },
+      specsNormalized: legacyRecordToSpecGroups({ switches: 'Blue', layout: 'ABNT2' }),
       editorialScore: 82,
       availability: ProductAvailability.IN_STOCK,
       rating: '4.50',
@@ -723,7 +724,7 @@ async function seedCollections(
       priceUpdatedAt: now,
       affiliateDeepLink: 'https://shopee.com.br/mouse-gamer-seed',
       images: [PEXELS.mouse],
-      specsNormalized: { dpi: '16000', conexao: '2.4GHz' },
+      specsNormalized: legacyRecordToSpecGroups({ dpi: '16000', conexao: '2.4GHz' }),
       editorialScore: 80,
       availability: ProductAvailability.IN_STOCK,
       rating: '4.70',
