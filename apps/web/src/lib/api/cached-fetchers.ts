@@ -7,6 +7,7 @@ import {
 } from '@ecommerce-amazon/shared/admin';
 import { pageLayoutDeliverySchema, type PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 import type { AboutPageContent } from '@ecommerce-amazon/shared/about';
+import { comparisonPublicDetailSchema } from '@ecommerce-amazon/shared/comparison';
 
 import { fetchCuratedCollection } from '@/lib/api/collections';
 import { fetchInstitutionalAboutPage } from '@/lib/api/institutional';
@@ -40,6 +41,10 @@ export const getCollection = cache(
     return fetchCuratedCollection(slug, { page });
   },
 );
+
+export const getComparison = cache(async (shareToken: string) => {
+  return fetchOrNotFound(`/comparisons/${shareToken}`, comparisonPublicDetailSchema);
+});
 
 export const getArticle = cache(async (slug: string): Promise<ArticlePublicDetail | null> => {
   const article = await fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);

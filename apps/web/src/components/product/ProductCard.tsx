@@ -4,6 +4,7 @@ import { Heart } from 'lucide-react';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import Link from 'next/link';
 
+import { ProductCompareToggle } from '@/components/comparison/ProductCompareToggle';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
@@ -31,6 +32,7 @@ type ProductCardProps = {
   emphasizeDiscount?: boolean;
   pros?: string[] | undefined;
   cons?: string[] | undefined;
+  showCompareToggle?: boolean;
 };
 
 export function ProductCard({
@@ -46,6 +48,7 @@ export function ProductCard({
   emphasizeDiscount = false,
   pros,
   cons,
+  showCompareToggle = variant !== 'editorial',
 }: ProductCardProps): React.JSX.Element {
   const { addItem, removeItem, isInWishlist, items, sessionId } = useWishlist();
   const saved = isInWishlist(product.id);
@@ -57,6 +60,15 @@ export function ProductCard({
     ? computeDiscountPercent(product.price.amount, product.price.strikethrough)
     : null;
   const showDiscountBadge = discountPercent !== null && !product.price.isStale;
+  const compareItem = {
+    productId: product.id,
+    slug: product.slug,
+    title: product.title,
+    ...(product.imageUrl !== undefined ? { imageUrl: product.imageUrl } : {}),
+    ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
+    ...(product.categorySlug !== undefined ? { categorySlug: product.categorySlug } : {}),
+    ...(product.categoryLabel !== undefined ? { categoryLabel: product.categoryLabel } : {}),
+  };
 
   const toggleWishlist = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
@@ -105,6 +117,12 @@ export function ProductCard({
             >
               <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
             </button>
+            {showCompareToggle ? (
+              <ProductCompareToggle
+                product={compareItem}
+                className="absolute bottom-1 right-1 z-20 sm:bottom-1.5 sm:right-1.5"
+              />
+            ) : null}
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-3">
@@ -195,6 +213,12 @@ export function ProductCard({
         >
           <Heart className={cn('h-3.5 w-3.5', saved && 'fill-orange-500 text-orange-500')} />
         </button>
+        {showCompareToggle ? (
+          <ProductCompareToggle
+            product={compareItem}
+            className="absolute bottom-1.5 right-1.5 z-20"
+          />
+        ) : null}
       </div>
       <div className="relative flex min-h-0 flex-1 flex-col px-2 pb-2 pt-2">
         <div className="flex shrink-0 flex-col gap-0.5">

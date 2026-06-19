@@ -12,11 +12,12 @@ import { registerInstitutionalRoutes } from './institutional-routes.js';
 import { registerPublicSiteSettingsRoute } from './admin-settings-routes.js';
 import {
   toProductDetailWithEmbedsDto,
-  toProductListItemDto,
+  mapProductsToListItemDtos,
   toCuratedCollectionDto,
 } from '../../presenters/product.presenter.js';
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
+import { toComparisonPublicDto } from '../../presenters/comparison.presenter.js';
 import { listArticlesByCategoryQuerySchema, listPublishedArticlesQuerySchema } from '@ecommerce-amazon/shared/admin';
 import {
   sitemapEntriesQuerySchema,
@@ -67,6 +68,11 @@ function handleError(error: unknown, reply: FastifyReply) {
 
 export async function registerRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases } = container;
+
+  const loadProductCategory = async (categoryId: string) => {
+    const category = await container.repositories.categoryRepository.findById(categoryId);
+    return category ? { id: category.id, slug: category.slug, label: category.label } : null;
+  };
 
   app.get('/health', () => ({ status: 'ok' }));
 
@@ -192,8 +198,9 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         filters.visibleOnly = filters.visibleOnly ?? true;
       }
       const result = await useCases.listProducts.execute(filters);
+      const items = await mapProductsToListItemDtos(result.items, loadProductCategory);
       return reply.send({
-        items: result.items.map(toProductListItemDto),
+        items,
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,
@@ -220,6 +227,9 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
           );
           return reply.send({
             ...dto,
+            categoryId: category.id,
+            categorySlug: category.slug,
+            categoryLabel: category.label,
             category: toProductCategorySummaryDto(category, ancestors),
           });
         }
@@ -443,13 +453,13 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const pageSize = query.pageSize ?? 24;
       const result = await useCases.getCuratedCollection.execute(slug, { page, pageSize });
       if (!result) return reply.status(404).send({ error: 'Collection not found' });
-      return reply.send(
-        toCuratedCollectionDto(result.collection, result.products, {
-          total: result.total,
-          page: result.page,
-          pageSize: result.pageSize,
-        }),
-      );
+      const products = await mapProductsToListItemDtos(result.products, loadProductCategory);
+      const dto = toCuratedCollectionDto(result.collection, products, {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+      });
+      return reply.send(dto);
     } catch (error) {
       return handleError(error, reply);
     }
@@ -469,7 +479,7 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
       const { shareToken } = ComparisonTokenParamsSchema.parse(request.params);
       const result = await useCases.getComparisonByToken.execute(shareToken);
       if (!result) return reply.status(404).send({ error: 'Comparison not found' });
-      return reply.send(result);
+      return reply.send(toComparisonPublicDto(result.comparison, result.products));
     } catch (error) {
       return handleError(error, reply);
     }
@@ -485,7 +495,11 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
         editorialIntro: body.editorialIntro,
         shareToken: randomUUID(),
       });
-      return reply.status(201).send(result);
+      const statusCode = result.created ? 201 : 200;
+      return reply.status(statusCode).send({
+        shareToken: result.shareToken,
+        id: result.id,
+      });
     } catch (error) {
       return handleError(error, reply);
     }

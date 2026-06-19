@@ -94,7 +94,7 @@ Doc completa: [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md).
 
 ## Próximos passos
 
-- Página standalone `/comparar/[slug]` (entidade `product_comparisons` — fluxo separado do shortcode em artigos)
+- Página standalone `/comparar/[shareToken]` — ver [comparator-web-phase1.md](./comparator-web-phase1.md)
 
 ## Índice público `/artigos`
 

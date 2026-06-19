@@ -3,6 +3,7 @@ import type { SyncJobLog } from '../entities/Coupon.js';
 
 export interface ProductComparisonRepository {
   findByShareToken(token: string): Promise<ProductComparison | null>;
+  findByProductIdSet(productIds: string[]): Promise<ProductComparison | null>;
   save(comparison: ProductComparison): Promise<void>;
 }
 

@@ -427,7 +427,7 @@ Cupons ativos verificados.
 
 ### `GET /comparisons/:shareToken`
 
-Comparador persistido por token de compartilhamento.
+Comparador persistido por token de compartilhamento. Response: `comparisonPublicDetailSchema` (`shareToken`, `editorialIntro`, `createdAt`, `products[]` como `ProductDetailDto`).
 
 ### `POST /comparisons`
 
@@ -435,12 +435,14 @@ Comparador persistido por token de compartilhamento.
 
 ```typescript
 {
-  productIds: string[];     // 2–3 uuids
+  productIds: string[];     // 2–3 uuids, mesma categoria
   editorialIntro: string;   // mín. 150 caracteres
 }
 ```
 
-**Response 201:** inclui `shareToken` para URL pública.
+**Response 201** (criada) ou **200** (dedupe — mesmo conjunto de produtos): `{ shareToken, id }`.
+
+Validações: produtos existentes, mesma `categoryId`, IDs ordenados antes de persistir; `A+B` e `B+A` retornam o mesmo `shareToken`.
 
 ---
 

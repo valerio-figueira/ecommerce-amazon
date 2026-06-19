@@ -46,6 +46,10 @@
       "types": "./dist/content/index.d.ts",
       "import": "./dist/content/index.js"
     },
+    "./comparison": {
+      "types": "./dist/comparison/index.d.ts",
+      "import": "./dist/comparison/index.js"
+    },
     "./product": {
       "types": "./dist/product/index.d.ts",
       "import": "./dist/product/index.js"

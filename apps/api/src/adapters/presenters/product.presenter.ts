@@ -12,6 +12,9 @@ export type ProductListItemDto = {
   visible: boolean;
   goUrl: string;
   editorialScore: number;
+  categoryId?: string | undefined;
+  categorySlug?: string | undefined;
+  categoryLabel?: string | undefined;
 };
 
 export type ProductPriceDto = {
@@ -103,7 +106,10 @@ export function toProductPriceDto(product: Product): ProductPriceDto {
   };
 }
 
-export function toProductListItemDto(product: Product): ProductListItemDto {
+export function toProductListItemDto(
+  product: Product,
+  category?: { id: string; slug: string; label: string } | null,
+): ProductListItemDto {
   return {
     id: product.id,
     slug: product.slug,
@@ -116,7 +122,37 @@ export function toProductListItemDto(product: Product): ProductListItemDto {
     visible: product.visible,
     goUrl: `/go/${product.slug}`,
     editorialScore: product.editorialScore,
+    ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
+    ...(category
+      ? { categorySlug: category.slug, categoryLabel: category.label }
+      : {}),
   };
+}
+
+export async function mapProductsToListItemDtos(
+  products: Product[],
+  loadCategory: (categoryId: string) => Promise<{ id: string; slug: string; label: string } | null>,
+): Promise<ProductListItemDto[]> {
+  const categoryIds = [
+    ...new Set(
+      products
+        .map((product) => product.categoryId)
+        .filter((id): id is string => id !== undefined),
+    ),
+  ];
+  const categories = await Promise.all(categoryIds.map((id) => loadCategory(id)));
+  const categoryById = new Map(
+    categories
+      .filter((category): category is NonNullable<typeof category> => category !== null)
+      .map((category) => [category.id, category]),
+  );
+
+  return products.map((product) =>
+    toProductListItemDto(
+      product,
+      product.categoryId ? (categoryById.get(product.categoryId) ?? null) : null,
+    ),
+  );
 }
 
 export function toProductDetailDto(product: Product): ProductDetailDto {
@@ -150,7 +186,7 @@ export function toProductDetailWithEmbedsDto(
 ): ProductDetailDto {
   return {
     ...toProductDetailDto(product),
-    similarProducts: similarProducts.map(toProductListItemDto),
+    similarProducts: similarProducts.map((product) => toProductListItemDto(product)),
   };
 }
 
@@ -238,7 +274,7 @@ export type CuratedCollectionDto = {
 
 export function toCuratedCollectionDto(
   collection: CuratedCollection,
-  products: Product[],
+  products: ProductListItemDto[],
   pagination: { total: number; page: number; pageSize: number },
 ): CuratedCollectionDto {
   const updatedAt =
@@ -258,7 +294,7 @@ export function toCuratedCollectionDto(
       ctaText: collection.ctaText,
       updatedAt,
     },
-    products: products.map(toProductListItemDto),
+    products,
     total: pagination.total,
     page: pagination.page,
     pageSize: pagination.pageSize,

@@ -1,4 +1,4 @@
-import { asc, and, count, desc, eq, ilike, inArray, ne, or } from 'drizzle-orm';
+import { asc, and, count, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 
 import {
   ArticleStatus,
@@ -417,6 +417,45 @@ export class DrizzleProductComparisonRepository implements ProductComparisonRepo
       .from(schema.productComparisons)
       .where(eq(schema.productComparisons.shareToken, token));
     const row = rows[0];
+    if (!row) return null;
+
+    const products = await this.db
+      .select()
+      .from(schema.comparisonProducts)
+      .where(eq(schema.comparisonProducts.comparisonId, row.id));
+
+    return mapComparison(
+      row,
+      products.sort((a, b) => a.sortOrder - b.sortOrder).map((p) => p.productId),
+    );
+  }
+
+  async findByProductIdSet(productIds: string[]) {
+    const n = productIds.length;
+    if (n === 0) return null;
+
+    const rows = await this.db
+      .select({ comparisonId: schema.comparisonProducts.comparisonId })
+      .from(schema.comparisonProducts)
+      .where(inArray(schema.comparisonProducts.productId, productIds))
+      .groupBy(schema.comparisonProducts.comparisonId)
+      .having(
+        and(
+          sql`count(*) = ${n}`,
+          sql`count(distinct ${schema.comparisonProducts.productId}) = ${n}`,
+          sql`(select count(*)::int from ${schema.comparisonProducts} cp2 where cp2.comparison_id = ${schema.comparisonProducts.comparisonId}) = ${n}`,
+        ),
+      )
+      .limit(1);
+
+    const comparisonId = rows[0]?.comparisonId;
+    if (!comparisonId) return null;
+
+    const comparisonRows = await this.db
+      .select()
+      .from(schema.productComparisons)
+      .where(eq(schema.productComparisons.id, comparisonId));
+    const row = comparisonRows[0];
     if (!row) return null;
 
     const products = await this.db

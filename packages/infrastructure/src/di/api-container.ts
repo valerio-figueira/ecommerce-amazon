@@ -336,7 +336,7 @@ export function buildApiContainer(env = loadEnv()) {
         cache,
         webRevalidator,
       ),
-      createComparison: new CreateComparison(comparisonRepository),
+      createComparison: new CreateComparison(comparisonRepository, productRepository),
       getComparisonByToken: new GetComparisonByToken(comparisonRepository, productRepository),
       listActiveCoupons: new ListActiveCoupons(couponRepository, cache),
       recordClickEvent: new RecordClickEvent(clickRepository),

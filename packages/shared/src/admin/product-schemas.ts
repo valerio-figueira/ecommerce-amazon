@@ -172,6 +172,9 @@ export const productPublicListItemSchema = z.object({
   goUrl: z.string(),
   editorialScore: z.number(),
   visible: z.boolean().optional(),
+  categoryId: z.string().uuid().optional(),
+  categorySlug: z.string().optional(),
+  categoryLabel: z.string().optional(),
 });
 
 export const productPublicCategorySummarySchema = z.object({

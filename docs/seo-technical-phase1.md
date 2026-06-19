@@ -34,7 +34,7 @@ Metadados globais, sitemap paginado, robots, JSON-LD site-wide, crawl budget e C
 
 **Política `lastmod`:** produtos usam `created_at` (sem `updated_at` na tabela); categorias, artigos e coleções usam `updated_at`. `price_updated_at` **não** entra no sitemap.
 
-**Excluído do sitemap:** `/cupons` (sem página web), `/go/*`, URLs com query params.
+**Excluído do sitemap:** `/cupons` (sem página web), `/go/*`, URLs com query params, `/comparar/*` gerado por usuários (UGC — ver [comparator-web-phase1.md](./comparator-web-phase1.md); fase editorial com `status: published` no admin).
 
 ### JSON-LD
 

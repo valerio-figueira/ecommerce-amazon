@@ -9,7 +9,7 @@ Com base nos PRDs ([PRD Core](.cursor/plans/prd_plataforma_afiliação_de44933f.
 | Catálogo local, workers, API REST core | ✅ Implementado |
 | Vitrine: home CMS, produtos, categorias, artigos, coleções, `/go` | ✅ Implementado |
 | Admin: produtos, artigos, categorias, coleções, CMS blocos, auto-links, clusters | ✅ Implementado |
-| **Comparador standalone**, **central `/cupons`**, **alertas UI**, **gráfico de preço** | ❌ Faltam na web |
+| **Comparador standalone** (`/comparar`), **central `/cupons`**, **alertas UI**, **gráfico de preço** | Comparador ✅; cupons/alertas/gráfico ❌ |
 | **Batch checkout** na wishlist, **LGPD alertas**, **banner cookies** | ❌ Parcial/ausente |
 | **Gate afiliado**, **PA-API em escala**, **calendário editorial** | ⏳ Negócio/ops |
 
@@ -24,7 +24,7 @@ Estes itens do PRD Core **não estão completos** end-to-end:
 | Gráfico de histórico (≥7 snapshots) | `GET /products/:id/price-history` ✅ | Sem componente na página de produto ❌ |
 | Wishlist com batch redirect | `POST /wishlist/checkout-batch` ✅ | Drawer com CTA batch + consentimento cookies ✅ |
 | Alerta de preço (double opt-in + disparo) | API + worker ✅ | Formulário na vitrine ❌; cancelamento LGPD ✅ |
-| Comparador 2–3 produtos + URL compartilhável | `POST/GET /comparisons` ✅ | Sem rota `/comparador` nem seletor nos cards ❌ |
+| Comparador 2–3 produtos + URL compartilhável | `POST/GET /comparisons` ✅ | `/comparar` + seletor nos cards ✅ — ver [comparator-web-phase1.md](./comparator-web-phase1.md) |
 | Central de cupons + Pipeline D | Worker `coupon_verify` + `GET /coupons` ✅ | Sem `/cupons`; admin é stub ❌ |
 
 O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds dinâmicos, coleções (`/colecoes/[slug]`), tracking de cliques.
@@ -49,7 +49,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 - **Falta:** CTA “Finalizar na Amazon (N itens)” chamando `checkout-batch`; limpeza de itens `delisted`; banner de cookies LGPD para sessão anônima.
 
 ### 3.4 Comparador lado a lado
-- **Falta:** checkbox “Comparar” nos cards, barra flutuante “Comparar (2/3)”, página pública com intro editorial ≥150 palavras, compartilhamento Open Graph.
+- **Entregue:** toggle nos cards, barra flutuante, `/comparar?p=` e `/comparar/[shareToken]` — [comparator-web-phase1.md](./comparator-web-phase1.md)
 
 ### 3.5 Central de cupons
 - **Falta:** página `/cupons` (+ sub-rotas Growth `/cupons/shopee`, `/cupons/amazon`), FAQ editorial, recirculação pós-cópia, bloco CMS `COUPON_STRIP` funcional (hoje é placeholder).
@@ -83,7 +83,7 @@ O que **já fecha** critérios: catálogo local, CTA/disclaimer, hub com embeds 
 
 **Páginas-ímã (alta prioridade no calendário Fase 1 do Growth):**
 - Central `/cupons` com conteúdo único + FAQ.
-- Comparador indexável como landing própria (não só embed em artigo).
+- Comparador indexável como landing própria — `/comparar/[shareToken]` (ver [comparator-web-phase1.md](./comparator-web-phase1.md))
 - Link “Cupons” no header (previsto no plano `header_gold_hub`; header atual só tem Artigos + Sobre).
 
 **Operação editorial (não é código, mas está no PRD Growth):**
@@ -131,15 +131,14 @@ Planos já **completed** incluem: arquitetura, home CMS, produtos/artigos admin,
 
 Se a meta é **fechar o MVP obrigatório** do North Star:
 
-1. **Comparador web** (`/comparador/[token]`) — API pronta, alto valor SEO/conversão.
-2. **Central `/cupons`** — API + Pipeline D prontos; falta front + admin CRUD.
-3. **Alertas de preço na vitrine** + `DELETE /price-alerts/:token` + Resend em staging/prod.
-4. **Gráfico de histórico** na página de produto.
-5. **Batch checkout** no `WishlistDrawer`.
-6. **LGPD:** banner cookies + exclusão de alertas/lista.
-7. **CMS publish/draft** e forms `HERO_SPLIT` / `COUPON_STRIP`.
-8. **GA4 web** (complementar ao tracking first-party).
-9. **Negócio/infra:** validar contas afiliado, PA-API, auto-mapeamento browse node.
+1. **Central `/cupons`** — API + Pipeline D prontos; falta front + admin CRUD.
+2. **Alertas de preço na vitrine** + `DELETE /price-alerts/:token` + Resend em staging/prod.
+3. **Gráfico de histórico** na página de produto.
+4. **Batch checkout** no `WishlistDrawer`.
+5. **LGPD:** banner cookies + exclusão de alertas/lista.
+6. **CMS publish/draft** e forms `HERO_SPLIT` / `COUPON_STRIP`.
+7. **GA4 web** (complementar ao tracking first-party).
+8. **Negócio/infra:** validar contas afiliado, PA-API, auto-mapeamento browse node.
 
 ---
 

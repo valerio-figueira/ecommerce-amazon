@@ -71,4 +71,25 @@ describe('API routes', () => {
     });
     expect(response.statusCode).toBe(400);
   });
+
+  it('returns 400 for comparison with too few products', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/comparisons',
+      headers: { 'x-session-id': 'test-session' },
+      payload: {
+        productIds: ['aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'],
+        editorialIntro: 'x'.repeat(150),
+      },
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  it('returns 404 for unknown comparison token', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/comparisons/unknown-token-12345',
+    });
+    expect(response.statusCode).toBe(404);
+  });
 });
