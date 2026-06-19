@@ -8,10 +8,12 @@ import {
 } from '@ecommerce-amazon/shared/seo';
 import { isComparisonShareToken } from '@ecommerce-amazon/shared/comparison';
 
+import { ComparisonEditorialIntro } from '@/components/comparison/ComparisonEditorialIntro';
 import { CopyComparisonLinkButton } from '@/components/comparison/CopyComparisonLinkButton';
 import { StandaloneComparisonTable } from '@/components/comparison/StandaloneComparisonTable';
 import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
+import { countEditorialWords } from '@ecommerce-amazon/shared/comparison';
 import { getComparison } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
@@ -129,11 +131,12 @@ export default async function ComparePersistedPage({
       />
 
       <div className="mx-auto w-full min-w-0 max-w-3xl">
-        <header className="mb-8 space-y-4">
+        <header className="mb-6 space-y-4">
           <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">{displayTitle}</h1>
-          <div className="prose prose-neutral max-w-none whitespace-pre-line text-sm leading-relaxed text-neutral-700 sm:text-base">
-            {data.editorialIntro}
-          </div>
+          <ComparisonEditorialIntro
+            text={data.editorialIntro}
+            collapsible={countEditorialWords(data.editorialIntro) > 35}
+          />
           <CopyComparisonLinkButton url={pageUrl} />
         </header>
 

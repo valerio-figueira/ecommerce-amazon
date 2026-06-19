@@ -79,6 +79,7 @@ Response (`comparisonPublicDetailSchema`):
 | Presenter | `apps/api/src/adapters/presenters/comparison.presenter.ts` |
 | Provider / barra | `apps/web/src/components/comparison/` |
 | Tabela | `apps/web/src/components/comparison/comparison-table-core.tsx` |
+| Intro colapsável | `apps/web/src/components/comparison/ComparisonEditorialIntro.tsx` |
 | Páginas | `apps/web/src/app/comparar/` |
 | JSON-LD | `packages/shared/src/seo/comparison-json-ld.ts` |
 
@@ -87,6 +88,17 @@ Response (`comparisonPublicDetailSchema`):
 - `?p=` nunca é canônico (`noindex`)
 - `/comparar/[param]` — draft `noindex`; published com OG + JSON-LD canônico por slug
 - **Sitemap:** apenas comparações `published` com slug (ver [admin-comparisons-phase1.md](./admin-comparisons-phase1.md))
+
+## Intro editorial colapsável (CRO + SEO)
+
+Páginas `/comparar` usam `ComparisonEditorialIntro`:
+
+- Texto **completo no HTML SSR** (robôs indexam palavras-chave e entidades)
+- Colapso visual via **CSS** (`max-h-32 overflow-hidden`) + gradiente `from-[var(--background)]`
+- Toggle **Ler descrição completa / Ler menos** altera só classes; não remove nós do DOM
+- Colapso ativo quando `countEditorialWords(intro) > 35`; intros curtas ficam expandidas
+
+Arquivo: `apps/web/src/components/comparison/ComparisonEditorialIntro.tsx`
 
 ## Como testar
 
