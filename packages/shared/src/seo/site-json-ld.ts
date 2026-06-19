@@ -67,7 +67,7 @@ export function buildWebSiteJsonLd(brand: BrandConfig): Record<string, unknown> 
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${brand.url}/artigos?q={search_term_string}`,
+        urlTemplate: `${brand.url}/busca?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },

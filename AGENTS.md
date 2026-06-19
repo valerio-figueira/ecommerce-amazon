@@ -50,6 +50,7 @@ Consultar **`docs/README.md`** para o índice completo. Principais referências:
 | [docs/admin-marketplace-credentials.md](docs/admin-marketplace-credentials.md) | Cofre de credenciais marketplace (PA-API, Shopee Open API), aba Integrações |
 | [docs/articles-taxonomy-phase2.md](docs/articles-taxonomy-phase2.md) | Categorias de artigos, autores, relacionados |
 | [docs/articles-public-rendering.md](docs/articles-public-rendering.md) | Vitrine `/artigos/[slug]`, embeds editoriais |
+| [docs/header-search.md](docs/header-search.md) | Busca no header: overlay, `/busca`, `GET /products?search=` |
 | [docs/auto-links-admin.md](docs/auto-links-admin.md) | CRUD auto-links (API + UI `/auto-links`), parser SEO |
 | [docs/content-clusters-hub-spoke.md](docs/content-clusters-hub-spoke.md) | Clusters Hub & Spoke — SEO Anchor, carousel, CRUD `/content-clusters` |
 | [docs/dev-setup.md](docs/dev-setup.md) | Setup local |

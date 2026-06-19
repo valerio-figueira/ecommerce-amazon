@@ -120,6 +120,8 @@ Cache Redis: chave `vitrine:page:slug:{slug}`, TTL 300s.
 | `category` | string | — | Filtra subárvore via `category_id` (slug + descendentes) |
 | `marketplace` | `amazon_br` \| `shopee_br` | — | |
 | `sort` | `editorial_score` \| `price_updated_at` | `editorial_score` | |
+| `visibleOnly` | `true` \| `false` | — | Quando `search` é informado, default `true` |
+| `search` | string (max 100) | — | `ilike` em `titleClean`, `titleRaw`, `slug` |
 
 **Response:**
 

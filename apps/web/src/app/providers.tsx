@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { CookieConsentProvider } from '@/components/legal/CookieConsentProvider';
+import { SearchProvider } from '@/components/search/SearchProvider';
 import { WishlistProvider } from '@/components/wishlist/WishlistProvider';
 
 export function Providers({ children }: { children: React.ReactNode }): React.JSX.Element {
@@ -22,7 +23,9 @@ export function Providers({ children }: { children: React.ReactNode }): React.JS
   return (
     <QueryClientProvider client={queryClient}>
       <CookieConsentProvider>
-        <WishlistProvider>{children}</WishlistProvider>
+        <WishlistProvider>
+          <SearchProvider>{children}</SearchProvider>
+        </WishlistProvider>
       </CookieConsentProvider>
     </QueryClientProvider>
   );

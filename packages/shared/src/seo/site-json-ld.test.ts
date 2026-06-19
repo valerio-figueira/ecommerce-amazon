@@ -29,6 +29,8 @@ describe('site json-ld', () => {
     expect(jsonLd['@type']).toBe('WebSite');
     const action = jsonLd['potentialAction'] as Record<string, unknown>;
     expect(action['@type']).toBe('SearchAction');
+    const target = action['target'] as Record<string, unknown>;
+    expect(target['urlTemplate']).toBe('https://vitrine.example/busca?q={search_term_string}');
   });
 
   it('builds site graph', () => {

@@ -29,6 +29,7 @@ export class ListProducts {
     minDiscountPercentage?: number;
     visibleOnly?: boolean;
     freshPriceOnly?: boolean;
+    search?: string;
   }): Promise<ListProductsResult> {
     const page = filters.page ?? 1;
     const pageSize = filters.pageSize ?? 20;
@@ -54,6 +55,7 @@ export class ListProducts {
         : {}),
       ...(filters.visibleOnly ? { visibleOnly: true } : {}),
       ...(filters.freshPriceOnly ? { freshPriceOnly: true } : {}),
+      ...(filters.search !== undefined ? { search: filters.search } : {}),
     });
 
     for (const product of result.items) {

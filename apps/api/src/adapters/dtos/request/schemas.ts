@@ -13,6 +13,7 @@ export const ListProductsQuerySchema = z.object({
     .enum(['true', 'false'])
     .optional()
     .transform((value) => value === 'true'),
+  search: z.string().trim().max(100).optional(),
 });
 
 export const CategorySlugParamsSchema = z.object({

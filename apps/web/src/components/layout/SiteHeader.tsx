@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { CategoryCatalogDrawer } from '@/components/layout/CategoryCatalogDrawer';
 import { CategoryCatalogFlyout } from '@/components/layout/CategoryCatalogFlyout';
+import { useSearch } from '@/components/search/SearchProvider';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { WishlistDrawer } from '@/components/wishlist/WishlistDrawer';
 import type { CategoryNavNode } from '@ecommerce-amazon/shared/category/category-tree-nav';
@@ -21,6 +22,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ siteName, navCategories = [] }: SiteHeaderProps): React.JSX.Element {
   const { items, setOpen } = useWishlist();
+  const { openSearch } = useSearch();
 
   return (
     <>
@@ -51,6 +53,7 @@ export function SiteHeader({ siteName, navCategories = [] }: SiteHeaderProps): R
               type="button"
               aria-label="Buscar"
               className="rounded-full p-2 hover:bg-neutral-100"
+              onClick={() => openSearch()}
             >
               <Search className="h-5 w-5" />
             </button>
