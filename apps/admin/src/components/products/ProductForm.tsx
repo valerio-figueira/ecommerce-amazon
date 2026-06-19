@@ -1,6 +1,10 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  hasIncompleteCascadeSelection,
+  resolveLeafCategoryId,
+} from '@ecommerce-amazon/shared/category/resolve-cascade-category-id';
 import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -18,10 +22,12 @@ import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
 import {
   createAdminProductClient,
   updateAdminProductClient,
 } from '@/lib/api/admin-products-client';
+import { formatProductFormErrorMessage } from '@/lib/product-form-errors';
 import type { ProductFormValues } from '@/lib/product-form-values';
 import { getPrimaryImageUrl } from '@/lib/product-image';
 import { createProductBodySchema } from '@ecommerce-amazon/shared/admin';
@@ -73,12 +79,33 @@ export function ProductForm({
     defaultValues: initialValues ?? emptyValues,
   });
 
+  const categoryOptions = useAdminCategoryOptions();
   const specsSyncRef = useRef<(() => void) | null>(null);
 
   const onSubmit = form.handleSubmit(async () => {
     try {
       specsSyncRef.current?.();
-      const parsed = createProductBodySchema.parse(form.getValues());
+
+      const values = form.getValues();
+      const cascadeLevels = {
+        level1: values.categoryCascadeLevel1,
+        level2: values.categoryCascadeLevel2,
+        level3: values.categoryCascadeLevel3,
+        level4: values.categoryCascadeLevel4,
+      };
+
+      if (hasIncompleteCascadeSelection(cascadeLevels, categoryOptions)) {
+        adminToast.error('Selecione a subcategoria folha mais específica.');
+        return;
+      }
+
+      const resolvedCategoryId = resolveLeafCategoryId(cascadeLevels, categoryOptions);
+      form.setValue('categoryId', resolvedCategoryId, { shouldDirty: true });
+
+      const parsed = createProductBodySchema.parse({
+        ...values,
+        categoryId: resolvedCategoryId,
+      });
       if (isEdit) {
         if (!slug) {
           throw new Error('Slug do produto não informado');
@@ -92,7 +119,9 @@ export function ProductForm({
       router.push('/produtos');
       router.refresh();
     } catch (error) {
-      adminToast.error(error instanceof Error ? error.message : 'Erro ao salvar produto');
+      const message =
+        error instanceof Error ? formatProductFormErrorMessage(error.message) : 'Erro ao salvar produto';
+      adminToast.error(message);
     }
   });
 

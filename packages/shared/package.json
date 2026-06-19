@@ -38,6 +38,10 @@
       "types": "./dist/category/category-tree-nav.d.ts",
       "import": "./dist/category/category-tree-nav.js"
     },
+    "./category/resolve-cascade-category-id": {
+      "types": "./dist/category/resolve-cascade-category-id.d.ts",
+      "import": "./dist/category/resolve-cascade-category-id.js"
+    },
     "./marketplace": {
       "types": "./dist/marketplace/index.d.ts",
       "import": "./dist/marketplace/index.js"

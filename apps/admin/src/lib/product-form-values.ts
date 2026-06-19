@@ -6,6 +6,7 @@ export type ProductFormCascadeFields = {
   categoryCascadeLevel1?: string;
   categoryCascadeLevel2?: string;
   categoryCascadeLevel3?: string;
+  categoryCascadeLevel4?: string;
 };
 
 export type ProductFormValues = z.input<typeof createProductBodySchema> & ProductFormCascadeFields;

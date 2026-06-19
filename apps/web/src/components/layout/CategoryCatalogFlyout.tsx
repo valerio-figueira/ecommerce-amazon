@@ -123,8 +123,8 @@ export function CategoryCatalogFlyout({
               <ul className="category-catalog-flyout__root-list">
                 {categories.map((root) => (
                   <li key={root.slug}>
-                    <button
-                      type="button"
+                    <Link
+                      href={`/categorias/${root.slug}`}
                       className={cn(
                         'category-catalog-flyout__root-item',
                         activeRoot?.slug === root.slug &&
@@ -132,10 +132,11 @@ export function CategoryCatalogFlyout({
                       )}
                       onMouseEnter={() => setActiveRootSlug(root.slug)}
                       onFocus={() => setActiveRootSlug(root.slug)}
+                      onClick={() => setOpen(false)}
                     >
                       {root.icon ? <span className="mr-1.5">{root.icon}</span> : null}
                       {root.label}
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>

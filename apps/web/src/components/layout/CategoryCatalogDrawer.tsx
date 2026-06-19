@@ -82,22 +82,29 @@ export function CategoryCatalogDrawer({
               <div key={category.slug} className="category-catalog-drawer__section">
                 {children.length > 0 ? (
                   <>
-                    <button
-                      type="button"
-                      className="category-catalog-drawer__accordion-trigger"
-                      aria-expanded={isExpanded}
-                      onClick={() =>
-                        setExpandedSlug((current) =>
-                          current === category.slug ? null : category.slug,
-                        )
-                      }
-                    >
-                      <span>
+                    <div className="category-catalog-drawer__accordion-trigger">
+                      <Link
+                        href={`/categorias/${category.slug}`}
+                        className="category-catalog-drawer__root-link"
+                        onClick={() => setOpen(false)}
+                      >
                         {category.icon ? <span className="mr-1">{category.icon}</span> : null}
                         {category.label}
-                      </span>
-                      <span aria-hidden>{isExpanded ? '−' : '+'}</span>
-                    </button>
+                      </Link>
+                      <button
+                        type="button"
+                        className="category-catalog-drawer__accordion-toggle"
+                        aria-expanded={isExpanded}
+                        aria-label={`${isExpanded ? 'Recolher' : 'Expandir'} subcategorias de ${category.label}`}
+                        onClick={() =>
+                          setExpandedSlug((current) =>
+                            current === category.slug ? null : category.slug,
+                          )
+                        }
+                      >
+                        <span aria-hidden>{isExpanded ? '−' : '+'}</span>
+                      </button>
+                    </div>
 
                     {isExpanded && (
                       <div className="mt-1">

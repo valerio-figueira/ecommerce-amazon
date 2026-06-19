@@ -32,6 +32,7 @@ flowchart LR
 ```
 
 - Produto vincula-se à **folha** da árvore (validação no create/update)
+- **Navegação** (`/categorias/{slug}`, header, pills, sidebar) funciona em **qualquer nó** — raiz, intermediário ou folha — e lista produtos da subárvore
 - `GET /products?category=slug` filtra a **subárvore** (produtos em descendentes)
 - Slug globalmente único → URL `/categorias/{slug}`
 
@@ -49,7 +50,7 @@ flowchart LR
 | Web pills | `apps/web/src/components/blocks/CategoryPillsRow.tsx` |
 | Web sidebar | `apps/web/src/components/category/CategorySidebarTree.tsx` |
 | Web header | `CategoryCatalogFlyout.tsx`, `CategoryCatalogDrawer.tsx`, `SiteHeader.tsx` |
-| Tree helpers | `packages/shared/src/category/category-tree-nav.ts` |
+| Tree helpers | `packages/shared/src/category/category-tree-nav.ts`, `resolve-cascade-category-id.ts` |
 
 ## API (resumo)
 
@@ -94,6 +95,9 @@ npm run test -w @ecommerce-amazon/application
 
 ## Formulário admin (refino UX)
 
+- **Seletor cascata (4 níveis)** — `CategoryCascadeSelect` com até 4 selects (alinhado a `MAX_CATEGORY_DEPTH = 4`); valor persistido = `categoryId` da folha
+- **Validação client-side** — submit bloqueia seleção incompleta; produtos com categoria legada (raiz/intermediário) exibem aviso e exigem re-seleção até a folha
+- **Helpers** — `resolveLeafCategoryId` / `buildCascadePath` em `packages/shared/src/category/resolve-cascade-category-id.ts`
 - **Slug automático** — gerado a partir do nome (`slugifyTitle`); preview da URL `/categorias/{slug}`; campo avançado "Personalizar slug" com botão "Usar slug do nome"
 - **SEO automático** — templates em `packages/shared/src/seo/category-meta.ts`; campos vazios usam fallback na vitrine (ver `generateMetadata` em `/categorias/[slug]`)
 - **Placeholders e tooltips** — dicas por campo (ícone ?) com orientações SEO
@@ -105,9 +109,25 @@ npm run test -w @ecommerce-amazon/application
 |-------|------------|---------------|
 | Home pills | `CategoryPillsRow` | 1ª fileira = raízes CMS; 2ª fileira = filhos do pai ativo |
 | Página categoria | `CategorySidebarTree` | Árvore lateral (lg+); chips horizontais em mobile |
-| Header desktop | `CategoryCatalogFlyout` | Botão Categorias → flyout 2 colunas (raízes + subcategorias) |
-| Header mobile | `CategoryCatalogDrawer` | Botão Categorias → drawer accordion só catálogo |
+| Header desktop | `CategoryCatalogFlyout` | Botão Categorias → flyout 2 colunas; raízes são links clicáveis **e** expandem subcategorias no hover |
+| Header mobile | `CategoryCatalogDrawer` | Botão Categorias → drawer; raiz linkável + botão +/- para expandir filhos |
 | Produto | breadcrumb em `produtos/[slug]` | `Home > … > categoria > produto` |
+
+## Dados legados (produtos em raiz)
+
+A migration `0008` backfillou produtos nas 3 raízes. Após criar subcategorias, esses `category_id` deixam de ser folha. Para corrigir manualmente em produção:
+
+```sql
+-- Exemplo: mover produtos ainda na raiz "games" para folha "teclados-mecanicos"
+UPDATE products p
+SET category_id = c_leaf.id
+FROM categories c_root
+JOIN categories c_leaf ON c_leaf.slug = 'teclados-mecanicos'
+WHERE p.category_id = c_root.id
+  AND c_root.slug = 'games';
+```
+
+Reaplicar seed em dev (`npm run db:seed`) já atribui produtos gamer à folha `teclados-mecanicos`.
 
 ## Próximos passos (fora desta entrega)
 

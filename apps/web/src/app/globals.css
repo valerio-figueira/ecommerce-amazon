@@ -142,6 +142,7 @@ button:disabled,
   font-size: 0.875rem;
   font-weight: 500;
   color: #404040;
+  text-decoration: none;
 }
 
 .category-catalog-flyout__root-item:hover,
@@ -227,10 +228,34 @@ button:disabled,
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   padding: 0.35rem 0;
   font-size: 0.9375rem;
   font-weight: 600;
   color: #111111;
+}
+
+.category-catalog-drawer__root-link {
+  flex: 1;
+  min-width: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-catalog-drawer__root-link:hover {
+  color: #525252;
+}
+
+.category-catalog-drawer__accordion-toggle {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: #525252;
 }
 
 .category-catalog-drawer__child-link {
