@@ -112,7 +112,7 @@ Se acessar o web por IP de rede, reinicie a API após alterar `.env`.
 ## Build e testes
 
 ```bash
-npm run build
+npm run build   # necessário para runtime/apps; lint usa tsconfig.eslint-* (source paths)
 npm run test
 npm run lint
 ```
@@ -128,7 +128,7 @@ Ordem de build TypeScript: `domain` → `shared` → `application` → `infrastr
 | Container Postgres sem porta | Sistema ocupa 5432 | `sudo systemctl stop postgresql` + `docker compose down && up -d` |
 | CORS no browser | Origin LAN vs localhost | Reiniciar API; conferir `CORS_ORIGINS` |
 | `crypto.randomUUID` | HTTP via IP (contexto não seguro) | Usar localhost ou fallback em `session.ts` |
-| ESLint `cannot be resolved` em `@ecommerce-amazon/*` | Pacotes `domain`/`shared` sem `dist/` (clone novo ou `dist` apagado) | `npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared` antes do lint |
+| ESLint `cannot be resolved` em `@ecommerce-amazon/*` | TypeScript ESLint não resolveu subpath (ex.: `shared/cms`) ou pacote sem `dist/` | Conferir `tsconfig.eslint-packages.json` e `tsconfig.eslint-next-*.json`; se persistir: `npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared` |
 
 ## Scripts utilitários
 
