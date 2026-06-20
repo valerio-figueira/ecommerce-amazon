@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
 
@@ -41,6 +41,18 @@ type ApiFetchInit = RequestInit & {
   next?: RequestInit extends { next?: infer N } ? N : never;
 };
 
+function parseWithSchema<TOutput>(
+  schema: z.ZodType<TOutput, z.ZodTypeDef, unknown>,
+  data: unknown,
+): TOutput {
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) {
+    throw parsed.error;
+  }
+
+  return parsed.data;
+}
+
 export async function apiFetch(path: string, init?: ApiFetchInit): Promise<unknown> {
   const { sessionId, next, ...fetchInit } = init ?? {};
   const headers = new Headers(fetchInit.headers);
@@ -68,11 +80,11 @@ export async function apiFetch(path: string, init?: ApiFetchInit): Promise<unkno
   return response.json();
 }
 
-export async function apiFetchParsed<T>(
+export async function apiFetchParsed<TOutput>(
   path: string,
-  schema: z.ZodType<T>,
+  schema: z.ZodType<TOutput, z.ZodTypeDef, unknown>,
   init?: ApiFetchInit,
-): Promise<T> {
+): Promise<TOutput> {
   const data = await apiFetch(path, init);
-  return schema.parse(data);
+  return parseWithSchema(schema, data);
 }

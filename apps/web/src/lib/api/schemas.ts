@@ -91,8 +91,8 @@ export const wishlistResponseSchema = z.object({
 
 export const productDetailSchema = productPublicDetailSchema;
 
-export type ProductListItemDto = z.infer<typeof productListItemSchema>;
-export type ProductDetailDto = z.infer<typeof productDetailSchema>;
+export type ProductListItemDto = z.output<typeof productListItemSchema>;
+export type ProductDetailDto = z.output<typeof productDetailSchema>;
 export type ProductsPageDto = z.infer<typeof productsPageSchema>;
 export type CategoryDto = z.infer<typeof categorySchema>;
 export type CategoryDetailDto = z.infer<typeof categoryDetailSchema>;

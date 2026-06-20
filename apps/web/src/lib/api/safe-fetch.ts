@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 
 import { apiFetchParsed, fetchPageLayout, isNotFoundError } from './client';
 
@@ -9,11 +9,11 @@ function isBuildPhaseApiUnavailable(error: unknown): boolean {
   return error instanceof TypeError && error.message === 'fetch failed';
 }
 
-export async function fetchOrNotFound<T>(
+export async function fetchOrNotFound<TOutput>(
   path: string,
-  schema: z.ZodType<T>,
+  schema: z.ZodType<TOutput, z.ZodTypeDef, unknown>,
   init?: RequestInit & { sessionId?: string },
-): Promise<T | null> {
+): Promise<TOutput | null> {
   try {
     return await apiFetchParsed(path, schema, init);
   } catch (error) {

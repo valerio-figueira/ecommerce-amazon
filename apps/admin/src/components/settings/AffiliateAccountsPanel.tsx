@@ -51,6 +51,10 @@ const MARKETPLACE_LABELS: Record<string, string> = {
 
 const ALL_MARKETPLACES = ['amazon_br', 'shopee_br', 'mercadolivre_br'] as const;
 
+function isAffiliateMarketplace(value: string): value is CreateAffiliateAccountBody['marketplace'] {
+  return ALL_MARKETPLACES.some((marketplace) => marketplace === value);
+}
+
 const TEXTAREA_CLASS =
   'flex min-h-[80px] w-full rounded-md border border-[var(--admin-border)] bg-white px-3 py-2 text-sm text-[var(--admin-text)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-primary)]';
 
@@ -329,7 +333,14 @@ export function AffiliateAccountsPanel({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Marketplace</Label>
-              <Select value={newMarketplace} onValueChange={setNewMarketplace}>
+              <Select
+                value={newMarketplace}
+                onValueChange={(value) => {
+                  if (isAffiliateMarketplace(value)) {
+                    setNewMarketplace(value);
+                  }
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o marketplace" />
                 </SelectTrigger>

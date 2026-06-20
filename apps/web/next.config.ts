@@ -26,6 +26,10 @@ const siteUrl =
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Lint and app typecheck run in CI/pre-commit (eslint + typecheck:apps).
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   allowedDevOrigins: ['localhost', '127.0.0.1', ...devOrigins],
   env: {
     NEXT_PUBLIC_STORAGE_PUBLIC_BASE_URL: storagePublicBaseUrl,

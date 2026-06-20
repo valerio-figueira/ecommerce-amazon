@@ -2,12 +2,14 @@ import { cache } from 'react';
 
 import {
   articlePublicDetailSchema,
-  resolveArticleUpdatedAtIso,
   type ArticlePublicDetail,
 } from '@ecommerce-amazon/shared/admin';
 import { pageLayoutDeliverySchema, type PageLayoutDeliveryDto } from '@ecommerce-amazon/shared/cms';
 import type { AboutPageContent } from '@ecommerce-amazon/shared/about';
-import { comparisonPublicDetailSchema } from '@ecommerce-amazon/shared/comparison';
+import {
+  comparisonPublicDetailSchema,
+  type ComparisonPublicDetail,
+} from '@ecommerce-amazon/shared/comparison';
 
 import { fetchCuratedCollection } from '@/lib/api/collections';
 import { fetchInstitutionalAboutPage } from '@/lib/api/institutional';
@@ -42,21 +44,14 @@ export const getCollection = cache(
   },
 );
 
-export const getComparison = cache(async (identifier: string) => {
-  return fetchOrNotFound(`/comparisons/${identifier}`, comparisonPublicDetailSchema);
-});
+export const getComparison = cache(
+  async (identifier: string): Promise<ComparisonPublicDetail | null> => {
+    return fetchOrNotFound(`/comparisons/${identifier}`, comparisonPublicDetailSchema);
+  },
+);
 
 export const getArticle = cache(async (slug: string): Promise<ArticlePublicDetail | null> => {
-  const article = await fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
-  if (!article) {
-    return null;
-  }
-
-  return {
-    ...article,
-    cluster: article.cluster ?? null,
-    updatedAt: resolveArticleUpdatedAtIso(article),
-  };
+  return fetchOrNotFound(`/articles/${slug}`, articlePublicDetailSchema);
 });
 
 export const getInstitutionalAboutPage = cache(async (): Promise<AboutPageContent> => {

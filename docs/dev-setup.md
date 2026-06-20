@@ -126,15 +126,18 @@ Após `npm install`, o script `prepare` instala o hook Git em `.husky/pre-commit
 Em cada commit:
 
 1. **lint-staged** — `prettier --write` e `eslint --fix` nos arquivos staged (`*.{ts,tsx,json,md}`)
-2. **quality** — espelha o job CI (sem integração): `format:check`, `lint`, `test:unit`
+2. **quality** — `format:check`, `lint`, `typecheck:apps` (TypeScript dos apps Next.js), `test:unit`
 
 Comandos úteis:
 
 ```bash
-npm run quality    # validação manual (format + lint + unit tests)
-npm run precommit  # o que o hook executa
+npm run quality       # validação manual (format + lint + typecheck apps + unit tests)
+npm run typecheck:apps  # só tsc --noEmit em apps/web e apps/admin (mesmo tsconfig do next build)
+npm run precommit     # o que o hook executa
 HUSKY=0 git commit -m "..."   # pular hook (emergência)
 ```
+
+**Por que `typecheck:apps`?** O ESLint usa `tsconfig.eslint-*` (paths para source); o `next build` usa `apps/*/tsconfig.json` e valida tipos de forma mais estrita (ex.: `z.output` vs `z.infer`, transforms Zod). Sem `typecheck:apps`, erros só apareciam no Docker `build_and_push`.
 
 Testes de integração **não** rodam no pre-commit (exigem Postgres/Redis); ficam no CI e via `npm run test:integration`.
 

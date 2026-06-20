@@ -72,6 +72,9 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
+      - name: Typecheck Next.js apps
+        run: npm run typecheck:apps
+
       - name: Prepare integration test database
         run: npm run db:migrate -w @ecommerce-amazon/infrastructure
 
