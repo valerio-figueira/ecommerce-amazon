@@ -7,7 +7,9 @@
     "baseUrl": ".",
     "paths": {
       "@ecommerce-amazon/shared": ["./src/index.ts"],
-      "@ecommerce-amazon/shared/*": ["./src/*"]
+      "@ecommerce-amazon/shared/*": ["./src/*"],
+      "@ecommerce-amazon/domain": ["../domain/src/index.ts"],
+      "@ecommerce-amazon/domain/*": ["../domain/src/*"]
     }
   },
   "references": [{ "path": "../domain" }],

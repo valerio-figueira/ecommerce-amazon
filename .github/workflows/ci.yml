@@ -58,6 +58,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build packages for type-aware lint
+        run: npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared
+
       - name: Lint
         run: npm run lint
 
