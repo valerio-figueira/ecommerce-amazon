@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Seed opcional (primeiro deploy) — exige SEED_FORCE=true no .env ou ambiente.
+# Seed opcional (primeiro deploy) — bootstrap sem catálogo demo; exige SEED_FORCE=true.
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/vitrine}"
@@ -14,7 +14,7 @@ set -a
 source "${APP_DIR}/.env"
 set +a
 
-echo "==> Rodando seed (SEED_FORCE=true)"
+echo "==> Rodando bootstrap seed (produção, sem mocks de catálogo)"
 docker pull "${MIGRATE_IMAGE}"
 
 docker run --rm \

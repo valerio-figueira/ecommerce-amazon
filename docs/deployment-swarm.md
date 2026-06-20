@@ -59,7 +59,7 @@ Depois:
 1. Adicionar chave SSH pública do usuário `deploy` em `~deploy/.ssh/authorized_keys`
 2. Criar environment **`production`** no GitHub com os secrets abaixo
 3. Gerar PAT `read:packages` → secret `GHCR_PULL_TOKEN` (pull na VPS)
-4. Disparar workflow **Deploy Production** com `run_seed: true` no primeiro deploy
+4. Disparar workflow **Deploy Production** com `run_seed: true` no primeiro deploy (bootstrap: operador, settings, home mínima — **sem** produtos/contas afiliado demo)
 
 ## Secrets GitHub (environment `production`)
 
@@ -95,7 +95,7 @@ Interno (Swarm): `API_INTERNAL_URL=http://api:3000`, `POSTGRES_HOST=postgres`, `
 | `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE` | |
 | `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID` | |
 | `EMAIL_FROM`, `RESEND_API_KEY` | |
-| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD` | Só primeiro deploy com seed |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD` | Só primeiro deploy com seed (cria operador admin; configure contas afiliado no painel depois) |
 | `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON` | Opcional |
 
 ## Pipeline GitHub Actions

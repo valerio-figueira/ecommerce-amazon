@@ -256,18 +256,35 @@ Migrations: [`0004_operators.sql`](../packages/infrastructure/src/persistence/dr
 
 Arquivo: [`packages/infrastructure/src/persistence/drizzle/seed.ts`](../packages/infrastructure/src/persistence/drizzle/seed.ts).
 
+O seed é **bifurcado por ambiente**:
+
+| Ambiente | Comando | Conteúdo |
+|----------|---------|----------|
+| Desenvolvimento (`NODE_ENV≠production`) | `npm run db:seed` | Bootstrap + catálogo demo (produtos, afiliados, artigos, coleções, cupons, clusters) |
+| Produção (`NODE_ENV=production`) | `SEED_FORCE=true npm run db:seed` | **Somente bootstrap** — operador admin, `site_settings`, home CMS mínima, página Sobre, auto-links, taxonomia de artigos |
+
+### Bootstrap (produção e dev)
+
+| Entidade | ID fixo (exemplo) | Notas |
+|----------|-------------------|-------|
+| Operador admin | `90111111-...` | email em `ADMIN_SEED_EMAIL`; em produção sem avatar/bio demo |
+| Page home | `f1111111-...` | layout mínimo em produção (hero + grids vazios); layout completo em dev |
+| Page sobre | `f2222222-...` | conteúdo institucional default da marca |
+| Categorias de artigos | `ac111111-...` | Guias, Reviews, Comparativos |
+
+### Demo (somente desenvolvimento)
+
 | Entidade | ID fixo (exemplo) | Slug / identificador |
 |----------|-------------------|----------------------|
 | Produto Amazon | `a1111111-...` | `cadeira-ergonomica-home-office` |
 | Produto Shopee | `a2222222-...` | `headset-gamer-7-1` |
+| Contas afiliado | `e1111111-...` | tags demo (`vitrine-21`, etc.) |
 | Artigo | `b1111111-...` | `guia-cadeira-ergonomica` |
 | Coleção | `c1111111-...` | `setup-gamer-iniciante` |
 | Cupom | `d1111111-...` | `VITRINE10` |
-| Page home | `f1111111-...` | `home` |
-| Blocos CMS | `f2111111-...` … `f6111111-...` | ver [cms-home-phase1.md](./cms-home-phase1.md) |
-| Operador admin | `90111111-...` | email em `ADMIN_SEED_EMAIL` |
+| Blocos CMS dev | `f2111111-...` … | ver [cms-home-phase1.md](./cms-home-phase1.md) |
 
-Produção: seed ignorado salvo `SEED_FORCE=true`.
+Produção: seed ignorado salvo `SEED_FORCE=true` (primeiro deploy via `deploy/scripts/seed.sh` ou workflow `run_seed: true`).
 
 ## Convenções
 

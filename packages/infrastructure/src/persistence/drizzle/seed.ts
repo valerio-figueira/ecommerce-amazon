@@ -123,37 +123,51 @@ async function runSeed(): Promise<void> {
     return;
   }
 
+  const devSeed = env.NODE_ENV !== 'production';
+
   const sql = postgres(env.DATABASE_URL, { max: 1, onnotice: () => {} });
   const db = drizzle(sql, { schema });
   const now = new Date();
 
   try {
-    await seedCategories(db, now, logger);
+    logger.info(devSeed ? 'Running development seed (with demo catalog)' : 'Running production bootstrap seed');
+
     await seedArticleCategories(db, now, logger);
 
-    const existing = await db
-      .select({ id: schema.products.id })
-      .from(schema.products)
-      .where(eq(schema.products.id, SEED_PRODUCT_AMAZON_ID))
-      .limit(1);
+    if (devSeed) {
+      await seedCategories(db, now, logger);
 
-    if (existing.length > 0) {
-      logger.info('Product seed data already present, skipping products');
-    } else {
-      logger.info('Inserting development seed data');
-      await insertProductSeed(db, now);
+      const existing = await db
+        .select({ id: schema.products.id })
+        .from(schema.products)
+        .where(eq(schema.products.id, SEED_PRODUCT_AMAZON_ID))
+        .limit(1);
+
+      if (existing.length > 0) {
+        logger.info('Product seed data already present, skipping products');
+      } else {
+        logger.info('Inserting development demo catalog');
+        await insertProductSeed(db, now);
+      }
     }
 
-    await seedHomePage(db, now, logger);
-    await ensureFlashDealsHomeLayout(db, logger);
-    await seedCollections(db, now, logger);
-    await ensureBentoHubMixHomeBlock(db, logger);
-    await ensureCuratedCollectionHomeBlock(db, logger);
-    await seedOperator(db, logger);
+    await seedHomePage(db, now, logger, devSeed);
+
+    if (devSeed) {
+      await ensureFlashDealsHomeLayout(db, logger);
+      await seedCollections(db, now, logger);
+      await ensureBentoHubMixHomeBlock(db, logger);
+      await ensureCuratedCollectionHomeBlock(db, logger);
+    }
+
+    await seedOperator(db, logger, devSeed);
     await seedSiteSettings(db, logger);
     await seedAboutPage(db, now, logger);
     await seedAutoLinks(db, logger);
-    await seedContentClusters(db, now, logger);
+
+    if (devSeed) {
+      await seedContentClusters(db, now, logger);
+    }
   } finally {
     await sql.end();
   }
@@ -393,6 +407,7 @@ async function seedHomePage(
   db: ReturnType<typeof drizzle<typeof schema>>,
   now: Date,
   logger: ReturnType<typeof createConsoleLogger>,
+  devSeed: boolean,
 ): Promise<void> {
   const existingPage = await db
     .select({ id: schema.pages.id })
@@ -407,6 +422,10 @@ async function seedHomePage(
 
   const brand = getBrandConfig(loadEnv());
 
+  const blocks = devSeed
+    ? buildDevHomePageBlocks()
+    : buildProductionHomePageBlocks(brand);
+
   await insertPageWithBlocks(
     db,
     {
@@ -419,7 +438,58 @@ async function seedHomePage(
       publishedAt: now,
       updatedAt: now,
     },
-    [
+    blocks,
+  );
+
+  logger.info(devSeed ? 'Home page CMS seed inserted (dev layout)' : 'Home page CMS seed inserted (production layout)');
+}
+
+function buildProductionHomePageBlocks(
+  brand: ReturnType<typeof getBrandConfig>,
+): Parameters<typeof insertPageWithBlocks>[2] {
+  return [
+    {
+      id: SEED_BLOCK_HERO_CAROUSEL_ID,
+      type: BlockType.HERO_CAROUSEL,
+      sortOrder: 0,
+      props: {
+        slides: [
+          {
+            imageUrl: `https://placehold.co/1200x800?text=${encodeURIComponent(brand.name)}`,
+            title: brand.name,
+            subtitle: brand.tagline,
+            ctaLabel: 'Conheça a vitrine',
+            ctaHref: '/sobre',
+          },
+        ],
+        autoplay: true,
+        intervalMs: 6000,
+      },
+    },
+    {
+      id: SEED_BLOCK_DYNAMIC_GRID_ID,
+      type: BlockType.DYNAMIC_PRODUCT_GRID,
+      sortOrder: 1,
+      props: FLASH_DEALS_BLOCK_PROPS,
+    },
+    {
+      id: SEED_BLOCK_GRID_ID,
+      type: BlockType.PRODUCT_GRID,
+      sortOrder: 2,
+      props: {
+        title: 'Destaques',
+        categorySlug: null,
+        sort: 'editorial_score',
+        pageSize: 12,
+        columns: 4,
+        catalogHref: '/categorias',
+      },
+    },
+  ];
+}
+
+function buildDevHomePageBlocks(): Parameters<typeof insertPageWithBlocks>[2] {
+  return [
       {
         id: SEED_BLOCK_HERO_CAROUSEL_ID,
         type: BlockType.HERO_CAROUSEL,
@@ -539,10 +609,7 @@ async function seedHomePage(
           intervalMs: 8000,
         },
       },
-    ],
-  );
-
-  logger.info('Home page CMS seed inserted');
+    ];
 }
 
 async function ensureFlashDealsHomeLayout(
@@ -1012,6 +1079,7 @@ async function seedArticleCategories(
 async function seedOperator(
   db: ReturnType<typeof drizzle<typeof schema>>,
   logger: ReturnType<typeof createConsoleLogger>,
+  devSeed: boolean,
 ): Promise<void> {
   const env = loadEnv();
   const brand = getBrandConfig(env);
@@ -1024,14 +1092,10 @@ async function seedOperator(
   const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
   const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
 
-  if (existing.length > 0) {
-    await db
-      .update(schema.operators)
-      .set({
-        passwordHash,
+  const operatorProfile = devSeed
+    ? {
         avatarUrl: PEXELS.authorAvatar,
         bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
-        role: 'admin',
         jobTitle: 'Fundador e curador-chefe',
         showOnTeam: true,
         teamPublicRole: TeamPublicRole.FOUNDER,
@@ -1039,6 +1103,25 @@ async function seedOperator(
           linkedin: 'https://linkedin.com/in/vitrine',
           instagram: brand.socials.instagram,
         },
+      }
+    : {
+        avatarUrl: null,
+        bio: null,
+        jobTitle: 'Administrador',
+        showOnTeam: false,
+        teamPublicRole: TeamPublicRole.MEMBER,
+        socialLinks: {
+          instagram: brand.socials.instagram,
+        },
+      };
+
+  if (existing.length > 0) {
+    await db
+      .update(schema.operators)
+      .set({
+        passwordHash,
+        role: 'admin',
+        ...operatorProfile,
         updatedAt: new Date(),
       })
       .where(eq(schema.operators.id, SEED_OPERATOR_ID));
@@ -1051,17 +1134,9 @@ async function seedOperator(
     email: env.ADMIN_SEED_EMAIL.toLowerCase(),
     passwordHash,
     name: `Administrador ${brand.name}`,
-    avatarUrl: PEXELS.authorAvatar,
-    bio: 'Especialista em curadoria de produtos para home office e setup gamer, com foco em ergonomia e custo-benefício.',
     role: 'admin',
     status: 'active',
-    jobTitle: 'Fundador e curador-chefe',
-    showOnTeam: true,
-    teamPublicRole: TeamPublicRole.FOUNDER,
-    socialLinks: {
-      linkedin: 'https://linkedin.com/in/vitrine',
-      instagram: brand.socials.instagram,
-    },
+    ...operatorProfile,
   });
 
   logger.info('Operator seed inserted', { email: env.ADMIN_SEED_EMAIL });
