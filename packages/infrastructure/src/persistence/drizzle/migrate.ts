@@ -1,5 +1,6 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
@@ -21,37 +22,61 @@ async function assertDatabaseConnection(databaseUrl: string): Promise<void> {
   }
 }
 
-async function runMigrations(): Promise<void> {
+export function resolveMigrationsFolder(): string {
+  const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+  const adjacentMigrations = path.join(moduleDir, 'migrations');
+
+  if (existsSync(path.join(adjacentMigrations, 'meta', '_journal.json'))) {
+    return adjacentMigrations;
+  }
+
+  return path.resolve(moduleDir, '../../../src/persistence/drizzle/migrations');
+}
+
+export async function runDatabaseMigrations(options?: {
+  databaseUrl?: string;
+  migrationsFolder?: string;
+}): Promise<void> {
   loadDotenvFromMonorepoRoot();
 
   const logger = createConsoleLogger();
   const env = loadEnv();
-  const migrationsFolder = path.join(path.dirname(fileURLToPath(import.meta.url)), 'migrations');
+  const databaseUrl = options?.databaseUrl ?? env.DATABASE_URL;
+  const migrationsFolder = options?.migrationsFolder ?? resolveMigrationsFolder();
 
   logger.info('Running database migrations', { migrationsFolder });
 
   try {
-    await assertDatabaseConnection(env.DATABASE_URL);
+    await assertDatabaseConnection(databaseUrl);
   } catch (error: unknown) {
-    console.error(formatDatabaseConnectionError(error, env.DATABASE_URL));
-    process.exit(1);
+    throw new Error(formatDatabaseConnectionError(error, databaseUrl));
   }
 
-  const migrationClient = postgres(env.DATABASE_URL, migrationPostgresOptions);
+  const migrationClient = postgres(databaseUrl, migrationPostgresOptions);
   const db = drizzle(migrationClient);
 
   try {
     await migrate(db, { migrationsFolder });
     logger.info('Database migrations completed');
   } catch (error: unknown) {
-    console.error(formatDatabaseConnectionError(error, env.DATABASE_URL));
-    process.exit(1);
+    throw new Error(formatDatabaseConnectionError(error, databaseUrl));
   } finally {
     await migrationClient.end();
   }
 }
 
-runMigrations().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
-});
+function isCliEntrypoint(): boolean {
+  const entrypoint = process.argv[1];
+  if (!entrypoint) {
+    return false;
+  }
+
+  return import.meta.url === pathToFileURL(path.resolve(entrypoint)).href;
+}
+
+if (isCliEntrypoint()) {
+  runDatabaseMigrations().catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
+}

@@ -72,5 +72,8 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
+      - name: Prepare integration test database
+        run: npm run db:migrate -w @ecommerce-amazon/infrastructure
+
       - name: Integration tests
         run: npm run test:integration

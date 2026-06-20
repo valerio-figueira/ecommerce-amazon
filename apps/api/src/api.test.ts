@@ -1,13 +1,25 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import Fastify from 'fastify';
 
+import { runDatabaseMigrations } from '@ecommerce-amazon/infrastructure';
+
+const TEST_DATABASE_URL = 'postgresql://vitrine:vitrine@localhost:5432/vitrine';
+const TEST_REDIS_URL = 'redis://localhost:6379';
+
 describe('API routes', () => {
   let app: ReturnType<typeof Fastify>;
 
   beforeAll(async () => {
-    vi.stubEnv('DATABASE_URL', 'postgresql://vitrine:vitrine@localhost:5432/vitrine');
-    vi.stubEnv('REDIS_URL', 'redis://localhost:6379');
+    vi.stubEnv('DATABASE_URL', TEST_DATABASE_URL);
+    vi.stubEnv('REDIS_URL', TEST_REDIS_URL);
+    vi.stubEnv('POSTGRES_HOST', 'localhost');
+    vi.stubEnv('POSTGRES_PORT', '5432');
+    vi.stubEnv('POSTGRES_USER', 'vitrine');
+    vi.stubEnv('POSTGRES_PASSWORD', 'vitrine');
+    vi.stubEnv('POSTGRES_DB', 'vitrine');
     vi.stubEnv('TELEMETRY_BUFFER_ENABLED', 'false');
+
+    await runDatabaseMigrations({ databaseUrl: TEST_DATABASE_URL });
 
     const { buildServer } = await import('../src/server.js');
     const server = await buildServer();
@@ -15,7 +27,9 @@ describe('API routes', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
     vi.unstubAllEnvs();
   });
 

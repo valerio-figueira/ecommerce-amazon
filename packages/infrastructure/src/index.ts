@@ -3,6 +3,7 @@ export { buildWorkerContainer } from './di/worker-container.js';
 export type { ApiContainer } from './di/api-container.js';
 export type { WorkerContainer } from './di/worker-container.js';
 export { createDrizzleClient } from './persistence/drizzle/client.js';
+export { runDatabaseMigrations } from './persistence/drizzle/migrate.js';
 export { schema } from './persistence/drizzle/client.js';
 export { RedisCacheStore, createRedisClient } from './cache/redis-cache.store.js';
 export { QUEUE_NAMES, createQueue } from './messaging/queues.js';

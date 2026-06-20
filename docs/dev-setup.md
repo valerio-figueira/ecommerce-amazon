@@ -138,6 +138,8 @@ HUSKY=0 git commit -m "..."   # pular hook (emergência)
 
 Testes de integração **não** rodam no pre-commit (exigem Postgres/Redis); ficam no CI e via `npm run test:integration`.
 
+Integração da API (`apps/api/src/api.test.ts`) roda migrations automaticamente no `beforeAll`. No CI, o step **Prepare integration test database** executa `db:migrate` antes da suíte.
+
 ## Troubleshooting
 
 | Sintoma                                              | Causa comum                                                                      | Ação                                                                                                                                                                             |
