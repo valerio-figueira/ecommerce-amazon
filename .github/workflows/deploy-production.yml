@@ -97,6 +97,8 @@ jobs:
   build_and_push:
     needs: quality
     runs-on: ubuntu-latest
+    # Secrets de produção (PUBLIC_BASE_URL, SITE_NAME) ficam no environment "production".
+    environment: production
     permissions:
       contents: read
       packages: write
@@ -133,6 +135,21 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Validate build-time secrets
+        if: matrix.app == 'web' || matrix.app == 'admin'
+        run: |
+          if [ -z "${{ secrets.PUBLIC_BASE_URL }}" ]; then
+            echo "::error::PUBLIC_BASE_URL is missing. Configure it on the production environment (Settings → Environments → production)."
+            exit 1
+          fi
+          case "${{ secrets.PUBLIC_BASE_URL }}" in
+            http://*|https://*) ;;
+            *)
+              echo "::error::PUBLIC_BASE_URL must start with http:// or https:// (got: ${{ secrets.PUBLIC_BASE_URL }})"
+              exit 1
+              ;;
+          esac
 
       # NEXT_PUBLIC_* são baked no build — rebuild obrigatório ao mudar PUBLIC_BASE_URL.
       - name: Build and push ${{ matrix.app }}

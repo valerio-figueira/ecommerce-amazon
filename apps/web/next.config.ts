@@ -14,14 +14,20 @@ const devOrigins =
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0) ?? [];
 
-const storagePublicBaseUrl =
-  process.env['STORAGE_PUBLIC_BASE_URL'] ??
-  `${(process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000').replace(/\/+$/, '')}/uploads`;
+function nonEmptyEnv(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value !== undefined && value.length > 0 ? value : undefined;
+}
 
-const siteName = process.env['SITE_NAME'] ?? process.env['NEXT_PUBLIC_SITE_NAME'] ?? 'Vitrine';
+const apiPublicUrl = nonEmptyEnv('NEXT_PUBLIC_API_URL') ?? 'http://localhost:3000';
+
+const storagePublicBaseUrl =
+  nonEmptyEnv('STORAGE_PUBLIC_BASE_URL') ?? `${apiPublicUrl.replace(/\/+$/, '')}/uploads`;
+
+const siteName = nonEmptyEnv('SITE_NAME') ?? nonEmptyEnv('NEXT_PUBLIC_SITE_NAME') ?? 'Vitrine';
 const siteUrl =
-  process.env['WEB_PUBLIC_URL'] ??
-  process.env['NEXT_PUBLIC_SITE_URL'] ??
+  nonEmptyEnv('WEB_PUBLIC_URL') ??
+  nonEmptyEnv('NEXT_PUBLIC_SITE_URL') ??
   `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
 
 const nextConfig: NextConfig = {
@@ -38,17 +44,14 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: buildWebNextImageRemotePatterns({
-      NEXT_PUBLIC_API_URL: process.env['NEXT_PUBLIC_API_URL'],
+      NEXT_PUBLIC_API_URL: apiPublicUrl,
       STORAGE_PUBLIC_BASE_URL: storagePublicBaseUrl,
-      API_INTERNAL_URL: process.env['API_INTERNAL_URL'],
+      API_INTERNAL_URL: nonEmptyEnv('API_INTERNAL_URL'),
       NEXT_ALLOWED_DEV_ORIGINS: process.env['NEXT_ALLOWED_DEV_ORIGINS'],
     }),
   },
   async rewrites() {
-    const apiUrl =
-      process.env['API_INTERNAL_URL'] ??
-      process.env['NEXT_PUBLIC_API_URL'] ??
-      'http://localhost:3000';
+    const apiUrl = nonEmptyEnv('API_INTERNAL_URL') ?? apiPublicUrl;
     return Promise.resolve([
       {
         source: '/go/:slug',

@@ -64,6 +64,12 @@ describe('brand config', () => {
     ).toBe('https://a.example');
   });
 
+  it('treats empty URL env as unset (Docker ARG without value)', () => {
+    expect(createBrandConfig({ WEB_PUBLIC_URL: '', NEXT_PUBLIC_SITE_URL: '' }).url).toBe(
+      'http://localhost:3001',
+    );
+  });
+
   it('formats titles and copyright copy', () => {
     const brand = createBrandConfig({ SITE_NAME: 'Vitrine' });
 

@@ -1,10 +1,9 @@
-import { loadEnv } from '@ecommerce-amazon/shared';
 import { getBrandConfig } from '@ecommerce-amazon/shared/config/brand';
 
 export function getSiteBaseUrl(): string {
-  return getBrandConfig(loadEnv()).url;
+  return getBrandConfig().url;
 }
 
 export function getServerBrandConfig() {
-  return getBrandConfig(loadEnv());
+  return getBrandConfig();
 }

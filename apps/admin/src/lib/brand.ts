@@ -1,8 +1,7 @@
-import { loadEnv } from '@ecommerce-amazon/shared';
 import { createBrandConfig, getBrandConfig } from '@ecommerce-amazon/shared/config/brand';
 
 export function getServerBrandConfig() {
-  return getBrandConfig(loadEnv());
+  return getBrandConfig();
 }
 
 export function getClientBrandConfig() {

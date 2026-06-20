@@ -22,6 +22,13 @@ export function buildDatabaseUrl(config: DatabaseConfig): string {
   return `postgresql://${user}:${password}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/${config.POSTGRES_DB}`;
 }
 
+/** Docker ARG/ENV often yields "" instead of unset; treat as missing for optional fields. */
+function emptyStringToUndefined(value: unknown): unknown {
+  return typeof value === 'string' && value.trim() === '' ? undefined : value;
+}
+
+const optionalUrl = z.preprocess(emptyStringToUndefined, z.string().url().optional());
+
 const envSchemaBase = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   POSTGRES_HOST: z.string().default('localhost'),
@@ -29,10 +36,10 @@ const envSchemaBase = z.object({
   POSTGRES_USER: z.string().default('vitrine'),
   POSTGRES_PASSWORD: z.string().default('vitrine'),
   POSTGRES_DB: z.string().default('vitrine'),
-  DATABASE_URL: z.string().url().optional(),
+  DATABASE_URL: optionalUrl,
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().int().positive().default(6379),
-  REDIS_URL: z.string().url().optional(),
+  REDIS_URL: optionalUrl,
   REDIS_CACHE_DB: z.coerce.number().int().min(0).max(15).default(0),
   REDIS_QUEUE_DB: z.coerce.number().int().min(0).max(15).default(1),
   REDIS_TELEMETRY_DB: z.coerce.number().int().min(0).max(15).default(2),
@@ -65,8 +72,8 @@ const envSchemaBase = z.object({
     z.string().default('AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE='),
   ),
   REVALIDATE_SECRET: z.string().default(''),
-  WEB_PUBLIC_URL: z.string().url().optional(),
-  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  WEB_PUBLIC_URL: optionalUrl,
+  NEXT_PUBLIC_SITE_URL: optionalUrl,
   SITE_NAME: z.string().default('Vitrine'),
   NEXT_PUBLIC_SITE_NAME: z.string().optional(),
   COMPANY_LEGAL_NAME: z.string().default('Vitrine Ltda'),
@@ -75,7 +82,7 @@ const envSchemaBase = z.object({
   SITE_SOCIAL_INSTAGRAM: z.string().url().default('https://instagram.com/vitrine'),
   SITE_SOCIAL_TELEGRAM: z.string().url().default('https://t.me/vitrine_ofertas'),
   STORAGE_DRIVER: z.enum(['filesystem', 's3', 'gcs']).default('filesystem'),
-  STORAGE_PUBLIC_BASE_URL: z.string().url().optional(),
+  STORAGE_PUBLIC_BASE_URL: optionalUrl,
   STORAGE_LOCAL_ROOT: z.string().default('./uploads'),
   AWS_S3_BUCKET: z.string().default(''),
   AWS_S3_REGION: z.string().default('us-east-1'),

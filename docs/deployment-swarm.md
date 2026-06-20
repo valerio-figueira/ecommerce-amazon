@@ -107,7 +107,8 @@ Lint, format, testes unitários e integração (Postgres + Redis como service co
 ### `deploy-production.yml` (push `main` + manual)
 
 1. **quality** — igual ao CI
-2. **build_and_push** — matrix: api, worker, web, admin, migrate → `ghcr.io/<owner>/vitrine-<app>:sha-<commit>`
+2. **build_and_push** — matrix: api, worker, web, admin, migrate → `ghcr.io/<owner>/vitrine-<app>:sha-<commit>`  
+   Usa o environment **`production`** (mesmos secrets de `PUBLIC_BASE_URL` / `SITE_NAME` que o deploy). Sem isso, os build-args de web/admin ficam vazios e o `next build` falha na coleta de páginas.
 3. **deploy_production** — SCP `deploy/` → VPS, `render-env.sh`, `deploy.sh`, seed opcional
 
 **Importante:** alterar `PUBLIC_BASE_URL` exige **rebuild** de `web` e `admin` (URLs `NEXT_PUBLIC_*` no build).

@@ -42,10 +42,21 @@ function resolveSiteName(source: BrandEnvSource): string {
   return source.SITE_NAME ?? source.NEXT_PUBLIC_SITE_NAME ?? BRAND_DEFAULTS.name;
 }
 
+function nonEmptyEnvValue(value: string | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function resolveSiteUrl(source: BrandEnvSource): string {
   const webPort = source.WEB_PORT ?? 3001;
   const fallback = `http://localhost:${webPort}`;
-  const raw = source.WEB_PUBLIC_URL ?? source.NEXT_PUBLIC_SITE_URL ?? fallback;
+  const raw =
+    nonEmptyEnvValue(source.WEB_PUBLIC_URL) ??
+    nonEmptyEnvValue(source.NEXT_PUBLIC_SITE_URL) ??
+    fallback;
   return normalizeSiteBaseUrl(raw);
 }
 

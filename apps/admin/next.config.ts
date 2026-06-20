@@ -13,10 +13,11 @@ const devOrigins =
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0) ?? [];
 
-const siteName = process.env['SITE_NAME'] ?? process.env['NEXT_PUBLIC_SITE_NAME'] ?? 'Vitrine';
+const siteName =
+  process.env['SITE_NAME']?.trim() || process.env['NEXT_PUBLIC_SITE_NAME']?.trim() || 'Vitrine';
 const siteUrl =
-  process.env['WEB_PUBLIC_URL'] ??
-  process.env['NEXT_PUBLIC_SITE_URL'] ??
+  process.env['WEB_PUBLIC_URL']?.trim() ||
+  process.env['NEXT_PUBLIC_SITE_URL']?.trim() ||
   `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
 
 // Production Swarm serves admin at /admin via Traefik; leave unset for local dev (localhost:3002).
