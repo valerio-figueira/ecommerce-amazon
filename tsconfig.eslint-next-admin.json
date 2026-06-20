@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.eslint-packages.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["apps/admin/src/*"],
+      "@ecommerce-amazon/domain": ["packages/domain/src/index.ts"],
+      "@ecommerce-amazon/domain/*": ["packages/domain/src/*"],
+      "@ecommerce-amazon/shared": ["packages/shared/src/index.ts"],
+      "@ecommerce-amazon/shared/*": ["packages/shared/src/*"],
+      "@ecommerce-amazon/shared/cms": ["packages/shared/src/cms/block-schemas.ts"],
+      "@ecommerce-amazon/application": ["packages/application/src/index.ts"],
+      "@ecommerce-amazon/application/*": ["packages/application/src/*"],
+      "@ecommerce-amazon/infrastructure": ["packages/infrastructure/src/index.ts"],
+      "@ecommerce-amazon/infrastructure/*": ["packages/infrastructure/src/*"]
+    }
+  }
+}

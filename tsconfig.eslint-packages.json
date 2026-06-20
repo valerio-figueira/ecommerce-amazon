@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ecommerce-amazon/domain": ["packages/domain/src/index.ts"],
+      "@ecommerce-amazon/domain/*": ["packages/domain/src/*"],
+      "@ecommerce-amazon/shared": ["packages/shared/src/index.ts"],
+      "@ecommerce-amazon/shared/*": ["packages/shared/src/*"],
+      "@ecommerce-amazon/shared/cms": ["packages/shared/src/cms/block-schemas.ts"],
+      "@ecommerce-amazon/application": ["packages/application/src/index.ts"],
+      "@ecommerce-amazon/application/*": ["packages/application/src/*"],
+      "@ecommerce-amazon/infrastructure": ["packages/infrastructure/src/index.ts"],
+      "@ecommerce-amazon/infrastructure/*": ["packages/infrastructure/src/*"]
+    }
+  }
+}
