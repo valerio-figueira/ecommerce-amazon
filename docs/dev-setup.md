@@ -119,6 +119,25 @@ npm run lint
 
 Ordem de build TypeScript: `domain` → `shared` → `application` → `infrastructure` → apps.
 
+## Pre-commit (Husky)
+
+Após `npm install`, o script `prepare` instala o hook Git em `.husky/pre-commit`.
+
+Em cada commit:
+
+1. **lint-staged** — `prettier --write` e `eslint --fix` nos arquivos staged (`*.{ts,tsx,json,md}`)
+2. **quality** — espelha o job CI (sem integração): `format:check`, `lint`, `test:unit`
+
+Comandos úteis:
+
+```bash
+npm run quality    # validação manual (format + lint + unit tests)
+npm run precommit  # o que o hook executa
+HUSKY=0 git commit -m "..."   # pular hook (emergência)
+```
+
+Testes de integração **não** rodam no pre-commit (exigem Postgres/Redis); ficam no CI e via `npm run test:integration`.
+
 ## Troubleshooting
 
 | Sintoma                                              | Causa comum                                                                      | Ação                                                                                                                                                                             |
@@ -133,9 +152,10 @@ Ordem de build TypeScript: `domain` → `shared` → `application` → `infrastr
 
 ## Scripts utilitários
 
-| Script                           | Função                                   |
-| -------------------------------- | ---------------------------------------- |
-| `scripts/compose.sh`             | Podman compose wrapper                   |
-| `scripts/init-local-postgres.sh` | Role/database vitrine no Postgres nativo |
-| `scripts/db-doctor.sh`           | Diagnóstico de porta e auth              |
-| `scripts/add-user-to-docker.sh`  | Adiciona user ao grupo docker            |
+| Script                              | Função                                              |
+| ----------------------------------- | --------------------------------------------------- |
+| `scripts/ensure-packages-built.mjs` | Builda pacotes workspace se `dist/` faltar (vitest) |
+| `scripts/compose.sh`                | Podman compose wrapper                              |
+| `scripts/init-local-postgres.sh`    | Role/database vitrine no Postgres nativo            |
+| `scripts/db-doctor.sh`              | Diagnóstico de porta e auth                         |
+| `scripts/add-user-to-docker.sh`     | Adiciona user ao grupo docker                       |

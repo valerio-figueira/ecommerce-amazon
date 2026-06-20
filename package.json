@@ -16,6 +16,8 @@
     "lint:fix": "node scripts/lint.mjs --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "quality": "npm run format:check && npm run lint && npm run test:unit",
+    "precommit": "lint-staged && npm run quality",
     "test": "node scripts/ensure-packages-built.mjs unit && vitest run",
     "test:unit": "node scripts/ensure-packages-built.mjs unit && vitest run --project unit",
     "test:integration": "node scripts/ensure-packages-built.mjs integration && vitest run --project integration",
@@ -27,7 +29,8 @@
     "db:doctor": "bash scripts/db-doctor.sh",
     "infra:up": "bash scripts/compose.sh up -d postgres redis",
     "infra:down": "bash scripts/compose.sh down",
-    "infra:logs": "bash scripts/compose.sh logs -f postgres redis"
+    "infra:logs": "bash scripts/compose.sh logs -f postgres redis",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
@@ -35,6 +38,8 @@
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
     "prettier": "^3.5.3",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3",
@@ -44,5 +49,9 @@
   "packageManager": "npm@10.0.0",
   "engines": {
     "node": ">=20"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,json,md}": "prettier --write",
+    "*.{ts,tsx}": "eslint --fix"
   }
 }
