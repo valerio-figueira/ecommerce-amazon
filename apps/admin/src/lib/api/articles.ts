@@ -46,7 +46,10 @@ export async function listAdminArticles(
 export async function listAdminArticlePicker(): Promise<
   Array<{ id: string; slug: string; title: string }>
 > {
-  const response = await adminFetchParsed('/admin/articles?picker=true', adminArticlePickerResponseSchema);
+  const response = await adminFetchParsed(
+    '/admin/articles?picker=true',
+    adminArticlePickerResponseSchema,
+  );
   return response.items.map((item) => ({
     id: item.id,
     slug: item.slug,
@@ -62,19 +65,14 @@ export async function getAdminArticle(id: string): Promise<AdminArticleDetail | 
   }
 }
 
-export async function createAdminArticle(
-  body: CreateArticleBody,
-): Promise<CreateArticleResponse> {
+export async function createAdminArticle(body: CreateArticleBody): Promise<CreateArticleResponse> {
   return adminFetchParsed('/admin/articles', createArticleResponseSchema, {
     method: 'POST',
     body,
   });
 }
 
-export async function updateAdminArticle(
-  id: string,
-  body: UpdateArticleBody,
-): Promise<void> {
+export async function updateAdminArticle(id: string, body: UpdateArticleBody): Promise<void> {
   await adminFetch(`/admin/articles/${id}`, {
     method: 'PATCH',
     body,

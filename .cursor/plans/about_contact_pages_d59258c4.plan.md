@@ -3,16 +3,16 @@ name: About Contact Pages
 overview: Implementar `/sobre` e `/contato` como páginas institucionais (ISR), com conteúdo da Sobre persistido no CMS (contrato Zod + API + seed; editor Admin em fase futura), equipe dinâmica via operadores (`GET /team`), e requisitos E-E-A-T/CRO do brief.
 todos:
   - id: schema-team-profile
-    content: "Migration 0017: job_title, social_links, show_on_team, team_sort_order + domain/repo/use case GetPublicTeamMembers"
+    content: 'Migration 0017: job_title, social_links, show_on_team, team_sort_order + domain/repo/use case GetPublicTeamMembers'
     status: completed
   - id: cms-institutional-schema
-    content: "Migration 0018: page_kind + institutional_content em pages; seed slug sobre; use cases Get/UpdateInstitutionalPage + GET /institutional-pages/:slug"
+    content: 'Migration 0018: page_kind + institutional_content em pages; seed slug sobre; use cases Get/UpdateInstitutionalPage + GET /institutional-pages/:slug'
     status: completed
   - id: api-team-endpoint
     content: GET /team público + estender PATCH /admin/profile e profile-schemas
     status: completed
   - id: admin-profile-public
-    content: "ProfileForm: toggle showOnTeam, jobTitle, campos de redes sociais"
+    content: 'ProfileForm: toggle showOnTeam, jobTitle, campos de redes sociais'
     status: completed
   - id: shared-about-contact
     content: about-content.schema.ts (Zod + trafficDirection + sanitize helper) + defaults/resolve + contact + JSON-LD Person↔Organization + testes
@@ -24,7 +24,7 @@ todos:
     content: Corrigir header, expandir footer, sitemap web + SQL repository
     status: completed
   - id: admin-about-editor
-    content: "Fase futura: AboutPageEditor em /paginas/sobre, PATCH admin, preview draft"
+    content: 'Fase futura: AboutPageEditor em /paginas/sobre, PATCH admin, preview draft'
     status: pending
   - id: docs-about-contact
     content: docs/about-contact-pages.md + atualizar docs/README.md e database-schema.md
@@ -87,12 +87,12 @@ flowchart TB
 
 Novas colunas em `operators`:
 
-| Coluna | Tipo | Uso |
-|--------|------|-----|
-| `job_title` | `varchar(120)` nullable | Cargo público ("Editor de reviews") |
-| `social_links` | `jsonb` nullable | `{ linkedin?, instagram?, x?, telegram? }` |
-| `show_on_team` | `boolean NOT NULL DEFAULT false` | Aparece na seção "Quem somos" |
-| `team_sort_order` | `smallint` nullable | Ordenação na grid (null → alfabética) |
+| Coluna             | Tipo                                | Uso                                                                           |
+| ------------------ | ----------------------------------- | ----------------------------------------------------------------------------- |
+| `job_title`        | `varchar(120)` nullable             | Cargo público ("Editor de reviews")                                           |
+| `social_links`     | `jsonb` nullable                    | `{ linkedin?, instagram?, x?, telegram? }`                                    |
+| `show_on_team`     | `boolean NOT NULL DEFAULT false`    | Aparece na seção "Quem somos"                                                 |
+| `team_sort_order`  | `smallint` nullable                 | Ordenação na grid (null → alfabética)                                         |
 | `team_public_role` | enum `founder` \| `member` nullable | JSON-LD: `Organization.founder` vs `Organization.employee` (default `member`) |
 
 **Camadas:** Domain → Infra → Shared (`profile-schemas.ts`) → Application (`GetPublicTeamMembers`, estender `UpdateOperatorProfile`) → API `GET /team`.
@@ -100,7 +100,9 @@ Novas colunas em `operators`:
 Resposta pública:
 
 ```typescript
-{ members: Array<{ name, jobTitle, bio, avatarUrl, socialLinks, publicTeamRole }> }
+{
+  members: Array<{ name; jobTitle; bio; avatarUrl; socialLinks; publicTeamRole }>;
+}
 ```
 
 ### Admin `/perfil`
@@ -115,12 +117,13 @@ Estender [`ProfileForm.tsx`](apps/admin/src/components/profile/ProfileForm.tsx) 
 
 Estender tabela `pages` (reutiliza draft/publish/SEO existentes — [`PageLayout`](packages/domain/src/entities/PageLayout.ts)):
 
-| Coluna | Tipo | Uso |
-|--------|------|-----|
-| `page_kind` | enum `block_layout` \| `institutional` | Default `block_layout` (home); Sobre = `institutional` |
-| `institutional_content` | `jsonb` nullable | Payload validado por `AboutPageContentSchema` |
+| Coluna                  | Tipo                                   | Uso                                                    |
+| ----------------------- | -------------------------------------- | ------------------------------------------------------ |
+| `page_kind`             | enum `block_layout` \| `institutional` | Default `block_layout` (home); Sobre = `institutional` |
+| `institutional_content` | `jsonb` nullable                       | Payload validado por `AboutPageContentSchema`          |
 
 **Regras:**
+
 - `page_kind = block_layout` → comportamento atual (`page_blocks` + `GetPublishedPageLayout`)
 - `page_kind = institutional` → ignora blocos; conteúdo vem de `institutional_content`
 - Seed: página `slug = sobre`, `status = published`, `institutional_content` = defaults serializados
@@ -155,7 +158,7 @@ export const aboutPageContentSchema = z.object({
   heroTitle: z.string().min(1).max(160),
   heroIntro: z.string().min(1).max(500),
   sections: z.array(aboutSectionSchema).length(4), // ordem fixa; CMS edita texto, não reordena
-  teamSectionIntro: z.string().min(1).max(500),  // intro #equipe; cards vêm de GET /team
+  teamSectionIntro: z.string().min(1).max(500), // intro #equipe; cards vêm de GET /team
   trafficDirection: aboutTrafficDirectionSchema, // seção #proximos-passos — CRO suave pós-equipe
   lastUpdated: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
@@ -163,7 +166,10 @@ export const aboutPageContentSchema = z.object({
 export type AboutPageContent = z.infer<typeof aboutPageContentSchema>;
 
 export function buildDefaultAboutPageContent(brand: BrandConfig): AboutPageContent;
-export function resolveAboutPageContent(stored: unknown | null, brand: BrandConfig): AboutPageContent;
+export function resolveAboutPageContent(
+  stored: unknown | null,
+  brand: BrandConfig,
+): AboutPageContent;
 export function parseAboutPageContent(raw: unknown): AboutPageContent; // strict — saves Admin
 export function buildAboutPageMetadata(brand, content?, seo?): MetadataShape;
 
@@ -175,20 +181,20 @@ export function sanitizeInstitutionalHtml(raw: string): string;
 
 **Validação de links em `trafficDirection`:** `href` deve ser path relativo interno (`/artigos`, `/cupons`) — rejeitar URLs externas e `javascript:` no `parseAboutPageContent` (Admin save). Defaults:
 
-| Label (default) | href |
-|---------------|------|
-| Ver nossos guias de compra | `/artigos` |
-| Explorar cupons na Amazon e Shopee | `/cupons` |
+| Label (default)                    | href       |
+| ---------------------------------- | ---------- |
+| Ver nossos guias de compra         | `/artigos` |
+| Explorar cupons na Amazon e Shopee | `/cupons`  |
 
 Nota: `/cupons` ainda não existe na vitrine (stub PRD); incluir link mesmo assim — rota será entregue em fase growth. Até lá, operador pode trocar o href no CMS futuro.
 
 ### Application layer
 
-| Use case | Responsabilidade |
-|----------|------------------|
+| Use case                        | Responsabilidade                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `GetPublishedInstitutionalPage` | Busca `pages` por slug + `page_kind=institutional` + `status=published`; `resolveAboutPageContent` |
-| `GetAdminInstitutionalPage` | Mesmo para operador autenticado (inclui draft) |
-| `UpdateInstitutionalPage` | Valida com `parseAboutPageContent`, persiste JSON, invalida cache, dispara revalidate web |
+| `GetAdminInstitutionalPage`     | Mesmo para operador autenticado (inclui draft)                                                     |
+| `UpdateInstitutionalPage`       | Valida com `parseAboutPageContent`, persiste JSON, invalida cache, dispara revalidate web          |
 
 Estender [`PageRepository`](packages/domain/src/repositories/PageRepository.ts): `findInstitutionalBySlug`, `updateInstitutionalContent`.
 
@@ -196,11 +202,11 @@ Cache Redis: chave `institutional-page:{slug}` (TTL 5 min, alinhado ao CMS home)
 
 ### API
 
-| Método | Rota | Fase |
-|--------|------|------|
-| GET | `/institutional-pages/:slug` | **Agora** — retorna `{ layout: { slug, seoTitle, seoDescription, updatedAt }, content: AboutPageContent }` |
-| GET | `/admin/institutional-pages/:slug` | **Agora** — inclui draft |
-| PATCH | `/admin/institutional-pages/:slug` | **Futuro** — body `{ content, status?, seoTitle?, seoDescription? }` |
+| Método | Rota                               | Fase                                                                                                       |
+| ------ | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| GET    | `/institutional-pages/:slug`       | **Agora** — retorna `{ layout: { slug, seoTitle, seoDescription, updatedAt }, content: AboutPageContent }` |
+| GET    | `/admin/institutional-pages/:slug` | **Agora** — inclui draft                                                                                   |
+| PATCH  | `/admin/institutional-pages/:slug` | **Futuro** — body `{ content, status?, seoTitle?, seoDescription? }`                                       |
 
 Implementar GET + stubs/types para PATCH (rota comentada ou 501) para o Admin futuro plugar sem refactor.
 
@@ -249,7 +255,7 @@ Props do componente:
 
 ```typescript
 type AboutPageContentProps = {
-  content: AboutPageContent;       // resolvido (CMS ou default)
+  content: AboutPageContent; // resolvido (CMS ou default)
   teamMembers: PublicTeamMember[];
 };
 ```
@@ -258,12 +264,13 @@ type AboutPageContentProps = {
 
 Conteúdo institucional vem de JSON no banco; operadores futuros podem inserir `<strong>`, `<a>`, etc.
 
-| Camada | Onde | O quê |
-|--------|------|-------|
+| Camada    | Onde                                                | O quê                                                                                   |
+| --------- | --------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | **Write** | `UpdateInstitutionalPage` + `parseAboutPageContent` | Sanitizar strings HTML em todo save Admin (fase futura) via `sanitizeInstitutionalHtml` |
-| **Read** | `AboutPageContent.tsx` / `SafeInstitutionalHtml` | Re-sanitizar no render (defesa se DB legado ou bypass) |
+| **Read**  | `AboutPageContent.tsx` / `SafeInstitutionalHtml`    | Re-sanitizar no render (defesa se DB legado ou bypass)                                  |
 
 Implementação em `packages/shared/src/about/sanitize-institutional-html.ts`:
+
 - Dependência: **`isomorphic-dompurify`** (SSR-safe no Next.js App Router)
 - Allowlist: `p`, `br`, `strong`, `em`, `a[href|title|target|rel]`, `ul`, `ol`, `li`
 - Proibido: `script`, `style`, event handlers, `javascript:` URLs
@@ -288,6 +295,7 @@ const personId = (index: number) => `${brand.url}/sobre#person-${index}`;
 ```
 
 Regras de mapeamento equipe:
+
 - `publicTeamRole === 'founder'` → incluir em `Organization.founder[]`
 - demais → `Organization.employee[]`
 - `sameAs` em Person: valores não-vazios de `socialLinks` (linkedin, instagram, x, telegram)
@@ -299,12 +307,12 @@ Testes em `site-json-ld.test.ts`: validar presença de `worksFor`, `employee`/`f
 
 ## Fase 4 — Navegação, SEO e sitemap
 
-| Artefato | Mudança |
-|----------|---------|
-| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) | `{ href: '/sobre', label: 'Sobre' }` |
-| [`Footer.tsx`](apps/web/src/components/layout/Footer.tsx) | Links `Sobre`, `Contato`, `/legal` |
-| [`sitemap.ts`](apps/web/src/app/sitemap.ts) | `/sobre`, `/contato` |
-| [`drizzle-sitemap.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-sitemap.repository.ts) | Rotas estáticas incluindo `/legal` |
+| Artefato                                                                                                              | Mudança                              |
+| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx)                                                     | `{ href: '/sobre', label: 'Sobre' }` |
+| [`Footer.tsx`](apps/web/src/components/layout/Footer.tsx)                                                             | Links `Sobre`, `Contato`, `/legal`   |
+| [`sitemap.ts`](apps/web/src/app/sitemap.ts)                                                                           | `/sobre`, `/contato`                 |
+| [`drizzle-sitemap.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-sitemap.repository.ts) | Rotas estáticas incluindo `/legal`   |
 
 Metadata SEO da Sobre: prioriza `pages.seoTitle` / `pages.seoDescription` do CMS; fallback para defaults derivados de `heroTitle` / `heroIntro`.
 
@@ -312,18 +320,18 @@ Metadata SEO da Sobre: prioriza `pages.seoTitle` / `pages.seoDescription` do CMS
 
 ## Fase 5 — Admin CMS editor (futura, já preparada)
 
-**Rota:** [`/paginas/sobre`](apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx) — detectar `page_kind=institutional` e renderizar **`AboutPageEditor`** em vez de `CMSBlockOrderManager`.
+**Rota:** [`/paginas/sobre`](<apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx>) — detectar `page_kind=institutional` e renderizar **`AboutPageEditor`** em vez de `CMSBlockOrderManager`.
 
 **UI** (painéis flutuantes — [`11-admin-floating-panels.mdc`](.cursor/rules/11-admin-floating-panels.mdc)):
 
-| Painel | Campos |
-|--------|--------|
-| SEO | `seoTitle`, `seoDescription` |
-| Hero | `heroTitle`, `heroIntro` |
-| Seções | Form repetível por `id` (título, parágrafos, listItems); `#afiliados` com preview do callout |
-| Equipe | `teamSectionIntro` + aviso "membros vêm de Perfis com 'Exibir na Sobre'" |
-| Próximos passos | `trafficDirection` (título, intro, links editáveis — labels/hrefs internos) |
-| Publicação | Status draft/published (reutiliza `PageStatus`) |
+| Painel          | Campos                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| SEO             | `seoTitle`, `seoDescription`                                                                 |
+| Hero            | `heroTitle`, `heroIntro`                                                                     |
+| Seções          | Form repetível por `id` (título, parágrafos, listItems); `#afiliados` com preview do callout |
+| Equipe          | `teamSectionIntro` + aviso "membros vêm de Perfis com 'Exibir na Sobre'"                     |
+| Próximos passos | `trafficDirection` (título, intro, links editáveis — labels/hrefs internos)                  |
+| Publicação      | Status draft/published (reutiliza `PageStatus`)                                              |
 
 **Não incluir no editor:** cards de equipe (dinâmicos via operadores) — evita duplicação.
 
@@ -337,12 +345,12 @@ Metadata SEO da Sobre: prioriza `pages.seoTitle` / `pages.seoDescription` do CMS
 
 Texto pt-BR parametrizado por `BrandConfig`. Seções default:
 
-| ID | Foco |
-|----|------|
-| `#proposta` | Gancho orientado ao usuário (`brand.tagline`) |
-| `#metodo` | Curadoria Amazon + Shopee, histórico local, revisão humana |
-| `#afiliados` | Disclosure com `callout: true` |
-| `#equipe` | Intro + equipe dinâmica |
+| ID                 | Foco                                                          |
+| ------------------ | ------------------------------------------------------------- |
+| `#proposta`        | Gancho orientado ao usuário (`brand.tagline`)                 |
+| `#metodo`          | Curadoria Amazon + Shopee, histórico local, revisão humana    |
+| `#afiliados`       | Disclosure com `callout: true`                                |
+| `#equipe`          | Intro + equipe dinâmica                                       |
 | `#proximos-passos` | Direcionamento suave: artigos + cupons (sem banner de vendas) |
 
 **CRO:** sem CTA comercial agressivo (preço, marketplace direto, urgência). A seção `#proximos-passos` é recirculação editorial — próximo passo natural após validar confiança, alinhada à regra de interlinking do growth PRD.
@@ -352,6 +360,7 @@ Texto pt-BR parametrizado por `BrandConfig`. Seções default:
 ## Documentação
 
 Criar [`docs/about-contact-pages.md`](docs/about-contact-pages.md):
+
 - Contrato CMS (`AboutPageContentSchema` + `trafficDirection`)
 - Sanitização HTML (`sanitizeInstitutionalHtml`, allowlist DOMPurify)
 - JSON-LD Organization ↔ Person (`employee`/`founder`, `worksFor`, `sameAs`)
@@ -388,6 +397,7 @@ curl -sI http://localhost:3001/sobre | head
 ```
 
 Checklist manual:
+
 - `/sobre` renderiza conteúdo do seed CMS (alterar JSON no DB reflete após cache/revalidate)
 - API down → fallback defaults em shared
 - Operador `show_on_team=true` aparece na grid

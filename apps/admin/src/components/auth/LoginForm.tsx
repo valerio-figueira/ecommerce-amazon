@@ -70,12 +70,17 @@ export function LoginForm() {
               {brand.name.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="main-title text-xl font-bold text-[color:var(--admin-navy)]">{brand.name}</h1>
+              <h1 className="main-title text-xl font-bold text-[color:var(--admin-navy)]">
+                {brand.name}
+              </h1>
               <p className="subtitle text-sm text-[color:var(--admin-text-muted)]">Painel CMS</p>
             </div>
           </div>
 
-          <form className="admin-login-form space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <form
+            className="admin-login-form space-y-4"
+            onSubmit={(event) => void handleSubmit(event)}
+          >
             <div className="box w-full">
               <label className="sr-only" htmlFor="email">
                 E-mail

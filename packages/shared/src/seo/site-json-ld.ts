@@ -38,9 +38,7 @@ export type ArticleJsonLdInput = {
 };
 
 export function buildOrganizationJsonLd(brand: BrandConfig): Record<string, unknown> {
-  const sameAs = [brand.socials.instagram, brand.socials.telegram].filter(
-    (url) => url.length > 0,
-  );
+  const sameAs = [brand.socials.instagram, brand.socials.telegram].filter((url) => url.length > 0);
 
   return {
     '@context': 'https://schema.org',
@@ -94,9 +92,7 @@ export type AboutPageJsonLdTeamMember = {
   publicTeamRole: 'founder' | 'member';
 };
 
-function collectPersonSameAs(
-  socialLinks: AboutPageJsonLdTeamMember['socialLinks'],
-): string[] {
+function collectPersonSameAs(socialLinks: AboutPageJsonLdTeamMember['socialLinks']): string[] {
   if (!socialLinks) return [];
   return [socialLinks.linkedin, socialLinks.instagram, socialLinks.x, socialLinks.telegram].filter(
     (url): url is string => typeof url === 'string' && url.length > 0,

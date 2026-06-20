@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
-
 import { getOperatorProfile, updateOperatorProfile } from '@/lib/api/profile';
 import { getSessionCookieMaxAge } from '@/lib/auth/jwt-expiry';
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants';

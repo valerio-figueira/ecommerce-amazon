@@ -27,10 +27,7 @@ export default async function ArtigosPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Artigos"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Artigos' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Artigos' }]}
       />
       <AdminPageCard>
         {apiUnavailable ? (

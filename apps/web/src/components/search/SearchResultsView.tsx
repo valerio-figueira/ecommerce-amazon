@@ -10,11 +10,7 @@ import { ArticleCard } from '@/components/articles/ArticleCard';
 import { ListingPagination } from '@/components/listing/ListingPagination';
 import { ProductCard } from '@/components/product/ProductCard';
 import { SearchTypeSwitch } from '@/components/search/SearchTypeSwitch';
-import {
-  searchTypeToParam,
-  totalSearchPages,
-  type SearchResultType,
-} from '@/lib/api/search';
+import { searchTypeToParam, totalSearchPages, type SearchResultType } from '@/lib/api/search';
 import type { ProductsPageDto } from '@/lib/api/schemas';
 
 type SearchResultsViewProps = {
@@ -25,11 +21,7 @@ type SearchResultsViewProps = {
   articles: PublishedArticlesListResponse;
 };
 
-function buildSearchHref(
-  query: string,
-  type: SearchResultType,
-  page: number,
-): string {
+function buildSearchHref(query: string, type: SearchResultType, page: number): string {
   const params = new URLSearchParams();
   params.set('q', query);
   if (type === 'articles') {
@@ -54,8 +46,7 @@ export function SearchResultsView({
   const productTotal = products.total;
   const articleTotal = articles.total;
   const activeTotal = activeType === 'products' ? productTotal : articleTotal;
-  const activePageSize =
-    activeType === 'products' ? products.pageSize : articles.limit;
+  const activePageSize = activeType === 'products' ? products.pageSize : articles.limit;
   const totalPages = totalSearchPages(activeTotal, activePageSize);
   const activeItems = activeType === 'products' ? products.items : articles.items;
 
@@ -90,9 +81,7 @@ export function SearchResultsView({
       <div
         role="tabpanel"
         id={activeType === 'products' ? 'search-panel-products' : 'search-panel-articles'}
-        aria-labelledby={
-          activeType === 'products' ? 'search-tab-products' : 'search-tab-articles'
-        }
+        aria-labelledby={activeType === 'products' ? 'search-tab-products' : 'search-tab-articles'}
       >
         {activeItems.length === 0 ? (
           <div className="rounded-[var(--radius)] border border-dashed border-neutral-300 bg-white px-6 py-12 text-center">

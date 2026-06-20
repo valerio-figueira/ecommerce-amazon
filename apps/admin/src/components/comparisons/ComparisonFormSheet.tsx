@@ -70,7 +70,9 @@ export function ComparisonFormSheet({
 
   useEffect(() => {
     if (!open) return;
-    void listProductsClient().then(setProducts).catch(() => setProducts([]));
+    void listProductsClient()
+      .then(setProducts)
+      .catch(() => setProducts([]));
   }, [open]);
 
   useEffect(() => {
@@ -252,7 +254,11 @@ export function ComparisonFormSheet({
   }
 
   const siteBase = process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3001';
-  const previewPath = slug.trim() ? `/comparar/${slug.trim()}` : shareToken ? `/comparar/${shareToken}` : null;
+  const previewPath = slug.trim()
+    ? `/comparar/${slug.trim()}`
+    : shareToken
+      ? `/comparar/${shareToken}`
+      : null;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -265,9 +271,14 @@ export function ComparisonFormSheet({
         </SheetHeader>
 
         {loading ? (
-          <p className="px-6 py-8 text-center text-sm text-[var(--admin-text-muted)]">Carregando…</p>
+          <p className="px-6 py-8 text-center text-sm text-[var(--admin-text-muted)]">
+            Carregando…
+          </p>
         ) : (
-          <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => void handleSaveDraft(event)}>
+          <form
+            className="flex min-h-0 flex-1 flex-col"
+            onSubmit={(event) => void handleSaveDraft(event)}
+          >
             <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="rounded-full bg-[var(--admin-accent-subtle)] px-2 py-0.5 font-medium">
@@ -282,7 +293,11 @@ export function ComparisonFormSheet({
 
               <div className="space-y-2">
                 <Label>Produtos (2–3, mesma categoria)</Label>
-                <ProductMultiSelect products={products} value={productIds} onChange={handleProductChange} />
+                <ProductMultiSelect
+                  products={products}
+                  value={productIds}
+                  onChange={handleProductChange}
+                />
               </div>
 
               <div className="space-y-2">
@@ -334,7 +349,11 @@ export function ComparisonFormSheet({
 
               <div className="space-y-2">
                 <Label htmlFor="comparison-seo-title">SEO title (opcional)</Label>
-                <Input id="comparison-seo-title" value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} />
+                <Input
+                  id="comparison-seo-title"
+                  value={seoTitle}
+                  onChange={(event) => setSeoTitle(event.target.value)}
+                />
               </div>
 
               <div className="space-y-2">
@@ -375,7 +394,11 @@ export function ComparisonFormSheet({
               <Button type="submit" variant="outline" disabled={saving}>
                 {saving ? 'Salvando…' : 'Salvar rascunho'}
               </Button>
-              <Button type="button" disabled={!canPublish || publishing} onClick={() => void handlePublish()}>
+              <Button
+                type="button"
+                disabled={!canPublish || publishing}
+                onClick={() => void handlePublish()}
+              >
                 {publishing ? 'Publicando…' : 'Publicar'}
               </Button>
             </SheetFooter>

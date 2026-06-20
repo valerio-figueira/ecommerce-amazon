@@ -30,7 +30,10 @@ function makeProduct(id: string, categoryId?: string): Product {
     titleClean: `Produto ${id}`,
     titleRaw: `Produto ${id}`,
     price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
-    affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
+    affiliateLink: AffiliateLink.create(
+      'https://www.amazon.com.br/dp/test?tag=vitrine-20',
+      'amazon_br',
+    ),
     images: [],
     specsNormalized: [],
     editorialScore: 80,

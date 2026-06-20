@@ -3,19 +3,19 @@ name: Article Editorial Embed
 overview: Refatorar a renderização de shortcodes em `/artigos/[slug]` para integrar embeds de produto ao fluxo `prose`, com `ProductCard variant="editorial"` em layout horizontal (imagem max 160px) e listas compactas de prós/contras (2+1).
 todos:
   - id: fetch-detail-dto
-    content: "artigos/[slug]/page.tsx: buscar productDetailSchema e tipar productsBySlug como ProductDetailDto"
+    content: 'artigos/[slug]/page.tsx: buscar productDetailSchema e tipar productsBySlug como ProductDetailDto'
     status: completed
   - id: article-body-prose
-    content: "ArticleBody: prose único + aside.not-prose para segmentos product"
+    content: 'ArticleBody: prose único + aside.not-prose para segmentos product'
     status: completed
   - id: product-card-editorial
-    content: "ProductCard: variant editorial horizontal max-w-[160px] + props pros/cons"
+    content: 'ProductCard: variant editorial horizontal max-w-[160px] + props pros/cons'
     status: completed
   - id: pros-cons-component
     content: Criar ProductEditorialProsCons (2 prós + 1 contra)
     status: completed
   - id: article-embed-wire
-    content: "ArticleProductEmbed: variant editorial + passar pros/cons"
+    content: 'ArticleProductEmbed: variant editorial + passar pros/cons'
     status: completed
   - id: docs-articles-rendering
     content: Atualizar docs/articles-public-rendering.md com novo pipeline e variant
@@ -37,6 +37,7 @@ flowchart TB
 ```
 
 Problemas:
+
 - [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx) fragmenta o conteúdo em múltiplos `div.prose` + `space-y-6`, quebrando o fluxo tipográfico contínuo.
 - [`ArticleProductEmbed.tsx`](apps/web/src/components/articles/ArticleProductEmbed.tsx) usa card vertical `compact`.
 - [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx) busca produtos com `productListItemSchema`, mas a API `GET /products/:slug` já retorna `ProductDetailDto` com `pros`/`cons` ([`productDetailSchema`](apps/web/src/lib/api/schemas.ts)).
@@ -108,6 +109,7 @@ cons?: string[];
 ```
 
 **Layout editorial (horizontal):**
+
 - Container: `flex flex-col gap-4 sm:flex-row sm:items-start` (mobile empilha; desktop inline).
 - Imagem: `shrink-0 w-full max-w-[160px]`, `aspect-square`, `rounded-xl`.
 - Coluna de conteúdo: título (link interno), `ProductRating`, `PriceDisplay`, listas, `ProductCardActions`.
@@ -145,6 +147,7 @@ Variantes `default` e `compact` permanecem inalteradas.
 ## 6. Documentação
 
 Atualizar [`docs/articles-public-rendering.md`](docs/articles-public-rendering.md):
+
 - Pipeline: `prose` único + `aside.not-prose` para embeds.
 - `ProductCard variant="editorial"` com imagem `max-w-[160px]` e 2 prós + 1 contra.
 - Fetch via `productDetailSchema`.

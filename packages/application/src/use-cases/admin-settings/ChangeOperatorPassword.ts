@@ -24,10 +24,7 @@ export class ChangeOperatorPassword {
       throw new EntityNotFoundError('Operator', input.operatorId);
     }
 
-    const matches = await this.passwordHasher.verify(
-      input.currentPassword,
-      operator.passwordHash,
-    );
+    const matches = await this.passwordHasher.verify(input.currentPassword, operator.passwordHash);
 
     if (!matches) {
       throw new AuthenticationError();

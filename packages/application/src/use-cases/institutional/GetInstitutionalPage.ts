@@ -87,8 +87,7 @@ export class UpdateInstitutionalPage {
     };
 
     const shouldPublish = input.status === PageStatus.PUBLISHED;
-    const publishedAt =
-      shouldPublish && !existing.layout.publishedAt ? new Date() : undefined;
+    const publishedAt = shouldPublish && !existing.layout.publishedAt ? new Date() : undefined;
 
     const updated = await this.pageRepository.updateInstitutionalContent(existing.layout.id, {
       content: content,

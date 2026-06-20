@@ -1,6 +1,27 @@
-import { and, asc, desc, eq, gte, ilike, inArray, isNotNull, lt, ne, notInArray, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNotNull,
+  lt,
+  ne,
+  notInArray,
+  or,
+  sql,
+} from 'drizzle-orm';
 
-import { Marketplace, PRICE_STALE_HOURS, ProductSortField, type ProductListFilters, type ProductRepository, type SimilarProductsCriteria } from '@ecommerce-amazon/domain';
+import {
+  Marketplace,
+  PRICE_STALE_HOURS,
+  ProductSortField,
+  type ProductListFilters,
+  type ProductRepository,
+  type SimilarProductsCriteria,
+} from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -120,10 +141,9 @@ export class DrizzleProductRepository implements ProductRepository {
 
   async findSimilarPublishedByCategory(criteria: SimilarProductsCriteria) {
     const limit = criteria.limit ?? 12;
-    const excludeIds = [
-      criteria.excludeProductId,
-      ...(criteria.excludeProductIds ?? []),
-    ].filter((id, index, arr) => arr.indexOf(id) === index);
+    const excludeIds = [criteria.excludeProductId, ...(criteria.excludeProductIds ?? [])].filter(
+      (id, index, arr) => arr.indexOf(id) === index,
+    );
 
     const rows = await this.db
       .select()
@@ -159,18 +179,17 @@ export class DrizzleProductRepository implements ProductRepository {
     const rows = await this.db
       .select()
       .from(schema.products)
-      .where(
-        criteria.onlyStale
-          ? lt(schema.products.priceUpdatedAt, staleThreshold)
-          : undefined,
-      )
+      .where(criteria.onlyStale ? lt(schema.products.priceUpdatedAt, staleThreshold) : undefined)
       .limit(limit);
 
     return rows.map(mapProductRowToDomain);
   }
 
   async findDueForCatalogSync(criteria: { limit?: number }) {
-    const rows = await this.db.select().from(schema.products).limit(criteria.limit ?? 500);
+    const rows = await this.db
+      .select()
+      .from(schema.products)
+      .limit(criteria.limit ?? 500);
     return rows.map(mapProductRowToDomain);
   }
 

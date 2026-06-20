@@ -12,7 +12,7 @@ todos:
     content: Criar apps/web (Next.js + Tailwind + shadcn + TanStack Query) com PageRenderer e BlockRegistry
     status: completed
   - id: block-components
-    content: "Implementar blocos fase 1: HeroCarousel, FeaturedProduct, ProductGrid, CategoryPills, RichText, Spacer (design ESTORE)"
+    content: 'Implementar blocos fase 1: HeroCarousel, FeaturedProduct, ProductGrid, CategoryPills, RichText, Spacer (design ESTORE)'
     status: completed
   - id: api-gaps
     content: GET /categories, wishlist DTO enriquecido, sort em GET /products, CORS_ORIGINS
@@ -30,7 +30,7 @@ todos:
     content: WEB_PORT, NEXT_PUBLIC_API_URL, CORS_ORIGINS; docker-compose web
     status: completed
   - id: admin-cms-phase
-    content: "Fase posterior: apps/admin — drag-and-drop, CRUD páginas/blocos, preview, publish/draft (não implementar na fase 1)"
+    content: 'Fase posterior: apps/admin — drag-and-drop, CRUD páginas/blocos, preview, publish/draft (não implementar na fase 1)'
     status: cancelled
 isProject: false
 ---
@@ -93,29 +93,31 @@ flowchart TB
 ### Entidades novas (`packages/domain`)
 
 **PageLayout**
+
 - `id`, `slug` (ex.: `home`), `title`, `status` (`draft` | `published`)
 - `publishedAt`, `updatedAt`
 - Regra: apenas 1 layout `published` por slug
 
 **PageBlock**
+
 - `id`, `pageId`, `type: BlockType`, `sortOrder: number`
 - `props: Record<string, unknown>` — validado na borda por schema do tipo
 - `visibility: 'all' | 'desktop' | 'mobile'` (default `all`)
 
 ### BlockType — catálogo inicial (extensível)
 
-| BlockType | Descrição UI | Props principais |
-|-----------|--------------|------------------|
-| `hero_carousel` | Carrossel editorial (coluna esquerda ESTORE) | `slides[]`: `{ imageUrl, title, subtitle, ctaLabel, ctaHref, linkedProductSlug? }`, `autoplay`, `intervalMs` |
-| `featured_product` | Card destaque (coluna direita ESTORE) | `productSlug` **ou** `productId`, `showMarketplaceBadge`, `ctaLabel` |
-| `product_grid` | Grid "Produtos populares" | `title`, `categorySlug?`, `marketplace?`, `sort`, `pageSize`, `columns: 2\|4` |
-| `category_pills` | Pills de filtro acima do grid | `title?`, `categorySlugs[]`, `linkedBlockId?` (sync com grid vizinho) |
-| `hero_split` | Container 2 colunas (carrossel + featured) | `leftBlockId`, `rightBlockId`, `ratio: '2/1' \| '1/1'` |
-| `curated_collection` | Destaque de coleção social | `collectionSlug`, `layout: 'carousel' \| 'grid'` |
-| `coupon_strip` | Faixa de cupons ativos | `marketplace?`, `maxItems` |
-| `rich_text` | Bloco editorial HTML/markdown | `html`, `align` |
-| `banner` | Imagem full-width + link | `imageUrl`, `href`, `alt` |
-| `spacer` | Espaçamento vertical | `size: 'sm' \| 'md' \| 'lg'` |
+| BlockType            | Descrição UI                                 | Props principais                                                                                             |
+| -------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `hero_carousel`      | Carrossel editorial (coluna esquerda ESTORE) | `slides[]`: `{ imageUrl, title, subtitle, ctaLabel, ctaHref, linkedProductSlug? }`, `autoplay`, `intervalMs` |
+| `featured_product`   | Card destaque (coluna direita ESTORE)        | `productSlug` **ou** `productId`, `showMarketplaceBadge`, `ctaLabel`                                         |
+| `product_grid`       | Grid "Produtos populares"                    | `title`, `categorySlug?`, `marketplace?`, `sort`, `pageSize`, `columns: 2\|4`                                |
+| `category_pills`     | Pills de filtro acima do grid                | `title?`, `categorySlugs[]`, `linkedBlockId?` (sync com grid vizinho)                                        |
+| `hero_split`         | Container 2 colunas (carrossel + featured)   | `leftBlockId`, `rightBlockId`, `ratio: '2/1' \| '1/1'`                                                       |
+| `curated_collection` | Destaque de coleção social                   | `collectionSlug`, `layout: 'carousel' \| 'grid'`                                                             |
+| `coupon_strip`       | Faixa de cupons ativos                       | `marketplace?`, `maxItems`                                                                                   |
+| `rich_text`          | Bloco editorial HTML/markdown                | `html`, `align`                                                                                              |
+| `banner`             | Imagem full-width + link                     | `imageUrl`, `href`, `alt`                                                                                    |
+| `spacer`             | Espaçamento vertical                         | `size: 'sm' \| 'md' \| 'lg'`                                                                                 |
 
 Novos tipos = novo enum + schema Zod + componente React registrado — **sem alterar o PageRenderer**.
 
@@ -163,16 +165,16 @@ type PageBlockDto = {
 
 ### Fase posterior — Admin (escopo documentado, não implementar agora)
 
-| Método | Rota | Ação |
-|--------|------|------|
-| GET | `/admin/pages` | Listar páginas |
-| GET | `/admin/pages/:slug` | Layout draft + published |
-| POST | `/admin/pages/:slug/blocks` | Adicionar bloco |
-| PATCH | `/admin/pages/:slug/blocks/reorder` | `{ blockIds: string[] }` |
-| PATCH | `/admin/pages/:slug/blocks/:id` | Atualizar props |
-| DELETE | `/admin/pages/:slug/blocks/:id` | Remover bloco |
-| POST | `/admin/pages/:slug/publish` | Draft → published |
-| GET | `/admin/pages/:slug/preview?token=` | Preview draft |
+| Método | Rota                                | Ação                     |
+| ------ | ----------------------------------- | ------------------------ |
+| GET    | `/admin/pages`                      | Listar páginas           |
+| GET    | `/admin/pages/:slug`                | Layout draft + published |
+| POST   | `/admin/pages/:slug/blocks`         | Adicionar bloco          |
+| PATCH  | `/admin/pages/:slug/blocks/reorder` | `{ blockIds: string[] }` |
+| PATCH  | `/admin/pages/:slug/blocks/:id`     | Atualizar props          |
+| DELETE | `/admin/pages/:slug/blocks/:id`     | Remover bloco            |
+| POST   | `/admin/pages/:slug/publish`        | Draft → published        |
+| GET    | `/admin/pages/:slug/preview?token=` | Preview draft            |
 
 Auth: JWT/session operador (fora do escopo MVP visitante). App: `apps/admin` (Next.js ou React SPA).
 
@@ -237,13 +239,13 @@ CMS configura **o quê mostrar**; API de catálogo fornece **dados vivos** (pre�
 
 Ordem `sortOrder` do seed `home`:
 
-| Order | type | props resumidas |
-|-------|------|-----------------|
-| 0 | `hero_split` | ratio `2/1`, compõe blocos 1 e 2 |
-| 1 | `hero_carousel` | slides da coleção `setup-gamer-iniciante` |
-| 2 | `featured_product` | `productSlug: cadeira-ergonomica-home-office` |
-| 3 | `category_pills` | `["home-office", "games", "eletronicos"]` |
-| 4 | `product_grid` | `title: "Produtos populares"`, `categorySlug: null`, `columns: 4`, `pageSize: 12` |
+| Order | type               | props resumidas                                                                   |
+| ----- | ------------------ | --------------------------------------------------------------------------------- |
+| 0     | `hero_split`       | ratio `2/1`, compõe blocos 1 e 2                                                  |
+| 1     | `hero_carousel`    | slides da coleção `setup-gamer-iniciante`                                         |
+| 2     | `featured_product` | `productSlug: cadeira-ergonomica-home-office`                                     |
+| 3     | `category_pills`   | `["home-office", "games", "eletronicos"]`                                         |
+| 4     | `product_grid`     | `title: "Produtos populares"`, `categorySlug: null`, `columns: 4`, `pageSize: 12` |
 
 Alterar a Home = alterar JSON no banco (Admin futuro) ou seed — **zero deploy** após CMS ativo.
 
@@ -254,6 +256,7 @@ Alterar a Home = alterar JSON no banco (Admin futuro) ou seed — **zero deploy*
 Tokens ESTORE: fundo `#F7F7F7`, radius `1rem`, primary `#111111`. Componentes primitivos (`ProductCard`, `PriceDisplay`, `MarketplaceBadge`) são **usados dentro dos blocos**, não substituídos por eles.
 
 Regras UX por bloco:
+
 - `product_grid` / `featured_product`: cenários A/B de clique ([`06-ux-conversion.mdc`](.cursor/rules/06-ux-conversion.mdc))
 - Preço stale: `PriceDisplay` oculta valor
 - CTAs: copy pt-BR ("Ver na Amazon", "Ver na Shopee")

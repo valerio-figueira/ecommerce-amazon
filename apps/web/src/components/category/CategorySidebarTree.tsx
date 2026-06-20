@@ -51,7 +51,10 @@ function CategorySidebarBranch({
         return (
           <li
             key={node.slug}
-            className={cn('category-sidebar-tree__node', depth > 0 && 'category-sidebar-tree__node--nested')}
+            className={cn(
+              'category-sidebar-tree__node',
+              depth > 0 && 'category-sidebar-tree__node--nested',
+            )}
             role="treeitem"
             aria-expanded={hasChildren ? isExpanded : undefined}
             style={{ paddingLeft: `${depth * 0.85}rem` }}

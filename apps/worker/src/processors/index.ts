@@ -12,7 +12,9 @@ import {
 } from '@ecommerce-amazon/infrastructure';
 import type { WorkerContainer } from '@ecommerce-amazon/infrastructure';
 
-function isMarketplaceJobData(data: PriceRefreshJobData | CatalogSyncJobData): data is MarketplaceJobData {
+function isMarketplaceJobData(
+  data: PriceRefreshJobData | CatalogSyncJobData,
+): data is MarketplaceJobData {
   return 'marketplace' in data && 'externalIds' in data;
 }
 

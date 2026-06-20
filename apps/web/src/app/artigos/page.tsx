@@ -6,9 +6,7 @@ import {
   parseListingPage,
 } from '@ecommerce-amazon/shared/seo';
 
-import {
-  ArticleListingGridSection,
-} from '@/components/articles/ArticleListingGridSection';
+import { ArticleListingGridSection } from '@/components/articles/ArticleListingGridSection';
 import { ArticleListingPendingProvider } from '@/components/articles/ArticleListingPendingContext';
 import {
   ArticleListingHeader,

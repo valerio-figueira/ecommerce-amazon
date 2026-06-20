@@ -23,12 +23,12 @@ isProject: false
 
 A API backend já está implementada ([`docs/auto-links-admin.md`](docs/auto-links-admin.md)):
 
-| Método | Rota |
-|--------|------|
-| `GET` | `/admin/auto-links?page&limit&search` |
-| `POST` | `/admin/auto-links` |
-| `PATCH` | `/admin/auto-links/:id` |
-| `DELETE` | `/admin/auto-links/:id` |
+| Método   | Rota                                  |
+| -------- | ------------------------------------- |
+| `GET`    | `/admin/auto-links?page&limit&search` |
+| `POST`   | `/admin/auto-links`                   |
+| `PATCH`  | `/admin/auto-links/:id`               |
+| `DELETE` | `/admin/auto-links/:id`               |
 
 Schemas Zod prontos em [`packages/shared/src/admin/auto-link-schemas.ts`](packages/shared/src/admin/auto-link-schemas.ts).
 
@@ -67,7 +67,7 @@ Atualizar [`apps/admin/src/lib/navigation.ts`](apps/admin/src/lib/navigation.ts)
 
 ### Página RSC
 
-Criar [`apps/admin/src/app/(dashboard)/auto-links/page.tsx`](apps/admin/src/app/(dashboard)/auto-links/page.tsx):
+Criar [`apps/admin/src/app/(dashboard)/auto-links/page.tsx`](<apps/admin/src/app/(dashboard)/auto-links/page.tsx>):
 
 - `metadata.title`: `Auto-Links — Vitrine CMS`
 - SSR: `listAutoLinks({ page: 1, limit: 20 })` via server lib
@@ -82,10 +82,10 @@ Também adicionar atalho opcional em [`ArticleListManager`](apps/admin/src/compo
 
 Seguir [`apps/admin/src/app/api/admin/article-categories/route.ts`](apps/admin/src/app/api/admin/article-categories/route.ts).
 
-| Arquivo | Métodos |
-|---------|---------|
-| [`apps/admin/src/app/api/admin/auto-links/route.ts`](apps/admin/src/app/api/admin/auto-links/route.ts) | `GET` (repassa query `page`, `limit`, `search`), `POST` |
-| [`apps/admin/src/app/api/admin/auto-links/[id]/route.ts`](apps/admin/src/app/api/admin/auto-links/[id]/route.ts) | `PATCH`, `DELETE` |
+| Arquivo                                                                                                          | Métodos                                                 |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [`apps/admin/src/app/api/admin/auto-links/route.ts`](apps/admin/src/app/api/admin/auto-links/route.ts)           | `GET` (repassa query `page`, `limit`, `search`), `POST` |
+| [`apps/admin/src/app/api/admin/auto-links/[id]/route.ts`](apps/admin/src/app/api/admin/auto-links/[id]/route.ts) | `PATCH`, `DELETE`                                       |
 
 Validação Zod na borda com schemas de `@ecommerce-amazon/shared/admin`. Erros: 401 unauthorized, 400 validação, 409 conflito keyword (repassar `error` da API).
 
@@ -139,17 +139,17 @@ Ações:
 Painel superior (copy pt-BR):
 
 - Título: **Links automáticos**
-- Apoio: *Keywords linkadas automaticamente nos artigos editoriais. O HTML do artigo não é alterado — a injeção ocorre na vitrine.*
+- Apoio: _Keywords linkadas automaticamente nos artigos editoriais. O HTML do artigo não é alterado — a injeção ocorre na vitrine._
 
 ### `AutoLinkListView.tsx` (client, apresentação)
 
 Cada item em `cms-block-card--plain` exibe:
 
-| Coluna | Conteúdo |
-|--------|----------|
-| Principal | `keyword` (bold) + `targetUrl` (muted, truncate) |
-| Meta | `priority`, `maxMatches`, badge Ativo/Inativo |
-| Ações | `Switch` `is_active` (PATCH imediato), Editar, Excluir |
+| Coluna    | Conteúdo                                               |
+| --------- | ------------------------------------------------------ |
+| Principal | `keyword` (bold) + `targetUrl` (muted, truncate)       |
+| Meta      | `priority`, `maxMatches`, badge Ativo/Inativo          |
+| Ações     | `Switch` `is_active` (PATCH imediato), Editar, Excluir |
 
 Badge status: reutilizar classes `cms-status-pill is-published` / `is-draft` (padrão produtos).
 
@@ -159,13 +159,13 @@ Empty state: mensagem + CTA "Criar primeira keyword".
 
 Campos (validação client-side com schemas shared antes do POST/PATCH):
 
-| Campo | UI | Default |
-|-------|-----|---------|
-| `keyword` | `Input` | — |
-| `targetUrl` | `Input` + hint: caminho `/categorias/...` ou URL HTTPS | — |
-| `maxMatches` | `Input type="number"` min 1 max 50 | 1 |
-| `priority` | `Input type="number"` min 0 max 1000 | 0 |
-| `isActive` | `Switch` + label "Regra ativa" | true |
+| Campo        | UI                                                     | Default |
+| ------------ | ------------------------------------------------------ | ------- |
+| `keyword`    | `Input`                                                | —       |
+| `targetUrl`  | `Input` + hint: caminho `/categorias/...` ou URL HTTPS | —       |
+| `maxMatches` | `Input type="number"` min 1 max 50                     | 1       |
+| `priority`   | `Input type="number"` min 0 max 1000                   | 0       |
+| `isActive`   | `Switch` + label "Regra ativa"                         | true    |
 
 Hints com componente leve (reutilizar [`ArticleFieldHint`](apps/admin/src/components/articles/ArticleFieldHint.tsx) ou texto muted):
 
@@ -178,13 +178,13 @@ Toast success/error via `useAdminToast`. Tratar 409 com mensagem "Keyword já ca
 
 ## 5. Comportamentos de negócio na UI
 
-| Regra | Implementação UI |
-|-------|------------------|
-| Não editar HTML de artigos | Copy explicativo no painel; sem preview/parser no admin |
-| Toggle `is_active` | `Switch` na listagem → `PATCH { isActive }` sem abrir sheet |
-| Keyword duplicada | Toast erro 409 da API |
-| Cache público | Transparente — mutações já invalidam Redis no backend |
-| Ordenação na listagem | Exibir `priority` DESC (API já ordena admin list por priority + updatedAt) |
+| Regra                      | Implementação UI                                                           |
+| -------------------------- | -------------------------------------------------------------------------- |
+| Não editar HTML de artigos | Copy explicativo no painel; sem preview/parser no admin                    |
+| Toggle `is_active`         | `Switch` na listagem → `PATCH { isActive }` sem abrir sheet                |
+| Keyword duplicada          | Toast erro 409 da API                                                      |
+| Cache público              | Transparente — mutações já invalidam Redis no backend                      |
+| Ordenação na listagem      | Exibir `priority` DESC (API já ordena admin list por priority + updatedAt) |
 
 ---
 

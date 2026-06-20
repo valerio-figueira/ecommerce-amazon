@@ -16,10 +16,7 @@ import {
 } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { useAdminToast } from '@/components/ui/admin-toast';
-import {
-  createAutoLinkClient,
-  updateAutoLinkClient,
-} from '@/lib/api/auto-links-client';
+import { createAutoLinkClient, updateAutoLinkClient } from '@/lib/api/auto-links-client';
 import { isManualTargetUrl } from '@/lib/internal-link-targets';
 import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
 

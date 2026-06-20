@@ -56,16 +56,16 @@ Desde o hardening documentado em [admin-security.md](./admin-security.md):
 
 ## Variáveis de ambiente
 
-| Variável | Default | Uso |
-|----------|---------|-----|
-| `ADMIN_PORT` | `3002` | Porta do painel |
-| `JWT_SECRET` | (dev placeholder) | Assinatura JWT — **obrigatório alterar em produção**; deve ser **o mesmo** na API e no admin (`next.config.ts` carrega `.env` da raiz do monorepo) |
-| `JWT_EXPIRES_IN` | `8h` | Expiração do token |
-| `ADMIN_SEED_EMAIL` | `admin@vitrine.local` | Operador criado no seed |
-| `ADMIN_SEED_PASSWORD` | `vitrine-admin` | Senha do operador seed |
-| `PASSWORD_PEPPER` | (dev placeholder) | Pepper bcrypt — ver [admin-security.md](./admin-security.md) |
-| `API_INTERNAL_URL` | `http://localhost:3000` | Proxy de login server-side |
-| `CORS_ORIGINS` | inclui `:3002` | Origem admin na API |
+| Variável              | Default                 | Uso                                                                                                                                                |
+| --------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ADMIN_PORT`          | `3002`                  | Porta do painel                                                                                                                                    |
+| `JWT_SECRET`          | (dev placeholder)       | Assinatura JWT — **obrigatório alterar em produção**; deve ser **o mesmo** na API e no admin (`next.config.ts` carrega `.env` da raiz do monorepo) |
+| `JWT_EXPIRES_IN`      | `8h`                    | Expiração do token                                                                                                                                 |
+| `ADMIN_SEED_EMAIL`    | `admin@vitrine.local`   | Operador criado no seed                                                                                                                            |
+| `ADMIN_SEED_PASSWORD` | `vitrine-admin`         | Senha do operador seed                                                                                                                             |
+| `PASSWORD_PEPPER`     | (dev placeholder)       | Pepper bcrypt — ver [admin-security.md](./admin-security.md)                                                                                       |
+| `API_INTERNAL_URL`    | `http://localhost:3000` | Proxy de login server-side                                                                                                                         |
+| `CORS_ORIGINS`        | inclui `:3002`          | Origem admin na API                                                                                                                                |
 
 ## Como rodar
 
@@ -79,38 +79,38 @@ Abrir http://localhost:3002/login — credenciais padrão do seed acima.
 
 ## Rotas do admin
 
-| Rota | Conteúdo |
-|------|----------|
-| `/login` | Tela de login |
-| `/` | Dashboard com KPIs placeholder |
-| `/paginas` | Lista páginas CMS + link para editor |
+| Rota              | Conteúdo                                  |
+| ----------------- | ----------------------------------------- |
+| `/login`          | Tela de login                             |
+| `/`               | Dashboard com KPIs placeholder            |
+| `/paginas`        | Lista páginas CMS + link para editor      |
 | `/paginas/[slug]` | Editor de blocos (`CMSBlockOrderManager`) |
-| `/produtos` | Listagem + link para cadastro manual |
-| `/produtos/novo` | Formulário de criação (modo híbrido) |
-| `/artigos` | Empty state — hub de conteúdo |
-| `/colecoes` | CRUD coleções curadas (listagem + sheet) |
-| `/cupons` | Empty state — central de cupons |
-| `/configuracoes` | Empty state — settings |
+| `/produtos`       | Listagem + link para cadastro manual      |
+| `/produtos/novo`  | Formulário de criação (modo híbrido)      |
+| `/artigos`        | Empty state — hub de conteúdo             |
+| `/colecoes`       | CRUD coleções curadas (listagem + sheet)  |
+| `/cupons`         | Empty state — central de cupons           |
+| `/configuracoes`  | Empty state — settings                    |
 
 ## Arquivos-chave
 
-| Área | Path |
-|------|------|
-| App Next.js | `apps/admin/` |
-| Login + shell | `apps/admin/src/components/admin/`, `apps/admin/src/components/auth/` |
-| Toast global | `apps/admin/src/components/ui/admin-toast.tsx`, provider em `AdminAppProviders.tsx` |
-| Auth API | `apps/api/src/adapters/http/routes/admin-routes.ts` |
-| Use case | `packages/application/src/use-cases/admin-auth/AuthenticateOperator.ts` |
-| Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql` |
-| Seed operador | `packages/infrastructure/src/persistence/drizzle/seed.ts` |
+| Área          | Path                                                                                |
+| ------------- | ----------------------------------------------------------------------------------- |
+| App Next.js   | `apps/admin/`                                                                       |
+| Login + shell | `apps/admin/src/components/admin/`, `apps/admin/src/components/auth/`               |
+| Toast global  | `apps/admin/src/components/ui/admin-toast.tsx`, provider em `AdminAppProviders.tsx` |
+| Auth API      | `apps/api/src/adapters/http/routes/admin-routes.ts`                                 |
+| Use case      | `packages/application/src/use-cases/admin-auth/AuthenticateOperator.ts`             |
+| Migration     | `packages/infrastructure/src/persistence/drizzle/migrations/0004_operators.sql`     |
+| Seed operador | `packages/infrastructure/src/persistence/drizzle/seed.ts`                           |
 
 ## Design tokens (botões)
 
-| Token | Valor | Uso |
-|-------|-------|-----|
-| `--admin-primary` | `#0d6efd` | CTA primário (`Button` default/primary, tabs ativos, chips selecionados) |
-| `--admin-primary-hover` | `#0b5ed7` | Hover de CTA |
-| `--admin-navy` | `#182a5a` | Texto e marca — **não** usar como fundo de botão |
+| Token                   | Valor     | Uso                                                                      |
+| ----------------------- | --------- | ------------------------------------------------------------------------ |
+| `--admin-primary`       | `#0d6efd` | CTA primário (`Button` default/primary, tabs ativos, chips selecionados) |
+| `--admin-primary-hover` | `#0b5ed7` | Hover de CTA                                                             |
+| `--admin-navy`          | `#182a5a` | Texto e marca — **não** usar como fundo de botão                         |
 
 Componente: `apps/admin/src/components/ui/button.tsx` (`variant="primary"` por padrão).
 

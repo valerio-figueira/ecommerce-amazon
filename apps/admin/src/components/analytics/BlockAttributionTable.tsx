@@ -12,9 +12,7 @@ type BlockAttributionTableProps = {
   }[];
 };
 
-export function BlockAttributionTable({
-  items,
-}: BlockAttributionTableProps): React.JSX.Element {
+export function BlockAttributionTable({ items }: BlockAttributionTableProps): React.JSX.Element {
   return (
     <AdminPageCard className="p-5">
       <h3 className="text-sm font-semibold text-[color:var(--admin-navy)]">

@@ -72,6 +72,7 @@ findSimilarPublishedByCategory(criteria: SimilarProductsCriteria): Promise<Produ
 ```
 
 **Regras de negócio na query:**
+
 - `category_id = criteria.categoryId`
 - `visible = true`
 - `id != excludeProductId`
@@ -116,6 +117,7 @@ export type ProductWithEmbedsResult = {
 ```
 
 Lógica:
+
 1. `findBySlug(slug)` → `null` se não encontrado
 2. Aplicar `PriceComplianceService` no produto principal (mesmo de `GetProductBySlug`)
 3. Se `product.categoryId`: buscar similares via `findSimilarPublishedByCategory`
@@ -195,6 +197,7 @@ Ordem final de seções (confirmado pelo usuário):
 ## 8. Documentação
 
 Atualizar [`docs/product-detail-page.md`](docs/product-detail-page.md):
+
 - Campo `similarProducts` no contrato
 - Regras de query (categoria, visível, preço ASC, exclui atual)
 - Posicionamento no rodapé
@@ -209,6 +212,7 @@ pnpm --filter @ecommerce-amazon/web build
 ```
 
 **Teste manual:**
+
 - Produto com `category_id` e ≥2 similares visíveis → carrossel renderiza, produto atual ausente
 - Produto sem categoria → seção omitida
 - Único produto na categoria → seção omitida
@@ -216,15 +220,15 @@ pnpm --filter @ecommerce-amazon/web build
 
 ## Arquivos tocados (resumo)
 
-| Ação | Arquivo |
-|------|---------|
-| Editar | `packages/domain/src/repositories/ProductRepository.ts` |
-| Editar | `packages/infrastructure/.../drizzle-product.repository.ts` |
-| Criar | `packages/application/src/use-cases/product/GetProductWithEmbeds.ts` |
-| Criar | `packages/application/src/use-cases/product/GetProductWithEmbeds.test.ts` |
+| Ação   | Arquivo                                                                      |
+| ------ | ---------------------------------------------------------------------------- |
+| Editar | `packages/domain/src/repositories/ProductRepository.ts`                      |
+| Editar | `packages/infrastructure/.../drizzle-product.repository.ts`                  |
+| Criar  | `packages/application/src/use-cases/product/GetProductWithEmbeds.ts`         |
+| Criar  | `packages/application/src/use-cases/product/GetProductWithEmbeds.test.ts`    |
 | Editar | `packages/application/src/index.ts`, `mock-factories.ts`, `api-container.ts` |
-| Editar | `packages/shared/src/admin/product-schemas.ts` |
-| Editar | `apps/api/.../product.presenter.ts`, `routes/index.ts` |
-| Criar | `apps/web/src/components/product/ProductSimilarCarousel.tsx` |
-| Editar | `apps/web/src/app/produtos/[slug]/page.tsx` |
-| Editar | `docs/product-detail-page.md` |
+| Editar | `packages/shared/src/admin/product-schemas.ts`                               |
+| Editar | `apps/api/.../product.presenter.ts`, `routes/index.ts`                       |
+| Criar  | `apps/web/src/components/product/ProductSimilarCarousel.tsx`                 |
+| Editar | `apps/web/src/app/produtos/[slug]/page.tsx`                                  |
+| Editar | `docs/product-detail-page.md`                                                |

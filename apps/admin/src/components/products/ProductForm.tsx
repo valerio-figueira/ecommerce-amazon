@@ -120,7 +120,9 @@ export function ProductForm({
       router.refresh();
     } catch (error) {
       const message =
-        error instanceof Error ? formatProductFormErrorMessage(error.message) : 'Erro ao salvar produto';
+        error instanceof Error
+          ? formatProductFormErrorMessage(error.message)
+          : 'Erro ao salvar produto';
       adminToast.error(message);
     }
   });
@@ -149,9 +151,13 @@ export function ProductForm({
               />
               <div className="min-w-0 flex-1">
                 <div className="cms-panel-head">
-                  <h2 className="cms-panel-title">{isEdit ? 'Edição manual' : 'Cadastro manual'}</h2>
+                  <h2 className="cms-panel-title">
+                    {isEdit ? 'Edição manual' : 'Cadastro manual'}
+                  </h2>
                   <p className="cms-panel-meta">
-                    <strong>{isEdit ? 'Editar produto no catálogo' : 'Cadastrar produto no catálogo'}</strong>
+                    <strong>
+                      {isEdit ? 'Editar produto no catálogo' : 'Cadastrar produto no catálogo'}
+                    </strong>
                     {isEdit && productTitle ? (
                       <span className="cms-panel-slug">/{slug}</span>
                     ) : null}
@@ -169,7 +175,12 @@ export function ProductForm({
                       ? `Editando: ${productTitle ?? slug}`
                       : 'Campos obrigatórios: link, título e marketplace identificado.'}
                   </p>
-                  <Button type="submit" variant="primary" size="sm" disabled={form.formState.isSubmitting}>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    disabled={form.formState.isSubmitting}
+                  >
                     <Save className="h-4 w-4" />
                     {form.formState.isSubmitting
                       ? 'Salvando…'
@@ -207,7 +218,11 @@ export function ProductForm({
               </TabsContent>
 
               <TabsContent value="specs">
-                <ProductSpecsForm onRegisterSync={(sync) => { specsSyncRef.current = sync; }} />
+                <ProductSpecsForm
+                  onRegisterSync={(sync) => {
+                    specsSyncRef.current = sync;
+                  }}
+                />
               </TabsContent>
 
               <TabsContent value="images">

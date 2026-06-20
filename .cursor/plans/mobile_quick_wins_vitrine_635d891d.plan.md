@@ -1,6 +1,6 @@
 ---
 name: Mobile Quick Wins Vitrine
-overview: "Auditoria da vitrine (`apps/web`) com foco em quick wins de layout/responsividade: grids apertados, navegação oculta em telas estreitas, CTA de conversão no detalhe e safe-area em elementos fixos."
+overview: 'Auditoria da vitrine (`apps/web`) com foco em quick wins de layout/responsividade: grids apertados, navegação oculta em telas estreitas, CTA de conversão no detalhe e safe-area em elementos fixos.'
 todos:
   - id: fix-category-grid
     content: Alterar grid mobile em categorias/[slug]/page.tsx para 1 col (ou compact cards) + alinhar ProductGridSkeleton
@@ -52,15 +52,15 @@ flowchart TB
 
 ## O que já está bom (não mexer)
 
-| Área | Evidência |
-|------|-----------|
-| Shell | [`layout.tsx`](apps/web/src/app/layout.tsx) — `flex min-h-screen`, header sticky, main flex-1 |
-| Categorias no mobile | [`CategoryCatalogDrawer.tsx`](apps/web/src/components/layout/CategoryCatalogDrawer.tsx) — `md:hidden`, scroll lock, Escape |
-| Home CMS | Blocos empilham em 1 col; produtos em carrossel `variant="compact"` ([`ProductGridBlock`](apps/web/src/components/blocks/ProductGridBlock.tsx)) |
-| Coleções | [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx) L137 — `grid-cols-1` no mobile |
-| Artigos | [`ArticleListingGrid.tsx`](apps/web/src/components/articles/ArticleListingGrid.tsx) — `grid-cols-1` até `sm` |
-| Cards | `truncate` no título, `sizes` responsivos na imagem, CTAs `w-full` ([`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx)) |
-| Compliance preço stale | `PriceDisplay` retorna `null`; CTA único "Ver preço na {marketplace}" — correto por regra de negócio |
+| Área                   | Evidência                                                                                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shell                  | [`layout.tsx`](apps/web/src/app/layout.tsx) — `flex min-h-screen`, header sticky, main flex-1                                                   |
+| Categorias no mobile   | [`CategoryCatalogDrawer.tsx`](apps/web/src/components/layout/CategoryCatalogDrawer.tsx) — `md:hidden`, scroll lock, Escape                      |
+| Home CMS               | Blocos empilham em 1 col; produtos em carrossel `variant="compact"` ([`ProductGridBlock`](apps/web/src/components/blocks/ProductGridBlock.tsx)) |
+| Coleções               | [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx) L137 — `grid-cols-1` no mobile                                          |
+| Artigos                | [`ArticleListingGrid.tsx`](apps/web/src/components/articles/ArticleListingGrid.tsx) — `grid-cols-1` até `sm`                                    |
+| Cards                  | `truncate` no título, `sizes` responsivos na imagem, CTAs `w-full` ([`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx))       |
+| Compliance preço stale | `PriceDisplay` retorna `null`; CTA único "Ver preço na {marketplace}" — correto por regra de negócio                                            |
 
 ---
 
@@ -78,6 +78,7 @@ flowchart TB
 **Arquivos:** `categorias/[slug]/page.tsx`, opcionalmente `ProductGridSkeleton.tsx` se mudar breakpoint.
 
 **Grids 2-col secundários** (menor impacto, avaliar no mesmo PR se couber):
+
 - [`CuratedCollectionSlide.tsx`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx) L68 — mini-grid dentro do bloco CMS
 - [`CategoryBentoGrid.tsx`](apps/web/src/components/blocks/CategoryBentoGrid.tsx) L88 — pills de categoria na home
 
@@ -126,6 +127,7 @@ Não exige bottom tab bar nem refatorar header.
 ```
 
 Aplicar em:
+
 - Cookie banner (`pb-safe` na div fixa)
 - `ProductDetailStickyCta` (novo)
 - Opcional: painel do drawer (`.category-catalog-drawer__panel`)
@@ -160,13 +162,13 @@ Exportar viewport em `layout.tsx` com `viewportFit: 'cover'` **só se** adiciona
 
 ## Fora do escopo deste pacote (quick wins)
 
-| Item | Motivo |
-|------|--------|
-| Implementar busca no header | Feature nova, não layout |
+| Item                                    | Motivo                                        |
+| --------------------------------------- | --------------------------------------------- |
+| Implementar busca no header             | Feature nova, não layout                      |
 | `PriceDisplay` placeholder quando stale | Mudança de copy/compliance — discutir à parte |
-| Header skeleton breakpoint `sm` vs `md` | Flash cosmético 640–768px |
-| Touch targets 44px em ícones | Refino UX, não bloqueador |
-| Comparador `/comparador`, `/cupons` | MVP features, não mobile layout |
+| Header skeleton breakpoint `sm` vs `md` | Flash cosmético 640–768px                     |
+| Touch targets 44px em ícones            | Refino UX, não bloqueador                     |
+| Comparador `/comparador`, `/cupons`     | MVP features, não mobile layout               |
 
 ---
 

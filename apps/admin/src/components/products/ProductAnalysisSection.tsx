@@ -27,7 +27,8 @@ const LONG_DESCRIPTION_MAX = 50000;
 export function ProductAnalysisSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
   const pros = useWatch({ control: form.control, name: 'pros' }) ?? [];
-  const longDescriptionHtml = useWatch({ control: form.control, name: 'longDescriptionHtml' }) ?? '';
+  const longDescriptionHtml =
+    useWatch({ control: form.control, name: 'longDescriptionHtml' }) ?? '';
   const shortDescriptionTouched = useRef(false);
 
   useEffect(() => {
@@ -110,8 +111,8 @@ export function ProductAnalysisSection(): React.JSX.Element {
               />
             </FormControl>
             <FormDescription>
-              Texto curto para cards e introdução da página. Se vazio ao salvar, a API monta a partir
-              dos prós mais marcantes.
+              Texto curto para cards e introdução da página. Se vazio ao salvar, a API monta a
+              partir dos prós mais marcantes.
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -129,10 +130,7 @@ export function ProductAnalysisSection(): React.JSX.Element {
               <ProductLlmPromptHelper />
             </div>
             <FormControl>
-              <ProductLongDescriptionEditor
-                value={field.value ?? ''}
-                onChange={field.onChange}
-              />
+              <ProductLongDescriptionEditor value={field.value ?? ''} onChange={field.onChange} />
             </FormControl>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <FormDescription>

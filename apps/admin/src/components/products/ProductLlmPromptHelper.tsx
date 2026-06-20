@@ -76,9 +76,9 @@ export function ProductLlmPromptHelper(): React.JSX.Element {
         <DialogHeader>
           <DialogTitle>Prompt para gerar análise editorial</DialogTitle>
           <DialogDescription>
-            Copie o texto abaixo e cole em uma LLM externa (ChatGPT, Gemini, Claude, etc.). O
-            prompt já inclui título, prós, contras e regras de conformidade da vitrine. Revise o
-            HTML gerado antes de publicar.
+            Copie o texto abaixo e cole em uma LLM externa (ChatGPT, Gemini, Claude, etc.). O prompt
+            já inclui título, prós, contras e regras de conformidade da vitrine. Revise o HTML
+            gerado antes de publicar.
           </DialogDescription>
         </DialogHeader>
         <pre className="max-h-[50vh] overflow-y-auto whitespace-pre-wrap rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] p-4 font-mono text-xs leading-relaxed text-[var(--admin-navy)]">

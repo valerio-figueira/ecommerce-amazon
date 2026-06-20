@@ -11,10 +11,7 @@ export type LoginRateLimitResult = {
   retryAfterSeconds: number;
 };
 
-export function createLoginRateLimiter(options?: {
-  maxAttempts?: number;
-  windowMs?: number;
-}) {
+export function createLoginRateLimiter(options?: { maxAttempts?: number; windowMs?: number }) {
   const maxAttempts = options?.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const windowMs = options?.windowMs ?? DEFAULT_WINDOW_MS;
   const attempts = new Map<string, AttemptRecord>();

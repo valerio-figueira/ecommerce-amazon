@@ -79,10 +79,7 @@ export class DrizzleAutoLinkRepository implements AutoLinkRepository {
       .select()
       .from(schema.autoLinks)
       .where(eq(schema.autoLinks.isActive, true))
-      .orderBy(
-        desc(schema.autoLinks.priority),
-        desc(sql`length(${schema.autoLinks.keyword})`),
-      );
+      .orderBy(desc(schema.autoLinks.priority), desc(sql`length(${schema.autoLinks.keyword})`));
 
     return rows.map(mapAutoLinkRow);
   }
@@ -112,10 +109,7 @@ export class DrizzleAutoLinkRepository implements AutoLinkRepository {
         .orderBy(desc(schema.autoLinks.priority), desc(schema.autoLinks.updatedAt))
         .limit(limit)
         .offset(offset),
-      this.db
-        .select({ count: count() })
-        .from(schema.autoLinks)
-        .where(whereClause),
+      this.db.select({ count: count() }).from(schema.autoLinks).where(whereClause),
     ]);
 
     return {

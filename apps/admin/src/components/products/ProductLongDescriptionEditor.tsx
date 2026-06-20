@@ -88,9 +88,7 @@ export function ProductLongDescriptionEditor({
     if (nextMode === mode) return;
 
     if (nextMode === 'html') {
-      const serialized = editor
-        ? normalizeEmptyHtml(editor.getHTML())
-        : value;
+      const serialized = editor ? normalizeEmptyHtml(editor.getHTML()) : value;
       setHtmlDraft(serialized);
       setMode('html');
       return;

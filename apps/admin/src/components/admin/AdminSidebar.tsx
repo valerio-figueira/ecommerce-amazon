@@ -33,14 +33,23 @@ export function AdminSidebar({
       >
         <div className="admin-side-inner">
           <div className="side-brand-card">
-            <div className={cn('side-brand-mark flex items-center gap-3', collapsed && 'justify-center')}>
+            <div
+              className={cn(
+                'side-brand-mark flex items-center gap-3',
+                collapsed && 'justify-center',
+              )}
+            >
               <div className="side-brand-logo flex size-11 shrink-0 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
                 V
               </div>
               {!collapsed && (
                 <div className="side-brand-text min-w-0">
-                  <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">{brand.name}</p>
-                  <p className="truncate text-xs text-[color:var(--admin-text-muted)]">Painel CMS</p>
+                  <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">
+                    {brand.name}
+                  </p>
+                  <p className="truncate text-xs text-[color:var(--admin-text-muted)]">
+                    Painel CMS
+                  </p>
                 </div>
               )}
             </div>
@@ -66,9 +75,7 @@ export function AdminSidebar({
             <ul className="space-y-1">
               {ADMIN_NAV_ITEMS.map((item) => {
                 const isActive =
-                  item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
+                  item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                 const Icon = item.icon;
 
                 return (

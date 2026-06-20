@@ -70,9 +70,7 @@ export function getBrandConfig(source: BrandEnvSource = process.env): BrandConfi
 }
 
 /** Env keys safe for Next.js Client Components (SSR + browser must match). */
-export function createClientBrandEnvSource(
-  env: BrandEnvSource = process.env,
-): BrandEnvSource {
+export function createClientBrandEnvSource(env: BrandEnvSource = process.env): BrandEnvSource {
   return {
     NEXT_PUBLIC_SITE_NAME: env.NEXT_PUBLIC_SITE_NAME,
     NEXT_PUBLIC_SITE_URL: env.NEXT_PUBLIC_SITE_URL,

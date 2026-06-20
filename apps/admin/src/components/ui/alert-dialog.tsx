@@ -50,7 +50,10 @@ export function AlertDialogFooter({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element {
   return (
-    <div className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)} {...props} />
+    <div
+      className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
+      {...props}
+    />
   );
 }
 

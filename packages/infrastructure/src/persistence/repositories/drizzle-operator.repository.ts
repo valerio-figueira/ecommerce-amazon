@@ -26,7 +26,9 @@ function parseOperatorStatus(status: string): OperatorStatus {
   return OperatorStatus.ACTIVE;
 }
 
-function mapSocialLinks(raw: Operator['socialLinks'] | null | undefined): OperatorSocialLinks | null {
+function mapSocialLinks(
+  raw: Operator['socialLinks'] | null | undefined,
+): OperatorSocialLinks | null {
   if (!raw) return null;
   const links: OperatorSocialLinks = {};
   if (raw.linkedin) links.linkedin = raw.linkedin;
@@ -66,10 +68,7 @@ export class DrizzleOperatorRepository implements OperatorRepository {
   }
 
   async findAll(): Promise<Operator[]> {
-    const rows = await this.db
-      .select()
-      .from(schema.operators)
-      .orderBy(asc(schema.operators.name));
+    const rows = await this.db.select().from(schema.operators).orderBy(asc(schema.operators.name));
 
     return rows.map((row) => this.mapRow(row));
   }

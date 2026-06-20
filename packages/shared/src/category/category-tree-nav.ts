@@ -24,10 +24,7 @@ export function findCategoryNodeBySlug(
   return null;
 }
 
-export function getDirectChildren(
-  nodes: CategoryNavNode[],
-  slug: string,
-): CategoryNavNode[] {
+export function getDirectChildren(nodes: CategoryNavNode[], slug: string): CategoryNavNode[] {
   const node = findCategoryNodeBySlug(nodes, slug);
   return node?.subcategories ?? [];
 }

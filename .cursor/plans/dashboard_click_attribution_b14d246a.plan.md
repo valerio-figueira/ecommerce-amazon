@@ -3,7 +3,7 @@ name: Dashboard Click Attribution
 overview: Evoluir o dashboard com funil editorial completo (listagem → artigo → clique afiliado) e atribuição granular de cliques por componente, tela e bloco CMS — corrigindo lacunas de instrumentação existentes e expandindo schema/API/UI antes da integração GA4 web.
 todos:
   - id: schema-attribution
-    content: "Migration: estender click_events (placement, page_path, referrer_path, collection_id) + criar content_engagement_events"
+    content: 'Migration: estender click_events (placement, page_path, referrer_path, collection_id) + criar content_engagement_events'
     status: completed
   - id: shared-vocabulary
     content: ClickPlacement, EngagementEventType e Zod schemas em packages/shared
@@ -12,16 +12,16 @@ todos:
     content: Estender GoQuerySchema/RecordClickEvent + POST /events/engagement + repositories
     status: completed
   - id: attribution-context
-    content: "apps/web: attribution context (sessionStorage) + estender go-url/AffiliateGoLink/TrackEngagement"
+    content: 'apps/web: attribution context (sessionStorage) + estender go-url/AffiliateGoLink/TrackEngagement'
     status: completed
   - id: web-instrumentation
     content: Passar placement/origem correta em todos os componentes (blocks, artigos, wishlist, bento, comparador)
     status: completed
   - id: analytics-read-api
-    content: "Novos use cases/endpoints: by-placement, by-block, by-page, trend-by-origin, engagement/funnel"
+    content: 'Novos use cases/endpoints: by-placement, by-block, by-page, trend-by-origin, engagement/funnel'
     status: completed
   - id: dashboard-ui
-    content: "Admin: EditorialFunnelSection, PlacementBarChart, BlockAttributionTable, OriginTrendStackedChart + loadDashboardAnalytics"
+    content: 'Admin: EditorialFunnelSection, PlacementBarChart, BlockAttributionTable, OriginTrendStackedChart + loadDashboardAnalytics'
     status: completed
   - id: tests-docs
     content: Testes unit/integration + docs/admin-dashboard-attribution-phase2.md
@@ -35,16 +35,16 @@ isProject: false
 
 O tracking first-party já grava cliques de afiliado em `click_events` via `GET /go/:slug`, mas a atribuição é **superficial** e há **buracos de instrumentação** que explicam métricas zeradas ou mal classificadas:
 
-| Problema | Impacto |
-|----------|---------|
-| Dashboard só agrega por `origin` (8 valores fixos) | Impossível distinguir home vs categoria vs bloco CMS vs embed vs comparador dentro do artigo |
-| `block_id` é gravado mas **nunca agregado** no admin | Blocos CMS invisíveis no painel |
-| Cliques em cards de artigo (`ArticleCard`) são navegação interna | **Não entram** em nenhuma métrica first-party hoje |
-| Funil listagem → artigo → embed não existe | Não dá para medir conversão editorial |
-| `WishlistDrawer` abre `/go` sem `origin` | Vai para `redirect_go` e é **excluído** do dashboard |
-| `ComparisonTable` usa `origin=embed` em vez de `comparador` | Comparador dentro do artigo misturado com embed simples |
-| `BentoHubMixGrid` só linka para `/produtos/[slug]` | Clique afiliado só na página de detalhe, sem `blockId` |
-| CTA primário do embed ("Ver análise e ofertas") é link interno | Usuário pode clicar nele achando que vai ao marketplace — **não gera clique de afiliado** (comportamento intencional, mas confunde na validação manual) |
+| Problema                                                         | Impacto                                                                                                                                                 |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard só agrega por `origin` (8 valores fixos)               | Impossível distinguir home vs categoria vs bloco CMS vs embed vs comparador dentro do artigo                                                            |
+| `block_id` é gravado mas **nunca agregado** no admin             | Blocos CMS invisíveis no painel                                                                                                                         |
+| Cliques em cards de artigo (`ArticleCard`) são navegação interna | **Não entram** em nenhuma métrica first-party hoje                                                                                                      |
+| Funil listagem → artigo → embed não existe                       | Não dá para medir conversão editorial                                                                                                                   |
+| `WishlistDrawer` abre `/go` sem `origin`                         | Vai para `redirect_go` e é **excluído** do dashboard                                                                                                    |
+| `ComparisonTable` usa `origin=embed` em vez de `comparador`      | Comparador dentro do artigo misturado com embed simples                                                                                                 |
+| `BentoHubMixGrid` só linka para `/produtos/[slug]`               | Clique afiliado só na página de detalhe, sem `blockId`                                                                                                  |
+| CTA primário do embed ("Ver análise e ofertas") é link interno   | Usuário pode clicar nele achando que vai ao marketplace — **não gera clique de afiliado** (comportamento intencional, mas confunde na validação manual) |
 
 ```mermaid
 flowchart LR
@@ -107,12 +107,12 @@ flowchart TB
 
 ### 1.1 Colunas novas em `click_events`
 
-| Coluna | Tipo | Uso |
-|--------|------|-----|
-| `placement` | `text` | Componente concreto (ex.: `article.embed`, `cms.product_grid`, `wishlist.drawer`) |
-| `page_path` | `text` | Rota onde o clique ocorreu (ex.: `/artigos/guia-x`) |
-| `referrer_path` | `text` | Entrada anterior na sessão (ex.: `/artigos` após clicar card na listagem) |
-| `collection_id` | `uuid` FK → `curated_collections` | Coleções curadas (página + bloco CMS) |
+| Coluna          | Tipo                              | Uso                                                                               |
+| --------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| `placement`     | `text`                            | Componente concreto (ex.: `article.embed`, `cms.product_grid`, `wishlist.drawer`) |
+| `page_path`     | `text`                            | Rota onde o clique ocorreu (ex.: `/artigos/guia-x`)                               |
+| `referrer_path` | `text`                            | Entrada anterior na sessão (ex.: `/artigos` após clicar card na listagem)         |
+| `collection_id` | `uuid` FK → `curated_collections` | Coleções curadas (página + bloco CMS)                                             |
 
 Índices: `(placement, occurred_at)`, `(page_path, occurred_at)`, `(collection_id, occurred_at)`.
 
@@ -120,16 +120,16 @@ Atualizar [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](pa
 
 ### 1.2 Nova tabela `content_engagement_events`
 
-| Coluna | Tipo | Uso |
-|--------|------|-----|
-| `event_type` | `text` | `article_card_click` \| `article_page_view` |
-| `article_id` | `uuid` FK | Artigo alvo |
-| `page_path` | `text` | Onde o evento ocorreu |
-| `placement` | `text` | Ex.: `article_listing`, `article_related`, `cms.bento_hero` |
-| `block_id` | `uuid` FK opcional | Bloco CMS de origem |
-| `referrer_path` | `text` | De onde veio |
-| `session_id` | `text` | Sessão anônima |
-| `occurred_at` | `timestamptz` | Timestamp |
+| Coluna          | Tipo               | Uso                                                         |
+| --------------- | ------------------ | ----------------------------------------------------------- |
+| `event_type`    | `text`             | `article_card_click` \| `article_page_view`                 |
+| `article_id`    | `uuid` FK          | Artigo alvo                                                 |
+| `page_path`     | `text`             | Onde o evento ocorreu                                       |
+| `placement`     | `text`             | Ex.: `article_listing`, `article_related`, `cms.bento_hero` |
+| `block_id`      | `uuid` FK opcional | Bloco CMS de origem                                         |
+| `referrer_path` | `text`             | De onde veio                                                |
+| `session_id`    | `text`             | Sessão anônima                                              |
+| `occurred_at`   | `timestamptz`      | Timestamp                                                   |
 
 Índices por `event_type + occurred_at`, `article_id + occurred_at`.
 
@@ -143,9 +143,17 @@ Criar em [`packages/shared/src/analytics/`](packages/shared/src/analytics/) (exp
 
 ```typescript
 // Exemplos
-'article.embed' | 'article.comparison' | 'article.related'
-'cms.product_grid' | 'cms.featured_product' | 'cms.bento_offer' | 'cms.bento_article' | 'cms.curated_collection'
-'product.detail_cta' | 'product.similar' | 'category.listing' | 'collection.page' | 'wishlist.drawer'
+'article.embed' | 'article.comparison' | 'article.related';
+'cms.product_grid' |
+  'cms.featured_product' |
+  'cms.bento_offer' |
+  'cms.bento_article' |
+  'cms.curated_collection';
+'product.detail_cta' |
+  'product.similar' |
+  'category.listing' |
+  'collection.page' |
+  'wishlist.drawer';
 ```
 
 - **`EngagementEventType`** — `article_card_click`, `article_page_view`
@@ -162,6 +170,7 @@ Manter `ClickOrigin` existente ([`packages/domain/src/enums/index.ts`](packages/
 Arquivos: [`apps/api/src/adapters/dtos/request/schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts), [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts), [`packages/application/src/use-cases/events/RecordClickEvent.ts`](packages/application/src/use-cases/events/RecordClickEvent.ts), [`packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts).
 
 Novos query params opcionais em `GoQuerySchema`:
+
 - `placement`, `pagePath`, `referrerPath`, `collectionId` (uuid)
 
 Validar `placement` contra allowlist Zod (rejeitar valores arbitrários).
@@ -178,13 +187,13 @@ Use case `RecordEngagementEvent` + port `EngagementEventRepository`.
 
 Estender [`packages/domain/src/repositories/AnalyticsRepository.ts`](packages/domain/src/repositories/AnalyticsRepository.ts) + [`drizzle-analytics.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-analytics.repository.ts):
 
-| Nova rota admin | Retorno |
-|-----------------|---------|
-| `GET /admin/analytics/clicks/by-placement` | `{ placement, count, sharePercent }[]` |
-| `GET /admin/analytics/clicks/by-block` | `{ blockId, blockType, pageSlug, count }[]` — JOIN `page_blocks` + `pages` |
-| `GET /admin/analytics/clicks/by-page` | `{ pagePath, count }[]` top 20 |
-| `GET /admin/analytics/clicks/trend-by-origin` | `{ date, origin, count }[]` — dados para gráfico empilhado |
-| `GET /admin/analytics/engagement/funnel` | `{ articleCardClicks, articlePageViews, embedAffiliateClicks, conversionRate }` + top artigos por etapa |
+| Nova rota admin                               | Retorno                                                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `GET /admin/analytics/clicks/by-placement`    | `{ placement, count, sharePercent }[]`                                                                  |
+| `GET /admin/analytics/clicks/by-block`        | `{ blockId, blockType, pageSlug, count }[]` — JOIN `page_blocks` + `pages`                              |
+| `GET /admin/analytics/clicks/by-page`         | `{ pagePath, count }[]` top 20                                                                          |
+| `GET /admin/analytics/clicks/trend-by-origin` | `{ date, origin, count }[]` — dados para gráfico empilhado                                              |
+| `GET /admin/analytics/engagement/funnel`      | `{ articleCardClicks, articlePageViews, embedAffiliateClicks, conversionRate }` + top artigos por etapa |
 
 Registrar em [`admin-analytics-routes.ts`](apps/api/src/adapters/http/routes/admin-analytics-routes.ts). Schemas em [`packages/shared/src/admin/analytics-schemas.ts`](packages/shared/src/admin/analytics-schemas.ts).
 
@@ -195,6 +204,7 @@ Registrar em [`admin-analytics-routes.ts`](apps/api/src/adapters/http/routes/adm
 ### 5.1 Contexto de atribuição (funil editorial)
 
 Novo módulo [`apps/web/src/lib/attribution/context.ts`](apps/web/src/lib/attribution/context.ts):
+
 - Grava em `sessionStorage` (TTL ~30 min): `entryPath`, `entryPlacement`, `blockId?`
 - `ArticleCard` chama `setAttribution({ entryPath: '/artigos', entryPlacement: 'article_listing' })` no click
 - Links CMS de artigo (`BentoHubMixGrid` hero) setam `cms.bento_article` + `blockId`
@@ -203,6 +213,7 @@ Novo módulo [`apps/web/src/lib/attribution/context.ts`](apps/web/src/lib/attrib
 ### 5.2 Estender primitivos
 
 [`apps/web/src/lib/go-url.ts`](apps/web/src/lib/go-url.ts) + [`AffiliateGoLink.tsx`](apps/web/src/components/product/AffiliateGoLink.tsx):
+
 - Props: `placement`, `pagePath?`, `referrerPath?`, `collectionId?`
 - Propagação automática de attribution context quando props omitidas
 
@@ -210,20 +221,20 @@ Novo [`apps/web/src/lib/api/engagement.ts`](apps/web/src/lib/api/engagement.ts) 
 
 ### 5.3 Passagem de `placement` por superfície
 
-| Superfície | `origin` | `placement` | Outros |
-|------------|----------|-------------|--------|
-| [`ProductGridBlock`](apps/web/src/components/blocks/ProductGridBlock.tsx) / [`DynamicProductGridBlock`](apps/web/src/components/blocks/DynamicProductGridBlock.tsx) | `listagem` | `cms.product_grid` | `blockId` |
-| [`FeaturedProductBlock`](apps/web/src/components/blocks/FeaturedProductBlock.tsx) | `listagem` | `cms.featured_product` | `blockId` |
-| [`CuratedCollectionSlide`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx) | `coleção` | `cms.curated_collection` | `blockId`, `collectionId`, `utmDefaults` |
-| [`BentoHubMixGrid`](apps/web/src/components/blocks/BentoHubMixGrid.tsx) offer slot | `listagem` | `cms.bento_offer` | `blockId` + **CTA afiliado direto** (como `CollectionProductCard`) |
-| [`ArticleProductEmbed`](apps/web/src/components/articles/ArticleProductEmbed.tsx) | `embed` | `article.embed` | `articleId` |
-| [`ComparisonTable`](apps/web/src/components/articles/ComparisonTable.tsx) | **`comparador`** | `article.comparison` | `articleId`, `sessionId` |
-| [`ArticleRelatedGrid`](apps/web/src/components/articles/ArticleRelatedGrid.tsx) | — | `article.related` | engajamento only (card click) |
-| [`ArticleCard`](apps/web/src/components/articles/ArticleCard.tsx) | — | `article_listing` / `article_related` | engajamento + setAttribution |
-| [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx) | — | — | `<TrackEngagement eventType="article_page_view" />` |
-| [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx) | `detalhe` | `product.detail_cta` | `sessionId` |
-| [`WishlistDrawer`](apps/web/src/components/wishlist/WishlistDrawer.tsx) | `listagem` | `wishlist.drawer` | `sessionId` |
-| [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx) | `coleção` | `collection.page` | `collectionId`, `utmDefaults` |
+| Superfície                                                                                                                                                          | `origin`         | `placement`                           | Outros                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------- | ------------------------------------------------------------------ |
+| [`ProductGridBlock`](apps/web/src/components/blocks/ProductGridBlock.tsx) / [`DynamicProductGridBlock`](apps/web/src/components/blocks/DynamicProductGridBlock.tsx) | `listagem`       | `cms.product_grid`                    | `blockId`                                                          |
+| [`FeaturedProductBlock`](apps/web/src/components/blocks/FeaturedProductBlock.tsx)                                                                                   | `listagem`       | `cms.featured_product`                | `blockId`                                                          |
+| [`CuratedCollectionSlide`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx)                                                                               | `coleção`        | `cms.curated_collection`              | `blockId`, `collectionId`, `utmDefaults`                           |
+| [`BentoHubMixGrid`](apps/web/src/components/blocks/BentoHubMixGrid.tsx) offer slot                                                                                  | `listagem`       | `cms.bento_offer`                     | `blockId` + **CTA afiliado direto** (como `CollectionProductCard`) |
+| [`ArticleProductEmbed`](apps/web/src/components/articles/ArticleProductEmbed.tsx)                                                                                   | `embed`          | `article.embed`                       | `articleId`                                                        |
+| [`ComparisonTable`](apps/web/src/components/articles/ComparisonTable.tsx)                                                                                           | **`comparador`** | `article.comparison`                  | `articleId`, `sessionId`                                           |
+| [`ArticleRelatedGrid`](apps/web/src/components/articles/ArticleRelatedGrid.tsx)                                                                                     | —                | `article.related`                     | engajamento only (card click)                                      |
+| [`ArticleCard`](apps/web/src/components/articles/ArticleCard.tsx)                                                                                                   | —                | `article_listing` / `article_related` | engajamento + setAttribution                                       |
+| [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx)                                                                                               | —                | —                                     | `<TrackEngagement eventType="article_page_view" />`                |
+| [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx)                                                                                             | `detalhe`        | `product.detail_cta`                  | `sessionId`                                                        |
+| [`WishlistDrawer`](apps/web/src/components/wishlist/WishlistDrawer.tsx)                                                                                             | `listagem`       | `wishlist.drawer`                     | `sessionId`                                                        |
+| [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx)                                                                                             | `coleção`        | `collection.page`                     | `collectionId`, `utmDefaults`                                      |
 
 ### 5.4 Correções pontuais incluídas
 
@@ -236,23 +247,24 @@ Novo [`apps/web/src/lib/api/engagement.ts`](apps/web/src/lib/api/engagement.ts) 
 
 ## 6. Admin — evolução do dashboard
 
-Arquivo principal: [`apps/admin/src/app/(dashboard)/page.tsx`](apps/admin/src/app/(dashboard)/page.tsx)
+Arquivo principal: [`apps/admin/src/app/(dashboard)/page.tsx`](<apps/admin/src/app/(dashboard)/page.tsx>)
 
 ### 6.1 Nova seção "Funil editorial"
 
 Componente `EditorialFunnelSection.tsx`:
+
 - KPIs: cliques em cards → views de artigo → cliques afiliado embed
 - Taxa de conversão view→clique e card→clique
 - Mini-tabela top artigos por etapa
 
 ### 6.2 Nova seção "Atribuição detalhada"
 
-| Componente | Dados |
-|------------|-------|
-| `PlacementBarChart.tsx` | `/clicks/by-placement` |
-| `BlockAttributionTable.tsx` | `/clicks/by-block` — tipo do bloco + página CMS |
-| `PagePathTable.tsx` | `/clicks/by-page` |
-| `OriginTrendStackedChart.tsx` | `/clicks/trend-by-origin` |
+| Componente                    | Dados                                           |
+| ----------------------------- | ----------------------------------------------- |
+| `PlacementBarChart.tsx`       | `/clicks/by-placement`                          |
+| `BlockAttributionTable.tsx`   | `/clicks/by-block` — tipo do bloco + página CMS |
+| `PagePathTable.tsx`           | `/clicks/by-page`                               |
+| `OriginTrendStackedChart.tsx` | `/clicks/trend-by-origin`                       |
 
 ### 6.3 Melhorias nos existentes
 
@@ -288,6 +300,7 @@ Labels pt-BR em [`apps/admin/src/lib/analytics/labels.ts`](apps/admin/src/lib/an
 ## 8. Documentação
 
 Criar [`docs/admin-dashboard-attribution-phase2.md`](docs/admin-dashboard-attribution-phase2.md):
+
 - Modelo de dados, vocabulário `placement`, funil editorial
 - Endpoints novos, como testar localmente
 - Relação com plano GA4 web (eventos `affiliate_click` usarão mesmos `origin` + `placement` como params GA4)

@@ -1,4 +1,8 @@
-import type { LegalPageContent, LegalSection, LegalSubsection } from '@ecommerce-amazon/shared/legal';
+import type {
+  LegalPageContent,
+  LegalSection,
+  LegalSubsection,
+} from '@ecommerce-amazon/shared/legal';
 
 type LegalPageContentProps = {
   content: LegalPageContent;
@@ -26,7 +30,10 @@ function LegalSubsectionBlock({ subsection }: { subsection: LegalSubsection }): 
 
 function LegalSectionBlock({ section }: { section: LegalSection }): React.JSX.Element {
   return (
-    <section id={section.id} className="scroll-mt-24 border-t border-neutral-100 pt-10 first:border-t-0 first:pt-0">
+    <section
+      id={section.id}
+      className="scroll-mt-24 border-t border-neutral-100 pt-10 first:border-t-0 first:pt-0"
+    >
       <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">{section.title}</h2>
       {section.paragraphs.map((paragraph) => (
         <p key={paragraph.slice(0, 48)} className="mt-4 text-base leading-relaxed text-neutral-600">
@@ -63,7 +70,10 @@ export function LegalPageContent({ content }: LegalPageContentProps): React.JSX.
         </h1>
         <p className="mt-3 text-sm text-neutral-500">Última atualização: {formattedDate}</p>
         <p className="mt-6 text-base leading-relaxed text-neutral-600">{content.intro}</p>
-        <nav aria-label="Sumário" className="mt-8 rounded-xl border border-neutral-100 bg-neutral-50 p-5">
+        <nav
+          aria-label="Sumário"
+          className="mt-8 rounded-xl border border-neutral-100 bg-neutral-50 p-5"
+        >
           <p className="text-sm font-medium text-neutral-900">Navegue por seção</p>
           <ol className="mt-3 space-y-2 text-sm">
             {content.sections.map((section, index) => (

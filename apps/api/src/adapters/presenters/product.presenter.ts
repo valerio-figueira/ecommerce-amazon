@@ -134,9 +134,7 @@ export function toProductListItemDto(
     goUrl: `/go/${product.slug}`,
     editorialScore: product.editorialScore,
     ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
-    ...(category
-      ? { categorySlug: category.slug, categoryLabel: category.label }
-      : {}),
+    ...(category ? { categorySlug: category.slug, categoryLabel: category.label } : {}),
   };
 }
 
@@ -146,9 +144,7 @@ export async function mapProductsToListItemDtos(
 ): Promise<ProductListItemDto[]> {
   const categoryIds = [
     ...new Set(
-      products
-        .map((product) => product.categoryId)
-        .filter((id): id is string => id !== undefined),
+      products.map((product) => product.categoryId).filter((id): id is string => id !== undefined),
     ),
   ];
   const categories = await Promise.all(categoryIds.map((id) => loadCategory(id)));
@@ -197,9 +193,7 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
     ...(product.pros !== undefined ? { pros: product.pros } : {}),
     ...(product.cons !== undefined ? { cons: product.cons } : {}),
     ...(product.metaTitle !== undefined ? { metaTitle: product.metaTitle } : {}),
-    ...(product.metaDescription !== undefined
-      ? { metaDescription: product.metaDescription }
-      : {}),
+    ...(product.metaDescription !== undefined ? { metaDescription: product.metaDescription } : {}),
     ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
     similarProducts: [],
   };
@@ -232,14 +226,12 @@ export function toAdminProductListItemDto(product: Product): AdminProductListIte
   };
 }
 
-export function toAdminProductListResponseDto(
-  result: {
-    items: Product[];
-    total: number;
-    page: number;
-    pageSize: number;
-  },
-): AdminProductListResponseDto {
+export function toAdminProductListResponseDto(result: {
+  items: Product[];
+  total: number;
+  page: number;
+  pageSize: number;
+}): AdminProductListResponseDto {
   return {
     items: result.items.map(toAdminProductListItemDto),
     total: result.total,
@@ -265,7 +257,9 @@ export function toAdminProductDetailDto(product: Product): AdminProductDetailDto
     pros: product.pros ?? [],
     cons: product.cons ?? [],
     ...(product.categoryId !== undefined ? { categoryId: product.categoryId } : {}),
-    ...(product.shortDescription !== undefined ? { shortDescription: product.shortDescription } : {}),
+    ...(product.shortDescription !== undefined
+      ? { shortDescription: product.shortDescription }
+      : {}),
     ...(product.longDescriptionHtml !== undefined
       ? { longDescriptionHtml: product.longDescriptionHtml }
       : {}),

@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getBffErrorMessage, isUnauthorizedError, resolveBffStatus } from '@/lib/api/bff-error-status';
+import {
+  getBffErrorMessage,
+  isUnauthorizedError,
+  resolveBffStatus,
+} from '@/lib/api/bff-error-status';
 
 import { ZodError } from 'zod';
 

@@ -49,10 +49,7 @@ function createExistingProduct(): Product {
       updatedAt: new Date('2026-01-01T00:00:00.000Z'),
       isStale: false,
     }),
-    affiliateLink: AffiliateLink.create(
-      'https://www.amazon.com.br/dp/B08411SMN5',
-      'amazon_br',
-    ),
+    affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/B08411SMN5', 'amazon_br'),
     images: [],
     specsNormalized: [],
     editorialScore: 85,

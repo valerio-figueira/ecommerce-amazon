@@ -4,7 +4,10 @@ import { z } from 'zod';
 import { BlockType } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
-import { publicCategoryTreeNodeSchema, type PublicCategoryTreeNode } from '@ecommerce-amazon/shared/category/category-schemas';
+import {
+  publicCategoryTreeNodeSchema,
+  type PublicCategoryTreeNode,
+} from '@ecommerce-amazon/shared/category/category-schemas';
 import { adminCollectionsResponseSchema } from '@ecommerce-amazon/shared/admin';
 
 import type { AdminBlockInput, UpdateAdminBlockInput } from '@/lib/api/cms-pages';
@@ -20,9 +23,7 @@ function flattenPublicCategories(
   return items.flatMap((item) => {
     const label = prefix ? `${prefix} → ${item.label}` : item.label;
     const current = { slug: item.slug, label };
-    const children = item.subcategories
-      ? flattenPublicCategories(item.subcategories, label)
-      : [];
+    const children = item.subcategories ? flattenPublicCategories(item.subcategories, label) : [];
     return [current, ...children];
   });
 }
@@ -114,13 +115,10 @@ export async function updatePageBlockClient(
   blockId: string,
   input: UpdateAdminBlockInput,
 ): Promise<PageBlockDto> {
-  const data = await clientFetch(
-    `/api/admin/pages/${encodeURIComponent(slug)}/blocks/${blockId}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(input),
-    },
-  );
+  const data = await clientFetch(`/api/admin/pages/${encodeURIComponent(slug)}/blocks/${blockId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+  });
   return pageBlockDtoSchema.parse(data);
 }
 
@@ -128,12 +126,9 @@ export async function deletePageBlockClient(
   slug: string,
   blockId: string,
 ): Promise<PageBlockDto[]> {
-  const data = await clientFetch(
-    `/api/admin/pages/${encodeURIComponent(slug)}/blocks/${blockId}`,
-    {
-      method: 'DELETE',
-    },
-  );
+  const data = await clientFetch(`/api/admin/pages/${encodeURIComponent(slug)}/blocks/${blockId}`, {
+    method: 'DELETE',
+  });
   return z.array(pageBlockDtoSchema).parse(data);
 }
 
@@ -141,13 +136,10 @@ export async function reorderPageBlocksClient(
   slug: string,
   blocksOrder: Array<{ blockId: string; position: number }>,
 ): Promise<PageBlockDto[]> {
-  const data = await clientFetch(
-    `/api/admin/pages/${encodeURIComponent(slug)}/blocks/reorder`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify({ blocksOrder }),
-    },
-  );
+  const data = await clientFetch(`/api/admin/pages/${encodeURIComponent(slug)}/blocks/reorder`, {
+    method: 'PATCH',
+    body: JSON.stringify({ blocksOrder }),
+  });
   return z.array(pageBlockDtoSchema).parse(data);
 }
 
@@ -163,7 +155,9 @@ export async function listProductsClient(
   params: { pageSize?: number } = {},
 ): Promise<ProductPickerOption[]> {
   const pageSize = params.pageSize ?? 50;
-  const response = await adminClientFetch(`/api/admin/products?pageSize=${pageSize}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/products?pageSize=${pageSize}`, {
+    cache: 'no-store',
+  });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
   const parsed = adminProductsPageSchema.safeParse(payload);

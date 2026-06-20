@@ -68,12 +68,7 @@ function stripRenderedData(layout: PageLayoutDeliveryDto): PageLayoutDeliveryDto
 }
 
 function mapDynamicGridSortBy(
-  sortBy:
-    | 'editorial_score'
-    | 'created_at'
-    | 'price_asc'
-    | 'price_desc'
-    | 'discount_percent_desc',
+  sortBy: 'editorial_score' | 'created_at' | 'price_asc' | 'price_desc' | 'discount_percent_desc',
 ): ProductSortField {
   switch (sortBy) {
     case 'created_at':
@@ -248,9 +243,7 @@ export class GetPublishedPageLayout {
 
     return {
       ...block,
-      renderedData: items
-        .filter((product) => product.shouldShowPrice)
-        .map(toProductDeliveryItem),
+      renderedData: items.filter((product) => product.shouldShowPrice).map(toProductDeliveryItem),
     };
   }
 

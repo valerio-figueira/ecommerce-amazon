@@ -32,11 +32,11 @@ flowchart LR
 
 ## Storage plugável
 
-| Driver | Env | Uso |
-|--------|-----|-----|
+| Driver                     | Env                                             | Uso                                          |
+| -------------------------- | ----------------------------------------------- | -------------------------------------------- |
 | `filesystem` (default dev) | `STORAGE_LOCAL_ROOT`, `STORAGE_PUBLIC_BASE_URL` | API serve `/uploads/*` via `@fastify/static` |
-| `s3` | `AWS_S3_BUCKET`, `AWS_S3_REGION`, credenciais | `PutObject` / `DeleteObject` |
-| `gcs` | `GCS_BUCKET`, `GCS_PROJECT_ID`, ADC/credentials | `@google-cloud/storage` |
+| `s3`                       | `AWS_S3_BUCKET`, `AWS_S3_REGION`, credenciais   | `PutObject` / `DeleteObject`                 |
+| `gcs`                      | `GCS_BUCKET`, `GCS_PROJECT_ID`, ADC/credentials | `@google-cloud/storage`                      |
 
 Port: `ObjectStorage` em `packages/domain`. Factory: `createObjectStorage()` em `packages/infrastructure/src/storage/`.
 
@@ -44,25 +44,25 @@ Chave de avatar: `admin-avatars/YYYY/MM/avatar-YYYYMMDD-HHMMSS-{hex32}.{ext}`.
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Port | `packages/domain/src/gateways/object-storage.ts`, `services/avatar-storage.ts` |
-| Storage adapters | `packages/infrastructure/src/storage/*` |
-| Use cases | `packages/application/src/use-cases/admin-profile/` |
-| API | `apps/api/src/adapters/http/routes/admin-profile-routes.ts` |
-| Schemas | `packages/shared/src/admin/profile-schemas.ts` |
-| BFF | `apps/admin/src/app/api/admin/profile/` |
-| UI | `apps/admin/src/app/(dashboard)/perfil/page.tsx`, `components/profile/*` |
-| Dropdown | `apps/admin/src/components/admin/AdminUserMenu.tsx` |
+| Camada           | Path                                                                           |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Port             | `packages/domain/src/gateways/object-storage.ts`, `services/avatar-storage.ts` |
+| Storage adapters | `packages/infrastructure/src/storage/*`                                        |
+| Use cases        | `packages/application/src/use-cases/admin-profile/`                            |
+| API              | `apps/api/src/adapters/http/routes/admin-profile-routes.ts`                    |
+| Schemas          | `packages/shared/src/admin/profile-schemas.ts`                                 |
+| BFF              | `apps/admin/src/app/api/admin/profile/`                                        |
+| UI               | `apps/admin/src/app/(dashboard)/perfil/page.tsx`, `components/profile/*`       |
+| Dropdown         | `apps/admin/src/components/admin/AdminUserMenu.tsx`                            |
 
 ## API / BFF
 
-| Método | API | BFF |
-|--------|-----|-----|
-| GET | `/admin/profile` | `/api/admin/profile` |
-| PATCH | `/admin/profile` `{ name, bio? }` → `{ operator, token }` | idem + refresh cookie |
-| POST | `/admin/profile/avatar` multipart `avatar` | `/api/admin/profile/avatar` |
-| DELETE | `/admin/profile/avatar` | `/api/admin/profile/avatar` |
+| Método | API                                                       | BFF                         |
+| ------ | --------------------------------------------------------- | --------------------------- |
+| GET    | `/admin/profile`                                          | `/api/admin/profile`        |
+| PATCH  | `/admin/profile` `{ name, bio? }` → `{ operator, token }` | idem + refresh cookie       |
+| POST   | `/admin/profile/avatar` multipart `avatar`                | `/api/admin/profile/avatar` |
+| DELETE | `/admin/profile/avatar`                                   | `/api/admin/profile/avatar` |
 
 DTO `operator`: `{ id, email, name, avatarUrl, bio, role, status, isManagedAvatar }`.
 

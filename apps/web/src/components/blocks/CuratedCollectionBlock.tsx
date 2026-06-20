@@ -59,8 +59,7 @@ export function CuratedCollectionBlock({
   if (slides.length === 0) {
     return (
       <section className="rounded-[var(--radius)] bg-white p-4 text-sm text-neutral-600">
-        Nenhuma coleção encontrada para{' '}
-        <strong>{props.collectionSlugs.join(', ')}</strong>.
+        Nenhuma coleção encontrada para <strong>{props.collectionSlugs.join(', ')}</strong>.
       </section>
     );
   }

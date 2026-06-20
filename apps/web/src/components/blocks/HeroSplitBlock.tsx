@@ -6,7 +6,10 @@ import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { BlockRegistry } from '@/components/cms/BlockRegistry';
 import { cn } from '@/lib/utils';
 
-export function HeroSplitBlock({ block, blocksById }: BlockComponentProps): React.JSX.Element | null {
+export function HeroSplitBlock({
+  block,
+  blocksById,
+}: BlockComponentProps): React.JSX.Element | null {
   const props = heroSplitPropsSchema.parse(block.props);
   const left = blocksById[props.leftBlockId];
   const right = blocksById[props.rightBlockId];

@@ -37,10 +37,7 @@ export function ProductCompareToggle({
         toggleProduct(product);
       }}
     >
-      <GitCompare
-        className={cn('h-3.5 w-3.5', selected && 'text-orange-600')}
-        aria-hidden
-      />
+      <GitCompare className={cn('h-3.5 w-3.5', selected && 'text-orange-600')} aria-hidden />
     </button>
   );
 }

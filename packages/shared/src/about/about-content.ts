@@ -64,7 +64,8 @@ export function buildDefaultAboutPageContent(brand: BrandConfig): AboutPageConte
     teamSectionIntro: `Somos a ${formatEditorialTeamName(brand)} — um time de curadores que analisa produtos, escreve guias e mantém a vitrine atualizada para você.`,
     trafficDirection: {
       title: 'Continue explorando',
-      intro: 'Agora que você conhece quem está por trás do site, veja onde podemos ajudar na sua próxima compra:',
+      intro:
+        'Agora que você conhece quem está por trás do site, veja onde podemos ajudar na sua próxima compra:',
       links: [
         {
           label: 'Ver nossos guias de compra',
@@ -94,10 +95,7 @@ function mergeSections(
   });
 }
 
-export function resolveAboutPageContent(
-  stored: unknown,
-  brand: BrandConfig,
-): AboutPageContent {
+export function resolveAboutPageContent(stored: unknown, brand: BrandConfig): AboutPageContent {
   const defaults = buildDefaultAboutPageContent(brand);
   if (!stored || typeof stored !== 'object') {
     return defaults;
@@ -139,12 +137,8 @@ export function buildAboutPageMetadata(
   };
 } {
   const resolved = content ?? buildDefaultAboutPageContent(brand);
-  const title = seo?.seoTitle?.trim()
-    ? seo.seoTitle.trim()
-    : formatWebPageTitle('Sobre', brand);
-  const description =
-    seo?.seoDescription?.trim() ??
-    resolved.heroIntro.slice(0, 160);
+  const title = seo?.seoTitle?.trim() ? seo.seoTitle.trim() : formatWebPageTitle('Sobre', brand);
+  const description = seo?.seoDescription?.trim() ?? resolved.heroIntro.slice(0, 160);
 
   return {
     title,

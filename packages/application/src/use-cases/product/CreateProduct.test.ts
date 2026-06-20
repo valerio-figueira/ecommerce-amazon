@@ -101,10 +101,7 @@ describe('CreateProduct', () => {
       titleClean: 'Existing',
       titleRaw: 'Existing',
       price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
-      affiliateLink: AffiliateLink.create(
-        'https://www.amazon.com.br/dp/B08411SMN5',
-        'amazon_br',
-      ),
+      affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/B08411SMN5', 'amazon_br'),
       images: [],
       specsNormalized: [],
       editorialScore: 50,

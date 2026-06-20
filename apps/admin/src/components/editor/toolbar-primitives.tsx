@@ -30,11 +30,7 @@ export function ToolbarButton({
       aria-label={title}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        'admin-rich-editor__toolbar-button',
-        active && 'is-active',
-        className,
-      )}
+      className={cn('admin-rich-editor__toolbar-button', active && 'is-active', className)}
     >
       {children}
     </button>

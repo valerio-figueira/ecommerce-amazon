@@ -28,10 +28,7 @@ function mapTeamMemberForJsonLd(member: PublicTeamMemberDto): AboutPageJsonLdTea
 
 export function AboutPageJsonLd({ teamMembers }: AboutPageJsonLdProps): React.JSX.Element {
   const brand = getServerBrandConfig();
-  const jsonLd = buildAboutPageJsonLd(
-    brand,
-    teamMembers.map(mapTeamMemberForJsonLd),
-  );
+  const jsonLd = buildAboutPageJsonLd(brand, teamMembers.map(mapTeamMemberForJsonLd));
 
   return (
     <script

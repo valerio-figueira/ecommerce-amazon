@@ -34,10 +34,7 @@ function handleAdminArticleError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminArticleRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminArticleRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   const articlesListQuerySchema = z.object({

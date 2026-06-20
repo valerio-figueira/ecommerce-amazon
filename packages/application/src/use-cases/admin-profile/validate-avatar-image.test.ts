@@ -2,10 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ValidationError } from '@ecommerce-amazon/domain';
 
-import {
-  mimeToAvatarExtension,
-  validateAvatarImage,
-} from './validate-avatar-image.js';
+import { mimeToAvatarExtension, validateAvatarImage } from './validate-avatar-image.js';
 
 describe('validateAvatarImage', () => {
   it('accepts supported mime types within size limit', () => {

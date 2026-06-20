@@ -79,9 +79,7 @@ export function CategoryPillsForm({
                   placeholder="Ex: Navegue por categoria"
                 />
               </FormControl>
-              <FormDescription>
-                Aparece acima dos atalhos de categoria na vitrine.
-              </FormDescription>
+              <FormDescription>Aparece acima dos atalhos de categoria na vitrine.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -151,10 +149,7 @@ export function CategoryPillsForm({
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={readBoolean(field.value, true)}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={readBoolean(field.value, true)} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}

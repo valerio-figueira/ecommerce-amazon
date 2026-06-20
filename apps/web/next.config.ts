@@ -8,10 +8,11 @@ import type { NextConfig } from 'next';
 const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 loadDotenv({ path: path.join(monorepoRoot, '.env') });
 
-const devOrigins = process.env['NEXT_ALLOWED_DEV_ORIGINS']
-  ?.split(',')
-  .map((origin) => origin.trim())
-  .filter((origin) => origin.length > 0) ?? [];
+const devOrigins =
+  process.env['NEXT_ALLOWED_DEV_ORIGINS']
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0) ?? [];
 
 const storagePublicBaseUrl =
   process.env['STORAGE_PUBLIC_BASE_URL'] ??

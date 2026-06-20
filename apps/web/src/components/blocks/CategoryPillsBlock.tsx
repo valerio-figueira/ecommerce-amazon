@@ -10,9 +10,7 @@ export function CategoryPillsBlock({ block }: BlockComponentProps): React.JSX.El
 
   return (
     <section>
-      {props.title && (
-        <h2 className="mb-4 text-2xl font-bold md:text-3xl">{props.title}</h2>
-      )}
+      {props.title && <h2 className="mb-4 text-2xl font-bold md:text-3xl">{props.title}</h2>}
       <CategoryPillsRow
         categorySlugs={props.categorySlugs}
         mode={props.mode}

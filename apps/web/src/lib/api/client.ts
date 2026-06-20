@@ -41,10 +41,7 @@ type ApiFetchInit = RequestInit & {
   next?: RequestInit extends { next?: infer N } ? N : never;
 };
 
-export async function apiFetch(
-  path: string,
-  init?: ApiFetchInit,
-): Promise<unknown> {
+export async function apiFetch(path: string, init?: ApiFetchInit): Promise<unknown> {
   const { sessionId, next, ...fetchInit } = init ?? {};
   const headers = new Headers(fetchInit.headers);
   if (fetchInit.body !== undefined && fetchInit.body !== null) {
@@ -57,10 +54,7 @@ export async function apiFetch(
   const response = await fetch(`${API_URL}${path}`, {
     ...fetchInit,
     headers,
-    next:
-      fetchInit.method === undefined
-        ? (next ?? { revalidate: 60 })
-        : undefined,
+    next: fetchInit.method === undefined ? (next ?? { revalidate: 60 }) : undefined,
   });
 
   if (!response.ok) {

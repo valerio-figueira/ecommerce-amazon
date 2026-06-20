@@ -8,9 +8,7 @@ import {
   ALL_CATEGORY_VALUE,
   getCategoryDisplayLabel,
 } from '@/components/cms/props-forms/dynamic-grid-form-meta';
-import {
-  PRODUCT_GRID_PAGE_SIZE_PRESETS,
-} from '@/components/cms/props-forms/block-form-registry';
+import { PRODUCT_GRID_PAGE_SIZE_PRESETS } from '@/components/cms/props-forms/block-form-registry';
 import { PresetChipPicker } from '@/components/cms/props-forms/PresetChipPicker';
 import {
   FormControl,
@@ -45,10 +43,7 @@ function readNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }
 
-export function ProductGridForm({
-  control,
-  categories,
-}: ProductGridFormProps): React.JSX.Element {
+export function ProductGridForm({ control, categories }: ProductGridFormProps): React.JSX.Element {
   return (
     <div className="space-y-6">
       <CmsFormSection title="Texto da vitrine">
@@ -113,9 +108,7 @@ export function ProductGridForm({
             <FormItem>
               <FormLabel>Marketplace</FormLabel>
               <Select
-                onValueChange={(value) =>
-                  field.onChange(value === '__all__' ? undefined : value)
-                }
+                onValueChange={(value) => field.onChange(value === '__all__' ? undefined : value)}
                 value={readString(field.value) || '__all__'}
               >
                 <FormControl>
@@ -147,8 +140,8 @@ export function ProductGridForm({
                 />
               </FormControl>
               <FormDescription>
-                Destino do botão &quot;Ver catálogo completo&quot;. Se vazio, usa a categoria
-                ativa ou `/categorias/home-office`.
+                Destino do botão &quot;Ver catálogo completo&quot;. Se vazio, usa a categoria ativa
+                ou `/categorias/home-office`.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -163,7 +156,10 @@ export function ProductGridForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Como ordenar os produtos?</FormLabel>
-              <Select onValueChange={field.onChange} value={readString(field.value) || 'editorial_score'}>
+              <Select
+                onValueChange={field.onChange}
+                value={readString(field.value) || 'editorial_score'}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue />

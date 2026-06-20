@@ -33,13 +33,13 @@ isProject: false
 
 ## Estado atual
 
-| Camada | Status |
-|--------|--------|
-| Use cases `SavePageBlock`, `DeletePageBlock`, `UpdatePageBlocksOrder` | Prontos em [`packages/application/src/use-cases/admin-cms/`](packages/application/src/use-cases/admin-cms/) |
-| Schemas Zod por tipo | Prontos em [`packages/shared/src/cms/block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) (`BlockPropsResolver`, `parseBlockProps`) |
-| Rotas REST `/admin/pages/*` | **Inexistentes** — só auth em [`apps/api/src/adapters/http/routes/admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts) |
-| UI admin CMS | **Inexistente** — [`apps/admin/src/app/(dashboard)/paginas/page.tsx`](apps/admin/src/app/(dashboard)/paginas/page.tsx) é empty state |
-| shadcn/ui no admin | **Inexistente** — sem Radix, sem `components/ui/` |
+| Camada                                                                | Status                                                                                                                                      |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Use cases `SavePageBlock`, `DeletePageBlock`, `UpdatePageBlocksOrder` | Prontos em [`packages/application/src/use-cases/admin-cms/`](packages/application/src/use-cases/admin-cms/)                                 |
+| Schemas Zod por tipo                                                  | Prontos em [`packages/shared/src/cms/block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) (`BlockPropsResolver`, `parseBlockProps`) |
+| Rotas REST `/admin/pages/*`                                           | **Inexistentes** — só auth em [`apps/api/src/adapters/http/routes/admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts)      |
+| UI admin CMS                                                          | **Inexistente** — [`apps/admin/src/app/(dashboard)/paginas/page.tsx`](<apps/admin/src/app/(dashboard)/paginas/page.tsx>) é empty state      |
+| shadcn/ui no admin                                                    | **Inexistente** — sem Radix, sem `components/ui/`                                                                                           |
 
 **Lacuna crítica no backend:** `saveBlock` faz upsert sem deslocar `sortOrder` existentes. Inserir na posição 2 com blocos `[0,1,2,3]` gera colisão (índice não-único). `deleteBlock` **já reindexa** `[0..n-1]` em transação ([`drizzle-page.repository.ts:140-182`](packages/infrastructure/src/persistence/repositories/drizzle-page.repository.ts)).
 
@@ -93,16 +93,17 @@ Chamar essa lógica em `SavePageBlock` quando `blockId` é omitido (create). Upd
 
 Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts) (ou `admin-cms-routes.ts` importado):
 
-| Método | Rota | Use case | Body |
-|--------|------|----------|------|
-| `GET` | `/admin/pages` | `ListAdminPages` | — |
-| `GET` | `/admin/pages/:slug` | `GetAdminPageLayout` | — |
-| `POST` | `/admin/pages/:slug/blocks` | `SavePageBlock` (sem `blockId`) | `{ type, position, props, visibility? }` |
-| `PATCH` | `/admin/pages/:slug/blocks/:id` | `SavePageBlock` (com `blockId`) | `{ type?, position?, props?, visibility? }` |
-| `DELETE` | `/admin/pages/:slug/blocks/:id` | `DeletePageBlock` | — |
-| `PATCH` | `/admin/pages/:slug/blocks/reorder` | `UpdatePageBlocksOrder` | `{ blocksOrder: [{ blockId, position }] }` |
+| Método   | Rota                                | Use case                        | Body                                        |
+| -------- | ----------------------------------- | ------------------------------- | ------------------------------------------- |
+| `GET`    | `/admin/pages`                      | `ListAdminPages`                | —                                           |
+| `GET`    | `/admin/pages/:slug`                | `GetAdminPageLayout`            | —                                           |
+| `POST`   | `/admin/pages/:slug/blocks`         | `SavePageBlock` (sem `blockId`) | `{ type, position, props, visibility? }`    |
+| `PATCH`  | `/admin/pages/:slug/blocks/:id`     | `SavePageBlock` (com `blockId`) | `{ type?, position?, props?, visibility? }` |
+| `DELETE` | `/admin/pages/:slug/blocks/:id`     | `DeletePageBlock`               | —                                           |
+| `PATCH`  | `/admin/pages/:slug/blocks/reorder` | `UpdatePageBlocksOrder`         | `{ blocksOrder: [{ blockId, position }] }`  |
 
 Schemas Zod em [`apps/api/src/adapters/dtos/request/schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts):
+
 - Params: `AdminPageSlugParamsSchema`, `AdminPageBlockParamsSchema`
 - Bodies: `CreatePageBlockSchema`, `UpdatePageBlockSchema`, `ReorderPageBlocksSchema` (validar posições contíguas `0..n-1`, todos os blocos incluídos — espelha regras de `UpdatePageBlocksOrder`)
 
@@ -143,6 +144,7 @@ Instalar dependências no [`apps/admin/package.json`](apps/admin/package.json):
 - `class-variance-authority`, `lucide-react` (já presente)
 
 Adicionar primitivos em `apps/admin/src/components/ui/`:
+
 - `dialog.tsx`, `input.tsx`, `label.tsx`, `button.tsx`, `select.tsx`, `dropdown-menu.tsx`, `alert-dialog.tsx`, `form.tsx`
 
 Estilizar com tokens existentes de [`globals.css`](apps/admin/src/app/globals.css) (`--admin-navy`, `--admin-primary`) — não copiar tema da vitrine.
@@ -153,10 +155,10 @@ Estilizar com tokens existentes de [`globals.css`](apps/admin/src/app/globals.cs
 
 ### 4.1 Rotas de página
 
-| Rota | Arquivo | Comportamento |
-|------|---------|---------------|
-| `/paginas` | Atualizar [`paginas/page.tsx`](apps/admin/src/app/(dashboard)/paginas/page.tsx) | Lista páginas via `GET /admin/pages`, link para editor |
-| `/paginas/[slug]` | Novo `paginas/[slug]/page.tsx` | Server fetch layout inicial → passa para client manager |
+| Rota              | Arquivo                                                                           | Comportamento                                           |
+| ----------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `/paginas`        | Atualizar [`paginas/page.tsx`](<apps/admin/src/app/(dashboard)/paginas/page.tsx>) | Lista páginas via `GET /admin/pages`, link para editor  |
+| `/paginas/[slug]` | Novo `paginas/[slug]/page.tsx`                                                    | Server fetch layout inicial → passa para client manager |
 
 ### 4.2 Componentes CMS
 
@@ -179,6 +181,7 @@ apps/admin/src/components/cms/
 ### 4.3 `CMSBlockOrderManager` — comportamentos
 
 **Estado local:**
+
 ```typescript
 type AdminBlock = PageBlockDto & { position: number }; // alias sortOrder → position na UI
 const [blocks, setBlocks] = useState(normalizePositions(initialBlocks));
@@ -189,23 +192,27 @@ const [insertAt, setInsertAt] = useState<number | null>(null); // posição para
 **`normalizePositions`** — sort por position, remap `[0..n-1]` (util pura, testável).
 
 **Editar configurações (⚙️):**
+
 - Abre `BlockPropsDialog` com `react-hook-form` + `zodResolver(BlockPropsResolver[type])`
 - `DYNAMIC_PRODUCT_GRID`: título, subtitle, categoryVertical (Select alimentado por `GET /categories` público), minDiscountPercentage, sortBy, limit
 - Tipos simples: campos conforme schemas
 - Salvar → `PATCH /api/admin/pages/:slug/blocks/:id` → atualiza estado local com resposta
 
 **Adicionar bloco (+):**
+
 - Botão no topo (final) + botão “+ Inserir aqui” entre cartões (define `insertAt = index`)
 - `AddBlockDialog`: grid de tipos com ícone/label; ao selecionar, abre `BlockPropsDialog` em modo create com defaults (`block-type-labels.ts` usa `.parse({})` do Zod quando possível)
 - Salvar → `POST` com `position: insertAt ?? blocks.length` → backend faz shift → merge resposta no estado
 
 **Excluir (🗑️):**
+
 - `AlertDialog` de confirmação (substituir `window.confirm`)
 - `DELETE /api/admin/pages/:slug/blocks/:id`
 - Backend já reindexa — frontend remove do array e aplica `normalizePositions` localmente (sem PATCH reorder redundante)
 - Toast/feedback de erro
 
 **Reordenar (↑ ↓ / input numérico):**
+
 - Mutação local + `normalizePositions`
 - Botão **“Salvar ordem”** (renomear “Publicar Layout” para evitar confusão com draft/publish) → `PATCH .../blocks/reorder` com `{ blocksOrder: blocks.map(b => ({ blockId: b.id, position: b.position })) }`
 - Desabilitar enquanto `blocksOrder.length !== blocks.length` (guard)
@@ -225,16 +232,16 @@ flowchart TD
   editFlow[Editar props] --> openDialog[BlockPropsDialog]
   openDialog --> zodValidate[zodResolver BlockPropsResolver]
   zodValidate --> patchBlock[PATCH blocks/id]
-  
+
   addFlow[Adicionar bloco] --> pickType[AddBlockDialog]
   pickType --> configForm[BlockPropsDialog create]
   configForm --> postBlock[POST blocks position N]
   postBlock --> shiftDB[Repo shift sortOrder]
-  
+
   deleteFlow[Excluir] --> confirm[AlertDialog]
   confirm --> deleteAPI[DELETE blocks/id]
   deleteAPI --> reindexDB[Repo reindex 0..n-1]
-  
+
   reorderFlow[Setas ou indice] --> normalizeLocal[normalizePositions]
   normalizeLocal --> saveOrder[PATCH blocks/reorder]
 ```

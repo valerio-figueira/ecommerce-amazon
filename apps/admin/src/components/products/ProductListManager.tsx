@@ -19,9 +19,7 @@ type ProductListManagerProps = {
 
 const DEFAULT_PAGE_SIZE = 12;
 
-export function ProductListManager({
-  initialData,
-}: ProductListManagerProps): React.JSX.Element {
+export function ProductListManager({ initialData }: ProductListManagerProps): React.JSX.Element {
   const adminToast = useAdminToast();
   const [items, setItems] = useState(initialData.items);
   const [total, setTotal] = useState(initialData.total);
@@ -151,8 +149,7 @@ export function ProductListManager({
             </>
           ) : (
             <>
-              Produtos cadastrados · <strong>{total}</strong>{' '}
-              {total === 1 ? 'item' : 'itens'}
+              Produtos cadastrados · <strong>{total}</strong> {total === 1 ? 'item' : 'itens'}
             </>
           )}
           {loading ? ' · atualizando…' : ''}
@@ -187,11 +184,7 @@ export function ProductListManager({
           </div>
         ) : (
           <>
-            <div
-              className="admin-product-grid"
-              aria-busy={loading}
-              aria-live="polite"
-            >
+            <div className="admin-product-grid" aria-busy={loading} aria-live="polite">
               {items.map((product) => (
                 <ProductListCard key={product.id} product={product} />
               ))}

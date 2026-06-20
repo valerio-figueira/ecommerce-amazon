@@ -3,22 +3,22 @@ name: Go Redirect e SEO
 overview: Implementar mascaramento de afiliados via `GET /go/:slug` na API com rewrite no Next.js, telemetria `redirect_go`, página de produto com JSON-LD, e motor de interlinkagem (`LinkParser` + dicionário SEO em shared).
 todos:
   - id: domain-affiliate
-    content: "Domain: ClickOrigin.redirect_go + AffiliateAccountRepository port + AffiliateLinkBuilder.buildWithTracking"
+    content: 'Domain: ClickOrigin.redirect_go + AffiliateAccountRepository port + AffiliateLinkBuilder.buildWithTracking'
     status: completed
   - id: shared-seo-utils
-    content: "Shared: link-parser, SEO_KEYWORD_MAP, product-json-ld builder + testes + export ./seo"
+    content: 'Shared: link-parser, SEO_KEYWORD_MAP, product-json-ld builder + testes + export ./seo'
     status: completed
   - id: usecase-redirect
-    content: "Application: ResolveAffiliateRedirect + interlinkagem em GetArticleWithEmbeds"
+    content: 'Application: ResolveAffiliateRedirect + interlinkagem em GetArticleWithEmbeds'
     status: completed
   - id: infra-affiliate
-    content: "Infrastructure: Drizzle AffiliateAccountRepository, buildWithTracking, DI api-container"
+    content: 'Infrastructure: Drizzle AffiliateAccountRepository, buildWithTracking, DI api-container'
     status: completed
   - id: api-go-route
-    content: "API: GET /go/:slug, presenter goUrl, RecordClickSchema redirect_go"
+    content: 'API: GET /go/:slug, presenter goUrl, RecordClickSchema redirect_go'
     status: completed
   - id: web-product-seo
-    content: "Web: next.config rewrite, produtos/[slug] + ProductJsonLd, CTAs buildGoUrl"
+    content: 'Web: next.config rewrite, produtos/[slug] + ProductJsonLd, CTAs buildGoUrl'
     status: completed
   - id: docs-go-seo
     content: Docs go-redirect-seo.md + api-rest + dev-setup
@@ -30,15 +30,15 @@ isProject: false
 
 ## Estado atual (gaps)
 
-| Item | Status |
-|------|--------|
-| `GET /go/:slug` | Inexistente |
-| CTAs web | Abrem `product.affiliateUrl` direto ([`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx), [`FeaturedProductBlock.tsx`](apps/web/src/components/blocks/FeaturedProductBlock.tsx)) |
-| `ClickOrigin` | 5 valores; **`redirect_go` ausente** ([`schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts)) |
-| `affiliate_accounts` | Schema + seed; **sem repository runtime** — tags vêm de env via [`DefaultAffiliateLinkBuilder`](packages/infrastructure/src/affiliate/default-affiliate-link.builder.ts) |
-| Página produto | **`produtos/[slug]/page.tsx` inexistente** |
-| JSON-LD | Zero implementação |
-| Interlinkagem | Zero; regra editorial em [`.cursor/rules/07-growth-seo-content.mdc`](.cursor/rules/07-growth-seo-content.mdc) |
+| Item                 | Status                                                                                                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /go/:slug`      | Inexistente                                                                                                                                                                                       |
+| CTAs web             | Abrem `product.affiliateUrl` direto ([`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx), [`FeaturedProductBlock.tsx`](apps/web/src/components/blocks/FeaturedProductBlock.tsx)) |
+| `ClickOrigin`        | 5 valores; **`redirect_go` ausente** ([`schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts))                                                                                              |
+| `affiliate_accounts` | Schema + seed; **sem repository runtime** — tags vêm de env via [`DefaultAffiliateLinkBuilder`](packages/infrastructure/src/affiliate/default-affiliate-link.builder.ts)                          |
+| Página produto       | **`produtos/[slug]/page.tsx` inexistente**                                                                                                                                                        |
+| JSON-LD              | Zero implementação                                                                                                                                                                                |
+| Interlinkagem        | Zero; regra editorial em [`.cursor/rules/07-growth-seo-content.mdc`](.cursor/rules/07-growth-seo-content.mdc)                                                                                     |
 
 **Decisão confirmada:** rota na **API Fastify** + **rewrite** no Next.js para CTAs usarem `/go/:slug` no domínio da vitrine.
 
@@ -86,6 +86,7 @@ Implementação Drizzle lendo [`affiliate_accounts`](packages/infrastructure/src
 **Input:** `{ slug, blockId?, sessionId?, origin?: string }`
 
 **Fluxo:**
+
 1. `productRepository.findBySlug(slug)` — null → `err(EntityNotFoundError)`
 2. `affiliateAccountRepository.findByMarketplace(product.marketplace)` — validar `status === 'active'` (ou fallback env tag se conta seed/dev)
 3. Construir URL via `AffiliateLinkBuilder.buildWithTracking(...)` (novo método — ver §3)
@@ -102,6 +103,7 @@ buildWithTracking(
 ```
 
 Implementação em [`default-affiliate-link.builder.ts`](packages/infrastructure/src/affiliate/default-affiliate-link.builder.ts):
+
 - Amazon: `tag` + `ascsubtag` composto (`blockId_sessionId_origin`)
 - Shopee: `affiliate_id` + query params UTM/sub_id quando aplicável
 
@@ -127,7 +129,10 @@ Invalidar cache de artigo ao alterar mapa (documentar TTL 15 min existente).
 Função pura conforme spec:
 
 ```typescript
-export interface SeoKeywordMap { keyword: string; targetUrl: string; }
+export interface SeoKeywordMap {
+  keyword: string;
+  targetUrl: string;
+}
 export function injectInternalLinks(htmlContent: string, keywords: SeoKeywordMap[]): string;
 ```
 
@@ -151,6 +156,7 @@ export const SEO_KEYWORD_MAP: SeoKeywordMap[] = [
 ### [`packages/shared/src/seo/product-json-ld.ts`](packages/shared/src/seo/product-json-ld.ts)
 
 Builder puro `buildProductJsonLd(product: ProductJsonLdInput)` retornando objeto Schema.org `Product`:
+
 - Incluir `offers` **somente** se `shouldShowPrice === true` (ou `amount !== null && !isStale`)
 - `offers.url` = `${siteBaseUrl}/go/${slug}` (nunca URL externa)
 - Mapear `availability` → `InStock` / `OutOfStock`
@@ -177,12 +183,16 @@ app.get('/go/:slug', async (request, reply) => {
     return reply.redirect('/', 307); // home relativa — web proxy resolve
   }
 
-  void useCases.recordClickEvent.execute({
-    productId: result.value.productId,
-    origin: 'redirect_go',
-    blockId: query.blockId,
-    sessionId,
-  }).catch(/* log via logger, não bloqueia redirect */);
+  void (
+    useCases.recordClickEvent
+      .execute({
+        productId: result.value.productId,
+        origin: 'redirect_go',
+        blockId: query.blockId,
+        sessionId,
+      })
+      .catch(/* log via logger, não bloqueia redirect */)
+  );
 
   return reply.redirect(result.value.targetUrl, 307);
 });
@@ -195,6 +205,7 @@ Wire DI em [`api-container.ts`](packages/infrastructure/src/di/api-container.ts)
 ### Presenter — mascarar URLs públicas
 
 Em [`product.presenter.ts`](apps/api/src/adapters/presenters/product.presenter.ts):
+
 - Adicionar `goUrl: `/go/${product.slug}`` em list/detail DTOs
 - **Manter** `affiliateUrl` internamente omitido do JSON público **ou** substituir por `goUrl` apenas (breaking change controlado — atualizar Zod web schemas)
 
@@ -223,12 +234,12 @@ export function buildGoUrl(slug: string, params?: { blockId?: string; sessionId?
 
 ### Atualizar CTAs (remover `affiliateUrl` + `recordClick` duplicado no clique)
 
-| Componente | Mudança |
-|------------|---------|
-| [`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx) | `window.open(buildGoUrl(slug, { sessionId }))` — telemetria só no servidor |
-| [`FeaturedProductBlock.tsx`](apps/web/src/components/blocks/FeaturedProductBlock.tsx) | idem + `blockId` |
-| [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx) | idem |
-| Blocos CMS com `renderedData` | CTA usa `goUrl` ou `buildGoUrl` |
+| Componente                                                                            | Mudança                                                                    |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`ProductCard.tsx`](apps/web/src/components/product/ProductCard.tsx)                  | `window.open(buildGoUrl(slug, { sessionId }))` — telemetria só no servidor |
+| [`FeaturedProductBlock.tsx`](apps/web/src/components/blocks/FeaturedProductBlock.tsx) | idem + `blockId`                                                           |
+| [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx)           | idem                                                                       |
+| Blocos CMS com `renderedData`                                                         | CTA usa `goUrl` ou `buildGoUrl`                                            |
 
 Atualizar [`schemas.ts`](apps/web/src/lib/api/schemas.ts): `goUrl` substitui `affiliateUrl`.
 
@@ -247,6 +258,7 @@ Env `NEXT_PUBLIC_SITE_URL` para URLs absolutas no JSON-LD.
 ## 6. Documentação
 
 Criar [`docs/go-redirect-seo.md`](docs/go-redirect-seo.md):
+
 - Fluxo `/go`, telemetria, mascaramento
 - JSON-LD e regra stale
 - LinkParser e `SEO_KEYWORD_MAP`

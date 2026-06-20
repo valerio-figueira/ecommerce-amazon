@@ -89,11 +89,11 @@ Novo componente dedicado: [`apps/admin/src/components/cms/props-forms/DynamicGri
 
 Reutiliza `react-hook-form` via `control` (mesmo padrão atual), com seções visuais:
 
-| Seção | Campos | Componente | Copy leigo |
-|-------|--------|------------|------------|
-| **1 — Texto da vitrine** | `title`, `subtitle` | `Input` + `FormDescription` | Placeholders e hints do prompt ("Ex: Cadeiras Gamer…", subtítulo opcional) |
-| **2 — Regras de seleção** | `categoryVertical`, `minDiscountPercentage`, `sortBy` | `Select`, `Slider`, `Select` | Ver abaixo |
-| **3 — Layout e limites** | `limit` | `ProductLimitPicker` (chips 4/8/12/16) | "Recomendado: 4 ou 8 para manter o site rápido." |
+| Seção                     | Campos                                                | Componente                             | Copy leigo                                                                 |
+| ------------------------- | ----------------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| **1 — Texto da vitrine**  | `title`, `subtitle`                                   | `Input` + `FormDescription`            | Placeholders e hints do prompt ("Ex: Cadeiras Gamer…", subtítulo opcional) |
+| **2 — Regras de seleção** | `categoryVertical`, `minDiscountPercentage`, `sortBy` | `Select`, `Slider`, `Select`           | Ver abaixo                                                                 |
+| **3 — Layout e limites**  | `limit`                                               | `ProductLimitPicker` (chips 4/8/12/16) | "Recomendado: 4 ou 8 para manter o site rápido."                           |
 
 ### Seção 2 — detalhes
 
@@ -144,13 +144,13 @@ Fallback: `label` da API + emoji genérico se slug desconhecido.
 
 Substituir [`BlockPropsDialog.tsx`](apps/admin/src/components/cms/BlockPropsDialog.tsx):
 
-| Aspecto | Implementação |
-|---------|---------------|
-| Shell | `Sheet` + `SheetContent side="right"` largura `sm:max-w-md` ou `max-w-lg` |
-| Layout | `flex flex-col h-full`: header fixo, body `flex-1 overflow-y-auto`, footer `border-t` sticky |
-| Footer | "Cancelar" (outline) + "Salvar propriedades" / "Aplicar configurações" (primary) |
+| Aspecto      | Implementação                                                                                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shell        | `Sheet` + `SheetContent side="right"` largura `sm:max-w-md` ou `max-w-lg`                                                                                         |
+| Layout       | `flex flex-col h-full`: header fixo, body `flex-1 overflow-y-auto`, footer `border-t` sticky                                                                      |
+| Footer       | "Cancelar" (outline) + "Salvar propriedades" / "Aplicar configurações" (primary)                                                                                  |
 | Outros tipos | Manter `SpacerFormFields`, `BannerFormFields`, `RichTextFormFields` no body; aplicar `CmsFormSection` onde fizer sentido (agrupamento leve, sem over-engineering) |
-| Import | Atualizar [`CMSBlockOrderManager.tsx`](apps/admin/src/components/cms/CMSBlockOrderManager.tsx) para importar `BlockPropsSheet` |
+| Import       | Atualizar [`CMSBlockOrderManager.tsx`](apps/admin/src/components/cms/CMSBlockOrderManager.tsx) para importar `BlockPropsSheet`                                    |
 
 CSS opcional em [`globals.css`](apps/admin/src/app/globals.css): `.cms-props-sheet` com borda superior primary (mesmo padrão `.cms-dialog-accent`).
 
@@ -179,18 +179,18 @@ const categoriesResponseSchema = z.object({
 
 ## Arquivos principais
 
-| Ação | Arquivo |
-|------|---------|
-| Criar | `props-forms/DynamicGridForm.tsx` |
-| Criar | `props-forms/dynamic-grid-form-meta.ts` |
-| Criar | `props-forms/CmsFormSection.tsx` |
-| Criar | `props-forms/ProductLimitPicker.tsx` |
-| Criar | `components/ui/sheet.tsx`, `components/ui/slider.tsx` |
-| Refatorar | `BlockPropsDialog.tsx` → `BlockPropsSheet.tsx` |
-| Reduzir | `BlockPropsForm.tsx` — extrair DynamicGrid para arquivo novo; demais forms permanecem |
-| Corrigir | `cms-pages-client.ts`, `cms-pages.ts` |
-| CSS | `globals.css` — classes sheet/section |
-| Docs | [`docs/admin-cms-blocks-phase2.md`](docs/admin-cms-blocks-phase2.md) — seção UX Grade Dinâmica + Sheet |
+| Ação      | Arquivo                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| Criar     | `props-forms/DynamicGridForm.tsx`                                                                      |
+| Criar     | `props-forms/dynamic-grid-form-meta.ts`                                                                |
+| Criar     | `props-forms/CmsFormSection.tsx`                                                                       |
+| Criar     | `props-forms/ProductLimitPicker.tsx`                                                                   |
+| Criar     | `components/ui/sheet.tsx`, `components/ui/slider.tsx`                                                  |
+| Refatorar | `BlockPropsDialog.tsx` → `BlockPropsSheet.tsx`                                                         |
+| Reduzir   | `BlockPropsForm.tsx` — extrair DynamicGrid para arquivo novo; demais forms permanecem                  |
+| Corrigir  | `cms-pages-client.ts`, `cms-pages.ts`                                                                  |
+| CSS       | `globals.css` — classes sheet/section                                                                  |
+| Docs      | [`docs/admin-cms-blocks-phase2.md`](docs/admin-cms-blocks-phase2.md) — seção UX Grade Dinâmica + Sheet |
 
 ---
 

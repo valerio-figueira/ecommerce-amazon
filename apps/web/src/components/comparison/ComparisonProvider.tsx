@@ -35,11 +35,7 @@ function resolveCategoryMismatchMessage(activeLabel: string | null): string {
   return 'Você só pode comparar produtos da mesma categoria.';
 }
 
-export function ComparisonProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}): React.JSX.Element {
+export function ComparisonProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [items, setItems] = useState<ComparisonSelectionItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [toast, setToast] = useState<ComparisonToastMessage | null>(null);

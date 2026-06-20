@@ -59,7 +59,8 @@ export class DrizzleSitemapRepository implements SitemapRepository {
 
     return result.map((row) => ({
       path: row.path,
-      lastModified: row.last_modified instanceof Date ? row.last_modified : new Date(row.last_modified),
+      lastModified:
+        row.last_modified instanceof Date ? row.last_modified : new Date(row.last_modified),
     }));
   }
 }

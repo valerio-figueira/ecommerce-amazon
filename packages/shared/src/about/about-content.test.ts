@@ -33,10 +33,7 @@ describe('about content', () => {
   });
 
   it('resolves partial CMS content over defaults', () => {
-    const resolved = resolveAboutPageContent(
-      { heroTitle: 'Título customizado' },
-      brand,
-    );
+    const resolved = resolveAboutPageContent({ heroTitle: 'Título customizado' }, brand);
     expect(resolved.heroTitle).toBe('Título customizado');
     expect(resolved.sections).toHaveLength(4);
   });

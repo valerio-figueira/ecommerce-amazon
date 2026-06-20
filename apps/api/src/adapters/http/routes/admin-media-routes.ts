@@ -13,10 +13,7 @@ function handleAdminMediaError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminMediaRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminMediaRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.post('/admin/media/images', async (request, reply) => {

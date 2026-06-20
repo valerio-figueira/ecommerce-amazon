@@ -1,6 +1,6 @@
 ---
 name: Content Clusters Hub Spoke
-overview: "Implementar clusters de conteúdo Hub & Spoke end-to-end: schema Drizzle + migration, domain/repository/use cases, API pública enriquecida em `GET /articles/:slug`, CRUD admin com UI dedicada, seletor de cluster no formulário de artigo, e dois componentes na vitrine (SEO Anchor no pilar + carrossel/grid no pilar e satélites)."
+overview: 'Implementar clusters de conteúdo Hub & Spoke end-to-end: schema Drizzle + migration, domain/repository/use cases, API pública enriquecida em `GET /articles/:slug`, CRUD admin com UI dedicada, seletor de cluster no formulário de artigo, e dois componentes na vitrine (SEO Anchor no pilar + carrossel/grid no pilar e satélites).'
 todos:
   - id: schema-migration
     content: Criar content-clusters.ts, clusterId em contentArticles, migration 0014 e mappers
@@ -88,10 +88,10 @@ flowchart TB
 Em [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts), adicionar em `contentArticles`:
 
 ```typescript
-clusterId: uuid('cluster_id').references(() => contentClusters.id, { onDelete: 'set null' })
+clusterId: uuid('cluster_id').references(() => contentClusters.id, { onDelete: 'set null' });
 ```
 
-+ índice `content_articles_cluster_id_idx`.
+- índice `content_articles_cluster_id_idx`.
 
 Exportar `contentClusters` de `index.ts` (padrão [`article-categories.ts`](packages/infrastructure/src/persistence/drizzle/schema/article-categories.ts)).
 
@@ -123,15 +123,15 @@ Estender [`ContentArticle`](packages/domain/src/entities/ContentArticle.ts) com 
 
 Criar [`packages/domain/src/repositories/ContentClusterRepository.ts`](packages/domain/src/repositories/ContentClusterRepository.ts):
 
-| Método | Uso |
-|--------|-----|
-| `findById(id)` | Admin detail |
-| `findBySlug(slug)` | Lookup futuro |
-| `findByArticleClusterId(clusterId)` | Resolver cluster de um artigo |
-| `listAdminSummaries()` | Listagem admin |
-| `listPublishedMembers(clusterId)` | Spokes + pilar publicados, `publishedAt ASC` |
-| `save(cluster)` / `delete(id)` | CRUD |
-| `slugExists(slug, excludeId?)` | Unicidade |
+| Método                              | Uso                                          |
+| ----------------------------------- | -------------------------------------------- |
+| `findById(id)`                      | Admin detail                                 |
+| `findBySlug(slug)`                  | Lookup futuro                                |
+| `findByArticleClusterId(clusterId)` | Resolver cluster de um artigo                |
+| `listAdminSummaries()`              | Listagem admin                               |
+| `listPublishedMembers(clusterId)`   | Spokes + pilar publicados, `publishedAt ASC` |
+| `save(cluster)` / `delete(id)`      | CRUD                                         |
+| `slugExists(slug, excludeId?)`      | Unicidade                                    |
 
 Estender [`ContentRepository`](packages/domain/src/repositories/ContentRepository.ts) com `clearClusterFromArticles(clusterId)` ou método equivalente para invalidação em massa (opcional — pode ficar no Drizzle repo do cluster).
 
@@ -166,13 +166,13 @@ Registrar `DrizzleContentClusterRepository` e use cases em [`apps/api/src/contai
 
 ### Admin clusters (`packages/application/src/use-cases/content-cluster/`)
 
-| Use case | Regras |
-|----------|--------|
-| `CreateContentCluster` | Slug único; se `pilarArticleId` informado → validar artigo existe + setar `clusterId` no pilar |
-| `UpdateContentCluster` | Sync pilar: artigo antigo perde `clusterId` se trocado; novo pilar recebe `clusterId` |
-| `DeleteContentCluster` | `DELETE` cluster; FK `SET NULL` limpa artigos |
-| `ListContentClustersAdmin` | `{ id, name, slug, pilarTitle?, memberCount, updatedAt }` |
-| `GetContentClusterAdmin` | Cluster + lista de membros (draft + published para admin) |
+| Use case                   | Regras                                                                                         |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| `CreateContentCluster`     | Slug único; se `pilarArticleId` informado → validar artigo existe + setar `clusterId` no pilar |
+| `UpdateContentCluster`     | Sync pilar: artigo antigo perde `clusterId` se trocado; novo pilar recebe `clusterId`          |
+| `DeleteContentCluster`     | `DELETE` cluster; FK `SET NULL` limpa artigos                                                  |
+| `ListContentClustersAdmin` | `{ id, name, slug, pilarTitle?, memberCount, updatedAt }`                                      |
+| `GetContentClusterAdmin`   | Cluster + lista de membros (draft + published para admin)                                      |
 
 **Invariantes de negócio:**
 
@@ -237,13 +237,13 @@ Exportar em [`packages/shared/src/admin/index.ts`](packages/shared/src/admin/ind
 
 ### Admin — [`apps/api/src/adapters/http/routes/admin-content-cluster-routes.ts`](apps/api/src/adapters/http/routes/admin-content-cluster-routes.ts)
 
-| Método | Rota | Body / Response |
-|--------|------|-----------------|
-| GET | `/admin/content-clusters` | `{ items: ContentClusterAdminSummary[] }` |
-| POST | `/admin/content-clusters` | Create → `{ id }` |
-| GET | `/admin/content-clusters/:id` | Detail + members |
-| PATCH | `/admin/content-clusters/:id` | Update → `204` |
-| DELETE | `/admin/content-clusters/:id` | `204` |
+| Método | Rota                          | Body / Response                           |
+| ------ | ----------------------------- | ----------------------------------------- |
+| GET    | `/admin/content-clusters`     | `{ items: ContentClusterAdminSummary[] }` |
+| POST   | `/admin/content-clusters`     | Create → `{ id }`                         |
+| GET    | `/admin/content-clusters/:id` | Detail + members                          |
+| PATCH  | `/admin/content-clusters/:id` | Update → `204`                            |
+| DELETE | `/admin/content-clusters/:id` | `204`                                     |
 
 Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts).
 
@@ -299,7 +299,7 @@ Seguir padrão [`article-categories`](apps/admin/src/components/article-categori
 
 ### Rota `/content-clusters`
 
-- [`page.tsx`](apps/admin/src/app/(dashboard)/content-clusters/page.tsx) com `ContentClusterListManager`
+- [`page.tsx`](<apps/admin/src/app/(dashboard)/content-clusters/page.tsx>) com `ContentClusterListManager`
 - Componentes: `ContentClusterListView`, `ContentClusterFormSheet`
 - Campos: name, slug (auto-slugify), description, **pilar** via `ArticleIdPicker` (artigos publicados)
 - Listagem: nome, slug, título do pilar, contagem de membros, updatedAt

@@ -6,16 +6,16 @@
 
 ## Rotas web implementadas (`apps/web`)
 
-| Rota | Função | Doc |
-|------|--------|-----|
-| `/` | Home CMS-driven via `PageRenderer` + `GET /pages/home` | `cms-home-phase1.md` |
-| `/produtos/[slug]` | Detalhe produto: galeria, análise editorial, ficha técnica, carrossel similares, JSON-LD, CTA `/go` | `product-detail-page.md`, `go-redirect-seo.md` |
-| `/categorias/[slug]` | Listagem SEO com sidebar árvore, breadcrumbs, grid | `categories-hierarchy.md` |
-| `/artigos` | Índice do blog: busca, filtros por categoria, paginação | `articles-public-rendering.md` |
-| `/artigos/[slug]` | Artigo editorial: prose, auto-links, embeds ProductCard | `articles-public-rendering.md` |
-| `/artigos/categoria/[slug]` | Redireciona para `/artigos?categoria={slug}` | `articles-taxonomy-phase2.md` |
-| `/colecoes/[slug]` | Landing coleção curada numerada + JSON-LD | `curated-collections.md` |
-| `/go/[slug]` | Rewrite → API `GET /go/:slug` (307 afiliado) | `go-redirect-seo.md` |
+| Rota                        | Função                                                                                              | Doc                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `/`                         | Home CMS-driven via `PageRenderer` + `GET /pages/home`                                              | `cms-home-phase1.md`                           |
+| `/produtos/[slug]`          | Detalhe produto: galeria, análise editorial, ficha técnica, carrossel similares, JSON-LD, CTA `/go` | `product-detail-page.md`, `go-redirect-seo.md` |
+| `/categorias/[slug]`        | Listagem SEO com sidebar árvore, breadcrumbs, grid                                                  | `categories-hierarchy.md`                      |
+| `/artigos`                  | Índice do blog: busca, filtros por categoria, paginação                                             | `articles-public-rendering.md`                 |
+| `/artigos/[slug]`           | Artigo editorial: prose, auto-links, embeds ProductCard                                             | `articles-public-rendering.md`                 |
+| `/artigos/categoria/[slug]` | Redireciona para `/artigos?categoria={slug}`                                                        | `articles-taxonomy-phase2.md`                  |
+| `/colecoes/[slug]`          | Landing coleção curada numerada + JSON-LD                                                           | `curated-collections.md`                       |
+| `/go/[slug]`                | Rewrite → API `GET /go/:slug` (307 afiliado)                                                        | `go-redirect-seo.md`                           |
 
 **Admin:** `/auto-links` — CRUD keywords SEO (`auto-links-admin.md`)
 
@@ -68,82 +68,82 @@ Grid 3 slots: (1) coleção ou artigo hero 2×2, (2) produto oferta 1×1, (3) to
 
 ### Fase 1 — Estrutura (`admin-app-phase1.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| App `apps/admin` | Next.js 15, porta 3002 |
-| Auth JWT | `operators` table, cookie `vitrine_admin_token` 8h |
-| Shell | Sidebar, breadcrumbs, toast |
-| Rotas | Dashboard, Páginas, Produtos, Artigos, Coleções, Cupons (stub), Config (stub) |
+| Entrega          | Detalhe                                                                       |
+| ---------------- | ----------------------------------------------------------------------------- |
+| App `apps/admin` | Next.js 15, porta 3002                                                        |
+| Auth JWT         | `operators` table, cookie `vitrine_admin_token` 8h                            |
+| Shell            | Sidebar, breadcrumbs, toast                                                   |
+| Rotas            | Dashboard, Páginas, Produtos, Artigos, Coleções, Cupons (stub), Config (stub) |
 
 ### Produtos — modo híbrido manual (`admin-products-phase1.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| Listagem + create + edit | `/produtos`, `/produtos/novo`, `/produtos/[slug]` |
-| Parser URL | Amazon/Shopee/ML → `marketplace` + `externalId` |
-| Switch preço | `stale_price` ↔ "Exibir valor numérico" |
-| 3 abas | Link & Essenciais · Análise Editorial · SEO Avançado |
-| API | `GET/POST/PATCH /admin/products` |
-| `visible` | Oculta da home sem remover página produto |
+| Entrega                  | Detalhe                                              |
+| ------------------------ | ---------------------------------------------------- |
+| Listagem + create + edit | `/produtos`, `/produtos/novo`, `/produtos/[slug]`    |
+| Parser URL               | Amazon/Shopee/ML → `marketplace` + `externalId`      |
+| Switch preço             | `stale_price` ↔ "Exibir valor numérico"              |
+| 3 abas                   | Link & Essenciais · Análise Editorial · SEO Avançado |
+| API                      | `GET/POST/PATCH /admin/products`                     |
+| `visible`                | Oculta da home sem remover página produto            |
 
 ### Artigos editoriais (`admin-articles-phase1.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| CRUD completo | `/artigos`, `/artigos/novo`, `/artigos/[id]` |
+| Entrega        | Detalhe                                           |
+| -------------- | ------------------------------------------------- |
+| CRUD completo  | `/artigos`, `/artigos/novo`, `/artigos/[id]`      |
 | TipTap WYSIWYG | Comando `/produto`, shortcodes `[[product:slug]]` |
-| Modo HTML | Toolbar + textarea monoespaçada |
-| Sync embeds | `content_product_embeds` extraído do body |
-| API | `/admin/articles` CRUD |
+| Modo HTML      | Toolbar + textarea monoespaçada                   |
+| Sync embeds    | `content_product_embeds` extraído do body         |
+| API            | `/admin/articles` CRUD                            |
 
 ### Taxonomia artigos fase 2 (`articles-taxonomy-phase2.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| `article_categories` | CRUD em `/artigos/categorias` |
-| Perfil autor | `operators.avatar_url`, `bio`, `role` |
-| API pública | `author`, `category`, `relatedArticles` (máx. 3) em `GET /articles/:slug` |
+| Entrega              | Detalhe                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| `article_categories` | CRUD em `/artigos/categorias`                                             |
+| Perfil autor         | `operators.avatar_url`, `bio`, `role`                                     |
+| API pública          | `author`, `category`, `relatedArticles` (máx. 3) em `GET /articles/:slug` |
 
 ### Coleções curadas (`curated-collections.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| CRUD admin | `/colecoes` com sheet lateral |
-| Landing pública | `/colecoes/[slug]` |
-| Bloco CMS | `curated_collection` com carrossel `CollectionProductCard` |
-| API | `GET /collections`, `GET /collections/:slug`, `/admin/collections` CRUD |
+| Entrega         | Detalhe                                                                 |
+| --------------- | ----------------------------------------------------------------------- |
+| CRUD admin      | `/colecoes` com sheet lateral                                           |
+| Landing pública | `/colecoes/[slug]`                                                      |
+| Bloco CMS       | `curated_collection` com carrossel `CollectionProductCard`              |
+| API             | `GET /collections`, `GET /collections/:slug`, `/admin/collections` CRUD |
 
 ### Categorias hierárquicas (`categories-hierarchy.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| Árvore `categories` | `parent_id`, SEO, IDs marketplace |
-| Admin | `/categorias` com árvore visual |
-| API pública | `GET /categories`, `GET /categories/:slug` |
-| API admin | CRUD + reorder `/admin/categories` |
-| Vitrine | Pills cascata home, sidebar categoria, header flyout/drawer |
-| Produto | `CategoryCascadeSelect` → folha obrigatória |
+| Entrega             | Detalhe                                                     |
+| ------------------- | ----------------------------------------------------------- |
+| Árvore `categories` | `parent_id`, SEO, IDs marketplace                           |
+| Admin               | `/categorias` com árvore visual                             |
+| API pública         | `GET /categories`, `GET /categories/:slug`                  |
+| API admin           | CRUD + reorder `/admin/categories`                          |
+| Vitrine             | Pills cascata home, sidebar categoria, header flyout/drawer |
+| Produto             | `CategoryCascadeSelect` → folha obrigatória                 |
 
 ### Auto-Links SEO (`auto-links-admin.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| API admin | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
-| UI admin | `/auto-links` — listagem, busca, CRUD Sheet, picker com busca server-side (`/admin/internal-link-targets`), toggle `is_active` |
-| Parser | `injectInternalLinks` com priority, maxMatches, zonas protegidas |
-| Cache | Redis `vitrine:seo:auto-links` + invalidação nas mutações |
-| Vitrine | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB) |
+| Entrega   | Detalhe                                                                                                                        |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| API admin | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets`                                                  |
+| UI admin  | `/auto-links` — listagem, busca, CRUD Sheet, picker com busca server-side (`/admin/internal-link-targets`), toggle `is_active` |
+| Parser    | `injectInternalLinks` com priority, maxMatches, zonas protegidas                                                               |
+| Cache     | Redis `vitrine:seo:auto-links` + invalidação nas mutações                                                                      |
+| Vitrine   | Injeção runtime em `ArticleBody` (HTML do artigo intacto no DB)                                                                |
 
 ### Content Clusters Hub & Spoke (`content-clusters-hub-spoke.md`) ✅
 
-| Entrega | Detalhe |
-|---------|---------|
-| Schema | `content_clusters` + `content_articles.cluster_id` (migration `0016`) |
-| API admin | `GET/POST/PATCH/DELETE /admin/content-clusters`; artigos com `clusterId` |
-| UI admin | `/content-clusters` — CRUD Sheet, picker de pilar; seletor de cluster no `ArticleForm` |
-| API pública | `GET /articles/:slug` → campo `cluster` (role, members, pilarArticle) |
-| Vitrine | `ArticleSeoAnchor` (só pilar), `ArticleClusterCarousel`, JSON-LD `ItemList` |
-| Seed | Cluster demo "Especial Cadeira Ergonômica" + 2 satélites |
+| Entrega     | Detalhe                                                                                |
+| ----------- | -------------------------------------------------------------------------------------- |
+| Schema      | `content_clusters` + `content_articles.cluster_id` (migration `0016`)                  |
+| API admin   | `GET/POST/PATCH/DELETE /admin/content-clusters`; artigos com `clusterId`               |
+| UI admin    | `/content-clusters` — CRUD Sheet, picker de pilar; seletor de cluster no `ArticleForm` |
+| API pública | `GET /articles/:slug` → campo `cluster` (role, members, pilarArticle)                  |
+| Vitrine     | `ArticleSeoAnchor` (só pilar), `ArticleClusterCarousel`, JSON-LD `ItemList`            |
+| Seed        | Cluster demo "Especial Cadeira Ergonômica" + 2 satélites                               |
 
 ---
 
@@ -160,6 +160,7 @@ flowchart LR
 ```
 
 **Ordem de renderização obrigatória (web):**
+
 1. `GET /articles/:slug` → body cru + metadados
 2. `GET /seo/auto-links` → keywords dinâmicas (cache 1h)
 3. `GET /products/:slug` por shortcode → pros/cons
@@ -173,15 +174,15 @@ flowchart LR
 
 ## go-redirect-seo (`go-redirect-seo.md`) ✅
 
-| Feature | Implementação |
-|---------|---------------|
-| `GET /go/:slug` | 307 para URL afiliado; telemetria `redirect_go` |
-| Rewrite Next | `/go/:slug` → `API_INTERNAL_URL` |
-| `goUrl` nos DTOs | Substitui exposição direta de `affiliateUrl` |
-| Gate afiliado | `pending_manual_validation` → 307 `/` |
-| JSON-LD Product | `/produtos/[slug]`; sem `offers` se stale |
-| Canonical | `resolveProductCanonicalUrl`: DB override ou `/produtos/{slug}` |
-| Interlinkagem | `SEO_KEYWORD_MAP` + tabela `auto_links`; primeira ocorrência por keyword |
+| Feature          | Implementação                                                            |
+| ---------------- | ------------------------------------------------------------------------ |
+| `GET /go/:slug`  | 307 para URL afiliado; telemetria `redirect_go`                          |
+| Rewrite Next     | `/go/:slug` → `API_INTERNAL_URL`                                         |
+| `goUrl` nos DTOs | Substitui exposição direta de `affiliateUrl`                             |
+| Gate afiliado    | `pending_manual_validation` → 307 `/`                                    |
+| JSON-LD Product  | `/produtos/[slug]`; sem `offers` se stale                                |
+| Canonical        | `resolveProductCanonicalUrl`: DB override ou `/produtos/{slug}`          |
+| Interlinkagem    | `SEO_KEYWORD_MAP` + tabela `auto_links`; primeira ocorrência por keyword |
 
 **SEO analytics (`seo_e_click_analytics` plan):** `block_id` em `click_events` para rastrear bloco CMS de origem.
 
@@ -209,71 +210,72 @@ Base dev: `http://localhost:3000`. Validação Zod na borda. Sessão: header `x-
 
 ### Público — leitura
 
-| Método | Rota | Use case / notas |
-|--------|------|------------------|
-| GET | `/health` | Health check |
-| GET | `/categories` | Árvore com productCount |
-| GET | `/categories/:slug` | Detalhe SEO + breadcrumbs |
-| GET | `/pages/:slug` | Layout CMS publicado (+ renderedData) |
-| GET | `/products` | Listagem paginada; query: page, pageSize, category, marketplace, sort |
-| GET | `/products/:slug` | Detalhe produto |
-| GET | `/products/:id/price-history` | Snapshots; query `days` |
-| GET | `/go/:slug` | 307 redirect afiliado |
-| GET | `/articles` | Lista publicada com `category`, `search`, `page`, `limit` |
-| GET | `/article-categories` | Categorias editoriais com artigos publicados |
-| GET | `/articles/:slug` | Artigo publicado |
-| GET | `/seo/auto-links` | Keywords interlinkagem |
-| GET | `/collections` | Picker CMS |
-| GET | `/collections/:slug` | Coleção + produtos |
-| GET | `/coupons` | Cupons ativos verificados |
-| GET | `/comparisons/:shareToken` | Comparador |
+| Método | Rota                          | Use case / notas                                                      |
+| ------ | ----------------------------- | --------------------------------------------------------------------- |
+| GET    | `/health`                     | Health check                                                          |
+| GET    | `/categories`                 | Árvore com productCount                                               |
+| GET    | `/categories/:slug`           | Detalhe SEO + breadcrumbs                                             |
+| GET    | `/pages/:slug`                | Layout CMS publicado (+ renderedData)                                 |
+| GET    | `/products`                   | Listagem paginada; query: page, pageSize, category, marketplace, sort |
+| GET    | `/products/:slug`             | Detalhe produto                                                       |
+| GET    | `/products/:id/price-history` | Snapshots; query `days`                                               |
+| GET    | `/go/:slug`                   | 307 redirect afiliado                                                 |
+| GET    | `/articles`                   | Lista publicada com `category`, `search`, `page`, `limit`             |
+| GET    | `/article-categories`         | Categorias editoriais com artigos publicados                          |
+| GET    | `/articles/:slug`             | Artigo publicado                                                      |
+| GET    | `/seo/auto-links`             | Keywords interlinkagem                                                |
+| GET    | `/collections`                | Picker CMS                                                            |
+| GET    | `/collections/:slug`          | Coleção + produtos                                                    |
+| GET    | `/coupons`                    | Cupons ativos verificados                                             |
+| GET    | `/comparisons/:shareToken`    | Comparador                                                            |
 
 ### Público — escrita
 
-| Método | Rota | Notas |
-|--------|------|-------|
-| POST | `/price-alerts` | Double opt-in; 201 |
-| POST | `/price-alerts/confirm/:token` | Ativa alerta |
-| DELETE | `/price-alerts/:token` | Cancela alerta (LGPD); 204 |
-| GET | `/wishlist` | Enriquecido com produto |
-| POST | `/wishlist` | Body `{ productId }` |
-| DELETE | `/wishlist/:id` | 204 |
-| DELETE | `/wishlist` | Limpa lista da sessão; 204 |
-| POST | `/wishlist/checkout-batch` | URL batch checkout |
-| POST | `/comparisons` | 2–3 produtos; intro ≥150 chars |
-| POST | `/events/click` | 204; origens: listagem, detalhe, embed, comparador, cupons, redirect_go |
+| Método | Rota                           | Notas                                                                   |
+| ------ | ------------------------------ | ----------------------------------------------------------------------- |
+| POST   | `/price-alerts`                | Double opt-in; 201                                                      |
+| POST   | `/price-alerts/confirm/:token` | Ativa alerta                                                            |
+| DELETE | `/price-alerts/:token`         | Cancela alerta (LGPD); 204                                              |
+| GET    | `/wishlist`                    | Enriquecido com produto                                                 |
+| POST   | `/wishlist`                    | Body `{ productId }`                                                    |
+| DELETE | `/wishlist/:id`                | 204                                                                     |
+| DELETE | `/wishlist`                    | Limpa lista da sessão; 204                                              |
+| POST   | `/wishlist/checkout-batch`     | URL batch checkout                                                      |
+| POST   | `/comparisons`                 | 2–3 produtos; intro ≥150 chars                                          |
+| POST   | `/events/click`                | 204; origens: listagem, detalhe, embed, comparador, cupons, redirect_go |
 
 ### Admin — auth
 
-| Método | Rota | Notas |
-|--------|------|-------|
-| POST | `/admin/auth/login` | `{ email, password }` → JWT |
-| GET | `/admin/auth/me` | Bearer JWT |
-| POST | `/admin/auth/logout` | 204 |
+| Método | Rota                 | Notas                       |
+| ------ | -------------------- | --------------------------- |
+| POST   | `/admin/auth/login`  | `{ email, password }` → JWT |
+| GET    | `/admin/auth/me`     | Bearer JWT                  |
+| POST   | `/admin/auth/logout` | 204                         |
 
 ### Admin — CMS páginas
 
-| Método | Rota |
-|--------|------|
-| GET | `/admin/pages` |
-| GET | `/admin/pages/:slug` |
-| POST | `/admin/pages/:slug/blocks` |
-| PATCH | `/admin/pages/:slug/blocks/:id` |
-| DELETE | `/admin/pages/:slug/blocks/:id` |
-| PATCH | `/admin/pages/:slug/blocks/reorder` |
+| Método | Rota                                |
+| ------ | ----------------------------------- |
+| GET    | `/admin/pages`                      |
+| GET    | `/admin/pages/:slug`                |
+| POST   | `/admin/pages/:slug/blocks`         |
+| PATCH  | `/admin/pages/:slug/blocks/:id`     |
+| DELETE | `/admin/pages/:slug/blocks/:id`     |
+| PATCH  | `/admin/pages/:slug/blocks/reorder` |
 
 ### Admin — catálogo e conteúdo
 
-| Grupo | Rotas |
-|-------|-------|
-| Produtos | `GET/POST /admin/products`, `GET/PATCH /admin/products/:slug` |
-| Categorias produto | `GET/POST/PATCH/DELETE /admin/categories`, `PATCH /admin/categories/reorder` |
-| Artigos | `GET/POST/PATCH/DELETE /admin/articles` |
-| Categorias artigo | `GET/POST/PATCH/DELETE /admin/article-categories` |
-| Coleções | `GET/POST/PATCH/DELETE /admin/collections` |
-| Auto-links | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
+| Grupo              | Rotas                                                                         |
+| ------------------ | ----------------------------------------------------------------------------- |
+| Produtos           | `GET/POST /admin/products`, `GET/PATCH /admin/products/:slug`                 |
+| Categorias produto | `GET/POST/PATCH/DELETE /admin/categories`, `PATCH /admin/categories/reorder`  |
+| Artigos            | `GET/POST/PATCH/DELETE /admin/articles`                                       |
+| Categorias artigo  | `GET/POST/PATCH/DELETE /admin/article-categories`                             |
+| Coleções           | `GET/POST/PATCH/DELETE /admin/collections`                                    |
+| Auto-links         | `GET/POST/PATCH/DELETE /admin/auto-links`, `GET /admin/internal-link-targets` |
 
 **Rotas planejadas NÃO implementadas:**
+
 - `GET /coupons/:marketplace`
 - `POST /admin/pages/:slug/publish`
 
@@ -285,14 +287,14 @@ Contrato completo: `docs/api-rest.md`.
 
 **Único processo com acesso marketplace.**
 
-| Fila | Cron | Pipeline |
-|------|------|----------|
-| `price_refresh` | 4h | B — preços (nunca pausar hot) |
-| `catalog_sync` | 6h | A — metadados |
-| `hygiene` | diário 02:00 | C — títulos/specs |
-| `coupon_verify` | 6h | D — cupons |
-| `domain_events` | — | PriceDropped → alertas |
-| `email_delivery` | — | Confirmação alertas |
+| Fila             | Cron         | Pipeline                      |
+| ---------------- | ------------ | ----------------------------- |
+| `price_refresh`  | 4h           | B — preços (nunca pausar hot) |
+| `catalog_sync`   | 6h           | A — metadados                 |
+| `hygiene`        | diário 02:00 | C — títulos/specs             |
+| `coupon_verify`  | 6h           | D — cupons                    |
+| `domain_events`  | —            | PriceDropped → alertas        |
+| `email_delivery` | —            | Confirmação alertas           |
 
 Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketplace.
 
@@ -302,55 +304,55 @@ Fetchers: Amazon, Shopee, Mercado Livre (stub). Rate limiter Redis por marketpla
 
 ## Planos executados (`.cursor/plans/` — todos completed)
 
-| Plano | Entrega principal |
-|-------|-------------------|
-| `arquitetura_tecnica_node` | Scaffold Clean Architecture completo |
-| `ui_home_vitrine` | CMS Home fase 1 |
-| `cms_blocos_dinâmicos` | Dynamic product grid + BFF |
-| `cms_admin_block_editor` | Editor blocos admin fase 2 |
-| `cms_forms_fase_1` | Formulários amigáveis blocos |
-| `cms_props_ux_form` | UX forms CMS |
-| `admin_app_estrutura_inicial` | App admin + auth |
-| `admin_product_management` | CRUD produtos híbrido |
-| `artigos_editoriais_mvp` | CRUD artigos TipTap |
-| `editor_toolbar_html` | Toolbar + modo HTML artigos |
-| `artigos_taxonomia_autores` | Categorias artigo + autor |
-| `article_editorial_embed` | Embed ProductCard editorial |
-| `categorias_hierárquicas_seo` | Árvore categorias produto |
-| `vitrine_subcategorias_ux` | Pills cascata + sidebar |
-| `header_gold_hub` | Header hub categorias |
-| `coleções_curadas_gold` | Coleções CRUD + landing |
-| `bento_hub_mix_cms` | Bloco bento hub 3 slots |
-| `go_redirect_e_seo` | /go + JSON-LD + interlinkagem |
-| `seo_e_click_analytics` | canonical_url + block_id cliques |
-| `product_card_cro_gold` | ProductCard variantes CRO |
+| Plano                         | Entrega principal                    |
+| ----------------------------- | ------------------------------------ |
+| `arquitetura_tecnica_node`    | Scaffold Clean Architecture completo |
+| `ui_home_vitrine`             | CMS Home fase 1                      |
+| `cms_blocos_dinâmicos`        | Dynamic product grid + BFF           |
+| `cms_admin_block_editor`      | Editor blocos admin fase 2           |
+| `cms_forms_fase_1`            | Formulários amigáveis blocos         |
+| `cms_props_ux_form`           | UX forms CMS                         |
+| `admin_app_estrutura_inicial` | App admin + auth                     |
+| `admin_product_management`    | CRUD produtos híbrido                |
+| `artigos_editoriais_mvp`      | CRUD artigos TipTap                  |
+| `editor_toolbar_html`         | Toolbar + modo HTML artigos          |
+| `artigos_taxonomia_autores`   | Categorias artigo + autor            |
+| `article_editorial_embed`     | Embed ProductCard editorial          |
+| `categorias_hierárquicas_seo` | Árvore categorias produto            |
+| `vitrine_subcategorias_ux`    | Pills cascata + sidebar              |
+| `header_gold_hub`             | Header hub categorias                |
+| `coleções_curadas_gold`       | Coleções CRUD + landing              |
+| `bento_hub_mix_cms`           | Bloco bento hub 3 slots              |
+| `go_redirect_e_seo`           | /go + JSON-LD + interlinkagem        |
+| `seo_e_click_analytics`       | canonical_url + block_id cliques     |
+| `product_card_cro_gold`       | ProductCard variantes CRO            |
 
 ## Planos de referência (não necessariamente 100% implementados)
 
-| Plano | Status geral |
-|-------|--------------|
-| `prd_plataforma_afiliação` | Parcial — backend core ✅; várias páginas web ✅; alertas email, comparador web ❌ |
-| `prd_growth_aquisicao_trafego` | Parcial — entidades/API ✅; índice artigos, calendário editorial ❌ |
-| `ui_ux_home_vitrine` | Referência visual (wireframe ESTORE) |
+| Plano                          | Status geral                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| `prd_plataforma_afiliação`     | Parcial — backend core ✅; várias páginas web ✅; alertas email, comparador web ❌ |
+| `prd_growth_aquisicao_trafego` | Parcial — entidades/API ✅; índice artigos, calendário editorial ❌                |
+| `ui_ux_home_vitrine`           | Referência visual (wireframe ESTORE)                                               |
 
 ---
 
 ## MVP — o que ainda falta (PRD Core)
 
-| Item | Prioridade |
-|------|------------|
-| Página comparador web (`/comparador/[token]`) | Alta |
-| Central de cupons web | Alta |
-| Hub `/artigos` (índice + filtros) | ✅ Entregue |
-| Alertas email em produção (Resend) | Alta |
-| `DELETE /price-alerts/:token` (LGPD) | ✅ |
-| Banner cookies + `DELETE /wishlist` | ✅ |
-| Draft/preview/publish CMS | Média |
-| Admin CRUD `auto_links` | Média | ✅ API + UI `/auto-links` |
-| Gate manual conta afiliado antes de escala | Negócio |
-| PA-API Amazon homologada | Infra |
-| Worker auto-mapeamento browse node → categoria | Worker |
-| Login social, app nativo, checkout in-platform | Fora MVP |
+| Item                                           | Prioridade  |
+| ---------------------------------------------- | ----------- | ------------------------- |
+| Página comparador web (`/comparador/[token]`)  | Alta        |
+| Central de cupons web                          | Alta        |
+| Hub `/artigos` (índice + filtros)              | ✅ Entregue |
+| Alertas email em produção (Resend)             | Alta        |
+| `DELETE /price-alerts/:token` (LGPD)           | ✅          |
+| Banner cookies + `DELETE /wishlist`            | ✅          |
+| Draft/preview/publish CMS                      | Média       |
+| Admin CRUD `auto_links`                        | Média       | ✅ API + UI `/auto-links` |
+| Gate manual conta afiliado antes de escala     | Negócio     |
+| PA-API Amazon homologada                       | Infra       |
+| Worker auto-mapeamento browse node → categoria | Worker      |
+| Login social, app nativo, checkout in-platform | Fora MVP    |
 
 ---
 

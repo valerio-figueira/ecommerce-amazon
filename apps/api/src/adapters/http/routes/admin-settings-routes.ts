@@ -32,10 +32,7 @@ import {
 
 import { createConnectivityTestRateLimiter } from '../connectivity-test-rate-limiter.js';
 import { handleAdminError } from '../admin-error-handler.js';
-import {
-  handleAdminAuthorizationError,
-  requireAdminOperator,
-} from '../require-admin-operator.js';
+import { handleAdminAuthorizationError, requireAdminOperator } from '../require-admin-operator.js';
 
 const connectivityTestRateLimiter = createConnectivityTestRateLimiter();
 
@@ -50,10 +47,7 @@ function resolveClientIp(request: { ip: string; headers: Record<string, unknown>
   return request.ip;
 }
 
-function parseMarketplaceCredentialsBody(
-  marketplace: 'amazon_br' | 'shopee_br',
-  body: unknown,
-) {
+function parseMarketplaceCredentialsBody(marketplace: 'amazon_br' | 'shopee_br', body: unknown) {
   if (marketplace === 'amazon_br') {
     return saveAmazonCredentialsBodySchema.parse(body);
   }
@@ -71,10 +65,7 @@ function handleSettingsError(error: unknown, reply: FastifyReply) {
   return handleAdminError(error, reply);
 }
 
-export function registerAdminSettingsRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminSettingsRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.get('/admin/affiliate-accounts', async (request, reply) => {

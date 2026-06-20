@@ -1,6 +1,6 @@
 ---
 name: Comparador Web MVP
-overview: "Implementar o comparador standalone na vitrine (`/comparar`) conforme North Star: seleção de 2–3 produtos nos cards, barra flutuante, página pública com intro editorial, URL compartilhável via `shareToken`, reutilizando `ComparisonTable` e a API `POST/GET /comparisons` já existente."
+overview: 'Implementar o comparador standalone na vitrine (`/comparar`) conforme North Star: seleção de 2–3 produtos nos cards, barra flutuante, página pública com intro editorial, URL compartilhável via `shareToken`, reutilizando `ComparisonTable` e a API `POST/GET /comparisons` já existente.'
 todos:
   - id: api-presenter
     content: Criar comparison-schemas + comparison.presenter; dedupe determinístico no POST; validação mesma categoria; categorySlug no list DTO; testes API
@@ -30,12 +30,12 @@ isProject: false
 
 ## Contexto e gap atual
 
-| Camada | Status |
-|--------|--------|
-| Domínio + DB (`product_comparisons`, `comparison_products`) | Pronto |
-| API `POST /comparisons`, `GET /comparisons/:shareToken` | Rotas existem em [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts) |
-| Tabela comparativa em artigos | [`ComparisonTable.tsx`](apps/web/src/components/articles/ComparisonTable.tsx) + shortcode `[[compare:...]]` |
-| **Vitrine standalone** | Ausente — prioridade #1 em [`docs/next-steps-mvp.md`](docs/next-steps-mvp.md) |
+| Camada                                                      | Status                                                                                                      |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Domínio + DB (`product_comparisons`, `comparison_products`) | Pronto                                                                                                      |
+| API `POST /comparisons`, `GET /comparisons/:shareToken`     | Rotas existem em [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts) |
+| Tabela comparativa em artigos                               | [`ComparisonTable.tsx`](apps/web/src/components/articles/ComparisonTable.tsx) + shortcode `[[compare:...]]` |
+| **Vitrine standalone**                                      | Ausente — prioridade #1 em [`docs/next-steps-mvp.md`](docs/next-steps-mvp.md)                               |
 
 **Gap crítico na API:** `GetComparisonByToken` retorna entidades de domínio (`Product`, `ProductComparison`) sem presenter. O front precisa do mesmo contrato que artigos usam (`ProductDetailDto` via [`toProductDetailDto`](apps/api/src/adapters/presenters/product.presenter.ts)). Corrigir antes da página web.
 
@@ -103,7 +103,7 @@ Do [PRD Core §3.4](.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) e
 **Mitigação:**
 
 - `ComparisonProvider.toggleProduct` exige **mesma `categoryId`** (ou `categorySlug`) entre todos os itens da seleção.
-- Ao tentar adicionar produto de categoria diferente com lista já contendo ≥1 item: **bloquear** e exibir feedback amigável (toast ou banner inline na `CompareBar`): *"Você só pode comparar produtos da mesma categoria (ex.: Smartphones)."*
+- Ao tentar adicionar produto de categoria diferente com lista já contendo ≥1 item: **bloquear** e exibir feedback amigável (toast ou banner inline na `CompareBar`): _"Você só pode comparar produtos da mesma categoria (ex.: Smartphones)."_
 - Persistir `categoryId` + `categorySlug` + `categoryLabel` no estado do comparador junto com cada item.
 - **Pré-requisito de dados:** `productPublicListItemSchema` ganha `categorySlug` e `categoryLabel` opcionais; [`toProductListItemDto`](apps/api/src/adapters/presenters/product.presenter.ts) passa a incluir categoria quando o produto tiver `categoryId` resolvido (join leve no repositório ou campo já carregado no domínio).
 - Produto **sem categoria** só pode ser comparado com outros sem categoria.
@@ -204,7 +204,7 @@ Adicionar testes em [`apps/api/src/api.test.ts`](apps/api/src/api.test.ts):
 Novo contexto em [`apps/web/src/components/comparison/`](apps/web/src/components/comparison/), espelhando padrão do [`WishlistProvider`](apps/web/src/components/wishlist/WishlistProvider.tsx):
 
 - Estado: até 3 itens com `productId`, `slug`, `title`, `imageUrl`, **`categoryId`**, **`categorySlug`**, **`categoryLabel`**
-- `categorySlug` da seleção ativa exposto no contexto (para label na barra: *"Comparando: Smartphones"*)
+- `categorySlug` da seleção ativa exposto no contexto (para label na barra: _"Comparando: Smartphones"_)
 - Persistência: `localStorage` (sem cookie/consent — só IDs locais, não PII)
 - **Hidratação segura:** ver §3 acima — `isHydrated` gate antes de refletir seleção na UI
 - API do contexto:
@@ -278,10 +278,10 @@ Função pura em `packages/shared` (ex.: `buildComparisonEditorialIntro`):
 
 Extrair núcleo reutilizável sem quebrar artigos:
 
-| Arquivo | Responsabilidade |
-|---------|------------------|
-| `comparison-table-core.tsx` | `collectSpecKeys`, badges, layout mobile/desktop |
-| `ComparisonTable.tsx` | Wrapper artigo (`articleId`, `ClickPlacement.ARTICLE_COMPARISON`) |
+| Arquivo                         | Responsabilidade                                                       |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| `comparison-table-core.tsx`     | `collectSpecKeys`, badges, layout mobile/desktop                       |
+| `ComparisonTable.tsx`           | Wrapper artigo (`articleId`, `ClickPlacement.ARTICLE_COMPARISON`)      |
 | `StandaloneComparisonTable.tsx` | Wrapper standalone (`ClickPlacement.COMPARISON_PAGE`, sem `articleId`) |
 
 Mudanças na tabela standalone vs artigo:
@@ -352,6 +352,7 @@ flowchart LR
 ## Arquivos principais a criar/alterar
 
 **Novos:**
+
 - `packages/shared/src/comparison/comparison-schemas.ts`
 - `packages/shared/src/comparison/build-editorial-intro.ts`
 - `apps/api/src/adapters/presenters/comparison.presenter.ts`
@@ -365,6 +366,7 @@ flowchart LR
 - `docs/comparator-web-phase1.md`
 
 **Alterar:**
+
 - [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts)
 - [`packages/application/src/use-cases/comparison/CreateComparison.ts`](packages/application/src/use-cases/comparison/CreateComparison.ts)
 - [`packages/domain/src/repositories/ProductComparisonRepository.ts`](packages/domain/src/repositories/ProductComparisonRepository.ts)

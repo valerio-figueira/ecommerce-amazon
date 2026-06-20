@@ -158,11 +158,7 @@ export default async function CuratedCollectionPage({
         )}
 
         <Suspense fallback={null}>
-          <ListingPagination
-            page={page}
-            totalPages={totalPages}
-            ariaLabel="Paginação da coleção"
-          />
+          <ListingPagination page={page} totalPages={totalPages} ariaLabel="Paginação da coleção" />
         </Suspense>
       </section>
     </main>

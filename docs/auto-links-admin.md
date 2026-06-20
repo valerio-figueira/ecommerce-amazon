@@ -54,52 +54,52 @@ flowchart LR
 
 ### Regras do parser
 
-| Regra | Comportamento |
-|-------|---------------|
-| Ordenação | `priority DESC`, depois `keyword.length DESC` |
-| `maxMatches` | Limite por regra no mesmo texto |
+| Regra            | Comportamento                                        |
+| ---------------- | ---------------------------------------------------- |
+| Ordenação        | `priority DESC`, depois `keyword.length DESC`        |
+| `maxMatches`     | Limite por regra no mesmo texto                      |
 | Zonas protegidas | Não injeta em `<a>`, headings `<h1>`–`<h6>`, `<img>` |
-| Persistência | HTML do artigo no DB **nunca** é modificado |
+| Persistência     | HTML do artigo no DB **nunca** é modificado          |
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Domain | `packages/domain/src/entities/AutoLink.ts` |
-| Port | `packages/domain/src/repositories/AutoLinkRepository.ts` |
-| Infra | `packages/infrastructure/src/persistence/repositories/drizzle-auto-link.repository.ts` |
-| Use cases | `packages/application/src/use-cases/auto-links/` |
-| Público | `packages/application/src/use-cases/seo/ListActiveAutoLinks.ts` |
-| Parser | `packages/shared/src/seo/link-parser.ts` |
-| Cache key | `packages/shared/src/seo/auto-links-cache.ts` |
-| Schemas admin | `packages/shared/src/admin/auto-link-schemas.ts` |
-| API admin | `apps/api/src/adapters/http/routes/admin-auto-link-routes.ts` |
-| Admin UI | `apps/admin/src/app/(dashboard)/auto-links/page.tsx` |
-| Admin BFF | `apps/admin/src/app/api/admin/auto-links/` |
-| Admin components | `apps/admin/src/components/auto-links/` |
-| Picker helpers | `apps/admin/src/lib/internal-link-targets.ts` |
-| Picker loader | `apps/admin/src/lib/api/internal-link-targets-client.ts` |
-| Search use case | `packages/application/src/use-cases/auto-links/SearchInternalLinkTargets.ts` |
-| Vitrine | `apps/web/src/components/articles/ArticleBody.tsx` |
+| Camada           | Path                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| Domain           | `packages/domain/src/entities/AutoLink.ts`                                             |
+| Port             | `packages/domain/src/repositories/AutoLinkRepository.ts`                               |
+| Infra            | `packages/infrastructure/src/persistence/repositories/drizzle-auto-link.repository.ts` |
+| Use cases        | `packages/application/src/use-cases/auto-links/`                                       |
+| Público          | `packages/application/src/use-cases/seo/ListActiveAutoLinks.ts`                        |
+| Parser           | `packages/shared/src/seo/link-parser.ts`                                               |
+| Cache key        | `packages/shared/src/seo/auto-links-cache.ts`                                          |
+| Schemas admin    | `packages/shared/src/admin/auto-link-schemas.ts`                                       |
+| API admin        | `apps/api/src/adapters/http/routes/admin-auto-link-routes.ts`                          |
+| Admin UI         | `apps/admin/src/app/(dashboard)/auto-links/page.tsx`                                   |
+| Admin BFF        | `apps/admin/src/app/api/admin/auto-links/`                                             |
+| Admin components | `apps/admin/src/components/auto-links/`                                                |
+| Picker helpers   | `apps/admin/src/lib/internal-link-targets.ts`                                          |
+| Picker loader    | `apps/admin/src/lib/api/internal-link-targets-client.ts`                               |
+| Search use case  | `packages/application/src/use-cases/auto-links/SearchInternalLinkTargets.ts`           |
+| Vitrine          | `apps/web/src/components/articles/ArticleBody.tsx`                                     |
 
 ## API
 
 ### Público
 
-| Método | Rota | Resposta |
-|--------|------|----------|
-| `GET` | `/seo/auto-links` | `{ items: [{ keyword, targetUrl, maxMatches, priority }] }` |
+| Método | Rota              | Resposta                                                    |
+| ------ | ----------------- | ----------------------------------------------------------- |
+| `GET`  | `/seo/auto-links` | `{ items: [{ keyword, targetUrl, maxMatches, priority }] }` |
 
 Cache Redis: `vitrine:seo:auto-links`, TTL 3600s.
 
 ### Admin (Bearer JWT)
 
-| Método | Rota | Body / query | Status |
-|--------|------|--------------|--------|
-| `GET` | `/admin/auto-links` | `?page=&limit=&search=` | 200 lista paginada |
-| `POST` | `/admin/auto-links` | `CreateAutoLinkBody` | 201 `{ id }` |
-| `PATCH` | `/admin/auto-links/:id` | `UpdateAutoLinkBody` (parcial) | 204 |
-| `DELETE` | `/admin/auto-links/:id` | — | 204 |
+| Método   | Rota                    | Body / query                   | Status             |
+| -------- | ----------------------- | ------------------------------ | ------------------ |
+| `GET`    | `/admin/auto-links`     | `?page=&limit=&search=`        | 200 lista paginada |
+| `POST`   | `/admin/auto-links`     | `CreateAutoLinkBody`           | 201 `{ id }`       |
+| `PATCH`  | `/admin/auto-links/:id` | `UpdateAutoLinkBody` (parcial) | 204                |
+| `DELETE` | `/admin/auto-links/:id` | —                              | 204                |
 
 **Erros:** 400 validação, 404 não encontrado, 409 keyword duplicada.
 

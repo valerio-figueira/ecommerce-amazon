@@ -10,10 +10,7 @@ export class CancelPriceAlert {
       return err(new ValidationError('Invalid cancellation token'));
     }
 
-    if (
-      alert.status === AlertStatus.EXPIRED ||
-      alert.status === AlertStatus.TRIGGERED
-    ) {
+    if (alert.status === AlertStatus.EXPIRED || alert.status === AlertStatus.TRIGGERED) {
       return ok(undefined);
     }
 

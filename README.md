@@ -24,13 +24,13 @@ Apply DB schema: `packages/infrastructure/src/persistence/drizzle/migrations/000
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Build all packages |
-| `npm run dev:api` | API on port 3000 |
-| `npm run dev:worker` | Background workers |
-| `npm run test` | Vitest unit + integration |
-| `npm run lint` | ESLint |
+| Command              | Description               |
+| -------------------- | ------------------------- |
+| `npm run build`      | Build all packages        |
+| `npm run dev:api`    | API on port 3000          |
+| `npm run dev:worker` | Background workers        |
+| `npm run test`       | Vitest unit + integration |
+| `npm run lint`       | ESLint                    |
 
 ## Architecture
 

@@ -50,14 +50,16 @@ describe('CreateAffiliateAccount', () => {
 
   it('rejects duplicate marketplace', async () => {
     const affiliateAccountRepository = {
-      findByMarketplace: vi.fn().mockResolvedValue(
-        new AffiliateAccount(
-          'a1111111-1111-4111-8111-111111111111',
-          Marketplace.AMAZON_BR,
-          'tag-21',
-          AffiliateAccountStatus.ACTIVE,
+      findByMarketplace: vi
+        .fn()
+        .mockResolvedValue(
+          new AffiliateAccount(
+            'a1111111-1111-4111-8111-111111111111',
+            Marketplace.AMAZON_BR,
+            'tag-21',
+            AffiliateAccountStatus.ACTIVE,
+          ),
         ),
-      ),
       findAll: vi.fn(),
       findById: vi.fn(),
       create: vi.fn(),

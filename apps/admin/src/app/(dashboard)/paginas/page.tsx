@@ -24,10 +24,7 @@ export default async function PaginasPage(): Promise<React.JSX.Element> {
       {error ? <AdminToastOnMount message={error} variant="error" /> : null}
       <AdminPageHeader
         title="Páginas"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Páginas' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Páginas' }]}
       />
       <AdminPageCard>
         <div className="cms-shell">

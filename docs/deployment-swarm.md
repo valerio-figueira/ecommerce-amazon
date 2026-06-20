@@ -23,27 +23,27 @@ api/worker → postgres, redis (rede overlay interna)
 
 ### Fases de exposição
 
-| Fase | `TLS_ENABLED` | `PUBLIC_BASE_URL` | Acesso |
-|------|---------------|-------------------|--------|
-| IP (MVP) | `false` | `http://SEU_IP` | HTTP porta 80 |
-| Domínio | `true` | `https://seudominio.com` | HTTPS (Let's Encrypt) |
+| Fase     | `TLS_ENABLED` | `PUBLIC_BASE_URL`        | Acesso                |
+| -------- | ------------- | ------------------------ | --------------------- |
+| IP (MVP) | `false`       | `http://SEU_IP`          | HTTP porta 80         |
+| Domínio  | `true`        | `https://seudominio.com` | HTTPS (Let's Encrypt) |
 
 Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando para a VPS.
 
 ## Arquivos do repositório
 
-| Caminho | Função |
-|---------|--------|
-| `docker/Dockerfile.*` | Imagens multi-stage (api, worker, web, admin, migrate) |
-| `deploy/docker-stack.yml` | Stack Swarm (template `envsubst`) |
-| `deploy/traefik/traefik.http.yml` | Traefik HTTP-only (fase IP) |
-| `deploy/traefik/traefik.https.yml` | Traefik HTTPS + ACME (fase domínio) |
-| `deploy/scripts/bootstrap-vps.sh` | Setup único do VPS |
-| `deploy/scripts/render-env.sh` | Gera `/opt/vitrine/.env` |
-| `deploy/scripts/deploy.sh` | Pull → stack deploy → migrate → smoke tests |
-| `deploy/scripts/migrate.sh` / `seed.sh` | Jobs one-shot |
-| `.github/workflows/ci.yml` | PR: lint + testes |
-| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH |
+| Caminho                                   | Função                                                 |
+| ----------------------------------------- | ------------------------------------------------------ |
+| `docker/Dockerfile.*`                     | Imagens multi-stage (api, worker, web, admin, migrate) |
+| `deploy/docker-stack.yml`                 | Stack Swarm (template `envsubst`)                      |
+| `deploy/traefik/traefik.http.yml`         | Traefik HTTP-only (fase IP)                            |
+| `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                    |
+| `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS                                     |
+| `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env`                               |
+| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests            |
+| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                          |
+| `.github/workflows/ci.yml`                | PR: lint + testes                                      |
+| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                          |
 
 ## Bootstrap do VPS (uma vez)
 
@@ -65,15 +65,15 @@ Depois:
 
 ### Infra / deploy
 
-| Secret | Exemplo | Notas |
-|--------|---------|-------|
-| `VPS_SSH_HOST` | `185.x.x.x` | IP ou hostname SSH |
-| `VPS_SSH_USER` | `deploy` | |
-| `VPS_SSH_PRIVATE_KEY` | PEM | Chave privada completa |
-| `PUBLIC_BASE_URL` | `http://185.x.x.x` | **Sem** barra final; muda para `https://dominio` na fase 2 |
-| `TLS_ENABLED` | `false` | `true` após DNS + domínio |
-| `ACME_EMAIL` | `ops@dominio.com` | Obrigatório se `TLS_ENABLED=true` |
-| `GHCR_PULL_TOKEN` | PAT | `read:packages` para `docker pull` na VPS |
+| Secret                | Exemplo            | Notas                                                      |
+| --------------------- | ------------------ | ---------------------------------------------------------- |
+| `VPS_SSH_HOST`        | `185.x.x.x`        | IP ou hostname SSH                                         |
+| `VPS_SSH_USER`        | `deploy`           |                                                            |
+| `VPS_SSH_PRIVATE_KEY` | PEM                | Chave privada completa                                     |
+| `PUBLIC_BASE_URL`     | `http://185.x.x.x` | **Sem** barra final; muda para `https://dominio` na fase 2 |
+| `TLS_ENABLED`         | `false`            | `true` após DNS + domínio                                  |
+| `ACME_EMAIL`          | `ops@dominio.com`  | Obrigatório se `TLS_ENABLED=true`                          |
+| `GHCR_PULL_TOKEN`     | PAT                | `read:packages` para `docker pull` na VPS                  |
 
 ### URLs derivadas (automáticas em `render-env.sh`)
 
@@ -88,15 +88,15 @@ Interno (Swarm): `API_INTERNAL_URL=http://api:3000`, `POSTGRES_HOST=postgres`, `
 
 ### App / segurança
 
-| Secret | Notas |
-|--------|-------|
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | |
-| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev |
-| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE` | |
-| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID` | |
-| `EMAIL_FROM`, `RESEND_API_KEY` | |
-| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD` | Só primeiro deploy com seed (cria operador admin; configure contas afiliado no painel depois) |
-| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON` | Opcional |
+| Secret                                                                 | Notas                                                                                         |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                               |
+| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev                                                                    |
+| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                               |
+| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                               |
+| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                               |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Só primeiro deploy com seed (cria operador admin; configure contas afiliado no painel depois) |
+| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                                      |
 
 ## Pipeline GitHub Actions
 
@@ -148,14 +148,14 @@ Paths **não mudam** — só scheme e host.
 
 ## Troubleshooting
 
-| Sintoma | Causa provável | Ação |
-|---------|----------------|------|
-| 404 em `/admin` | `ADMIN_BASE_PATH` ausente no build admin | Rebuild imagem admin com `/admin` |
-| 404 em `/api/...` | StripPrefix ou API down | `curl` interno + logs `vitrine_api` |
-| CORS no browser | `CORS_ORIGINS` sem origem exata | Usar `PUBLIC_BASE_URL` sem path |
-| ACME falhou | DNS não propagado ou :80 bloqueado | Checar `ufw`, DNS, logs Traefik |
-| OOM 4 GB | Limites de memória | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN` |
-| Migrate falhou | Postgres não pronto | `wait-postgres.sh`; ver rede `vitrine_vitrine_net` |
+| Sintoma           | Causa provável                           | Ação                                               |
+| ----------------- | ---------------------------------------- | -------------------------------------------------- |
+| 404 em `/admin`   | `ADMIN_BASE_PATH` ausente no build admin | Rebuild imagem admin com `/admin`                  |
+| 404 em `/api/...` | StripPrefix ou API down                  | `curl` interno + logs `vitrine_api`                |
+| CORS no browser   | `CORS_ORIGINS` sem origem exata          | Usar `PUBLIC_BASE_URL` sem path                    |
+| ACME falhou       | DNS não propagado ou :80 bloqueado       | Checar `ufw`, DNS, logs Traefik                    |
+| OOM 4 GB          | Limites de memória                       | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`     |
+| Migrate falhou    | Postgres não pronto                      | `wait-postgres.sh`; ver rede `vitrine_vitrine_net` |
 
 ## Escala futura
 

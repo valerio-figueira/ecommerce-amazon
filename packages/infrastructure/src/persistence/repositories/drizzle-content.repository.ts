@@ -280,10 +280,7 @@ export class DrizzleContentRepository implements ContentRepository {
         .orderBy(desc(schema.contentArticles.updatedAt))
         .limit(options.pageSize)
         .offset(offset),
-      this.db
-        .select({ total: count() })
-        .from(schema.contentArticles)
-        .where(whereClause),
+      this.db.select({ total: count() }).from(schema.contentArticles).where(whereClause),
     ]);
 
     return {
@@ -339,8 +336,9 @@ export class DrizzleContentRepository implements ContentRepository {
         if (!productId) return null;
         return { productId, position: index + 1, variant: 'inline' as const };
       })
-      .filter((embed): embed is { productId: string; position: number; variant: 'inline' } =>
-        embed !== null,
+      .filter(
+        (embed): embed is { productId: string; position: number; variant: 'inline' } =>
+          embed !== null,
       );
 
     await this.db.transaction(async (tx) => {

@@ -39,13 +39,9 @@ export function CompareBar(): React.JSX.Element | null {
             ))}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-neutral-900">
-              Comparar ({count}/3)
-            </p>
+            <p className="text-sm font-semibold text-neutral-900">Comparar ({count}/3)</p>
             {activeCategoryLabel ? (
-              <p className="truncate text-xs text-neutral-500">
-                Categoria: {activeCategoryLabel}
-              </p>
+              <p className="truncate text-xs text-neutral-500">Categoria: {activeCategoryLabel}</p>
             ) : null}
           </div>
         </div>

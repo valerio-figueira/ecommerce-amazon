@@ -1,11 +1,6 @@
 import { ValidationError } from '@ecommerce-amazon/domain';
 
-const ALLOWED_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-]);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
 export const ADMIN_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 

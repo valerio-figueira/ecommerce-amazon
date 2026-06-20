@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getBffErrorMessage, resolveBffStatus } from '@/lib/api/bff-error-status';
 
-import {
-  deleteArticleCategory,
-  updateArticleCategory,
-} from '@/lib/api/article-categories';
+import { deleteArticleCategory, updateArticleCategory } from '@/lib/api/article-categories';
 import {
   articleCategoryIdParamsSchema,
   updateArticleCategoryBodySchema,

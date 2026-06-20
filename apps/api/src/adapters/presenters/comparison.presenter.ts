@@ -43,9 +43,7 @@ export function toComparisonPublicDto(
   const relatedDtos =
     relatedProducts.length > 0
       ? relatedProducts.map((product) => {
-          const category = product.categoryId
-            ? categoriesById.get(product.categoryId)
-            : undefined;
+          const category = product.categoryId ? categoriesById.get(product.categoryId) : undefined;
           return toProductListItemDto(product, category);
         })
       : undefined;

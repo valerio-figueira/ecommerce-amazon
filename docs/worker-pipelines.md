@@ -8,15 +8,15 @@ Implementação: [`apps/worker`](../apps/worker). Regras: [`.cursor/rules/04-wor
 
 Definição: [`packages/infrastructure/src/messaging/queues.ts`](../packages/infrastructure/src/messaging/queues.ts)
 
-| Fila | Constante | Pipeline PRD | Prioridade |
-|------|-----------|--------------|------------|
-| `catalog_sync` | `QUEUE_NAMES.CATALOG_SYNC` | A — metadados não-preço | Pausável por budget |
-| `price_refresh` | `QUEUE_NAMES.PRICE_REFRESH` | B — preços | **Nunca pausar** em hot traffic |
-| `hygiene` | `QUEUE_NAMES.HYGIENE` | C — títulos, specs, slugs | Baixa |
-| `coupon_verify` | `QUEUE_NAMES.COUPON_VERIFY` | D — cupons | Média |
-| `domain_events` | `QUEUE_NAMES.DOMAIN_EVENTS` | Eventos `PriceDropped` | — |
-| `email_delivery` | `QUEUE_NAMES.EMAIL_DELIVERY` | Confirmação alertas, notificações | — |
-| `telemetry_flush` | `QUEUE_NAMES.TELEMETRY_FLUSH` | Bulk insert telemetria Redis → PG | Baixa |
+| Fila              | Constante                     | Pipeline PRD                      | Prioridade                      |
+| ----------------- | ----------------------------- | --------------------------------- | ------------------------------- |
+| `catalog_sync`    | `QUEUE_NAMES.CATALOG_SYNC`    | A — metadados não-preço           | Pausável por budget             |
+| `price_refresh`   | `QUEUE_NAMES.PRICE_REFRESH`   | B — preços                        | **Nunca pausar** em hot traffic |
+| `hygiene`         | `QUEUE_NAMES.HYGIENE`         | C — títulos, specs, slugs         | Baixa                           |
+| `coupon_verify`   | `QUEUE_NAMES.COUPON_VERIFY`   | D — cupons                        | Média                           |
+| `domain_events`   | `QUEUE_NAMES.DOMAIN_EVENTS`   | Eventos `PriceDropped`            | —                               |
+| `email_delivery`  | `QUEUE_NAMES.EMAIL_DELIVERY`  | Confirmação alertas, notificações | —                               |
+| `telemetry_flush` | `QUEUE_NAMES.TELEMETRY_FLUSH` | Bulk insert telemetria Redis → PG | Baixa                           |
 
 Redis DB: filas em `REDIS_QUEUE_DB` (default 1); cache em `REDIS_CACHE_DB` (default 0); buffer telemetria em `REDIS_TELEMETRY_DB` (default 2). Ver [telemetry-redis-buffer.md](./telemetry-redis-buffer.md).
 
@@ -31,12 +31,12 @@ Redis DB: filas em `REDIS_QUEUE_DB` (default 1); cache em `REDIS_CACHE_DB` (defa
 
 Arquivo: [`apps/worker/src/schedulers/index.ts`](../apps/worker/src/schedulers/index.ts)
 
-| Job | Pattern | Fila |
-|-----|---------|------|
-| `schedule-price-refresh` | `0 */4 * * *` (4h) | `price_refresh` |
-| `schedule-catalog-sync` | `0 */6 * * *` (6h) | `catalog_sync` |
-| `schedule-hygiene` | `0 2 * * *` (diário 02:00) | `hygiene` |
-| `schedule-coupon-verify` | `0 */6 * * *` (6h) | `coupon_verify` |
+| Job                      | Pattern                                        | Fila              |
+| ------------------------ | ---------------------------------------------- | ----------------- |
+| `schedule-price-refresh` | `0 */4 * * *` (4h)                             | `price_refresh`   |
+| `schedule-catalog-sync`  | `0 */6 * * *` (6h)                             | `catalog_sync`    |
+| `schedule-hygiene`       | `0 2 * * *` (diário 02:00)                     | `hygiene`         |
+| `schedule-coupon-verify` | `0 */6 * * *` (6h)                             | `coupon_verify`   |
 | `flush-telemetry-buffer` | `TELEMETRY_FLUSH_CRON` (default `*/5 * * * *`) | `telemetry_flush` |
 
 Na inicialização também enfileira batches de preço para produtos due (`findDueForPriceRefresh`, limit 500), agrupados por marketplace em lotes de 15 `external_id`.
@@ -70,9 +70,9 @@ sequenceDiagram
 2. `MarketplaceCredentialResolver` — cache Redis `vitrine:marketplace-credentials:{marketplace}` → decrypt DB (ver [admin-marketplace-credentials.md](./admin-marketplace-credentials.md))
 3. `MarketplaceFetcher.fetchProductsBatch(externalIds)` — Amazon PA-API / Shopee Open API quando credenciais configuradas
 4. `Product.updatePrice()` no domain
-4. Unit of work: produto + `price_snapshots`
-5. `CacheInvalidator.invalidateProducts([ids])`
-6. Eventos → fila `domain_events` (email **não** inline)
+5. Unit of work: produto + `price_snapshots`
+6. `CacheInvalidator.invalidateProducts([ids])`
+7. Eventos → fila `domain_events` (email **não** inline)
 
 ## SLA de preço (24h)
 
@@ -132,11 +132,11 @@ Use case: `ProcessTriggeredAlerts`.
 
 ## Rate limit e retry
 
-| Erro | Comportamento |
-|------|---------------|
-| `MarketplaceRateLimitError` | delay 5 min, re-enqueue |
-| Falha genérica | backoff exponencial (5 tentativas) |
-| Concurrency `price_refresh` | ≤ 3 workers |
+| Erro                        | Comportamento                      |
+| --------------------------- | ---------------------------------- |
+| `MarketplaceRateLimitError` | delay 5 min, re-enqueue            |
+| Falha genérica              | backoff exponencial (5 tentativas) |
+| Concurrency `price_refresh` | ≤ 3 workers                        |
 
 Token bucket Redis por marketplace.
 
@@ -154,13 +154,13 @@ Cada processor:
 
 Tabela `sync_job_logs` — auditoria operacional:
 
-| Campo | Tipo |
-|-------|------|
-| `job_type` | enum sync_job_type |
-| `status` | running \| completed \| failed |
-| `items_processed` | int |
-| `errors` | jsonb array |
-| `started_at`, `finished_at` | timestamptz |
+| Campo                       | Tipo                           |
+| --------------------------- | ------------------------------ |
+| `job_type`                  | enum sync_job_type             |
+| `status`                    | running \| completed \| failed |
+| `items_processed`           | int                            |
+| `errors`                    | jsonb array                    |
+| `started_at`, `finished_at` | timestamptz                    |
 
 ## Como rodar
 
@@ -175,12 +175,12 @@ Worker e API compartilham PostgreSQL e Redis; processos independentes.
 
 Exportados em [`packages/application/src/index.ts`](../packages/application/src/index.ts):
 
-| Use case | Pipeline |
-|----------|----------|
-| `UpdatePricesBatch` | B |
-| `SyncCatalogBatch` | A |
-| `RunHygienePipeline` | C |
-| `VerifyCouponsBatch` | D |
+| Use case                 | Pipeline      |
+| ------------------------ | ------------- |
+| `UpdatePricesBatch`      | B             |
+| `SyncCatalogBatch`       | A             |
+| `RunHygienePipeline`     | C             |
+| `VerifyCouponsBatch`     | D             |
 | `ProcessTriggeredAlerts` | domain_events |
 
 ## Gate afiliado

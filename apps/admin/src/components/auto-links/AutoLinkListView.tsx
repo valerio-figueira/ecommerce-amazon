@@ -56,66 +56,63 @@ export function AutoLinkListView({
         const manual = isManualTargetUrl(item.targetUrl);
 
         return (
-        <li key={item.id} className="cms-block-card cms-block-card--plain">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="font-semibold text-[var(--admin-navy)]">{item.keyword}</p>
-                <span
-                  className={cn(
-                    'cms-status-pill',
-                    item.isActive ? 'is-published' : 'is-draft',
-                  )}
-                >
-                  {item.isActive ? 'Ativo' : 'Inativo'}
-                </span>
-                {resolved ? (
-                  <span className="cms-status-pill is-published">{resolved.typeLabel}</span>
-                ) : manual ? (
-                  <span className="cms-status-pill is-draft">Manual</span>
-                ) : null}
-              </div>
-              <p className="mt-0.5 truncate text-xs text-[var(--admin-navy)]">
-                {resolved?.label ?? item.targetUrl}
-              </p>
-              {resolved ? (
-                <p className="mt-0.5 truncate font-mono text-xs text-[var(--admin-text-muted)]">
-                  {item.targetUrl}
+          <li key={item.id} className="cms-block-card cms-block-card--plain">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-semibold text-[var(--admin-navy)]">{item.keyword}</p>
+                  <span
+                    className={cn('cms-status-pill', item.isActive ? 'is-published' : 'is-draft')}
+                  >
+                    {item.isActive ? 'Ativo' : 'Inativo'}
+                  </span>
+                  {resolved ? (
+                    <span className="cms-status-pill is-published">{resolved.typeLabel}</span>
+                  ) : manual ? (
+                    <span className="cms-status-pill is-draft">Manual</span>
+                  ) : null}
+                </div>
+                <p className="mt-0.5 truncate text-xs text-[var(--admin-navy)]">
+                  {resolved?.label ?? item.targetUrl}
                 </p>
-              ) : null}
-              <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
-                Prioridade <strong>{item.priority}</strong> · Máx.{' '}
-                <strong>{item.maxMatches}</strong> ocorrência
-                {item.maxMatches === 1 ? '' : 's'}
-              </p>
-            </div>
+                {resolved ? (
+                  <p className="mt-0.5 truncate font-mono text-xs text-[var(--admin-text-muted)]">
+                    {item.targetUrl}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+                  Prioridade <strong>{item.priority}</strong> · Máx.{' '}
+                  <strong>{item.maxMatches}</strong> ocorrência
+                  {item.maxMatches === 1 ? '' : 's'}
+                </p>
+              </div>
 
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
-              <label className="flex items-center gap-2 text-xs text-[var(--admin-text-muted)]">
-                <Switch
-                  checked={item.isActive}
-                  disabled={togglingId === item.id}
-                  onCheckedChange={(checked) => onToggleActive(item, checked)}
-                  aria-label={`Ativar regra ${item.keyword}`}
-                />
-                Ativo
-              </label>
-              <Button type="button" variant="outline" size="sm" onClick={() => onEdit(item)}>
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                Editar
-              </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => onDelete(item)}
-              >
-                <Trash2 className="mr-1 h-3.5 w-3.5" />
-                Excluir
-              </Button>
+              <div className="flex shrink-0 flex-wrap items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-[var(--admin-text-muted)]">
+                  <Switch
+                    checked={item.isActive}
+                    disabled={togglingId === item.id}
+                    onCheckedChange={(checked) => onToggleActive(item, checked)}
+                    aria-label={`Ativar regra ${item.keyword}`}
+                  />
+                  Ativo
+                </label>
+                <Button type="button" variant="outline" size="sm" onClick={() => onEdit(item)}>
+                  <Pencil className="mr-1 h-3.5 w-3.5" />
+                  Editar
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(item)}
+                >
+                  <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  Excluir
+                </Button>
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
         );
       })}
     </ul>

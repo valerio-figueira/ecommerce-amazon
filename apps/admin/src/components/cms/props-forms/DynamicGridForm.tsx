@@ -44,10 +44,7 @@ function readNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }
 
-export function DynamicGridForm({
-  control,
-  categories,
-}: DynamicGridFormProps): React.JSX.Element {
+export function DynamicGridForm({ control, categories }: DynamicGridFormProps): React.JSX.Element {
   return (
     <div className="space-y-6">
       <CmsFormSection title="Texto da vitrine">
@@ -113,9 +110,7 @@ export function DynamicGridForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={ALL_CATEGORY_VALUE}>
-                    ✨ Todos os produtos do site
-                  </SelectItem>
+                  <SelectItem value={ALL_CATEGORY_VALUE}>✨ Todos os produtos do site</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.slug} value={category.slug}>
                       {getCategoryDisplayLabel(category.slug, category.label)}
@@ -152,8 +147,8 @@ export function DynamicGridForm({
                   />
                 </FormControl>
                 <FormDescription>
-                  Exibir apenas produtos com mais de {discount}% de desconto. Em 0%, qualquer
-                  preço entra na vitrine.
+                  Exibir apenas produtos com mais de {discount}% de desconto. Em 0%, qualquer preço
+                  entra na vitrine.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

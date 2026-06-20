@@ -78,10 +78,7 @@ export function CMSBlockOrderManager({
     if (!query) return ALL_BLOCK_TYPES;
     return ALL_BLOCK_TYPES.filter((type) => {
       const meta = getBlockTypeMeta(type);
-      return (
-        type.toLowerCase().includes(query) ||
-        meta.label.toLowerCase().includes(query)
-      );
+      return type.toLowerCase().includes(query) || meta.label.toLowerCase().includes(query);
     });
   }, [blockTypeFilter]);
 
@@ -209,7 +206,12 @@ export function CMSBlockOrderManager({
         </div>
 
         <div className="cms-panel-actions">
-          <Button type="button" variant="outline" size="sm" onClick={() => openCreateDialog(blocks.length)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => openCreateDialog(blocks.length)}
+          >
             <Plus className="h-4 w-4" />
             Adicionar bloco
           </Button>
@@ -234,59 +236,67 @@ export function CMSBlockOrderManager({
         </p>
 
         <div className="cms-block-list">
-        {blocks.map((block, index) => (
-          <div key={block.id} className="space-y-1.5">
-            <button type="button" onClick={() => openCreateDialog(index)} className="cms-insert-slot">
-              <Plus className="h-3 w-3" aria-hidden />
-              Inserir aqui
-            </button>
-            <BlockListItem
-              block={block}
-              isFirst={index === 0}
-              isLast={index === blocks.length - 1}
-              onMoveUp={() => handleMove(block.id, -1)}
-              onMoveDown={() => handleMove(block.id, 1)}
-              onPositionChange={(position) => handlePositionChange(block.id, position)}
-              onEdit={() => {
-                setEditingBlock(block);
-                setDialogMode('edit');
-                setPropsDialogOpen(true);
-              }}
-              onDelete={() => setDeleteTarget(block)}
-            />
-          </div>
-        ))}
-
-        {blocks.length === 0 && (
-          <div className="cms-empty-state">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--admin-accent-muted)] text-[var(--admin-primary)]">
-              <Layers className="h-5 w-5" aria-hidden />
+          {blocks.map((block, index) => (
+            <div key={block.id} className="space-y-1.5">
+              <button
+                type="button"
+                onClick={() => openCreateDialog(index)}
+                className="cms-insert-slot"
+              >
+                <Plus className="h-3 w-3" aria-hidden />
+                Inserir aqui
+              </button>
+              <BlockListItem
+                block={block}
+                isFirst={index === 0}
+                isLast={index === blocks.length - 1}
+                onMoveUp={() => handleMove(block.id, -1)}
+                onMoveDown={() => handleMove(block.id, 1)}
+                onPositionChange={(position) => handlePositionChange(block.id, position)}
+                onEdit={() => {
+                  setEditingBlock(block);
+                  setDialogMode('edit');
+                  setPropsDialogOpen(true);
+                }}
+                onDelete={() => setDeleteTarget(block)}
+              />
             </div>
-            <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
-              Página sem blocos
-            </p>
-            <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--admin-text-muted)]">
-              Monte o layout editorial adicionando blocos dinâmicos, grades e conteúdo curado.
-            </p>
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              className="mt-4"
-              onClick={() => openCreateDialog(0)}
-            >
-              <Sparkles className="h-4 w-4" />
-              Adicionar primeiro bloco
-            </Button>
-          </div>
-        )}
+          ))}
 
-        {blocks.length > 0 && (
-          <button type="button" onClick={() => openCreateDialog(blocks.length)} className="cms-insert-slot mt-1">
-            <Plus className="h-3.5 w-3.5" aria-hidden />
-            Adicionar no final
-          </button>
-        )}
+          {blocks.length === 0 && (
+            <div className="cms-empty-state">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--admin-accent-muted)] text-[var(--admin-primary)]">
+                <Layers className="h-5 w-5" aria-hidden />
+              </div>
+              <p className="text-sm font-semibold text-[var(--admin-navy-deep)]">
+                Página sem blocos
+              </p>
+              <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--admin-text-muted)]">
+                Monte o layout editorial adicionando blocos dinâmicos, grades e conteúdo curado.
+              </p>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                className="mt-4"
+                onClick={() => openCreateDialog(0)}
+              >
+                <Sparkles className="h-4 w-4" />
+                Adicionar primeiro bloco
+              </Button>
+            </div>
+          )}
+
+          {blocks.length > 0 && (
+            <button
+              type="button"
+              onClick={() => openCreateDialog(blocks.length)}
+              className="cms-insert-slot mt-1"
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden />
+              Adicionar no final
+            </button>
+          )}
         </div>
       </div>
 
@@ -312,29 +322,29 @@ export function CMSBlockOrderManager({
               </p>
             ) : (
               filteredBlockTypes.map((type) => {
-              const meta = getBlockTypeMeta(type);
-              const Icon = meta.icon;
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  className="cms-type-picker-card"
-                  onClick={() => startCreateBlock(type)}
-                >
-                  <span className="cms-type-picker-icon">
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </span>
-                  <span>
-                    <span className="block text-sm font-semibold text-[var(--admin-navy-deep)]">
-                      {meta.label}
+                const meta = getBlockTypeMeta(type);
+                const Icon = meta.icon;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    className="cms-type-picker-card"
+                    onClick={() => startCreateBlock(type)}
+                  >
+                    <span className="cms-type-picker-icon">
+                      <Icon className="h-4 w-4" aria-hidden />
                     </span>
-                    <span className="mt-0.5 block font-mono text-[10px] text-[var(--admin-text-muted)]">
-                      {type}
+                    <span>
+                      <span className="block text-sm font-semibold text-[var(--admin-navy-deep)]">
+                        {meta.label}
+                      </span>
+                      <span className="mt-0.5 block font-mono text-[10px] text-[var(--admin-text-muted)]">
+                        {type}
+                      </span>
                     </span>
-                  </span>
-                </button>
-              );
-            })
+                  </button>
+                );
+              })
             )}
           </div>
         </DialogContent>
@@ -368,7 +378,10 @@ export function CMSBlockOrderManager({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent className="cms-dialog-accent">
           <AlertDialogHeader>
             <AlertDialogTitle>Remover bloco?</AlertDialogTitle>

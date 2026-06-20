@@ -58,8 +58,9 @@ export function MarketplaceIntegrationsPanel({
 
   const amazonStatus = items.find((item) => item.marketplace === 'amazon_br');
   const shopeeStatus = items.find((item) => item.marketplace === 'shopee_br');
-  const amazonAffiliateTag = affiliateAccounts.find((item) => item.marketplace === 'amazon_br')
-    ?.affiliateTag;
+  const amazonAffiliateTag = affiliateAccounts.find(
+    (item) => item.marketplace === 'amazon_br',
+  )?.affiliateTag;
 
   const amazonMetadata = useMemo(() => {
     if (!amazonStatus?.publicMetadata) return null;

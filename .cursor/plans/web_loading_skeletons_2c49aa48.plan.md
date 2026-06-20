@@ -26,10 +26,10 @@ isProject: false
 
 O lag ao clicar em links na vitrine é **esperado no App Router** quando não há `loading.tsx`: o header/footer permanecem, mas a área `{children}` **mantém a página anterior** até o Server Component da nova rota terminar o fetch — sem feedback visual.
 
-| Fator | Impacto |
-|-------|---------|
-| **Dev** | Compilação sob demanda + sem cache ISR → latência maior que produção |
-| **Produção** | `revalidate = 300` em quase todas as rotas → páginas frequentemente servidas do cache, mas cold start / primeira visita ainda pode demorar |
+| Fator            | Impacto                                                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dev**          | Compilação sob demanda + sem cache ISR → latência maior que produção                                                                                     |
+| **Produção**     | `revalidate = 300` em quase todas as rotas → páginas frequentemente servidas do cache, mas cold start / primeira visita ainda pode demorar               |
 | **Estado atual** | Zero `loading.tsx`; skeletons só em blocos CMS client-side (`ProductCarousel`, `FeaturedProductBlock`); `BentoHubMixSkeleton` existe mas **não é usado** |
 
 ```mermaid
@@ -68,32 +68,33 @@ Criar [`apps/web/src/components/ui/skeleton.tsx`](apps/web/src/components/ui/ske
 
 Nova pasta [`apps/web/src/components/loading/`](apps/web/src/components/loading/) com componentes **sem fetch** (só markup):
 
-| Componente | Espelha | Estrutura |
-|------------|---------|-----------|
-| `ProductCardSkeleton` | [`ProductCard`](apps/web/src/components/product/ProductCard.tsx) | `aspect-[4/5] rounded-2xl` + linhas de texto |
-| `ProductGridSkeleton` | grid de categorias/coleções | `grid-cols-2 md:3 lg:4` com N cards |
-| `ProductDetailSkeleton` | [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx) | `max-w-5xl`, breadcrumb, `md:grid-cols-2` (imagem + info), blocos de análise |
-| `CategoryPageSkeleton` | [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | sidebar `240px` (lg) + header + grid |
-| `CollectionPageSkeleton` | [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx) | `max-w-7xl`, badge + título + grid |
-| `ArticleCardSkeleton` | [`ArticleCard`](apps/web/src/components/articles/ArticleCard.tsx) | imagem + título + excerpt |
-| `ArticleListingSkeleton` | [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx) | header + toolbar chips + grid 3 col |
-| `ArticleDetailSkeleton` | [`ArticleHero`](apps/web/src/components/articles/ArticleBody.tsx) + body | cover `aspect-[21/9]`, título, parágrafos |
-| `HomePageSkeleton` | [`page.tsx`](apps/web/src/app/page.tsx) | reutilizar [`BentoHubMixSkeleton`](apps/web/src/components/blocks/BentoHubMixSkeleton.tsx) (hero + offer + list) em `space-y-10` |
+| Componente               | Espelha                                                                     | Estrutura                                                                                                                        |
+| ------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `ProductCardSkeleton`    | [`ProductCard`](apps/web/src/components/product/ProductCard.tsx)            | `aspect-[4/5] rounded-2xl` + linhas de texto                                                                                     |
+| `ProductGridSkeleton`    | grid de categorias/coleções                                                 | `grid-cols-2 md:3 lg:4` com N cards                                                                                              |
+| `ProductDetailSkeleton`  | [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx)     | `max-w-5xl`, breadcrumb, `md:grid-cols-2` (imagem + info), blocos de análise                                                     |
+| `CategoryPageSkeleton`   | [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | sidebar `240px` (lg) + header + grid                                                                                             |
+| `CollectionPageSkeleton` | [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx)     | `max-w-7xl`, badge + título + grid                                                                                               |
+| `ArticleCardSkeleton`    | [`ArticleCard`](apps/web/src/components/articles/ArticleCard.tsx)           | imagem + título + excerpt                                                                                                        |
+| `ArticleListingSkeleton` | [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx)                     | header + toolbar chips + grid 3 col                                                                                              |
+| `ArticleDetailSkeleton`  | [`ArticleHero`](apps/web/src/components/articles/ArticleBody.tsx) + body    | cover `aspect-[21/9]`, título, parágrafos                                                                                        |
+| `HomePageSkeleton`       | [`page.tsx`](apps/web/src/app/page.tsx)                                     | reutilizar [`BentoHubMixSkeleton`](apps/web/src/components/blocks/BentoHubMixSkeleton.tsx) (hero + offer + list) em `space-y-10` |
 
 Todos os skeletons devem incluir:
+
 - `aria-busy="true"` no `<main>`
 - texto oculto `role="status"` com "Carregando…" para acessibilidade
 
 ## 3. Arquivos `loading.tsx` por rota
 
-| Arquivo | Skeleton |
-|---------|----------|
-| [`apps/web/src/app/loading.tsx`](apps/web/src/app/loading.tsx) | `HomePageSkeleton` — fallback genérico (home e qualquer rota sem skeleton específico) |
-| [`apps/web/src/app/produtos/[slug]/loading.tsx`](apps/web/src/app/produtos/[slug]/loading.tsx) | `ProductDetailSkeleton` |
-| [`apps/web/src/app/categorias/[slug]/loading.tsx`](apps/web/src/app/categorias/[slug]/loading.tsx) | `CategoryPageSkeleton` |
-| [`apps/web/src/app/colecoes/[slug]/loading.tsx`](apps/web/src/app/colecoes/[slug]/loading.tsx) | `CollectionPageSkeleton` |
-| [`apps/web/src/app/artigos/loading.tsx`](apps/web/src/app/artigos/loading.tsx) | `ArticleListingSkeleton` |
-| [`apps/web/src/app/artigos/[slug]/loading.tsx`](apps/web/src/app/artigos/[slug]/loading.tsx) | `ArticleDetailSkeleton` |
+| Arquivo                                                                                            | Skeleton                                                                              |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`apps/web/src/app/loading.tsx`](apps/web/src/app/loading.tsx)                                     | `HomePageSkeleton` — fallback genérico (home e qualquer rota sem skeleton específico) |
+| [`apps/web/src/app/produtos/[slug]/loading.tsx`](apps/web/src/app/produtos/[slug]/loading.tsx)     | `ProductDetailSkeleton`                                                               |
+| [`apps/web/src/app/categorias/[slug]/loading.tsx`](apps/web/src/app/categorias/[slug]/loading.tsx) | `CategoryPageSkeleton`                                                                |
+| [`apps/web/src/app/colecoes/[slug]/loading.tsx`](apps/web/src/app/colecoes/[slug]/loading.tsx)     | `CollectionPageSkeleton`                                                              |
+| [`apps/web/src/app/artigos/loading.tsx`](apps/web/src/app/artigos/loading.tsx)                     | `ArticleListingSkeleton`                                                              |
+| [`apps/web/src/app/artigos/[slug]/loading.tsx`](apps/web/src/app/artigos/[slug]/loading.tsx)       | `ArticleDetailSkeleton`                                                               |
 
 **Não criar** loading para `artigos/categoria/[slug]` — é redirect instantâneo a [`artigos/categoria/[slug]/page.tsx`](apps/web/src/app/artigos/categoria/[slug]/page.tsx).
 
@@ -114,6 +115,7 @@ Documentar na entrega: skeleton **não elimina** latência real (fetch + compile
 ## 7. Documentação
 
 Criar [`docs/web-loading-skeletons.md`](docs/web-loading-skeletons.md) e indexar em [`docs/README.md`](docs/README.md):
+
 - mecanismo (`loading.tsx` + skeletons)
 - mapa rota → skeleton
 - como testar em dev

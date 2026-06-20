@@ -18,9 +18,7 @@ function credentialStatusLabel(status: string): string {
   return 'Não configurado';
 }
 
-export function OperationalHealthPanel({
-  status,
-}: OperationalHealthPanelProps): React.JSX.Element {
+export function OperationalHealthPanel({ status }: OperationalHealthPanelProps): React.JSX.Element {
   return (
     <div className="cms-float-panel cms-blocks-panel">
       <p className="cms-blocks-panel__meta">

@@ -31,8 +31,7 @@ export function ProductMultiSelect({
     if (!query) return products;
     return products.filter(
       (product) =>
-        product.title.toLowerCase().includes(query) ||
-        product.slug.toLowerCase().includes(query),
+        product.title.toLowerCase().includes(query) || product.slug.toLowerCase().includes(query),
     );
   }, [filter, products]);
 
@@ -85,26 +84,26 @@ export function ProductMultiSelect({
           </p>
         ) : (
           filtered.map((product) => {
-          const checked = value.includes(product.id);
-          const order = value.indexOf(product.id);
-          return (
-            <label
-              key={product.id}
-              className={cn('cms-category-check-item', checked && 'is-checked')}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => toggle(product.id)}
-                className="h-4 w-4 accent-[var(--admin-primary)]"
-              />
-              <span className="flex-1 text-sm">
-                {product.title} · {marketplaceLabel(product.marketplace)}
-              </span>
-              {checked && <span className="cms-category-order-badge">{order + 1}</span>}
-            </label>
-          );
-        })
+            const checked = value.includes(product.id);
+            const order = value.indexOf(product.id);
+            return (
+              <label
+                key={product.id}
+                className={cn('cms-category-check-item', checked && 'is-checked')}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggle(product.id)}
+                  className="h-4 w-4 accent-[var(--admin-primary)]"
+                />
+                <span className="flex-1 text-sm">
+                  {product.title} · {marketplaceLabel(product.marketplace)}
+                </span>
+                {checked && <span className="cms-category-order-badge">{order + 1}</span>}
+              </label>
+            );
+          })
         )}
       </div>
 
@@ -120,9 +119,7 @@ export function ProductMultiSelect({
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--admin-navy)] text-xs font-bold text-white">
                   {index + 1}
                 </span>
-                <span className="flex-1 truncate">
-                  {product?.title ?? productId}
-                </span>
+                <span className="flex-1 truncate">{product?.title ?? productId}</span>
                 <button
                   type="button"
                   className="rounded px-1.5 py-0.5 text-xs text-[var(--admin-text-muted)] hover:bg-[var(--admin-gray)]"

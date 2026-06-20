@@ -21,16 +21,16 @@ type CuratedCollectionFormProps = {
 };
 
 function readStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
 }
 
 function readBoolean(value: unknown, fallback: boolean): boolean {
   return typeof value === 'boolean' ? value : fallback;
 }
 
-export function CuratedCollectionForm({
-  control,
-}: CuratedCollectionFormProps): React.JSX.Element {
+export function CuratedCollectionForm({ control }: CuratedCollectionFormProps): React.JSX.Element {
   const [collections, setCollections] = useState<
     Array<{ slug: string; title: string; coverImageUrl: string }>
   >([]);
@@ -89,14 +89,14 @@ export function CuratedCollectionForm({
                           <input
                             type="checkbox"
                             checked={checked}
-                            onChange={(event) =>
-                              toggleSlug(collection.slug, event.target.checked)
-                            }
+                            onChange={(event) => toggleSlug(collection.slug, event.target.checked)}
                             className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                           />
                           <span className="space-y-0.5">
                             <span className="block text-sm font-medium">{collection.title}</span>
-                            <span className="block text-xs text-neutral-500">/{collection.slug}</span>
+                            <span className="block text-xs text-neutral-500">
+                              /{collection.slug}
+                            </span>
                           </span>
                         </label>
                       );
@@ -123,10 +123,7 @@ export function CuratedCollectionForm({
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={readBoolean(field.value, true)}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={readBoolean(field.value, true)} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}

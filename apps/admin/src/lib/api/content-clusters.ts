@@ -18,7 +18,9 @@ export async function getContentCluster(id: string) {
   return adminFetchParsed(`/admin/content-clusters/${id}`, contentClusterAdminDetailSchema);
 }
 
-export async function createContentCluster(body: CreateContentClusterBody): Promise<{ id: string }> {
+export async function createContentCluster(
+  body: CreateContentClusterBody,
+): Promise<{ id: string }> {
   return adminFetchParsed('/admin/content-clusters', createContentClusterResponseSchema, {
     method: 'POST',
     body,

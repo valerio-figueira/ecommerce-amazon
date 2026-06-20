@@ -74,9 +74,7 @@ export function isManualTargetUrl(url: string): boolean {
   return parseInternalLinkTargetUrl(trimmed) === null;
 }
 
-export function groupInternalLinkTargets(
-  targets: InternalLinkTarget[],
-): InternalLinkTargetGroup[] {
+export function groupInternalLinkTargets(targets: InternalLinkTarget[]): InternalLinkTargetGroup[] {
   return TYPE_ORDER.map((type) => ({
     type,
     groupLabel: GROUP_LABELS[type],

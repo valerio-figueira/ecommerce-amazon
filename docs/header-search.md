@@ -39,13 +39,13 @@ flowchart TD
 
 ## Arquivos-chave
 
-| Camada | Arquivo |
-|--------|---------|
-| API | [`ListProducts.ts`](../packages/application/src/use-cases/product/ListProducts.ts), [`schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts), [`routes/index.ts`](../apps/api/src/adapters/http/routes/index.ts) |
+| Camada          | Arquivo                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API             | [`ListProducts.ts`](../packages/application/src/use-cases/product/ListProducts.ts), [`schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts), [`routes/index.ts`](../apps/api/src/adapters/http/routes/index.ts)                                                                                                                                                                             |
 | Web — estado/UI | [`SearchProvider.tsx`](../apps/web/src/components/search/SearchProvider.tsx), [`SearchOverlay.tsx`](../apps/web/src/components/search/SearchOverlay.tsx), [`SearchTypeSwitch.tsx`](../apps/web/src/components/search/SearchTypeSwitch.tsx), [`SearchResultsView.tsx`](../apps/web/src/components/search/SearchResultsView.tsx), [`SiteHeader.tsx`](../apps/web/src/components/layout/SiteHeader.tsx) |
-| Web — dados | [`lib/api/search.ts`](../apps/web/src/lib/api/search.ts) |
-| Web — página | [`app/busca/page.tsx`](../apps/web/src/app/busca/page.tsx) |
-| SEO | [`site-json-ld.ts`](../packages/shared/src/seo/site-json-ld.ts) — `SearchAction` → `/busca?q=` |
+| Web — dados     | [`lib/api/search.ts`](../apps/web/src/lib/api/search.ts)                                                                                                                                                                                                                                                                                                                                             |
+| Web — página    | [`app/busca/page.tsx`](../apps/web/src/app/busca/page.tsx)                                                                                                                                                                                                                                                                                                                                           |
+| SEO             | [`site-json-ld.ts`](../packages/shared/src/seo/site-json-ld.ts) — `SearchAction` → `/busca?q=`                                                                                                                                                                                                                                                                                                       |
 
 ## API / contratos
 
@@ -53,8 +53,8 @@ flowchart TD
 
 Novo query param opcional:
 
-| Param | Tipo | Descrição |
-|-------|------|-----------|
+| Param    | Tipo             | Descrição                                             |
+| -------- | ---------------- | ----------------------------------------------------- |
 | `search` | string (max 100) | Filtra por `titleClean`, `titleRaw`, `slug` (`ilike`) |
 
 Quando `search` é informado, a rota aplica `visibleOnly: true` por padrão.

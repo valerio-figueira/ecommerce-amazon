@@ -83,8 +83,7 @@ export function AdminPagination({
             <span className="mx-1.5 text-[var(--admin-border)]" aria-hidden>
               ·
             </span>
-            Página{' '}
-            <strong className="text-[var(--admin-navy)]">{page}</strong> de{' '}
+            Página <strong className="text-[var(--admin-navy)]">{page}</strong> de{' '}
             <strong className="text-[var(--admin-navy)]">{totalPages}</strong>
           </>
         )}
@@ -121,10 +120,7 @@ export function AdminPagination({
                 size="sm"
                 disabled={loading}
                 aria-current={token === page ? 'page' : undefined}
-                className={cn(
-                  'min-w-9 px-2',
-                  token === page && 'pointer-events-none shadow-sm',
-                )}
+                className={cn('min-w-9 px-2', token === page && 'pointer-events-none shadow-sm')}
                 onClick={() => onPageChange(token)}
               >
                 {token}

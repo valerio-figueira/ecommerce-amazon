@@ -47,9 +47,7 @@ describe('site-metadata', () => {
       page: 2,
     });
     expect(metadata.robots).toEqual({ index: false, follow: true });
-    expect(metadata.alternates?.canonical).toBe(
-      'https://vitrine.example/categorias/eletronicos',
-    );
+    expect(metadata.alternates?.canonical).toBe('https://vitrine.example/categorias/eletronicos');
   });
 
   it('noindexes faceted listing when sort param present', () => {

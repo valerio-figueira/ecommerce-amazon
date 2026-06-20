@@ -12,21 +12,21 @@ Edições no admin/worker não refletiam imediatamente na vitrine por:
 
 ## Camadas
 
-| Camada | Mecanismo | Onde |
-|--------|-----------|------|
-| Redis | `cache.del` / `INCR cache:version:product:{id}` | Use cases de leitura/escrita |
-| Next.js | `POST /api/revalidate` | `apps/web` — chamado pela API via `PublicWebRevalidator` |
+| Camada  | Mecanismo                                       | Onde                                                     |
+| ------- | ----------------------------------------------- | -------------------------------------------------------- |
+| Redis   | `cache.del` / `INCR cache:version:product:{id}` | Use cases de leitura/escrita                             |
+| Next.js | `POST /api/revalidate`                          | `apps/web` — chamado pela API via `PublicWebRevalidator` |
 
 ## Chaves Redis
 
-| Chave | TTL | Invalidação |
-|-------|-----|-------------|
-| `vitrine:article:slug:v2:{slug}` | 15 min | CRUD artigos, update categoria editorial |
-| `vitrine:page:slug:{slug}` | 5 min | CMS blocos |
-| `vitrine:collection:slug:{slug}` | 10 min | CRUD coleções |
-| `vitrine:seo:auto-links` | 1 h | CRUD auto-links |
-| `vitrine:coupons:active` | 30 min | `VerifyCouponsBatch` |
-| `cache:version:product:{id}` | — | Worker preços/sync/hygiene, admin produto, coleções |
+| Chave                            | TTL    | Invalidação                                         |
+| -------------------------------- | ------ | --------------------------------------------------- |
+| `vitrine:article:slug:v2:{slug}` | 15 min | CRUD artigos, update categoria editorial            |
+| `vitrine:page:slug:{slug}`       | 5 min  | CMS blocos                                          |
+| `vitrine:collection:slug:{slug}` | 10 min | CRUD coleções                                       |
+| `vitrine:seo:auto-links`         | 1 h    | CRUD auto-links                                     |
+| `vitrine:coupons:active`         | 30 min | `VerifyCouponsBatch`                                |
+| `cache:version:product:{id}`     | —      | Worker preços/sync/hygiene, admin produto, coleções |
 
 Helper: `@ecommerce-amazon/shared/cache` — `articlePublicCacheKey`, `COUPONS_ACTIVE_CACHE_KEY`.
 
@@ -65,17 +65,17 @@ Implementação HTTP — `packages/infrastructure/src/cache/http-public-web.reva
 
 ## Mutations que disparam invalidação
 
-| Módulo | Redis | Web paths |
-|--------|-------|-----------|
-| Artigos | slug v2 | `/artigos`, `/artigos/{slug}` |
-| Categorias editoriais | artigos linkados | listing + categoria + artigos |
-| Produtos | version stamp | `/produtos/{slug}`, categorias afetadas |
-| Categorias produto | — | `/categorias/{slug}`, `/` + layout |
-| Coleções | slug + products | `/colecoes/{slug}`, `/` |
-| CMS | page slug | `/` ou `/paginas/{slug}` |
-| Auto-links | global key | layout `/artigos` |
-| Worker sync/hygiene | product version | — |
-| Worker cupons | coupons key | — |
+| Módulo                | Redis            | Web paths                               |
+| --------------------- | ---------------- | --------------------------------------- |
+| Artigos               | slug v2          | `/artigos`, `/artigos/{slug}`           |
+| Categorias editoriais | artigos linkados | listing + categoria + artigos           |
+| Produtos              | version stamp    | `/produtos/{slug}`, categorias afetadas |
+| Categorias produto    | —                | `/categorias/{slug}`, `/` + layout      |
+| Coleções              | slug + products  | `/colecoes/{slug}`, `/`                 |
+| CMS                   | page slug        | `/` ou `/paginas/{slug}`                |
+| Auto-links            | global key       | layout `/artigos`                       |
+| Worker sync/hygiene   | product version  | —                                       |
+| Worker cupons         | coupons key      | —                                       |
 
 ## Arquivos-chave
 

@@ -57,10 +57,12 @@ describe('GetCuratedCollection', () => {
       findBySlug: vi.fn().mockResolvedValue(collection),
     };
     const productRepository = {
-      findByIds: vi.fn().mockResolvedValue([
-        createProduct(PRODUCT_A_ID, 'product-a'),
-        createProduct(PRODUCT_B_ID, 'product-b'),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          createProduct(PRODUCT_A_ID, 'product-a'),
+          createProduct(PRODUCT_B_ID, 'product-b'),
+        ]),
     };
     const cache = {
       get: vi.fn().mockResolvedValue(null),
@@ -90,10 +92,12 @@ describe('GetCuratedCollection', () => {
       findBySlug: vi.fn(),
     };
     const productRepository = {
-      findByIds: vi.fn().mockResolvedValue([
-        createProduct(PRODUCT_A_ID, 'product-a'),
-        createProduct(PRODUCT_B_ID, 'product-b'),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          createProduct(PRODUCT_A_ID, 'product-a'),
+          createProduct(PRODUCT_B_ID, 'product-b'),
+        ]),
     };
     const cache = {
       get: vi.fn().mockResolvedValue({
@@ -210,10 +214,12 @@ describe('GetCuratedCollection', () => {
       findBySlug: vi.fn().mockResolvedValue(collection),
     };
     const productRepository = {
-      findByIds: vi.fn().mockResolvedValue([
-        createProduct(PRODUCT_A_ID, 'product-a'),
-        createProduct(PRODUCT_B_ID, 'product-b'),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          createProduct(PRODUCT_A_ID, 'product-a'),
+          createProduct(PRODUCT_B_ID, 'product-b'),
+        ]),
     };
     const cache = {
       get: vi.fn().mockResolvedValue(null),

@@ -52,7 +52,9 @@ function readString(value: unknown): string {
 }
 
 function readStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
 }
 
 export function BentoHubMixForm({
@@ -89,7 +91,10 @@ export function BentoHubMixForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de conteúdo</FormLabel>
-              <Select onValueChange={field.onChange} value={readString(field.value) || 'collection'}>
+              <Select
+                onValueChange={field.onChange}
+                value={readString(field.value) || 'collection'}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue />
@@ -113,9 +118,7 @@ export function BentoHubMixForm({
           name="slot1.entityId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {slot1Type === 'collection' ? 'Coleção' : 'Artigo'}
-              </FormLabel>
+              <FormLabel>{slot1Type === 'collection' ? 'Coleção' : 'Artigo'}</FormLabel>
               <FormControl>
                 {slot1Type === 'collection' ? (
                   <CollectionIdPicker
@@ -173,9 +176,7 @@ export function BentoHubMixForm({
           name="slot1.coverImageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Imagem de capa{slot1Type === 'article' ? '' : ' (opcional)'}
-              </FormLabel>
+              <FormLabel>Imagem de capa{slot1Type === 'article' ? '' : ' (opcional)'}</FormLabel>
               <FormControl>
                 <CmsHybridImageField
                   value={readString(field.value)}
@@ -254,10 +255,7 @@ export function BentoHubMixForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={readString(field.value) ?? ''}
-                  >
+                  <Select onValueChange={field.onChange} value={readString(field.value) ?? ''}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Escolha uma categoria" />
@@ -283,11 +281,7 @@ export function BentoHubMixForm({
                 <FormItem>
                   <FormLabel>Título da lista (opcional)</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      value={readString(field.value)}
-                      placeholder="Ex: Top Games"
-                    />
+                    <Input {...field} value={readString(field.value)} placeholder="Ex: Top Games" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -44,14 +44,14 @@ export function OperationalSettingsManager({
   const tabCount = isAdmin ? 5 : 4;
 
   function isSettingsTab(value: string): value is SettingsTab {
-  return (
-    value === 'affiliate' ||
-    value === 'integrations' ||
-    value === 'preferences' ||
-    value === 'operators' ||
-    value === 'health'
-  );
-}
+    return (
+      value === 'affiliate' ||
+      value === 'integrations' ||
+      value === 'preferences' ||
+      value === 'operators' ||
+      value === 'health'
+    );
+  }
 
   function handleTabChange(value: string): void {
     if (isSettingsTab(value)) {

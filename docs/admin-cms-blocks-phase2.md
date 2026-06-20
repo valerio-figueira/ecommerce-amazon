@@ -23,14 +23,14 @@ Planos de referência:
 
 Blocos da home seed com edição visual leigo-friendly (sem alterar schemas Zod nem backend):
 
-| Bloco | Componente | Seções principais |
-|-------|------------|-------------------|
-| `HERO_CAROUSEL` | `HeroCarouselForm` | Slides repetíveis (imagem, título, destino do botão), autoplay e velocidade |
-| `CATEGORY_PILLS` | `CategoryPillsForm` | Título, multi-select de categorias, vínculo opcional com grade abaixo |
-| `PRODUCT_GRID` | `ProductGridForm` | Texto, filtros (categoria/marketplace), ordenação, layout (quantidade/colunas) |
-| `FEATURED_PRODUCT` | `FeaturedProductForm` | ProductPicker, badge marketplace, texto do botão |
-| `DYNAMIC_PRODUCT_GRID` | `DynamicGridForm` | Texto, regras de seleção, layout (já existia) |
-| `BANNER` / `RICH_TEXT` / `SPACER` | `BlockPropsForm` | Seções `CmsFormSection` com copy leigo |
+| Bloco                             | Componente            | Seções principais                                                              |
+| --------------------------------- | --------------------- | ------------------------------------------------------------------------------ |
+| `HERO_CAROUSEL`                   | `HeroCarouselForm`    | Slides repetíveis (imagem, título, destino do botão), autoplay e velocidade    |
+| `CATEGORY_PILLS`                  | `CategoryPillsForm`   | Título, multi-select de categorias, vínculo opcional com grade abaixo          |
+| `PRODUCT_GRID`                    | `ProductGridForm`     | Texto, filtros (categoria/marketplace), ordenação, layout (quantidade/colunas) |
+| `FEATURED_PRODUCT`                | `FeaturedProductForm` | ProductPicker, badge marketplace, texto do botão                               |
+| `DYNAMIC_PRODUCT_GRID`            | `DynamicGridForm`     | Texto, regras de seleção, layout (já existia)                                  |
+| `BANNER` / `RICH_TEXT` / `SPACER` | `BlockPropsForm`      | Seções `CmsFormSection` com copy leigo                                         |
 
 **Componentes compartilhados:** `ProductPicker`, `CategoryMultiSelect`, `PresetChipPicker`, `CmsHybridImageField` (upload + URL externa, como artigos/coleções), `block-form-registry.ts` (schemas editáveis, normalização e sanitização antes do parse Zod).
 
@@ -73,23 +73,23 @@ sequenceDiagram
 
 Todas exigem `Authorization: Bearer <JWT>` (exceto login).
 
-| Método | Rota | Ação |
-|--------|------|------|
-| `GET` | `/admin/pages` | Lista páginas (`id`, `slug`, `title`, `status`) |
-| `GET` | `/admin/pages/:slug` | Layout + blocos (props crus) |
-| `POST` | `/admin/pages/:slug/blocks` | Criar bloco na posição N (shift automático) |
-| `PATCH` | `/admin/pages/:slug/blocks/:id` | Atualizar props/tipo/visibility |
-| `DELETE` | `/admin/pages/:slug/blocks/:id` | Remover + reindexar |
-| `PATCH` | `/admin/pages/:slug/blocks/reorder` | `{ blocksOrder: [{ blockId, position }] }` |
+| Método   | Rota                                | Ação                                            |
+| -------- | ----------------------------------- | ----------------------------------------------- |
+| `GET`    | `/admin/pages`                      | Lista páginas (`id`, `slug`, `title`, `status`) |
+| `GET`    | `/admin/pages/:slug`                | Layout + blocos (props crus)                    |
+| `POST`   | `/admin/pages/:slug/blocks`         | Criar bloco na posição N (shift automático)     |
+| `PATCH`  | `/admin/pages/:slug/blocks/:id`     | Atualizar props/tipo/visibility                 |
+| `DELETE` | `/admin/pages/:slug/blocks/:id`     | Remover + reindexar                             |
+| `PATCH`  | `/admin/pages/:slug/blocks/reorder` | `{ blocksOrder: [{ blockId, position }] }`      |
 
 Contrato detalhado: [api-rest.md](./api-rest.md).
 
 ## UI admin
 
-| Rota | Componente |
-|------|------------|
-| `/paginas` | Lista páginas com link "Editar blocos" |
-| `/paginas/[slug]` | `CMSBlockOrderManager` |
+| Rota              | Componente                             |
+| ----------------- | -------------------------------------- |
+| `/paginas`        | Lista páginas com link "Editar blocos" |
+| `/paginas/[slug]` | `CMSBlockOrderManager`                 |
 
 ### Ações no editor
 
@@ -131,18 +131,18 @@ Contrato detalhado: [api-rest.md](./api-rest.md).
 
 ## Arquivos-chave
 
-| Área | Path |
-|------|------|
-| Use cases | `packages/application/src/use-cases/admin-cms/` |
+| Área                       | Path                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| Use cases                  | `packages/application/src/use-cases/admin-cms/`                                   |
 | Repositório (shift insert) | `packages/infrastructure/src/persistence/repositories/drizzle-page.repository.ts` |
-| Rotas HTTP | `apps/api/src/adapters/http/routes/admin-cms-routes.ts` |
-| Proxy admin | `apps/admin/src/app/api/admin/pages/` |
-| Editor UI | `apps/admin/src/components/cms/CMSBlockOrderManager.tsx` |
-| Props sheet | `apps/admin/src/components/cms/BlockPropsSheet.tsx` |
-| Registry + forms | `apps/admin/src/components/cms/props-forms/` |
-| Forms simples | `apps/admin/src/components/cms/forms/BlockPropsForm.tsx` |
-| API client | `apps/admin/src/lib/api/cms-pages-client.ts` |
-| Schemas Zod | `packages/shared/src/cms/block-schemas.ts` |
+| Rotas HTTP                 | `apps/api/src/adapters/http/routes/admin-cms-routes.ts`                           |
+| Proxy admin                | `apps/admin/src/app/api/admin/pages/`                                             |
+| Editor UI                  | `apps/admin/src/components/cms/CMSBlockOrderManager.tsx`                          |
+| Props sheet                | `apps/admin/src/components/cms/BlockPropsSheet.tsx`                               |
+| Registry + forms           | `apps/admin/src/components/cms/props-forms/`                                      |
+| Forms simples              | `apps/admin/src/components/cms/forms/BlockPropsForm.tsx`                          |
+| API client                 | `apps/admin/src/lib/api/cms-pages-client.ts`                                      |
+| Schemas Zod                | `packages/shared/src/cms/block-schemas.ts`                                        |
 
 ## Como testar
 

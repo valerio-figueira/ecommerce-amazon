@@ -9,7 +9,10 @@ import {
   EngagementEventType,
   type EngagementPlacementValue,
 } from '@ecommerce-amazon/shared/analytics';
-import type { ArticleRelatedSummary, PublishedArticleListItem } from '@ecommerce-amazon/shared/admin';
+import type {
+  ArticleRelatedSummary,
+  PublishedArticleListItem,
+} from '@ecommerce-amazon/shared/admin';
 
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { recordEngagement } from '@/lib/api/engagement';
@@ -17,7 +20,10 @@ import { setAttribution } from '@/lib/attribution/context';
 import { cn } from '@/lib/utils';
 
 type ArticleCardProps = {
-  article: ArticleRelatedSummary | PublishedArticleListItem | (ArticleRelatedSummary & { excerpt?: string });
+  article:
+    | ArticleRelatedSummary
+    | PublishedArticleListItem
+    | (ArticleRelatedSummary & { excerpt?: string });
   showExcerpt?: boolean;
   engagementPlacement?: EngagementPlacementValue;
   isCurrent?: boolean;

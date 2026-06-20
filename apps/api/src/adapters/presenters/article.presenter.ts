@@ -24,16 +24,10 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
       slug: item.slug,
       title: item.title,
       coverImageUrl: item.coverImageUrl,
-      publishedAt:
-        item.publishedAt != null ? toIsoDateTime(item.publishedAt) : null,
+      publishedAt: item.publishedAt != null ? toIsoDateTime(item.publishedAt) : null,
     })),
-    publishedAt: article.publishedAt
-      ? toIsoDateTime(article.publishedAt)
-      : null,
-    updatedAt: toIsoDateTime(
-      article.updatedAt,
-      article.publishedAt ?? article.createdAt,
-    ),
+    publishedAt: article.publishedAt ? toIsoDateTime(article.publishedAt) : null,
+    updatedAt: toIsoDateTime(article.updatedAt, article.publishedAt ?? article.createdAt),
     embeddedProducts: Object.fromEntries(
       Object.entries(embeddedProducts).map(([productSlug, product]) => [
         productSlug,
@@ -53,8 +47,7 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
             title: member.title,
             excerpt: member.excerpt,
             coverImageUrl: member.coverImageUrl,
-            publishedAt:
-              member.publishedAt != null ? toIsoDateTime(member.publishedAt) : null,
+            publishedAt: member.publishedAt != null ? toIsoDateTime(member.publishedAt) : null,
             isPilar: member.isPilar,
           })),
         }

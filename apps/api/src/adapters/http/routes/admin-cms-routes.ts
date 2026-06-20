@@ -1,11 +1,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
 
-import {
-  BlockVisibility,
-  EntityNotFoundError,
-  ValidationError,
-} from '@ecommerce-amazon/domain';
+import { BlockVisibility, EntityNotFoundError, ValidationError } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import type { PageBlockDto } from '@ecommerce-amazon/shared/cms';
 
@@ -33,7 +29,9 @@ function handleCmsError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-function parseVisibility(value: 'all' | 'desktop' | 'mobile' | undefined): BlockVisibility | undefined {
+function parseVisibility(
+  value: 'all' | 'desktop' | 'mobile' | undefined,
+): BlockVisibility | undefined {
   if (value === undefined) return undefined;
   switch (value) {
     case 'desktop':

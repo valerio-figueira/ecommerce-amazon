@@ -25,13 +25,8 @@ export class Coupon {
   ) {}
 
   isDisplayable(now: Date = new Date()): boolean {
-    const hoursSinceVerify =
-      (now.getTime() - this.lastVerifiedAt.getTime()) / (1000 * 60 * 60);
-    return (
-      this.status === CouponStatus.ACTIVE &&
-      hoursSinceVerify < 24 &&
-      this.validUntil > now
-    );
+    const hoursSinceVerify = (now.getTime() - this.lastVerifiedAt.getTime()) / (1000 * 60 * 60);
+    return this.status === CouponStatus.ACTIVE && hoursSinceVerify < 24 && this.validUntil > now;
   }
 }
 

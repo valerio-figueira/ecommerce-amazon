@@ -32,6 +32,7 @@ isProject: false
 # Arquitetura Técnica — Vitrine Inteligente & Hub de Conteúdo (Node.js + TypeScript)
 
 Documento de referência para implementação. Complementa:
+
 - [PRD Core — Plataforma](prd_plataforma_afiliação_de44933f.plan.md)
 - [PRD Growth — Aquisição de Tráfego](prd_growth_aquisicao_trafego.plan.md)
 
@@ -86,6 +87,7 @@ flowchart TB
 ```
 
 **Dois processos Node independentes:**
+
 - `apps/api` — serve REST ao front-end; **somente leitura** do catálogo local + escrita de alertas/wishlist/eventos.
 - `apps/worker` — consome filas BullMQ; **único processo** autorizado a chamar APIs/scrapers externos.
 
@@ -266,11 +268,11 @@ flowchart BT
   App --> Domain
 ```
 
-| Camada | Pode importar | Não pode importar |
-|--------|---------------|-------------------|
-| **Domain** | — | application, infrastructure, apps |
-| **Application** | domain | infrastructure, fastify, drizzle |
-| **Infrastructure** | domain, application (raro) | apps |
+| Camada                    | Pode importar               | Não pode importar                     |
+| ------------------------- | --------------------------- | ------------------------------------- |
+| **Domain**                | —                           | application, infrastructure, apps     |
+| **Application**           | domain                      | infrastructure, fastify, drizzle      |
+| **Infrastructure**        | domain, application (raro)  | apps                                  |
 | **apps/api, apps/worker** | application, infrastructure | drizzle schema direto nos controllers |
 
 ### Fluxo de um Request REST (exemplo: `GET /products/:slug`)
@@ -306,7 +308,10 @@ interface IProductRepository {
 
 // infrastructure — adapter
 class DrizzleProductRepository implements IProductRepository {
-  constructor(private db: DrizzleClient, private mapper: ProductPersistenceMapper) {}
+  constructor(
+    private db: DrizzleClient,
+    private mapper: ProductPersistenceMapper,
+  ) {}
   // ...
 }
 ```
@@ -367,6 +372,7 @@ class MarketplaceFetcherFactory {
 ```
 
 **Use Case `UpdatePricesBatch`:**
+
 1. Agrupa produtos por `marketplace`.
 2. Para cada grupo, obtém strategy via factory.
 3. Chama `fetchProductsBatch` respeitando `MarketplaceRateLimiter`.
@@ -431,6 +437,7 @@ class BullMQEventBus implements IEventBus {
 ```
 
 **Regras de domínio no handler (via `ProcessTriggeredAlerts`):**
+
 - Não disparar se `Preco.isStale === true`.
 - Respeitar cooldown 24h por produto/email.
 - Marcar alerta como `triggered` após envio.
@@ -441,14 +448,14 @@ class BullMQEventBus implements IEventBus {
 
 ### 2.4 Outros Padrões Complementares (aplicação cirúrgica)
 
-| Padrão | Onde | Justificativa |
-|--------|------|---------------|
-| **Mapper** | infra/persistence/mappers, api/adapters/mappers | Separa shape DB/HTTP do modelo de domínio (DRY nos converters) |
-| **Presenter** | api/adapters/presenters | Formata saída (ex: "Atualizado há 3h") sem poluir entidade |
-| **Specification** | domain/services/RefreshCriteria | Queries complexas ("produtos hot + stale") como objetos testáveis |
-| **Unit of Work** | infra/persistence (transação Drizzle) | `saveBatch` produto + snapshot atômico |
-| **Template Method** | BaseSyncProcessor no worker | Fluxo comum fetch→parse→save→emit; subclasses por pipeline |
-| **Decorator** | CachedProductRepository wraps DrizzleProductRepository | Cache transparente opcional na composição DI (YAGNI: começar cache no use case) |
+| Padrão              | Onde                                                   | Justificativa                                                                   |
+| ------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| **Mapper**          | infra/persistence/mappers, api/adapters/mappers        | Separa shape DB/HTTP do modelo de domínio (DRY nos converters)                  |
+| **Presenter**       | api/adapters/presenters                                | Formata saída (ex: "Atualizado há 3h") sem poluir entidade                      |
+| **Specification**   | domain/services/RefreshCriteria                        | Queries complexas ("produtos hot + stale") como objetos testáveis               |
+| **Unit of Work**    | infra/persistence (transação Drizzle)                  | `saveBatch` produto + snapshot atômico                                          |
+| **Template Method** | BaseSyncProcessor no worker                            | Fluxo comum fetch→parse→save→emit; subclasses por pipeline                      |
+| **Decorator**       | CachedProductRepository wraps DrizzleProductRepository | Cache transparente opcional na composição DI (YAGNI: começar cache no use case) |
 
 ---
 
@@ -499,24 +506,26 @@ flowchart TB
 
 ### 3.2 Mapeamento PRD → Filas
 
-| Pipeline PRD | Fila | Scheduler | Prioridade |
-|--------------|------|-----------|------------|
-| A — Catálogo | `catalog_sync` | `0 */6 * * *` + boost 2h wishlist/alerts | normal |
-| B — Preços | `price_refresh` | `0 */4 * * *` hot / `0 */12 * * *` demais | **high** |
-| C — Higiene | `hygiene` | `0 2 * * *` | low |
-| D — Cupons | `coupon_verify` | `0 */6 * * *` | normal |
-| Eventos | `domain_events` | on-demand | high |
-| Email | `email_delivery` | on-demand | normal |
+| Pipeline PRD | Fila             | Scheduler                                 | Prioridade |
+| ------------ | ---------------- | ----------------------------------------- | ---------- |
+| A — Catálogo | `catalog_sync`   | `0 */6 * * *` + boost 2h wishlist/alerts  | normal     |
+| B — Preços   | `price_refresh`  | `0 */4 * * *` hot / `0 */12 * * *` demais | **high**   |
+| C — Higiene  | `hygiene`        | `0 2 * * *`                               | low        |
+| D — Cupons   | `coupon_verify`  | `0 */6 * * *`                             | normal     |
+| Eventos      | `domain_events`  | on-demand                                 | high       |
+| Email        | `email_delivery` | on-demand                                 | normal     |
 
 ### 3.3 Batch Processing — Pipeline de Preços
 
 **Orquestrador (`PriceRefreshScheduler`):**
+
 1. Query `IProductRepository.findDueForPriceRefresh(criteria)` — retorna N produtos (ex: 500).
 2. Particiona por `marketplace` → sub-batches de **10–20 ASINs** (limite API Amazon).
 3. Enfileira job filho por batch: `{ marketplace, externalIds[], priority }`.
 4. Job pai não faz I/O — evita bloquear scheduler.
 
 **Processor (`PriceBatchProcessor`):**
+
 ```
 1. Adquire token do MarketplaceRateLimiter (amazon: 1 req/s base)
 2. fetchProductsBatch via Strategy
@@ -530,6 +539,7 @@ flowchart TB
 ```
 
 **Proteção do Event Loop Node.js:**
+
 - Jobs I/O-bound; **concurrency** por fila controlada (price: 3 workers; catalog: 2).
 - Batch HTTP com `Promise.all` limitado por `p-limit` (max 5 concurrent requests **dentro** do batch).
 - Operações CPU pesadas (similaridade de título, hygiene regex) → batches de 50, `setImmediate` entre batches ou worker thread só se profiling exigir (YAGNI no MVP).
@@ -541,7 +551,7 @@ flowchart TB
 const priceRefreshQueue = {
   defaultJobOptions: {
     attempts: 5,
-    backoff: { type: 'exponential', delay: 30_000 },  // 30s, 60s, 120s...
+    backoff: { type: 'exponential', delay: 30_000 }, // 30s, 60s, 120s...
     removeOnComplete: { count: 1000 },
     removeOnFail: { count: 5000 },
   },
@@ -555,11 +565,13 @@ const priceRefreshQueue = {
 ```
 
 **Rate Limiter dedicado (`MarketplaceRateLimiter`):**
+
 - Token bucket em Redis por marketplace (`rate:amazon`, `rate:shopee`).
 - Worker consulta antes de cada batch; se vazio, job delayed +30s.
 - Budget diário alinhado ao PRD Core §4.3 — contador `api_budget:amazon:2026-06-12` decrementado por request.
 
 **Dead Letter / Stalled Jobs:**
+
 - BullMQ `failed` event → persiste em `sync_job_logs` com payload.
 - Alerta operacional se >10% jobs falharem em 1h.
 
@@ -668,6 +680,7 @@ erDiagram
 ```
 
 **Índices críticos (performance MVP):**
+
 - `products(slug)`, `products(marketplace, external_id)` UNIQUE
 - `products(stale_price, price_updated_at)` — query compliance SLA
 - `price_snapshots(product_id, captured_at DESC)`
@@ -678,22 +691,25 @@ erDiagram
 
 **Objetivo:** listagem vitrine <50ms p95; cache hit ratio >90% em produção estável.
 
-| Chave | Conteúdo | TTL | Invalidação |
-|-------|----------|-----|-------------|
-| `vitrine:products:list:{hash}` | JSON paginado de ProductListItemDTO | 5 min | Produto qualquer do set atualizado |
-| `vitrine:product:slug:{slug}` | ProductDetailDTO completo | 10 min | Update desse product_id |
-| `vitrine:product:id:{id}:history` | PriceHistoryDTO (30/90d) | 1 h | Novo snapshot |
-| `vitrine:article:slug:{slug}` | ArticleWithEmbedsDTO | 15 min | Artigo ou embed product update |
-| `vitrine:coupons:active` | Lista cupons verificados | 30 min | Pipeline D |
-| `vitrine:collection:slug:{slug}` | CuratedCollectionDTO | 10 min | Coleção ou produto membro |
+| Chave                             | Conteúdo                            | TTL    | Invalidação                        |
+| --------------------------------- | ----------------------------------- | ------ | ---------------------------------- |
+| `vitrine:products:list:{hash}`    | JSON paginado de ProductListItemDTO | 5 min  | Produto qualquer do set atualizado |
+| `vitrine:product:slug:{slug}`     | ProductDetailDTO completo           | 10 min | Update desse product_id            |
+| `vitrine:product:id:{id}:history` | PriceHistoryDTO (30/90d)            | 1 h    | Novo snapshot                      |
+| `vitrine:article:slug:{slug}`     | ArticleWithEmbedsDTO                | 15 min | Artigo ou embed product update     |
+| `vitrine:coupons:active`          | Lista cupons verificados            | 30 min | Pipeline D                         |
+| `vitrine:collection:slug:{slug}`  | CuratedCollectionDTO                | 10 min | Coleção ou produto membro          |
 
 **Version stamp (invalidação eficiente):**
+
 ```
 cache:version:product:{id}  →  incrementa a cada write
 ```
+
 Chave de cache inclui versão: `vitrine:product:slug:chair-x:v42`. Worker após `saveBatch` executa `INCR cache:version:product:{id}` — leituras antigas expiram naturalmente (TTL) ou miss imediato se versão embedada no cache key lookup.
 
 **Cache-aside no Use Case:**
+
 ```typescript
 // ListProducts.ts — pseudocódigo
 const cacheKey = buildListKey(filters);
@@ -710,10 +726,10 @@ return dto;
 
 ### 4.3 Redis — Dual Role
 
-| Instância lógica | Uso |
-|------------------|-----|
-| DB 0 | Cache de leitura (vitrine) |
-| DB 1 | BullMQ queues + rate limiter tokens |
+| Instância lógica | Uso                                 |
+| ---------------- | ----------------------------------- |
+| DB 0             | Cache de leitura (vitrine)          |
+| DB 1             | BullMQ queues + rate limiter tokens |
 
 Produção: preferir dois clusters Redis separados se carga crescer (substituição transparente via config).
 
@@ -776,6 +792,7 @@ class Preco {
 ```
 
 **Branded types para IDs:**
+
 ```typescript
 type ProductId = string & { readonly __brand: 'ProductId' };
 type Slug = string & { readonly __brand: 'Slug' };
@@ -805,9 +822,7 @@ await createPriceAlert.execute(body);
 
 ```typescript
 // Result type para use cases — evita throw em fluxo esperado
-type Result<T, E = DomainError> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
+type Result<T, E = DomainError> = { ok: true; value: T } | { ok: false; error: E };
 
 // Repository pagination
 type Paginated<T> = {
@@ -840,14 +855,14 @@ flowchart TB
   INT --> E2E
 ```
 
-| Camada | Escopo | Ferramenta | Exemplos |
-|--------|--------|------------|----------|
-| **Unit** | domain entities, value objects, domain services | Vitest | `Preco.meetsTarget`, `PriceComplianceService.isStale`, `TitleHygieneService.clean` |
-| **Unit** | use cases com repos mockados | Vitest + vi.fn | `UpdatePricesBatch` emite `PriceDropped`; `CreatePriceAlert` rejeita produto stale |
-| **Integration** | repositories reais | Vitest + Testcontainers PG/Redis | `DrizzleProductRepository.saveBatch` + snapshots |
-| **Integration** | HTTP controllers | Vitest + Fastify inject | `GET /products/:slug` 200; Zod 400 em payload inválido |
-| **Integration** | marketplace parsers | Vitest + fixtures JSON | `AmazonResponseParser` normaliza fixture real |
-| **E2E (mínimo)** | fluxos críticos | 1–2 testes | alerta criado → price drop simulado → email mock recebido |
+| Camada           | Escopo                                          | Ferramenta                       | Exemplos                                                                           |
+| ---------------- | ----------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------- |
+| **Unit**         | domain entities, value objects, domain services | Vitest                           | `Preco.meetsTarget`, `PriceComplianceService.isStale`, `TitleHygieneService.clean` |
+| **Unit**         | use cases com repos mockados                    | Vitest + vi.fn                   | `UpdatePricesBatch` emite `PriceDropped`; `CreatePriceAlert` rejeita produto stale |
+| **Integration**  | repositories reais                              | Vitest + Testcontainers PG/Redis | `DrizzleProductRepository.saveBatch` + snapshots                                   |
+| **Integration**  | HTTP controllers                                | Vitest + Fastify inject          | `GET /products/:slug` 200; Zod 400 em payload inválido                             |
+| **Integration**  | marketplace parsers                             | Vitest + fixtures JSON           | `AmazonResponseParser` normaliza fixture real                                      |
+| **E2E (mínimo)** | fluxos críticos                                 | 1–2 testes                       | alerta criado → price drop simulado → email mock recebido                          |
 
 **Coverage MVP target:** domain + application ≥85%; infrastructure repositories ≥70%; controllers happy path + validation errors.
 
@@ -867,8 +882,14 @@ function buildWorkerContainer() {
     ]),
   );
   const eventBus = new BullMQEventBus(queues);
-  const updatePricesBatch = new UpdatePricesBatch(productRepo, snapshotRepo, fetcherFactory, eventBus, cacheInvalidator);
-  return { updatePricesBatch, /* ... */ };
+  const updatePricesBatch = new UpdatePricesBatch(
+    productRepo,
+    snapshotRepo,
+    fetcherFactory,
+    eventBus,
+    cacheInvalidator,
+  );
+  return { updatePricesBatch /* ... */ };
 }
 ```
 
@@ -880,20 +901,20 @@ Trocar Drizzle → Prisma: reescrever `persistence/` + container. Trocar BullMQ 
 
 Alinhado ao PRD Core §5 — implementação nos controllers:
 
-| Método | Rota | Use Case |
-|--------|------|----------|
-| GET | `/products` | `ListProducts` |
-| GET | `/products/:slug` | `GetProductBySlug` |
-| GET | `/products/:id/price-history` | `GetProductPriceHistory` |
-| POST | `/price-alerts` | `CreatePriceAlert` |
-| POST | `/price-alerts/confirm/:token` | `ConfirmPriceAlert` |
-| GET/POST/DELETE | `/wishlist` | `GetWishlist` / `AddToWishlist` / `RemoveFromWishlist` |
-| POST | `/wishlist/checkout-batch` | `BuildBatchCheckoutRedirect` |
-| GET | `/articles/:slug` | `GetArticleWithEmbeds` |
-| GET | `/collections/:slug` | `GetCuratedCollection` |
-| GET | `/coupons` | `ListActiveCoupons` |
-| GET/POST | `/comparisons` | `GetComparisonByToken` / `CreateComparison` |
-| POST | `/events/click` | `RecordClickEvent` |
+| Método          | Rota                           | Use Case                                               |
+| --------------- | ------------------------------ | ------------------------------------------------------ |
+| GET             | `/products`                    | `ListProducts`                                         |
+| GET             | `/products/:slug`              | `GetProductBySlug`                                     |
+| GET             | `/products/:id/price-history`  | `GetProductPriceHistory`                               |
+| POST            | `/price-alerts`                | `CreatePriceAlert`                                     |
+| POST            | `/price-alerts/confirm/:token` | `ConfirmPriceAlert`                                    |
+| GET/POST/DELETE | `/wishlist`                    | `GetWishlist` / `AddToWishlist` / `RemoveFromWishlist` |
+| POST            | `/wishlist/checkout-batch`     | `BuildBatchCheckoutRedirect`                           |
+| GET             | `/articles/:slug`              | `GetArticleWithEmbeds`                                 |
+| GET             | `/collections/:slug`           | `GetCuratedCollection`                                 |
+| GET             | `/coupons`                     | `ListActiveCoupons`                                    |
+| GET/POST        | `/comparisons`                 | `GetComparisonByToken` / `CreateComparison`            |
+| POST            | `/events/click`                | `RecordClickEvent`                                     |
 
 Header de resposta cacheável: `Cache-Control: public, max-age=60` para listagens; `ETag` opcional fase 2.
 
@@ -901,14 +922,14 @@ Header de resposta cacheável: `Cache-Control: public, max-age=60` para listagen
 
 ## 7. Decisões de Substituição Futura (Portabilidade)
 
-| Componente atual | Interface | Alternativa | Impacto |
-|------------------|-----------|-------------|---------|
-| Drizzle ORM | `I*Repository` | Prisma, Kysely | Só `infrastructure/persistence` |
-| Fastify | controllers adapters | Hono, NestJS | Só `apps/api/adapters` |
-| BullMQ | `IEventBus` + queue config | SQS, RabbitMQ | Só `infrastructure/messaging` |
-| Resend | `IEmailSender` | SendGrid, SES | Só `infrastructure/email` |
-| Redis cache | `ICacheStore` | Memcached, in-memory (dev) | Só `infrastructure/cache` |
-| Amazon HTTP client | `IMarketplaceFetcher` | Scraper headless | Nova strategy, mesma interface |
+| Componente atual   | Interface                  | Alternativa                | Impacto                         |
+| ------------------ | -------------------------- | -------------------------- | ------------------------------- |
+| Drizzle ORM        | `I*Repository`             | Prisma, Kysely             | Só `infrastructure/persistence` |
+| Fastify            | controllers adapters       | Hono, NestJS               | Só `apps/api/adapters`          |
+| BullMQ             | `IEventBus` + queue config | SQS, RabbitMQ              | Só `infrastructure/messaging`   |
+| Resend             | `IEmailSender`             | SendGrid, SES              | Só `infrastructure/email`       |
+| Redis cache        | `ICacheStore`              | Memcached, in-memory (dev) | Só `infrastructure/cache`       |
+| Amazon HTTP client | `IMarketplaceFetcher`      | Scraper headless           | Nova strategy, mesma interface  |
 
 ---
 

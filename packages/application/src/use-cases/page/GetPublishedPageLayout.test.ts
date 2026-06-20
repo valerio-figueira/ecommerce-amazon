@@ -14,7 +14,10 @@ import {
   Category,
 } from '@ecommerce-amazon/domain';
 
-import { createMockPageRepository, createMockProductRepository } from '../../test/mock-factories.js';
+import {
+  createMockPageRepository,
+  createMockProductRepository,
+} from '../../test/mock-factories.js';
 import { ListProducts } from '../product/ListProducts.js';
 import { GetPublishedPageLayout } from './GetPublishedPageLayout.js';
 
@@ -233,7 +236,13 @@ describe('GetPublishedPageLayout', () => {
   });
 
   it('hydrates BENTO_HUB_MIX with renderedBentoHubMix', async () => {
-    const offerProduct = createProduct(OFFER_PRODUCT_ID, 'teclado-mecanico-rgb', 329.9, false, 499.9);
+    const offerProduct = createProduct(
+      OFFER_PRODUCT_ID,
+      'teclado-mecanico-rgb',
+      329.9,
+      false,
+      499.9,
+    );
     const listProduct = createProduct(
       'a2222222-2222-4222-8222-222222222222',
       'headset-gamer-7-1',
@@ -349,7 +358,13 @@ describe('GetPublishedPageLayout', () => {
   });
 
   it('hydrates BENTO_HUB_MIX slot3 category with stale-price products (no numeric price)', async () => {
-    const offerProduct = createProduct(OFFER_PRODUCT_ID, 'teclado-mecanico-rgb', 329.9, false, 499.9);
+    const offerProduct = createProduct(
+      OFFER_PRODUCT_ID,
+      'teclado-mecanico-rgb',
+      329.9,
+      false,
+      499.9,
+    );
     const staleListProduct = createProduct(
       'a2222222-2222-4222-8222-222222222222',
       'headset-gamer-7-1',

@@ -101,7 +101,11 @@ export function CategoryPillsRow({
   function renderLinkPill(label: string, slug: string | null, active: boolean, sub = false) {
     if (!slug) {
       return (
-        <Link key="__all__" href="/" className={sub ? subPillClassName(active) : pillClassName(active)}>
+        <Link
+          key="__all__"
+          href="/"
+          className={sub ? subPillClassName(active) : pillClassName(active)}
+        >
           {label}
         </Link>
       );
@@ -129,9 +133,7 @@ export function CategoryPillsRow({
       )}
       <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
         {renderPill('Todos', null, categorySlug === null)}
-        {rootNodes.map((node) =>
-          renderPill(node.label, node.slug, activeRootSlug === node.slug),
-        )}
+        {rootNodes.map((node) => renderPill(node.label, node.slug, activeRootSlug === node.slug))}
       </div>
 
       {subcategoryNodes.length > 0 && activeRootNode ? (

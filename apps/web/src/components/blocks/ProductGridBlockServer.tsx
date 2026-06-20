@@ -8,9 +8,7 @@ export async function ProductGridBlockServer(
   props: BlockComponentProps,
 ): Promise<React.JSX.Element> {
   const gridProps = productGridPropsSchema.parse(props.block.props);
-  const initialProducts = await fetchProductGridPage(
-    parseProductGridFetchInput(gridProps),
-  );
+  const initialProducts = await fetchProductGridPage(parseProductGridFetchInput(gridProps));
 
   return <ProductGridBlock {...props} initialProducts={initialProducts} />;
 }

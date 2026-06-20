@@ -49,27 +49,25 @@ function inferSlideButtonMode(slide: Record<string, unknown>): SlideButtonMode {
   return 'none';
 }
 
-export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, unknown>> | null> = {
-  [BlockType.HERO_CAROUSEL]: heroCarouselPropsSchema,
-  [BlockType.FEATURED_PRODUCT]: featuredProductPropsSchema,
-  [BlockType.PRODUCT_GRID]: productGridPropsSchema,
-  [BlockType.CATEGORY_PILLS]: categoryPillsPropsSchema,
-  [BlockType.CATEGORY_BENTO_GRID]: categoryBentoGridPropsSchema,
-  [BlockType.HERO_SPLIT]: null,
-  [BlockType.CURATED_COLLECTION]: curatedCollectionPropsSchema,
-  [BlockType.COUPON_STRIP]: null,
-  [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
-  [BlockType.BENTO_HUB_MIX]: bentoHubMixPropsSchema,
-  [BlockType.WEEKLY_TRENDS]: weeklyTrendsPropsSchema,
-  [BlockType.RICH_TEXT]: richTextPropsSchema,
-  [BlockType.BANNER]: bannerPropsSchema,
-  [BlockType.SPACER]: spacerPropsSchema,
-};
+export const EDITABLE_BLOCK_SCHEMAS: Record<BlockType, z.ZodType<Record<string, unknown>> | null> =
+  {
+    [BlockType.HERO_CAROUSEL]: heroCarouselPropsSchema,
+    [BlockType.FEATURED_PRODUCT]: featuredProductPropsSchema,
+    [BlockType.PRODUCT_GRID]: productGridPropsSchema,
+    [BlockType.CATEGORY_PILLS]: categoryPillsPropsSchema,
+    [BlockType.CATEGORY_BENTO_GRID]: categoryBentoGridPropsSchema,
+    [BlockType.HERO_SPLIT]: null,
+    [BlockType.CURATED_COLLECTION]: curatedCollectionPropsSchema,
+    [BlockType.COUPON_STRIP]: null,
+    [BlockType.DYNAMIC_PRODUCT_GRID]: dynamicProductGridPropsSchema,
+    [BlockType.BENTO_HUB_MIX]: bentoHubMixPropsSchema,
+    [BlockType.WEEKLY_TRENDS]: weeklyTrendsPropsSchema,
+    [BlockType.RICH_TEXT]: richTextPropsSchema,
+    [BlockType.BANNER]: bannerPropsSchema,
+    [BlockType.SPACER]: spacerPropsSchema,
+  };
 
-export const PHASE2_BLOCK_TYPES: BlockType[] = [
-  BlockType.HERO_SPLIT,
-  BlockType.COUPON_STRIP,
-];
+export const PHASE2_BLOCK_TYPES: BlockType[] = [BlockType.HERO_SPLIT, BlockType.COUPON_STRIP];
 
 export function isEditableBlockType(type: BlockType): boolean {
   return EDITABLE_BLOCK_SCHEMAS[type] !== null;
@@ -84,10 +82,12 @@ export function normalizeFormValues(type: BlockType, props: unknown): Record<str
   const base = isRecord(props) ? { ...props } : {};
 
   if (type === BlockType.HERO_CAROUSEL && Array.isArray(base['slides'])) {
-    const slides = base['slides'].filter(isRecord).map((slide): HeroSlideFormValue => ({
-      ...slide,
-      buttonMode: inferSlideButtonMode(slide),
-    }));
+    const slides = base['slides'].filter(isRecord).map(
+      (slide): HeroSlideFormValue => ({
+        ...slide,
+        buttonMode: inferSlideButtonMode(slide),
+      }),
+    );
     return { ...base, slides };
   }
 
@@ -104,10 +104,12 @@ export function normalizeFormValues(type: BlockType, props: unknown): Record<str
   }
 
   if (type === BlockType.CATEGORY_BENTO_GRID && Array.isArray(base['tiles'])) {
-    const tiles = base['tiles'].filter(isRecord).map((tile): CategoryBentoTileFormValue => ({
-      ...tile,
-      actionMode: inferBentoTileActionMode(tile),
-    }));
+    const tiles = base['tiles'].filter(isRecord).map(
+      (tile): CategoryBentoTileFormValue => ({
+        ...tile,
+        actionMode: inferBentoTileActionMode(tile),
+      }),
+    );
     return { ...base, tiles };
   }
 

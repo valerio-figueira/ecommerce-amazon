@@ -5,14 +5,7 @@ import { getApiUrl } from '@/lib/api/client';
 
 export async function recordClick(
   productId: string,
-  origin:
-    | 'listagem'
-    | 'detalhe'
-    | 'embed'
-    | 'comparador'
-    | 'cupons'
-    | 'coleção'
-    | 'similar',
+  origin: 'listagem' | 'detalhe' | 'embed' | 'comparador' | 'cupons' | 'coleção' | 'similar',
   sessionId?: string,
   options?: { blockId?: string; articleId?: string },
 ): Promise<void> {

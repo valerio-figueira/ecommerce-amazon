@@ -32,16 +32,17 @@ isProject: false
 
 Grande parte da fundação **já existe** — não recriar do zero:
 
-| Camada | Já implementado | Falta |
-|--------|-----------------|-------|
-| DB | [`content_articles`](packages/infrastructure/src/persistence/drizzle/schema/index.ts), `content_product_embeds`, seed `guia-cadeira-ergonomica` | Colunas SEO/capa/autor/audit; tabela `auto_links` |
-| Domain | [`ContentArticle`](packages/domain/src/entities/ContentArticle.ts), enums `ArticleType`/`ArticleStatus` | Novos campos; métodos write no `ContentRepository` |
-| API pública | `GET /articles/:slug` → [`GetArticleWithEmbeds`](packages/application/src/use-cases/content/GetArticleWithEmbeds.ts) | Presenter/DTO; `GET /seo/auto-links`; remover auto-link da API |
-| API admin | `GET /admin/articles` (só published summaries) | CRUD completo (`admin-article-routes.ts`) |
-| Admin UI | [`/artigos`](apps/admin/src/app/(dashboard)/artigos/page.tsx) placeholder; `ArticleIdPicker` | Listagem + formulário TipTap |
-| Web | `ProductCard` compact; Bento links para `/artigos/{slug}` | Página `/artigos/[slug]`; typography plugin; parser shortcodes |
+| Camada      | Já implementado                                                                                                                                 | Falta                                                          |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| DB          | [`content_articles`](packages/infrastructure/src/persistence/drizzle/schema/index.ts), `content_product_embeds`, seed `guia-cadeira-ergonomica` | Colunas SEO/capa/autor/audit; tabela `auto_links`              |
+| Domain      | [`ContentArticle`](packages/domain/src/entities/ContentArticle.ts), enums `ArticleType`/`ArticleStatus`                                         | Novos campos; métodos write no `ContentRepository`             |
+| API pública | `GET /articles/:slug` → [`GetArticleWithEmbeds`](packages/application/src/use-cases/content/GetArticleWithEmbeds.ts)                            | Presenter/DTO; `GET /seo/auto-links`; remover auto-link da API |
+| API admin   | `GET /admin/articles` (só published summaries)                                                                                                  | CRUD completo (`admin-article-routes.ts`)                      |
+| Admin UI    | [`/artigos`](<apps/admin/src/app/(dashboard)/artigos/page.tsx>) placeholder; `ArticleIdPicker`                                                  | Listagem + formulário TipTap                                   |
+| Web         | `ProductCard` compact; Bento links para `/artigos/{slug}`                                                                                       | Página `/artigos/[slug]`; typography plugin; parser shortcodes |
 
 **Decisões confirmadas:**
+
 - Shortcode: `[[product:slug]]` → `ProductCard` `variant="compact"`, `clickOrigin="embed"` (alinhado a [06-ux-conversion.mdc](.cursor/rules/06-ux-conversion.mdc))
 - `auto_links`: infra + seed + `GET` público; **sem** CRUD admin nesta fase
 
@@ -82,15 +83,15 @@ flowchart TB
 
 Manter `body` como armazenamento do HTML TipTap (equivale ao `contentHtml` pedido). Adicionar:
 
-| Coluna | Tipo | Notas |
-|--------|------|-------|
-| `excerpt` | `text` | Resumo listagens/SEO |
-| `cover_image_url` | `varchar(255)` | Banner; desbloqueia Bento slot1 sem override obrigatório |
-| `author_id` | `uuid` FK → `operators.id` | Preenchido server-side com `adminOperator.id` |
-| `seo_title` | `text` | Migrar `seo.metaTitle` existente |
-| `seo_description` | `text` | Migrar `seo.metaDescription` existente |
-| `created_at` | `timestamptz` | `defaultNow()` |
-| `updated_at` | `timestamptz` | `defaultNow()` + trigger/app update |
+| Coluna            | Tipo                       | Notas                                                    |
+| ----------------- | -------------------------- | -------------------------------------------------------- |
+| `excerpt`         | `text`                     | Resumo listagens/SEO                                     |
+| `cover_image_url` | `varchar(255)`             | Banner; desbloqueia Bento slot1 sem override obrigatório |
+| `author_id`       | `uuid` FK → `operators.id` | Preenchido server-side com `adminOperator.id`            |
+| `seo_title`       | `text`                     | Migrar `seo.metaTitle` existente                         |
+| `seo_description` | `text`                     | Migrar `seo.metaDescription` existente                   |
+| `created_at`      | `timestamptz`              | `defaultNow()`                                           |
+| `updated_at`      | `timestamptz`              | `defaultNow()` + trigger/app update                      |
 
 **Manter:** `type` (`article_type`), `status`, `published_at`, `seo` jsonb (só `canonical` residual ou deprecar gradualmente).
 
@@ -133,14 +134,14 @@ Seed: migrar entradas de [`SEO_KEYWORD_MAP`](packages/shared/src/seo/keywords.ts
 
 ### Use cases (novos em `packages/application/src/use-cases/`)
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `CreateArticle` | draft; `authorId` do operador; slug único |
-| `UpdateArticle` | body/SEO/status/capa; set `publishedAt` ao publicar |
-| `GetAdminArticle` | artigo completo por `id` |
-| `ListAdminArticles` | substituir filtro published-only; suportar `?status=` |
-| `DeleteArticle` | hard delete (cascade embeds) |
-| `ListActiveAutoLinks` | keywords ativas ordenadas por `priority` |
+| Use case               | Responsabilidade                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| `CreateArticle`        | draft; `authorId` do operador; slug único                                               |
+| `UpdateArticle`        | body/SEO/status/capa; set `publishedAt` ao publicar                                     |
+| `GetAdminArticle`      | artigo completo por `id`                                                                |
+| `ListAdminArticles`    | substituir filtro published-only; suportar `?status=`                                   |
+| `DeleteArticle`        | hard delete (cascade embeds)                                                            |
+| `ListActiveAutoLinks`  | keywords ativas ordenadas por `priority`                                                |
 | `GetArticleWithEmbeds` | **refatorar:** retornar body **sem** `injectInternalLinks`; incluir novos campos no DTO |
 
 Invalidação cache: ao write admin, `DEL vitrine:article:slug:{slug}` + `DEL vitrine:seo:auto-links`.
@@ -231,13 +232,13 @@ Relaxar `superRefine` em [`block-schemas.ts`](packages/shared/src/cms/block-sche
 
 ### Componentes novos
 
-| Arquivo | Função |
-|---------|--------|
-| `components/articles/ArticleListManager.tsx` | Lista com status badge; painéis flutuantes ([11-admin-floating-panels.mdc](.cursor/rules/11-admin-floating-panels.mdc)) |
-| `components/articles/ArticleForm.tsx` | Campos metadados + editor |
-| `components/articles/ArticleEditor.tsx` | TipTap wrapper |
-| `components/articles/extensions/ProductEmbedExtension.ts` | Atom block; serializa `[[product:slug]]`; preview inline |
-| `components/articles/ProductSearchModal.tsx` | Dialog reutilizando padrão de busca de [`ProductIdPicker`](apps/admin/src/components/cms/props-forms/ProductIdPicker.tsx) (slug como valor) |
+| Arquivo                                                   | Função                                                                                                                                      |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/articles/ArticleListManager.tsx`              | Lista com status badge; painéis flutuantes ([11-admin-floating-panels.mdc](.cursor/rules/11-admin-floating-panels.mdc))                     |
+| `components/articles/ArticleForm.tsx`                     | Campos metadados + editor                                                                                                                   |
+| `components/articles/ArticleEditor.tsx`                   | TipTap wrapper                                                                                                                              |
+| `components/articles/extensions/ProductEmbedExtension.ts` | Atom block; serializa `[[product:slug]]`; preview inline                                                                                    |
+| `components/articles/ProductSearchModal.tsx`              | Dialog reutilizando padrão de busca de [`ProductIdPicker`](apps/admin/src/components/cms/props-forms/ProductIdPicker.tsx) (slug como valor) |
 
 ### Slash command `/produto`
 
@@ -256,6 +257,7 @@ Relaxar `superRefine` em [`block-schemas.ts`](packages/shared/src/cms/block-sche
 ### BFF Next.js
 
 Estender [`apps/admin/src/lib/api/articles.ts`](apps/admin/src/lib/api/articles.ts) + novo `articles-client.ts` + rotas:
+
 - `app/api/admin/articles/route.ts` (GET + POST)
 - `app/api/admin/articles/[id]/route.ts` (GET/PATCH/DELETE)
 
@@ -311,12 +313,12 @@ Novo trecho em [`apps/web/src/lib/api/schemas.ts`](apps/web/src/lib/api/schemas.
 
 ## 7. Testes
 
-| Arquivo | Cobertura |
-|---------|-----------|
-| `packages/shared/src/seo/link-parser.test.ts` | `maxMatches`, skip inside `<a>`, classes emerald |
-| `packages/shared/src/content/article-shortcodes.test.ts` | parse múltiplos shortcodes, HTML entre eles |
-| `packages/application/.../CreateArticle.test.ts` | slug conflict, authorId injection |
-| `packages/shared/src/admin/article-schemas.test.ts` | validação Zod |
+| Arquivo                                                  | Cobertura                                        |
+| -------------------------------------------------------- | ------------------------------------------------ |
+| `packages/shared/src/seo/link-parser.test.ts`            | `maxMatches`, skip inside `<a>`, classes emerald |
+| `packages/shared/src/content/article-shortcodes.test.ts` | parse múltiplos shortcodes, HTML entre eles      |
+| `packages/application/.../CreateArticle.test.ts`         | slug conflict, authorId injection                |
+| `packages/shared/src/admin/article-schemas.test.ts`      | validação Zod                                    |
 
 ---
 
@@ -349,9 +351,9 @@ Criar [`docs/admin-articles-phase1.md`](docs/admin-articles-phase1.md) e [`docs/
 
 ## Riscos e mitigações
 
-| Risco | Mitigação |
-|-------|-----------|
-| `prose` hoje sem plugin (inerte) | Instalar typography antes da página |
-| Double auto-linking (API + web) | Remover de `GetArticleWithEmbeds`; só RSC |
-| TipTap salva HTML inconsistente | Atom node com serializer explícito para `[[product:slug]]` |
-| Produto deletado referenciado no artigo | Render fallback: bloco "Produto indisponível" sem CTA |
+| Risco                                   | Mitigação                                                  |
+| --------------------------------------- | ---------------------------------------------------------- |
+| `prose` hoje sem plugin (inerte)        | Instalar typography antes da página                        |
+| Double auto-linking (API + web)         | Remover de `GetArticleWithEmbeds`; só RSC                  |
+| TipTap salva HTML inconsistente         | Atom node com serializer explícito para `[[product:slug]]` |
+| Produto deletado referenciado no artigo | Render fallback: bloco "Produto indisponível" sem CTA      |

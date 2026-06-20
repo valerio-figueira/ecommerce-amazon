@@ -6,13 +6,13 @@ todos:
     content: Criar use case ValidateOperatorSession + GET /admin/auth/session (200/401/503)
     status: completed
   - id: fail-closed-layout
-    content: "Refatorar dashboard layout: confirmar sessão na API; redirect /servico-indisponivel ou /login"
+    content: 'Refatorar dashboard layout: confirmar sessão na API; redirect /servico-indisponivel ou /login'
     status: completed
   - id: servico-indisponivel-page
     content: Página pública /servico-indisponivel sem AdminShell + PUBLIC_PATHS no middleware
     status: completed
   - id: middleware-jwt
-    content: "Middleware: jwtVerify no cookie; limpar cookie inválido"
+    content: 'Middleware: jwtVerify no cookie; limpar cookie inválido'
     status: completed
   - id: admin-client-401
     content: adminClientFetch com logout global em 401; migrar call sites client
@@ -58,25 +58,25 @@ flowchart TD
 Arquivos-chave:
 
 - [`apps/admin/src/middleware.ts`](apps/admin/src/middleware.ts) — só verifica **presença** do cookie, não assinatura JWT
-- [`apps/admin/src/app/(dashboard)/layout.tsx`](apps/admin/src/app/(dashboard)/layout.tsx) — verifica JWT localmente com `jose` (`getSessionFromCookie`) e **sempre** renderiza o shell se o token for válido, mesmo com API off
+- [`apps/admin/src/app/(dashboard)/layout.tsx`](<apps/admin/src/app/(dashboard)/layout.tsx>) — verifica JWT localmente com `jose` (`getSessionFromCookie`) e **sempre** renderiza o shell se o token for válido, mesmo com API off
 - [`apps/admin/src/lib/auth/session.ts`](apps/admin/src/lib/auth/session.ts) — validação offline (sem DB)
 
 **Cenário do bug percebido:** operador com JWT ainda válido (ex.: logou antes, containers caíram depois) → shell aparece sem dados. Não é bypass para anônimos, mas **expõe a estrutura do painel** e confunde auth com indisponibilidade (`/perfil` redireciona para login em qualquer erro de fetch).
 
 ### Lacunas de segurança identificadas
 
-| Área | Severidade | Problema |
-|------|------------|----------|
-| Middleware | Média | Cookie arbitrário passa no edge; páginas são salvas pelo layout, mas `/api/admin/*` só exige cookie |
-| Sessão stateless | Média | Logout só limpa cookie; JWT roubado vale até `exp`; operador **desativado** continua com acesso até expirar |
-| Fail-open no layout | Média–Alta | JWT local válido → shell mesmo sem confirmação no backend (sua escolha: **fail-closed**) |
-| `/perfil` | Baixa | `catch` genérico → `redirect('/login')` em falha de infra |
-| Client fetch | Média | Dezenas de `fetch('/api/admin/...')` sem handler global de 401 → usuário fica no shell com toasts |
-| Login | Média | Sem rate limit; `catch` no BFF retorna 400 genérico em falha de rede |
-| API erros | Média | `handleAdminError` devolve `error.message` em 500 (pode vazar detalhes de Postgres) |
-| Redis | Baixa (ops) | `createRedisClient` sem handler de `error` → spam de `Unhandled error event` |
-| Senhas | Média | [`BcryptPasswordHasher`](packages/infrastructure/src/auth/bcrypt-password.hasher.ts) sem pepper; vazamento de DB facilita offline cracking |
-| Health | Baixa | `/health` não verifica DB/Redis |
+| Área                | Severidade  | Problema                                                                                                                                   |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Middleware          | Média       | Cookie arbitrário passa no edge; páginas são salvas pelo layout, mas `/api/admin/*` só exige cookie                                        |
+| Sessão stateless    | Média       | Logout só limpa cookie; JWT roubado vale até `exp`; operador **desativado** continua com acesso até expirar                                |
+| Fail-open no layout | Média–Alta  | JWT local válido → shell mesmo sem confirmação no backend (sua escolha: **fail-closed**)                                                   |
+| `/perfil`           | Baixa       | `catch` genérico → `redirect('/login')` em falha de infra                                                                                  |
+| Client fetch        | Média       | Dezenas de `fetch('/api/admin/...')` sem handler global de 401 → usuário fica no shell com toasts                                          |
+| Login               | Média       | Sem rate limit; `catch` no BFF retorna 400 genérico em falha de rede                                                                       |
+| API erros           | Média       | `handleAdminError` devolve `error.message` em 500 (pode vazar detalhes de Postgres)                                                        |
+| Redis               | Baixa (ops) | `createRedisClient` sem handler de `error` → spam de `Unhandled error event`                                                               |
+| Senhas              | Média       | [`BcryptPasswordHasher`](packages/infrastructure/src/auth/bcrypt-password.hasher.ts) sem pepper; vazamento de DB facilita offline cracking |
+| Health              | Baixa       | `/health` não verifica DB/Redis                                                                                                            |
 
 **Pontos positivos a preservar:** cookie `httpOnly` + `SameSite=Lax`, JWT verificado no layout, API valida Bearer em `/admin/*`, mensagem uniforme de login (sem enumeração de e-mail), bcrypt com salt por hash.
 
@@ -128,7 +128,7 @@ Use case novo (Clean Architecture): `ValidateOperatorSession` em `packages/appli
 
 ### 1.2 Fail-closed no layout do dashboard
 
-Refatorar [`apps/admin/src/app/(dashboard)/layout.tsx`](apps/admin/src/app/(dashboard)/layout.tsx):
+Refatorar [`apps/admin/src/app/(dashboard)/layout.tsx`](<apps/admin/src/app/(dashboard)/layout.tsx>):
 
 1. `getSessionFromCookie` (gate local rápido)
 2. `confirmSessionWithApi()` — chama `GET /admin/auth/session` via `adminFetch` interno
@@ -148,7 +148,7 @@ Extrair helper em [`apps/admin/src/lib/auth/session-guard.ts`](apps/admin/src/li
 
 ### 1.4 Corrigir `/perfil`
 
-[`apps/admin/src/app/(dashboard)/perfil/page.tsx`](apps/admin/src/app/(dashboard)/perfil/page.tsx): remover `redirect('/login')` no `catch`; delegar confirmação de sessão ao layout; em erro de fetch usar banner/toast como outras páginas.
+[`apps/admin/src/app/(dashboard)/perfil/page.tsx`](<apps/admin/src/app/(dashboard)/perfil/page.tsx>): remover `redirect('/login')` no `catch`; delegar confirmação de sessão ao layout; em erro de fetch usar banner/toast como outras páginas.
 
 ---
 
@@ -190,13 +190,13 @@ Criar [`apps/admin/src/lib/api/admin-client.ts`](apps/admin/src/lib/api/admin-cl
 
 Padronizar páginas que hoje **lançam** sem try/catch:
 
-- [`colecoes/page.tsx`](apps/admin/src/app/(dashboard)/colecoes/page.tsx)
-- [`artigos/page.tsx`](apps/admin/src/app/(dashboard)/artigos/page.tsx)
+- [`colecoes/page.tsx`](<apps/admin/src/app/(dashboard)/colecoes/page.tsx>)
+- [`artigos/page.tsx`](<apps/admin/src/app/(dashboard)/artigos/page.tsx>)
 - Demais páginas SSR com `adminFetch` direto
 
-Padrão: try/catch → estado vazio + mensagem (como [`page.tsx` dashboard](apps/admin/src/app/(dashboard)/page.tsx) com `apiUnavailable`).
+Padrão: try/catch → estado vazio + mensagem (como [`page.tsx` dashboard](<apps/admin/src/app/(dashboard)/page.tsx>) com `apiUnavailable`).
 
-Adicionar [`apps/admin/src/app/(dashboard)/error.tsx`](apps/admin/src/app/(dashboard)/error.tsx) com recovery UI (sem vazar detalhes).
+Adicionar [`apps/admin/src/app/(dashboard)/error.tsx`](<apps/admin/src/app/(dashboard)/error.tsx>) com recovery UI (sem vazar detalhes).
 
 ### 2.6 Cookie maxAge alinhado ao JWT
 
@@ -256,12 +256,12 @@ private applyPepper(plain: string): string {
 
 ### 4.2 Env e wiring
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`packages/shared/src/index.ts`](packages/shared/src/index.ts) | `PASSWORD_PEPPER: z.string().min(16)` com default dev documentado |
-| [`.env.example`](.env.example) | `PASSWORD_PEPPER=dev-pepper-change-in-production-min-16-chars` |
-| [`packages/infrastructure/src/di/api-container.ts`](packages/infrastructure/src/di/api-container.ts) | `new BcryptPasswordHasher(env.PASSWORD_PEPPER)` |
-| [`packages/infrastructure/src/persistence/drizzle/seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) | mesmo construtor com `loadEnv()` |
+| Arquivo                                                                                                              | Mudança                                                           |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [`packages/shared/src/index.ts`](packages/shared/src/index.ts)                                                       | `PASSWORD_PEPPER: z.string().min(16)` com default dev documentado |
+| [`.env.example`](.env.example)                                                                                       | `PASSWORD_PEPPER=dev-pepper-change-in-production-min-16-chars`    |
+| [`packages/infrastructure/src/di/api-container.ts`](packages/infrastructure/src/di/api-container.ts)                 | `new BcryptPasswordHasher(env.PASSWORD_PEPPER)`                   |
+| [`packages/infrastructure/src/persistence/drizzle/seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) | mesmo construtor com `loadEnv()`                                  |
 
 ### 4.3 Migração de hashes existentes
 
@@ -290,17 +290,17 @@ Criar [`docs/admin-security.md`](docs/admin-security.md) com:
 
 ## Matriz de testes manuais
 
-| Cenário | Resultado esperado |
-|---------|-------------------|
-| Sem cookie → `/produtos` | Redirect `/login` |
-| Cookie lixo | Middleware/layout → `/login` |
-| JWT expirado | `/login` |
-| JWT válido + API/DB off | `/servico-indisponivel` (sem shell) |
-| JWT válido + operador `disabled` | Cookie limpo → `/login` |
-| Login com API off | Toast 503, sem cookie |
-| Client fetch após 401 | Logout automático → `/login` |
-| Login >10x em 15min | HTTP 429 |
-| Seed após pepper | Login com `ADMIN_SEED_PASSWORD` ok |
+| Cenário                          | Resultado esperado                  |
+| -------------------------------- | ----------------------------------- |
+| Sem cookie → `/produtos`         | Redirect `/login`                   |
+| Cookie lixo                      | Middleware/layout → `/login`        |
+| JWT expirado                     | `/login`                            |
+| JWT válido + API/DB off          | `/servico-indisponivel` (sem shell) |
+| JWT válido + operador `disabled` | Cookie limpo → `/login`             |
+| Login com API off                | Toast 503, sem cookie               |
+| Client fetch após 401            | Logout automático → `/login`        |
+| Login >10x em 15min              | HTTP 429                            |
+| Seed após pepper                 | Login com `ADMIN_SEED_PASSWORD` ok  |
 
 Comandos:
 

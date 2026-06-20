@@ -1,6 +1,6 @@
 ---
 name: Auto-link URL picker
-overview: "Substituir o input livre de URL de destino no admin de auto-links por um picker híbrido: combobox com busca client-side sobre produtos, categorias de vitrine, coleções, artigos e categorias editoriais, mais toggle para URL manual (HTTPS/custom). O backend continua armazenando `targetUrl` como string; a listagem passa a exibir label amigável quando resolvível."
+overview: 'Substituir o input livre de URL de destino no admin de auto-links por um picker híbrido: combobox com busca client-side sobre produtos, categorias de vitrine, coleções, artigos e categorias editoriais, mais toggle para URL manual (HTTPS/custom). O backend continua armazenando `targetUrl` como string; a listagem passa a exibir label amigável quando resolvível.'
 todos:
   - id: url-helpers
     content: Criar apps/admin/src/lib/internal-link-targets.ts com tipos, build/parse/filter/resolve e labels pt-BR
@@ -49,14 +49,14 @@ flowchart LR
 
 ## Escopo entregue
 
-| Incluído | Detalhe |
-|----------|---------|
-| Combobox agrupado | 5 tipos de destino interno |
-| Busca client-side | Título/nome/slug, debounce ~200ms |
-| Modo manual | Switch + `Input` para `https://...` ou paths custom |
-| Edição | Detectar URL conhecida → mostrar label; desconhecida → modo manual |
-| Listagem | Label amigável + URL truncada quando resolvível |
-| Docs | Atualizar [`docs/auto-links-admin.md`](docs/auto-links-admin.md) |
+| Incluído          | Detalhe                                                            |
+| ----------------- | ------------------------------------------------------------------ |
+| Combobox agrupado | 5 tipos de destino interno                                         |
+| Busca client-side | Título/nome/slug, debounce ~200ms                                  |
+| Modo manual       | Switch + `Input` para `https://...` ou paths custom                |
+| Edição            | Detectar URL conhecida → mostrar label; desconhecida → modo manual |
+| Listagem          | Label amigável + URL truncada quando resolvível                    |
+| Docs              | Atualizar [`docs/auto-links-admin.md`](docs/auto-links-admin.md)   |
 
 ## Fora de escopo (fase 2)
 
@@ -72,6 +72,7 @@ flowchart LR
 Criar [`apps/admin/src/lib/internal-link-targets.ts`](apps/admin/src/lib/internal-link-targets.ts):
 
 **Tipos:**
+
 ```ts
 type InternalLinkTargetType =
   | 'product'
@@ -91,15 +92,16 @@ type InternalLinkTarget = {
 
 **Rotas (espelham a vitrine):**
 
-| Tipo | Padrão |
-|------|--------|
-| `product` | `/produtos/{slug}` |
-| `product_category` | `/categorias/{slug}` |
-| `collection` | `/colecoes/{slug}` |
-| `article` | `/artigos/{slug}` |
+| Tipo               | Padrão                      |
+| ------------------ | --------------------------- |
+| `product`          | `/produtos/{slug}`          |
+| `product_category` | `/categorias/{slug}`        |
+| `collection`       | `/colecoes/{slug}`          |
+| `article`          | `/artigos/{slug}`           |
 | `article_category` | `/artigos/categoria/{slug}` |
 
 **Funções puras:**
+
 - `buildInternalLinkTarget(type, slug, label, meta?)` → `InternalLinkTarget`
 - `parseInternalLinkTargetUrl(url)` → `{ type, slug } | null` (regex por prefixo; ordem importa — `article_category` antes de `article`)
 - `filterInternalLinkTargets(targets, query)` → filtrado por label/slug/meta
@@ -133,6 +135,7 @@ Hook opcional [`useInternalLinkTargets(open)`](apps/admin/src/lib/hooks/useInter
 Criar [`apps/admin/src/components/auto-links/InternalLinkTargetPicker.tsx`](apps/admin/src/components/auto-links/InternalLinkTargetPicker.tsx):
 
 **Props:**
+
 ```ts
 {
   value: string;           // targetUrl
@@ -143,6 +146,7 @@ Criar [`apps/admin/src/components/auto-links/InternalLinkTargetPicker.tsx`](apps
 ```
 
 **UX (modo picker — default):**
+
 - Campo de busca (`Input type="search"`) com placeholder "Buscar produto, categoria, coleção ou artigo…"
 - Painel abaixo (`max-h-48 overflow-y-auto`, borda admin) com grupos:
   - Cabeçalho sticky por tipo (Produtos, Categorias, Coleções, Artigos, Categorias editoriais)
@@ -152,6 +156,7 @@ Criar [`apps/admin/src/components/auto-links/InternalLinkTargetPicker.tsx`](apps
 - Loading: skeleton ou texto "Carregando destinos…"
 
 **UX (modo manual):**
+
 - `Switch` + label "URL manual (externa ou custom)"
 - Quando ativo: esconde combobox; mostra `Input` atual com hint HTTPS
 - Auto-ativa manual se `value` for `https://` ou `parseInternalLinkTargetUrl` retornar `null` ao abrir edição
@@ -174,6 +179,7 @@ Alterar [`AutoLinkFormSheet.tsx`](apps/admin/src/components/auto-links/AutoLinkF
 - Carregar targets via hook quando `open === true`
 
 Copy atualizada no hint:
+
 - Modo picker: "Selecione um destino interno da vitrine."
 - Modo manual: "Use caminho relativo (/) ou URL HTTPS absoluta."
 

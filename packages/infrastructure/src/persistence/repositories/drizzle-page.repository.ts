@@ -121,9 +121,7 @@ export class DrizzlePageRepository implements PageRepository {
     const pageRows = await this.db
       .select()
       .from(schema.pages)
-      .where(
-        and(eq(schema.pages.slug, slug), eq(schema.pages.pageKind, PageKind.INSTITUTIONAL)),
-      )
+      .where(and(eq(schema.pages.slug, slug), eq(schema.pages.pageKind, PageKind.INSTITUTIONAL)))
       .limit(1);
 
     const pageRow = pageRows[0];
@@ -196,12 +194,7 @@ export class DrizzlePageRepository implements PageRepository {
       const existing = await tx
         .select({ id: schema.pageBlocks.id })
         .from(schema.pageBlocks)
-        .where(
-          and(
-            eq(schema.pageBlocks.pageId, pageId),
-            inArray(schema.pageBlocks.id, blockIds),
-          ),
-        );
+        .where(and(eq(schema.pageBlocks.pageId, pageId), inArray(schema.pageBlocks.id, blockIds)));
 
       if (existing.length !== orders.length) {
         throw new Error('One or more blocks do not belong to this page');
@@ -212,10 +205,7 @@ export class DrizzlePageRepository implements PageRepository {
           .update(schema.pageBlocks)
           .set({ sortOrder: order.sortOrder })
           .where(
-            and(
-              eq(schema.pageBlocks.id, order.blockId),
-              eq(schema.pageBlocks.pageId, pageId),
-            ),
+            and(eq(schema.pageBlocks.id, order.blockId), eq(schema.pageBlocks.pageId, pageId)),
           );
       }
     });

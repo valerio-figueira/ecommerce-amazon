@@ -19,8 +19,7 @@ describe('article shortcodes', () => {
   });
 
   it('parses html and product segments in order', () => {
-    const body =
-      '<p>Antes</p>[[product:cadeira-ergonomica-home-office]]<p>Depois</p>';
+    const body = '<p>Antes</p>[[product:cadeira-ergonomica-home-office]]<p>Depois</p>';
     expect(parseArticleShortcodes(body)).toEqual([
       { type: 'html', html: '<p>Antes</p>' },
       { type: 'product', slug: 'cadeira-ergonomica-home-office' },

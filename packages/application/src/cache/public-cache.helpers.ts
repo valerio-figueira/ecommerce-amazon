@@ -9,7 +9,10 @@ export async function invalidateArticlePublicCache(
   await Promise.all(uniqueSlugs.map((slug) => cache.del(articlePublicCacheKey(slug))));
 }
 
-export function buildArticlePublicPaths(slugs: string[], options?: { includeListing?: boolean }): string[] {
+export function buildArticlePublicPaths(
+  slugs: string[],
+  options?: { includeListing?: boolean },
+): string[] {
   const paths = [...new Set(slugs.filter(Boolean).map((slug) => `/artigos/${slug}`))];
   if (options?.includeListing) {
     paths.push('/artigos');

@@ -10,25 +10,25 @@ Página pública `/legal` com política de privacidade, termos de uso, divulgaç
 
 ## O que foi entregue
 
-| Seção (âncora) | Conteúdo |
-|----------------|----------|
-| `#privacidade` | LGPD: dados coletados, bases legais, compartilhamento, direitos, contato |
-| `#termos` | Natureza da vitrine, preços stale 24h, uso permitido, limitação de responsabilidade |
-| `#afiliados` | Amazon Associados / Shopee Afiliados, CTAs transparentes, `/go/` |
-| `#cookies` | Cookie `vitrine_session`, analytics futuro com consentimento |
+| Seção (âncora) | Conteúdo                                                                            |
+| -------------- | ----------------------------------------------------------------------------------- |
+| `#privacidade` | LGPD: dados coletados, bases legais, compartilhamento, direitos, contato            |
+| `#termos`      | Natureza da vitrine, preços stale 24h, uso permitido, limitação de responsabilidade |
+| `#afiliados`   | Amazon Associados / Shopee Afiliados, CTAs transparentes, `/go/`                    |
+| `#cookies`     | Cookie `vitrine_session`, analytics futuro com consentimento                        |
 
 Conteúdo parametrizado por [`BrandConfig`](../packages/shared/src/config/brand.ts) (`name`, `legalName`, `contactEmail`, `url`).
 
 ## Arquivos-chave
 
-| Artefato | Path |
-|----------|------|
-| Conteúdo + metadata | [`packages/shared/src/legal/legal-content.ts`](../packages/shared/src/legal/legal-content.ts) |
-| Testes | [`packages/shared/src/legal/legal-content.test.ts`](../packages/shared/src/legal/legal-content.test.ts) |
-| Página Next.js | [`apps/web/src/app/legal/page.tsx`](../apps/web/src/app/legal/page.tsx) |
-| UI | [`apps/web/src/components/legal/LegalPageContent.tsx`](../apps/web/src/components/legal/LegalPageContent.tsx) |
-| Link no rodapé | [`apps/web/src/components/layout/Footer.tsx`](../apps/web/src/components/layout/Footer.tsx) |
-| Sitemap estático | [`apps/web/src/app/sitemap.ts`](../apps/web/src/app/sitemap.ts) — inclui `/legal` |
+| Artefato            | Path                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Conteúdo + metadata | [`packages/shared/src/legal/legal-content.ts`](../packages/shared/src/legal/legal-content.ts)                 |
+| Testes              | [`packages/shared/src/legal/legal-content.test.ts`](../packages/shared/src/legal/legal-content.test.ts)       |
+| Página Next.js      | [`apps/web/src/app/legal/page.tsx`](../apps/web/src/app/legal/page.tsx)                                       |
+| UI                  | [`apps/web/src/components/legal/LegalPageContent.tsx`](../apps/web/src/components/legal/LegalPageContent.tsx) |
+| Link no rodapé      | [`apps/web/src/components/layout/Footer.tsx`](../apps/web/src/components/layout/Footer.tsx)                   |
+| Sitemap estático    | [`apps/web/src/app/sitemap.ts`](../apps/web/src/app/sitemap.ts) — inclui `/legal`                             |
 
 ## Import
 
@@ -42,12 +42,12 @@ const content = buildLegalPageContent(brand);
 
 ## Env vars relevantes
 
-| Variável | Uso na página legal |
-|----------|---------------------|
-| `SITE_NAME` | Nome público no texto |
-| `COMPANY_LEGAL_NAME` | Controlador LGPD |
-| `CONTACT_EMAIL` | Canal de privacidade/dúvidas |
-| `WEB_PUBLIC_URL` | URL canônica e links absolutos |
+| Variável             | Uso na página legal            |
+| -------------------- | ------------------------------ |
+| `SITE_NAME`          | Nome público no texto          |
+| `COMPANY_LEGAL_NAME` | Controlador LGPD               |
+| `CONTACT_EMAIL`      | Canal de privacidade/dúvidas   |
+| `WEB_PUBLIC_URL`     | URL canônica e links absolutos |
 
 ## Como testar
 

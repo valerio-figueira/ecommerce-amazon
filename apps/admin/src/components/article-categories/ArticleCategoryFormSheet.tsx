@@ -118,7 +118,12 @@ export function ArticleCategoryFormSheet({
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button type="button" variant="primary" disabled={saving} onClick={() => void handleSave()}>
+          <Button
+            type="button"
+            variant="primary"
+            disabled={saving}
+            onClick={() => void handleSave()}
+          >
             {saving ? 'Salvando…' : editing ? 'Guardar' : 'Criar'}
           </Button>
         </SheetFooter>

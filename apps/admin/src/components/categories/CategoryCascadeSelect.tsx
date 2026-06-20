@@ -44,10 +44,7 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
   const hydratedCategoryIdRef = useRef<string | undefined>(undefined);
   const [needsLeafReselection, setNeedsLeafReselection] = useState(false);
 
-  const roots = useMemo(
-    () => options.filter((option) => option.depth === 0),
-    [options],
-  );
+  const roots = useMemo(() => options.filter((option) => option.depth === 0), [options]);
 
   const level2Options = useMemo(
     () => (level1 ? options.filter((option) => option.parentId === level1) : []),
@@ -237,8 +234,8 @@ export function CategoryCascadeSelect({ options }: CategoryCascadeSelectProps): 
             </p>
           )}
           <FormDescription>
-            Selecione a subcategoria mais específica. Produtos devem ficar em categorias folha quando
-            houver filhos.
+            Selecione a subcategoria mais específica. Produtos devem ficar em categorias folha
+            quando houver filhos.
           </FormDescription>
           <FormMessage />
         </FormItem>

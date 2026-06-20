@@ -123,11 +123,11 @@ Criar [`apps/web/src/lib/analytics.ts`](apps/web/src/lib/analytics.ts) com:
 
 **Eventos definidos:**
 
-| Evento GA4 | Quando | Parâmetros principais |
-|------------|--------|------------------------|
-| `affiliate_click` (custom) | Clique em CTA de saída | `product_id`, `product_slug`, `marketplace`, `price_amount` (null se stale), `price_stale`, `click_origin`, `block_id?` |
-| `view_item` (recomendado GA4) | Detalhe de produto montado | `currency: 'BRL'`, `value`, `items: [{ item_id, item_name, price, item_category? }]` |
-| `article_view` (custom) | Artigo editorial montado | `article_slug`, `article_title`, `article_category?` |
+| Evento GA4                    | Quando                     | Parâmetros principais                                                                                                   |
+| ----------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `affiliate_click` (custom)    | Clique em CTA de saída     | `product_id`, `product_slug`, `marketplace`, `price_amount` (null se stale), `price_stale`, `click_origin`, `block_id?` |
+| `view_item` (recomendado GA4) | Detalhe de produto montado | `currency: 'BRL'`, `value`, `items: [{ item_id, item_name, price, item_category? }]`                                    |
+| `article_view` (custom)       | Artigo editorial montado   | `article_slug`, `article_title`, `article_category?`                                                                    |
 
 **Mapeamento de `click_origin`** — reutilizar enum existente (`listagem | detalhe | embed | comparador | cupons | coleção`) para alinhar GA4 ao `click_events` interno.
 
@@ -160,7 +160,7 @@ trackAffiliateClick({
   productId,
   productSlug: slug,
   marketplace,
-  priceAmount: priceStale ? null : priceAmount ?? null,
+  priceAmount: priceStale ? null : (priceAmount ?? null),
   priceStale: priceStale ?? false,
   clickOrigin: origin,
   blockId,
@@ -169,11 +169,11 @@ trackAffiliateClick({
 
 **Propagar props nos call sites que já têm o produto:**
 
-| Arquivo | Ação |
-|---------|------|
-| [`ProductCardActions.tsx`](apps/web/src/components/product/ProductCardActions.tsx) | Passar `product.marketplace`, `product.price.amount`, `product.price.isStale` |
-| [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx) | Passar dados do `product` no CTA hero |
-| [`CollectionProductCard.tsx`](apps/web/src/components/product/CollectionProductCard.tsx) | Passar dados do produto |
+| Arquivo                                                                                  | Ação                                                                          |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`ProductCardActions.tsx`](apps/web/src/components/product/ProductCardActions.tsx)       | Passar `product.marketplace`, `product.price.amount`, `product.price.isStale` |
+| [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx)                  | Passar dados do `product` no CTA hero                                         |
+| [`CollectionProductCard.tsx`](apps/web/src/components/product/CollectionProductCard.tsx) | Passar dados do produto                                                       |
 
 **Fora do escopo desta entrega (nota no doc):** [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx) abre `/go` direto sem `AffiliateGoLink` — continua sem evento GA4 de origem contextual.
 
@@ -240,21 +240,21 @@ Atualizar [`docs/README.md`](docs/README.md) (índice) e [`docs/dev-setup.md`](d
 
 ## Arquivos principais
 
-| Ação | Arquivo |
-|------|---------|
-| Criar | `apps/web/src/lib/analytics.ts` |
-| Criar | `apps/web/src/components/analytics/GoogleAnalyticsProvider.tsx` |
-| Criar | `apps/web/src/components/analytics/AnalyticsProductView.tsx` |
-| Criar | `apps/web/src/components/analytics/AnalyticsArticleView.tsx` |
-| Editar | `apps/web/src/app/layout.tsx` |
-| Editar | `apps/web/src/components/product/AffiliateGoLink.tsx` |
-| Editar | `apps/web/src/components/product/ProductCardActions.tsx` |
-| Editar | `apps/web/src/components/product/CollectionProductCard.tsx` |
-| Editar | `apps/web/src/app/produtos/[slug]/page.tsx` |
-| Editar | `apps/web/src/app/artigos/[slug]/page.tsx` |
-| Editar | `apps/web/package.json` (dep `@next/third-parties`) |
-| Editar | `.env.example`, `docs/dev-setup.md`, `docs/README.md` |
-| Criar | `docs/ga4-analytics.md` |
+| Ação   | Arquivo                                                         |
+| ------ | --------------------------------------------------------------- |
+| Criar  | `apps/web/src/lib/analytics.ts`                                 |
+| Criar  | `apps/web/src/components/analytics/GoogleAnalyticsProvider.tsx` |
+| Criar  | `apps/web/src/components/analytics/AnalyticsProductView.tsx`    |
+| Criar  | `apps/web/src/components/analytics/AnalyticsArticleView.tsx`    |
+| Editar | `apps/web/src/app/layout.tsx`                                   |
+| Editar | `apps/web/src/components/product/AffiliateGoLink.tsx`           |
+| Editar | `apps/web/src/components/product/ProductCardActions.tsx`        |
+| Editar | `apps/web/src/components/product/CollectionProductCard.tsx`     |
+| Editar | `apps/web/src/app/produtos/[slug]/page.tsx`                     |
+| Editar | `apps/web/src/app/artigos/[slug]/page.tsx`                      |
+| Editar | `apps/web/package.json` (dep `@next/third-parties`)             |
+| Editar | `.env.example`, `docs/dev-setup.md`, `docs/README.md`           |
+| Criar  | `docs/ga4-analytics.md`                                         |
 
 ---
 

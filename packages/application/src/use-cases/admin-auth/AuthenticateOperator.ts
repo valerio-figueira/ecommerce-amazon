@@ -34,10 +34,7 @@ export class AuthenticateOperator {
       return err(new AuthenticationError());
     }
 
-    const passwordMatches = await this.passwordHasher.verify(
-      input.password,
-      operator.passwordHash,
-    );
+    const passwordMatches = await this.passwordHasher.verify(input.password, operator.passwordHash);
 
     if (!passwordMatches) {
       return err(new AuthenticationError());

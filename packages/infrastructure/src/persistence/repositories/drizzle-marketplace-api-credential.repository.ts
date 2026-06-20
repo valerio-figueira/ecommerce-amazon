@@ -21,7 +21,9 @@ import {
 export class DrizzleMarketplaceApiCredentialRepository implements MarketplaceApiCredentialRepository {
   constructor(private readonly db: DrizzleClient) {}
 
-  async findByMarketplace(marketplace: Marketplace): Promise<MarketplaceApiCredentialRecord | null> {
+  async findByMarketplace(
+    marketplace: Marketplace,
+  ): Promise<MarketplaceApiCredentialRecord | null> {
     const rows = await this.db
       .select()
       .from(schema.marketplaceApiCredentials)
@@ -60,7 +62,9 @@ export class DrizzleMarketplaceApiCredentialRepository implements MarketplaceApi
           publicMetadata: data.publicMetadata,
           ...(data.healthStatus !== undefined ? { healthStatus: data.healthStatus } : {}),
           ...(data.healthMessage !== undefined ? { healthMessage: data.healthMessage } : {}),
-          ...(data.lastHealthCheckAt !== undefined ? { lastHealthCheckAt: data.lastHealthCheckAt } : {}),
+          ...(data.lastHealthCheckAt !== undefined
+            ? { lastHealthCheckAt: data.lastHealthCheckAt }
+            : {}),
           updatedBy: data.updatedBy ?? null,
           updatedAt: new Date(),
         },

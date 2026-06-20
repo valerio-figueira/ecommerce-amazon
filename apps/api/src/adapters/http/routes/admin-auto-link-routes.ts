@@ -35,10 +35,7 @@ function handleAdminAutoLinkError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminAutoLinkRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminAutoLinkRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.get('/admin/internal-link-targets', async (request, reply) => {

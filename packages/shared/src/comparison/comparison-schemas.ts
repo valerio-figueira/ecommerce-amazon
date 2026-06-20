@@ -1,9 +1,16 @@
 import { z } from 'zod';
 
 import { toIsoDateTime } from '../admin/article-schemas.js';
-import { productPublicDetailSchema, productPublicListItemSchema } from '../admin/product-schemas.js';
+import {
+  productPublicDetailSchema,
+  productPublicListItemSchema,
+} from '../admin/product-schemas.js';
 
-import { comparisonSlugSchema, comparisonSourceSchema, comparisonStatusSchema } from '../admin/comparison-schemas.js';
+import {
+  comparisonSlugSchema,
+  comparisonSourceSchema,
+  comparisonStatusSchema,
+} from '../admin/comparison-schemas.js';
 
 export function resolveComparisonCanonicalPath(input: {
   canonicalPath?: string | undefined;

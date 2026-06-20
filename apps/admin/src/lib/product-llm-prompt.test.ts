@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  buildProductSeoLlmPrompt,
-  parseProductSeoLlmResponse,
-} from './product-llm-prompt';
+import { buildProductSeoLlmPrompt, parseProductSeoLlmResponse } from './product-llm-prompt';
 
 describe('buildProductSeoLlmPrompt', () => {
   it('includes product context and JSON output instructions', () => {
@@ -51,9 +48,7 @@ describe('parseProductSeoLlmResponse', () => {
   });
 
   it('accepts seoTitle and seoDescription aliases', () => {
-    const result = parseProductSeoLlmResponse(
-      '{"seoTitle":"Título","seoDescription":"Descrição"}',
-    );
+    const result = parseProductSeoLlmResponse('{"seoTitle":"Título","seoDescription":"Descrição"}');
 
     expect(result.metaTitle).toBe('Título');
     expect(result.metaDescription).toBe('Descrição');

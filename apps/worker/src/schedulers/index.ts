@@ -1,8 +1,5 @@
 import { Marketplace } from '@ecommerce-amazon/domain';
-import type {
-  MarketplaceJobData,
-  WorkerContainer,
-} from '@ecommerce-amazon/infrastructure';
+import type { MarketplaceJobData, WorkerContainer } from '@ecommerce-amazon/infrastructure';
 
 const BATCH_SIZE = 15;
 

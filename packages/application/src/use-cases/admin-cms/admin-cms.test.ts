@@ -64,7 +64,11 @@ describe('SavePageBlock', () => {
     });
     const pageCacheInvalidator = createMockPageCacheInvalidator();
 
-    const useCase = new SavePageBlock(pageRepository, pageCacheInvalidator, createMockPublicWebRevalidator());
+    const useCase = new SavePageBlock(
+      pageRepository,
+      pageCacheInvalidator,
+      createMockPublicWebRevalidator(),
+    );
     const result = await useCase.execute({
       pageId: PAGE_ID,
       type: BlockType.DYNAMIC_PRODUCT_GRID,
@@ -89,7 +93,11 @@ describe('SavePageBlock', () => {
     const pageRepository = createMockPageRepository({
       findPageById: vi.fn().mockResolvedValue(mockPage()),
     });
-    const useCase = new SavePageBlock(pageRepository, createMockPageCacheInvalidator(), createMockPublicWebRevalidator());
+    const useCase = new SavePageBlock(
+      pageRepository,
+      createMockPageCacheInvalidator(),
+      createMockPublicWebRevalidator(),
+    );
 
     const result = await useCase.execute({
       pageId: PAGE_ID,
@@ -138,9 +146,11 @@ describe('GetAdminPageLayout', () => {
 describe('ListAdminPages', () => {
   it('returns page summaries', async () => {
     const pageRepository = createMockPageRepository({
-      listPages: vi.fn().mockResolvedValue([
-        { id: PAGE_ID, slug: 'home', title: 'Home', status: PageStatus.PUBLISHED },
-      ]),
+      listPages: vi
+        .fn()
+        .mockResolvedValue([
+          { id: PAGE_ID, slug: 'home', title: 'Home', status: PageStatus.PUBLISHED },
+        ]),
     });
     const useCase = new ListAdminPages(pageRepository);
 
@@ -158,7 +168,11 @@ describe('DeletePageBlock', () => {
     const pageRepository = createMockPageRepository({
       findBlockById: vi.fn().mockResolvedValue(null),
     });
-    const useCase = new DeletePageBlock(pageRepository, createMockPageCacheInvalidator(), createMockPublicWebRevalidator());
+    const useCase = new DeletePageBlock(
+      pageRepository,
+      createMockPageCacheInvalidator(),
+      createMockPublicWebRevalidator(),
+    );
 
     const result = await useCase.execute({ blockId: BLOCK_A });
     expect(result.ok).toBe(false);
@@ -181,7 +195,11 @@ describe('DeletePageBlock', () => {
       deleteBlock: vi.fn().mockResolvedValue({ pageId: PAGE_ID, pageSlug: 'home' }),
     });
     const pageCacheInvalidator = createMockPageCacheInvalidator();
-    const useCase = new DeletePageBlock(pageRepository, pageCacheInvalidator, createMockPublicWebRevalidator());
+    const useCase = new DeletePageBlock(
+      pageRepository,
+      pageCacheInvalidator,
+      createMockPublicWebRevalidator(),
+    );
 
     const result = await useCase.execute({ blockId: BLOCK_A });
     expect(result.ok).toBe(true);
@@ -194,7 +212,11 @@ describe('UpdatePageBlocksOrder', () => {
     const pageRepository = createMockPageRepository({
       findPageById: vi.fn().mockResolvedValue(mockPage()),
     });
-    const useCase = new UpdatePageBlocksOrder(pageRepository, createMockPageCacheInvalidator(), createMockPublicWebRevalidator());
+    const useCase = new UpdatePageBlocksOrder(
+      pageRepository,
+      createMockPageCacheInvalidator(),
+      createMockPublicWebRevalidator(),
+    );
 
     const result = await useCase.execute({
       pageId: PAGE_ID,
@@ -216,7 +238,11 @@ describe('UpdatePageBlocksOrder', () => {
       updateBlocksOrder: vi.fn(),
     });
     const pageCacheInvalidator = createMockPageCacheInvalidator();
-    const useCase = new UpdatePageBlocksOrder(pageRepository, pageCacheInvalidator, createMockPublicWebRevalidator());
+    const useCase = new UpdatePageBlocksOrder(
+      pageRepository,
+      pageCacheInvalidator,
+      createMockPublicWebRevalidator(),
+    );
 
     const result = await useCase.execute({
       pageId: PAGE_ID,

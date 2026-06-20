@@ -10,9 +10,7 @@ type ProductGridFetchInput = {
   marketplace?: string;
 };
 
-export async function fetchProductGridPage(
-  input: ProductGridFetchInput,
-): Promise<ProductsPageDto> {
+export async function fetchProductGridPage(input: ProductGridFetchInput): Promise<ProductsPageDto> {
   const queryParams = new URLSearchParams();
   queryParams.set('pageSize', String(input.pageSize));
   if (input.categorySlug) queryParams.set('category', input.categorySlug);

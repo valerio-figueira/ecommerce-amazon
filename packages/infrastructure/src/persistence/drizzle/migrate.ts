@@ -26,10 +26,7 @@ async function runMigrations(): Promise<void> {
 
   const logger = createConsoleLogger();
   const env = loadEnv();
-  const migrationsFolder = path.join(
-    path.dirname(fileURLToPath(import.meta.url)),
-    'migrations',
-  );
+  const migrationsFolder = path.join(path.dirname(fileURLToPath(import.meta.url)), 'migrations');
 
   logger.info('Running database migrations', { migrationsFolder });
 

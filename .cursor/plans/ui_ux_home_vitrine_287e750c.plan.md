@@ -3,7 +3,7 @@ name: UI/UX Home Vitrine
 overview: Home totalmente customizável via CMS (page builder por blocos). Fase 1 = PageRenderer + API GET /pages/:slug + seed ESTORE; Admin apps/admin em fase posterior.
 todos:
   - id: cms-domain
-    content: "Modelar PageLayout + PageBlock + BlockType enum + Zod por tipo de bloco"
+    content: 'Modelar PageLayout + PageBlock + BlockType enum + Zod por tipo de bloco'
     status: pending
   - id: cms-api-read
     content: GET /pages/:slug + seed layout home ESTORE + cache Redis
@@ -12,7 +12,7 @@ todos:
     content: apps/web com PageRenderer + BlockRegistry (Next + Tailwind + shadcn)
     status: pending
   - id: block-components
-    content: "Blocos: hero_carousel, featured_product, product_grid, category_pills, hero_split, rich_text, banner, spacer"
+    content: 'Blocos: hero_carousel, featured_product, product_grid, category_pills, hero_split, rich_text, banner, spacer'
     status: pending
   - id: api-gaps
     content: GET /categories, wishlist DTO, sort products, CORS_ORIGINS
@@ -21,7 +21,7 @@ todos:
     content: Session + WishlistDrawer + click tracking
     status: pending
   - id: admin-cms-phase
-    content: "Fase 3: apps/admin CRUD, reorder, preview, publish (não fase 1)"
+    content: 'Fase 3: apps/admin CRUD, reorder, preview, publish (não fase 1)'
     status: pending
 isProject: false
 ---
@@ -47,10 +47,10 @@ Props guardam **referências** ao catálogo (`productSlug`, `categorySlug`); pre
 
 ## Fases
 
-| Fase | Entrega |
-|------|---------|
-| **1** | API leitura + seed ESTORE + web PageRenderer |
-| **2** | Detalhe, artigos, coleções |
+| Fase  | Entrega                                       |
+| ----- | --------------------------------------------- |
+| **1** | API leitura + seed ESTORE + web PageRenderer  |
+| **2** | Detalhe, artigos, coleções                    |
 | **3** | `apps/admin` — CRUD, drag-drop, draft/publish |
 
 Ver plano completo no workspace para wireframe seed, contrato API Admin e critérios de aceite.

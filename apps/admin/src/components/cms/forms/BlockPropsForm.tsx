@@ -2,7 +2,10 @@
 
 import type { Control } from 'react-hook-form';
 
-import type { CategoryBentoTileFormValue, HeroSlideFormValue } from '@/components/cms/props-forms/block-form-registry';
+import type {
+  CategoryBentoTileFormValue,
+  HeroSlideFormValue,
+} from '@/components/cms/props-forms/block-form-registry';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import { Input, Textarea } from '@/components/ui/input';
@@ -13,7 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 
 export type BlockFormValues = {
   slides?: HeroSlideFormValue[];
@@ -120,7 +130,11 @@ export function BannerFormFields({
             <FormItem>
               <FormLabel>Descrição da imagem</FormLabel>
               <FormControl>
-                <Input {...field} value={readString(field.value)} placeholder="Ex: Promoção de verão" />
+                <Input
+                  {...field}
+                  value={readString(field.value)}
+                  placeholder="Ex: Promoção de verão"
+                />
               </FormControl>
               <FormDescription>Texto alternativo para acessibilidade e SEO.</FormDescription>
               <FormMessage />
@@ -137,7 +151,11 @@ export function BannerFormFields({
             <FormItem>
               <FormLabel>Para onde o banner leva?</FormLabel>
               <FormControl>
-                <Input {...field} value={readString(field.value)} placeholder="https://… ou /colecoes/slug" />
+                <Input
+                  {...field}
+                  value={readString(field.value)}
+                  placeholder="https://… ou /colecoes/slug"
+                />
               </FormControl>
               <FormDescription>Página interna ou link externo ao clicar no banner.</FormDescription>
               <FormMessage />
@@ -220,8 +238,8 @@ export function UnsupportedBlockForm({
         Edição amigável em breve
       </p>
       <p className="mx-auto mt-2 max-w-sm text-xs text-[var(--admin-text-muted)]">
-        O bloco <strong>{blockTypeLabel}</strong> ainda não possui formulário visual nesta fase.
-        Em breve você poderá configurá-lo por aqui. Consulte{' '}
+        O bloco <strong>{blockTypeLabel}</strong> ainda não possui formulário visual nesta fase. Em
+        breve você poderá configurá-lo por aqui. Consulte{' '}
         <code className="text-[10px]">docs/admin-cms-blocks-phase2.md</code> para o roadmap.
       </p>
     </div>

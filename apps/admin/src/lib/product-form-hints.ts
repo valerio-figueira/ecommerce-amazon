@@ -22,8 +22,7 @@ export const PRODUCT_FORM_HINTS = {
     'Nota média do marketplace (0 a 5). Exibida na vitrine e usada no selo "Top avaliado" (≥ 4,5 com 50+ avaliações).',
   reviewCount:
     'Quantidade de avaliações no marketplace. Complementa a nota para estrelas e selos na vitrine.',
-  tags:
-    'Etiquetas internas para organização (ex.: gamer, home-office). Não aparecem na vitrine pública no MVP.',
+  tags: 'Etiquetas internas para organização (ex.: gamer, home-office). Não aparecem na vitrine pública no MVP.',
   strikethroughPrice:
     'Preço de referência opcional (ex.: "De R$"). Só exibido se "Exibir valor numérico" estiver ativo e o preço não estiver desatualizado.',
   price:

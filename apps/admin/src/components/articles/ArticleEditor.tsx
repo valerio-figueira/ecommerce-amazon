@@ -7,9 +7,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { useEffect, useRef, useState } from 'react';
 
 import { RichTextEditorHtmlPane } from '@/components/editor/RichTextEditorHtmlPane';
-import {
-  RichTextEditorShell,
-} from '@/components/editor/RichTextEditorShell';
+import { RichTextEditorShell } from '@/components/editor/RichTextEditorShell';
 import type { RichTextEditorMode } from '@/components/editor/RichTextEditorModeTabs';
 import { listProductsClient, type ProductPickerOption } from '@/lib/api/cms-pages-client';
 
@@ -94,9 +92,7 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
     if (nextMode === mode) return;
 
     if (nextMode === 'html') {
-      const serialized = editor
-        ? serializeArticleBody(editor.getHTML())
-        : value;
+      const serialized = editor ? serializeArticleBody(editor.getHTML()) : value;
       setHtmlDraft(serialized);
       setMode('html');
       return;
@@ -171,7 +167,10 @@ export function ArticleEditor({ value, onChange }: ArticleEditorProps): React.JS
           />
         }
         visualContent={
-          <EditorContent editor={editor} className="admin-rich-editor__prose admin-rich-editor__prose--article" />
+          <EditorContent
+            editor={editor}
+            className="admin-rich-editor__prose admin-rich-editor__prose--article"
+          />
         }
         htmlContent={
           <RichTextEditorHtmlPane

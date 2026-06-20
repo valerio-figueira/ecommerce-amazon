@@ -49,9 +49,9 @@ describe('GetClicksByMarketplace', () => {
       AnalyticsRepository,
       'getClicksByMarketplace' | 'getVisibleProductCountByMarketplace'
     > = {
-      getClicksByMarketplace: vi.fn().mockResolvedValue([
-        { marketplace: 'amazon_br', count: 10, sharePercent: 100 },
-      ]),
+      getClicksByMarketplace: vi
+        .fn()
+        .mockResolvedValue([{ marketplace: 'amazon_br', count: 10, sharePercent: 100 }]),
       getVisibleProductCountByMarketplace: vi.fn().mockResolvedValue([
         { marketplace: 'amazon_br', count: 8, sharePercent: 80 },
         { marketplace: 'mercadolivre_br', count: 2, sharePercent: 20 },

@@ -39,14 +39,16 @@ describe('ResolveAffiliateRedirect', () => {
     });
 
     const affiliateAccountRepository = {
-      findByMarketplace: vi.fn().mockResolvedValue(
-        new AffiliateAccount(
-          'e1111111-1111-4111-8111-111111111111',
-          Marketplace.AMAZON_BR,
-          'vitrine-21',
-          AffiliateAccountStatus.ACTIVE,
+      findByMarketplace: vi
+        .fn()
+        .mockResolvedValue(
+          new AffiliateAccount(
+            'e1111111-1111-4111-8111-111111111111',
+            Marketplace.AMAZON_BR,
+            'vitrine-21',
+            AffiliateAccountStatus.ACTIVE,
+          ),
         ),
-      ),
     };
 
     const affiliateLinkBuilder = {
@@ -100,14 +102,16 @@ describe('ResolveAffiliateRedirect', () => {
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
       {
-        findByMarketplace: vi.fn().mockResolvedValue(
-          new AffiliateAccount(
-            'e2222222-2222-4222-8222-222222222222',
-            Marketplace.SHOPEE_BR,
-            'pending-tag',
-            AffiliateAccountStatus.PENDING,
+        findByMarketplace: vi
+          .fn()
+          .mockResolvedValue(
+            new AffiliateAccount(
+              'e2222222-2222-4222-8222-222222222222',
+              Marketplace.SHOPEE_BR,
+              'pending-tag',
+              AffiliateAccountStatus.PENDING,
+            ),
           ),
-        ),
       },
       {
         build: vi.fn(),
@@ -161,18 +165,22 @@ describe('ResolveAffiliateRedirect', () => {
       createdAt: new Date(),
     });
 
-    const buildWithTracking = vi.fn().mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21');
+    const buildWithTracking = vi
+      .fn()
+      .mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21');
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
       {
-        findByMarketplace: vi.fn().mockResolvedValue(
-          new AffiliateAccount(
-            'e1111111-1111-4111-8111-111111111111',
-            Marketplace.AMAZON_BR,
-            'vitrine-21',
-            AffiliateAccountStatus.ACTIVE,
+        findByMarketplace: vi
+          .fn()
+          .mockResolvedValue(
+            new AffiliateAccount(
+              'e1111111-1111-4111-8111-111111111111',
+              Marketplace.AMAZON_BR,
+              'vitrine-21',
+              AffiliateAccountStatus.ACTIVE,
+            ),
           ),
-        ),
       },
       { build: vi.fn(), buildBatchCheckout: vi.fn(), buildWithTracking },
       { isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true) },

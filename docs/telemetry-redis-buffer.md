@@ -26,40 +26,40 @@ flowchart LR
 
 ## Chaves Redis (DB `REDIS_TELEMETRY_DB`, default 2)
 
-| Chave | Tipo | Uso |
-|-------|------|-----|
-| `telemetry:buffer:clicks` | LIST | JSON de cliques aguardando flush |
-| `telemetry:buffer:clicks:processing` | LIST | Batch em processamento (at-least-once) |
-| `telemetry:buffer:engagement` | LIST | JSON de engajamento aguardando flush |
-| `telemetry:buffer:engagement:processing` | LIST | Batch em processamento |
-| `telemetry:pending:events:day:{date}:total` | STRING | Total pending (badge admin) |
-| `telemetry:pending:clicks:day:{date}:*` | STRING | Contadores por origin/placement/block/page |
-| `telemetry:pending:engagement:day:{date}:*` | STRING | Contadores por tipo e artigo |
-| `telemetry:pending:pagepaths` | HASH | Map hash → pagePath para leitura |
+| Chave                                       | Tipo   | Uso                                        |
+| ------------------------------------------- | ------ | ------------------------------------------ |
+| `telemetry:buffer:clicks`                   | LIST   | JSON de cliques aguardando flush           |
+| `telemetry:buffer:clicks:processing`        | LIST   | Batch em processamento (at-least-once)     |
+| `telemetry:buffer:engagement`               | LIST   | JSON de engajamento aguardando flush       |
+| `telemetry:buffer:engagement:processing`    | LIST   | Batch em processamento                     |
+| `telemetry:pending:events:day:{date}:total` | STRING | Total pending (badge admin)                |
+| `telemetry:pending:clicks:day:{date}:*`     | STRING | Contadores por origin/placement/block/page |
+| `telemetry:pending:engagement:day:{date}:*` | STRING | Contadores por tipo e artigo               |
+| `telemetry:pending:pagepaths`               | HASH   | Map hash → pagePath para leitura           |
 
 Contadores pending são decrementados **somente** após INSERT bem-sucedido no PostgreSQL.
 
 ## Variáveis de ambiente
 
-| Variável | Default | Descrição |
-|----------|---------|-----------|
-| `REDIS_TELEMETRY_DB` | `2` | DB Redis dedicado ao buffer |
-| `TELEMETRY_BUFFER_ENABLED` | `true` | `false` = INSERT direto no PG (dev/test) |
-| `TELEMETRY_FLUSH_BATCH_SIZE` | `5000` | Eventos por batch no worker |
-| `TELEMETRY_FLUSH_CRON` | `*/5 * * * *` | Cron BullMQ para flush |
-| `TELEMETRY_BUFFER_MAX_LEN` | `100000` | Cap por lista Redis |
+| Variável                     | Default       | Descrição                                |
+| ---------------------------- | ------------- | ---------------------------------------- |
+| `REDIS_TELEMETRY_DB`         | `2`           | DB Redis dedicado ao buffer              |
+| `TELEMETRY_BUFFER_ENABLED`   | `true`        | `false` = INSERT direto no PG (dev/test) |
+| `TELEMETRY_FLUSH_BATCH_SIZE` | `5000`        | Eventos por batch no worker              |
+| `TELEMETRY_FLUSH_CRON`       | `*/5 * * * *` | Cron BullMQ para flush                   |
+| `TELEMETRY_BUFFER_MAX_LEN`   | `100000`      | Cap por lista Redis                      |
 
 ## Arquivos-chave
 
-| Camada | Arquivo |
-|--------|---------|
-| Port | `packages/domain/src/repositories/TelemetryBufferStore.ts` |
-| Buffer Redis | `packages/infrastructure/src/telemetry/redis-telemetry-buffer.store.ts` |
-| Repos buffered | `packages/infrastructure/src/telemetry/redis-buffered-event.repositories.ts` |
-| Merge admin | `packages/infrastructure/src/persistence/repositories/composite-analytics.repository.ts` |
-| Flush UC | `packages/application/src/use-cases/events/FlushTelemetryBuffer.ts` |
-| Worker fila | `apps/worker` → `telemetry_flush` |
-| DI API | `packages/infrastructure/src/di/api-container.ts` |
+| Camada         | Arquivo                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| Port           | `packages/domain/src/repositories/TelemetryBufferStore.ts`                               |
+| Buffer Redis   | `packages/infrastructure/src/telemetry/redis-telemetry-buffer.store.ts`                  |
+| Repos buffered | `packages/infrastructure/src/telemetry/redis-buffered-event.repositories.ts`             |
+| Merge admin    | `packages/infrastructure/src/persistence/repositories/composite-analytics.repository.ts` |
+| Flush UC       | `packages/application/src/use-cases/events/FlushTelemetryBuffer.ts`                      |
+| Worker fila    | `apps/worker` → `telemetry_flush`                                                        |
+| DI API         | `packages/infrastructure/src/di/api-container.ts`                                        |
 
 ## Como testar
 
@@ -86,14 +86,14 @@ npm run test -w @ecommerce-amazon/infrastructure -- telemetry
 
 ## Runbook
 
-| Situação | Ação |
-|----------|------|
-| Worker parado | Eventos acumulam no Redis; dashboard ainda mostra pending. Subir worker. |
-| Top produtos/marketplace defasados vs KPI total | Agregações PG sem merge do buffer (corrigido via composite analytics) | Aguardar flush ou verificar worker |
-| Cliques somem após flush | `origin=redirect_go` — link `/go` sem atribuição | Usar `AffiliateGoLink` com `origin` + `placement` |
-| Redis cheio | Verificar `TELEMETRY_BUFFER_MAX_LEN`; aumentar frequência de flush ou cap. |
-| Dev sem worker | `TELEMETRY_BUFFER_ENABLED=false` no `.env` |
-| Perda Redis | Processing list + requeue; eventos em processing são reenfileirados em falha PG |
+| Situação                                        | Ação                                                                            |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Worker parado                                   | Eventos acumulam no Redis; dashboard ainda mostra pending. Subir worker.        |
+| Top produtos/marketplace defasados vs KPI total | Agregações PG sem merge do buffer (corrigido via composite analytics)           | Aguardar flush ou verificar worker                |
+| Cliques somem após flush                        | `origin=redirect_go` — link `/go` sem atribuição                                | Usar `AffiliateGoLink` com `origin` + `placement` |
+| Redis cheio                                     | Verificar `TELEMETRY_BUFFER_MAX_LEN`; aumentar frequência de flush ou cap.      |
+| Dev sem worker                                  | `TELEMETRY_BUFFER_ENABLED=false` no `.env`                                      |
+| Perda Redis                                     | Processing list + requeue; eventos em processing são reenfileirados em falha PG |
 
 ## Lag esperado
 

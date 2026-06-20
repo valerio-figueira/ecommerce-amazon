@@ -29,13 +29,13 @@ isProject: false
 
 Em [`BlockPropsSheet.tsx`](apps/admin/src/components/cms/BlockPropsSheet.tsx), apenas 4 tipos estão em `EDITABLE_BLOCK_TYPES` ([`block-type-labels.ts`](apps/admin/src/components/cms/block-type-labels.ts)). Os demais caem em [`UnsupportedBlockForm`](apps/admin/src/components/cms/forms/BlockPropsForm.tsx) (dump JSON) — incluindo blocos presentes na home seed:
 
-| Bloco seed home | Status hoje |
-|-----------------|-------------|
-| `HERO_CAROUSEL` | Read-only |
-| `CATEGORY_PILLS` | Read-only |
-| `PRODUCT_GRID` | Read-only |
-| `FEATURED_PRODUCT` | Read-only |
-| `DYNAMIC_PRODUCT_GRID` | UX amigável (feito) |
+| Bloco seed home                   | Status hoje                |
+| --------------------------------- | -------------------------- |
+| `HERO_CAROUSEL`                   | Read-only                  |
+| `CATEGORY_PILLS`                  | Read-only                  |
+| `PRODUCT_GRID`                    | Read-only                  |
+| `FEATURED_PRODUCT`                | Read-only                  |
+| `DYNAMIC_PRODUCT_GRID`            | UX amigável (feito)        |
 | `BANNER` / `RICH_TEXT` / `SPACER` | Editável, mas copy técnica |
 
 Contratos Zod em [`block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) **já existem** — fase 1 é 100% admin UI + clientes de leitura já expostos (`GET /categories`, `GET /products`).
@@ -127,12 +127,12 @@ Arquivo: [`CategoryPillsForm.tsx`](apps/admin/src/components/cms/props-forms/Cat
 
 Arquivo: [`ProductGridForm.tsx`](apps/admin/src/components/cms/props-forms/ProductGridForm.tsx) — espelha padrão DynamicGridForm
 
-| Seção | Campos | UI leigo |
-|-------|--------|----------|
-| Texto | `title` | Input + hint editorial |
-| Filtros | `categorySlug`, `marketplace` | Select categoria (incl. "Todas") + Select marketplace (Todas / Amazon / Shopee) |
-| Ordenação | `sort` | Select: "Melhor curadoria" / "Preço atualizado recentemente" |
-| Layout | `pageSize`, `columns` | Reutilizar `ProductLimitPicker` adaptado (presets 8/12/16/24) + chips 2 ou 4 colunas |
+| Seção     | Campos                        | UI leigo                                                                             |
+| --------- | ----------------------------- | ------------------------------------------------------------------------------------ |
+| Texto     | `title`                       | Input + hint editorial                                                               |
+| Filtros   | `categorySlug`, `marketplace` | Select categoria (incl. "Todas") + Select marketplace (Todas / Amazon / Shopee)      |
+| Ordenação | `sort`                        | Select: "Melhor curadoria" / "Preço atualizado recentemente"                         |
+| Layout    | `pageSize`, `columns`         | Reutilizar `ProductLimitPicker` adaptado (presets 8/12/16/24) + chips 2 ou 4 colunas |
 
 ---
 
@@ -164,12 +164,12 @@ Migrar para `CmsFormSection` + copy leigo (sem mudar schema):
 
 ## Componentes compartilhados (novos)
 
-| Componente | Função |
-|------------|--------|
-| [`ProductPicker.tsx`](apps/admin/src/components/cms/props-forms/ProductPicker.tsx) | Select + filtro local; props `value` slug, `onChange` |
-| [`CategoryMultiSelect.tsx`](apps/admin/src/components/cms/props-forms/CategoryMultiSelect.tsx) | Checkboxes ordenáveis para `categorySlugs[]` |
-| [`SlideRepeater.tsx`](apps/admin/src/components/cms/props-forms/SlideRepeater.tsx) | UI add/remove slides para carousel |
-| [`block-form-registry.ts`](apps/admin/src/components/cms/props-forms/block-form-registry.ts) | Mapa tipo → schema + componente + defaults |
+| Componente                                                                                     | Função                                                |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [`ProductPicker.tsx`](apps/admin/src/components/cms/props-forms/ProductPicker.tsx)             | Select + filtro local; props `value` slug, `onChange` |
+| [`CategoryMultiSelect.tsx`](apps/admin/src/components/cms/props-forms/CategoryMultiSelect.tsx) | Checkboxes ordenáveis para `categorySlugs[]`          |
+| [`SlideRepeater.tsx`](apps/admin/src/components/cms/props-forms/SlideRepeater.tsx)             | UI add/remove slides para carousel                    |
+| [`block-form-registry.ts`](apps/admin/src/components/cms/props-forms/block-form-registry.ts)   | Mapa tipo → schema + componente + defaults            |
 
 **Cliente API:** [`listProductsClient`](apps/admin/src/lib/api/cms-pages-client.ts) parseando `{ items, total, page, pageSize }` (mesmo contrato de [`GET /products`](docs/api-rest.md)).
 

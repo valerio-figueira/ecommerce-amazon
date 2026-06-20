@@ -20,17 +20,10 @@ import { Label } from '@/components/ui/label';
 import { buildCategoryPathLabel } from '@/lib/api/categories-utils';
 import { useAdminCategoryOptions } from '@/hooks/useAdminCategoryOptions';
 import type { ProductFormValues } from '@/lib/product-form-values';
-import {
-  buildProductSeoLlmPrompt,
-  parseProductSeoLlmResponse,
-} from '@/lib/product-llm-prompt';
-import {
-  buildProductMetaDescription,
-  buildProductMetaTitle,
-} from '@ecommerce-amazon/shared/seo';
+import { buildProductSeoLlmPrompt, parseProductSeoLlmResponse } from '@/lib/product-llm-prompt';
+import { buildProductMetaDescription, buildProductMetaTitle } from '@ecommerce-amazon/shared/seo';
 
-const TOOLTIP_HINT =
-  'Gerar Meta Title e Meta Description com prompt inteligente para LLM externa';
+const TOOLTIP_HINT = 'Gerar Meta Title e Meta Description com prompt inteligente para LLM externa';
 
 export function ProductSeoLlmPromptHelper(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
@@ -114,11 +107,15 @@ export function ProductSeoLlmPromptHelper(): React.JSX.Element {
         shouldDirty: true,
         shouldValidate: true,
       });
-      adminToast.success('Meta Title e Meta Description aplicados. Revise os contadores antes de salvar.');
+      adminToast.success(
+        'Meta Title e Meta Description aplicados. Revise os contadores antes de salvar.',
+      );
       setOpen(false);
       setLlmResponse('');
     } catch (error) {
-      adminToast.error(error instanceof Error ? error.message : 'Não foi possível aplicar a resposta.');
+      adminToast.error(
+        error instanceof Error ? error.message : 'Não foi possível aplicar a resposta.',
+      );
     }
   };
 
@@ -182,8 +179,8 @@ export function ProductSeoLlmPromptHelper(): React.JSX.Element {
             Aceita chaves <code className="text-[var(--admin-navy)]">metaTitle</code> /{' '}
             <code className="text-[var(--admin-navy)]">metaDescription</code> (ou{' '}
             <code className="text-[var(--admin-navy)]">seoTitle</code> /{' '}
-            <code className="text-[var(--admin-navy)]">seoDescription</code>). Revise sempre antes de
-            publicar.
+            <code className="text-[var(--admin-navy)]">seoDescription</code>). Revise sempre antes
+            de publicar.
           </p>
         </div>
 

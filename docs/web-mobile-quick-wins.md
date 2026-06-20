@@ -61,19 +61,19 @@ Comportamento com preço stale: mesmo CTA "Ver preço na {marketplace}" (sem val
 
 ## Arquivos-chave
 
-| Arquivo | Mudança |
-|---------|---------|
-| `apps/web/src/app/categorias/[slug]/page.tsx` | Grid 1 col mobile |
-| `apps/web/src/components/loading/ProductGridSkeleton.tsx` | Skeleton alinhado |
-| `apps/web/src/components/layout/Footer.tsx` | Link Artigos |
-| `apps/web/src/components/layout/CategoryCatalogDrawer.tsx` | Seção Explorar |
-| `apps/web/src/components/product/ProductDetailStickyCta.tsx` | Novo componente |
-| `apps/web/src/app/produtos/[slug]/page.tsx` | Sticky CTA, breadcrumb scroll, padding inferior |
-| `apps/web/src/components/product/ProductImageGallery.tsx` | Thumbnails scroll |
-| `apps/web/src/components/product/ProductCardActions.tsx` | `text-xs` em compact |
-| `apps/web/src/app/globals.css` | `.pb-safe`, drawer safe-area |
-| `apps/web/src/app/layout.tsx` | Viewport export |
-| `apps/web/src/components/legal/CookieConsentProvider.tsx` | `pb-safe` no banner |
+| Arquivo                                                      | Mudança                                         |
+| ------------------------------------------------------------ | ----------------------------------------------- |
+| `apps/web/src/app/categorias/[slug]/page.tsx`                | Grid 1 col mobile                               |
+| `apps/web/src/components/loading/ProductGridSkeleton.tsx`    | Skeleton alinhado                               |
+| `apps/web/src/components/layout/Footer.tsx`                  | Link Artigos                                    |
+| `apps/web/src/components/layout/CategoryCatalogDrawer.tsx`   | Seção Explorar                                  |
+| `apps/web/src/components/product/ProductDetailStickyCta.tsx` | Novo componente                                 |
+| `apps/web/src/app/produtos/[slug]/page.tsx`                  | Sticky CTA, breadcrumb scroll, padding inferior |
+| `apps/web/src/components/product/ProductImageGallery.tsx`    | Thumbnails scroll                               |
+| `apps/web/src/components/product/ProductCardActions.tsx`     | `text-xs` em compact                            |
+| `apps/web/src/app/globals.css`                               | `.pb-safe`, drawer safe-area                    |
+| `apps/web/src/app/layout.tsx`                                | Viewport export                                 |
+| `apps/web/src/components/legal/CookieConsentProvider.tsx`    | `pb-safe` no banner                             |
 
 ## Como testar
 

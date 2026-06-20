@@ -10,10 +10,7 @@ type ProductImageGalleryProps = {
   alt: string;
 };
 
-export function ProductImageGallery({
-  images,
-  alt,
-}: ProductImageGalleryProps): React.JSX.Element {
+export function ProductImageGallery({ images, alt }: ProductImageGalleryProps): React.JSX.Element {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedImage = images[selectedIndex];
 
@@ -52,13 +49,7 @@ export function ProductImageGallery({
                   : 'border-gray-200 hover:border-gray-300',
               )}
             >
-              <RemoteImage
-                src={image}
-                alt=""
-                fill
-                className="object-contain"
-                sizes="64px"
-              />
+              <RemoteImage src={image} alt="" fill className="object-contain" sizes="64px" />
             </button>
           ))}
         </div>

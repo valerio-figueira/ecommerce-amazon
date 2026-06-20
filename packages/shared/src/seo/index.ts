@@ -46,10 +46,7 @@ export {
   type NotFoundMetadata,
   type SiteMetadata,
 } from './site-metadata.js';
-export {
-  buildComparisonPageJsonLd,
-  type ComparisonJsonLdInput,
-} from './comparison-json-ld.js';
+export { buildComparisonPageJsonLd, type ComparisonJsonLdInput } from './comparison-json-ld.js';
 export {
   buildAboutPageJsonLd,
   buildArticleJsonLd,

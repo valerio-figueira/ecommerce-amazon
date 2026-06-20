@@ -63,9 +63,7 @@ export function ArticleClusterCarousel({
   return (
     <section className="mt-12 overflow-hidden" aria-label="Artigos do guia">
       <div className="mb-4 flex flex-col gap-1">
-        <h2 className="text-xl font-semibold text-neutral-900">
-          Explore o guia: {cluster.name}
-        </h2>
+        <h2 className="text-xl font-semibold text-neutral-900">Explore o guia: {cluster.name}</h2>
         {cluster.role === 'spoke' ? (
           <Link
             href={`/artigos/${cluster.pilarArticle.slug}`}

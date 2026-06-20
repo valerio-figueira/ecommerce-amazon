@@ -14,8 +14,5 @@ export function readTooltipSharePercent(item: unknown): number | undefined {
 
 export function formatCountWithShare(value: unknown, item: unknown): [string, string] {
   const share = readTooltipSharePercent(item);
-  return [
-    `${String(value)} cliques${typeof share === 'number' ? ` (${share}%)` : ''}`,
-    'Total',
-  ];
+  return [`${String(value)} cliques${typeof share === 'number' ? ` (${share}%)` : ''}`, 'Total'];
 }

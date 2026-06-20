@@ -24,7 +24,9 @@ export async function listContentClustersClient(): Promise<ContentClusterAdminSu
 }
 
 export async function getContentClusterClient(id: string) {
-  const response = await adminClientFetch(`/api/admin/content-clusters/${id}`, { cache: 'no-store' });
+  const response = await adminClientFetch(`/api/admin/content-clusters/${id}`, {
+    cache: 'no-store',
+  });
   if (!response.ok) {
     throw new Error('Falha ao carregar cluster');
   }
@@ -36,7 +38,9 @@ export async function getContentClusterClient(id: string) {
   return parsed.data;
 }
 
-export async function createContentClusterClient(body: CreateContentClusterBody): Promise<{ id: string }> {
+export async function createContentClusterClient(
+  body: CreateContentClusterBody,
+): Promise<{ id: string }> {
   const parsedBody = createContentClusterBodySchema.parse(body);
   const response = await adminClientFetch('/api/admin/content-clusters', {
     method: 'POST',

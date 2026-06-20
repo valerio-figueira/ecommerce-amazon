@@ -53,7 +53,9 @@ const DEFAULT_TILE: CategoryBentoTileFormValue = {
 
 function readTileList(value: unknown): CategoryBentoTileFormValue[] {
   if (!Array.isArray(value)) return [];
-  return value.filter((item): item is CategoryBentoTileFormValue => typeof item === 'object' && item !== null);
+  return value.filter(
+    (item): item is CategoryBentoTileFormValue => typeof item === 'object' && item !== null,
+  );
 }
 
 type BentoTileCardProps = {

@@ -49,7 +49,9 @@ export const marketplaceCredentialsListResponseSchema = z.object({
 
 export const marketplaceConnectivityTestBodySchema = z
   .object({
-    credentials: z.union([amazonStaticCredentialsBodySchema, shopeeStaticCredentialsBodySchema]).optional(),
+    credentials: z
+      .union([amazonStaticCredentialsBodySchema, shopeeStaticCredentialsBodySchema])
+      .optional(),
   })
   .optional();
 

@@ -25,6 +25,10 @@ export function ComparisonVolatilePrice({
   }
 
   return (
-    <PriceDisplay price={product.price} strikethrough={product.price.strikethrough} compact={compact} />
+    <PriceDisplay
+      price={product.price}
+      strikethrough={product.price.strikethrough}
+      compact={compact}
+    />
   );
 }

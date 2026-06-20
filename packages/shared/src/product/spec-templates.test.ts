@@ -4,11 +4,9 @@ import { resolveSpecTemplateForSlugChain } from './spec-templates.js';
 
 describe('resolveSpecTemplateForSlugChain', () => {
   it('returns leaf template when slug chain includes a matching leaf', () => {
-    expect(resolveSpecTemplateForSlugChain(['games', 'perifericos', 'teclados-mecanicos'])).toEqual([
-      'Switches',
-      'Layout',
-      'Conexão',
-    ]);
+    expect(resolveSpecTemplateForSlugChain(['games', 'perifericos', 'teclados-mecanicos'])).toEqual(
+      ['Switches', 'Layout', 'Conexão'],
+    );
   });
 
   it('falls back to parent slug when leaf has no template', () => {

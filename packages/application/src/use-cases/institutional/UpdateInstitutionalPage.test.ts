@@ -2,7 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { ZodError } from 'zod';
 
 import { EntityNotFoundError, PageKind, PageStatus } from '@ecommerce-amazon/domain';
-import { buildDefaultAboutPageContent, parseAboutPageContent } from '@ecommerce-amazon/shared/about';
+import {
+  buildDefaultAboutPageContent,
+  parseAboutPageContent,
+} from '@ecommerce-amazon/shared/about';
 import { createBrandConfig } from '@ecommerce-amazon/shared/config/brand';
 
 import {
@@ -108,10 +111,7 @@ describe('UpdateInstitutionalPage', () => {
     const pageRepository = createMockPageRepository();
     vi.mocked(pageRepository.findInstitutionalBySlug).mockResolvedValue(null);
 
-    const useCase = new UpdateInstitutionalPage(
-      pageRepository,
-      createMockPublicWebRevalidator(),
-    );
+    const useCase = new UpdateInstitutionalPage(pageRepository, createMockPublicWebRevalidator());
 
     await expect(
       useCase.execute({

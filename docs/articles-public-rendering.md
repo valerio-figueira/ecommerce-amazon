@@ -46,23 +46,23 @@ parseArticleShortcodes(linkedHtml)
 
 ## Arquivos-chave
 
-| Path | Função |
-|------|--------|
-| `apps/web/src/app/artigos/[slug]/page.tsx` | RSC, metadata, JSON-LD, consome `embeddedProducts` |
-| `apps/web/src/components/articles/ArticleBody.tsx` | `prose` único + embeds product/compare |
-| `apps/web/src/components/articles/ComparisonTable.tsx` | Tabela comparativa responsiva |
-| `apps/web/src/components/articles/ArticleProductEmbed.tsx` | Card editorial |
-| `apps/web/src/components/ui/table.tsx` | Primitives shadcn Table |
-| `packages/shared/src/content/article-shortcodes.ts` | Parser `[[product:]]` e `[[compare:]]` |
-| `packages/application/src/use-cases/content/GetArticleWithEmbeds.ts` | Resolve produtos embutidos |
-| `apps/admin/src/components/articles/CompareInsertModal.tsx` | Helper admin para gerar shortcode |
+| Path                                                                 | Função                                             |
+| -------------------------------------------------------------------- | -------------------------------------------------- |
+| `apps/web/src/app/artigos/[slug]/page.tsx`                           | RSC, metadata, JSON-LD, consome `embeddedProducts` |
+| `apps/web/src/components/articles/ArticleBody.tsx`                   | `prose` único + embeds product/compare             |
+| `apps/web/src/components/articles/ComparisonTable.tsx`               | Tabela comparativa responsiva                      |
+| `apps/web/src/components/articles/ArticleProductEmbed.tsx`           | Card editorial                                     |
+| `apps/web/src/components/ui/table.tsx`                               | Primitives shadcn Table                            |
+| `packages/shared/src/content/article-shortcodes.ts`                  | Parser `[[product:]]` e `[[compare:]]`             |
+| `packages/application/src/use-cases/content/GetArticleWithEmbeds.ts` | Resolve produtos embutidos                         |
+| `apps/admin/src/components/articles/CompareInsertModal.tsx`          | Helper admin para gerar shortcode                  |
 
 ## API pública
 
-| Rota | Cache | Resposta |
-|------|-------|----------|
+| Rota                  | Cache        | Resposta                                                                 |
+| --------------------- | ------------ | ------------------------------------------------------------------------ |
 | `GET /articles/:slug` | 15 min Redis | `ArticlePublicDetail` + `embeddedProducts` (mapa slug → produto ou null) |
-| `GET /seo/auto-links` | 1 h Redis | `{ items: [{ keyword, targetUrl, maxMatches }] }` |
+| `GET /seo/auto-links` | 1 h Redis    | `{ items: [{ keyword, targetUrl, maxMatches }] }`                        |
 
 Auto-linking ocorre **somente na vitrine** (não na API), com classes `text-emerald-600 underline font-medium hover:text-emerald-700`.
 
@@ -83,10 +83,10 @@ npm run dev -w @ecommerce-amazon/admin
 
 Quando o artigo pertence a um cluster publicado, a página inclui:
 
-| Componente | Quando | Posição |
-|------------|--------|---------|
-| `ArticleSeoAnchor` | Artigo é **pilar** e há satélites publicados | Entre hero e corpo |
-| `ArticleClusterCarousel` | ≥2 membros publicados no cluster | Antes de `ArticleRelatedGrid` |
+| Componente               | Quando                                       | Posição                       |
+| ------------------------ | -------------------------------------------- | ----------------------------- |
+| `ArticleSeoAnchor`       | Artigo é **pilar** e há satélites publicados | Entre hero e corpo            |
+| `ArticleClusterCarousel` | ≥2 membros publicados no cluster             | Antes de `ArticleRelatedGrid` |
 
 Ordem dos satélites: `publishedAt ASC`. JSON-LD `@graph` inclui `ItemList` no pilar.
 

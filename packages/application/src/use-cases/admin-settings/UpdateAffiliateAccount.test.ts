@@ -46,30 +46,34 @@ describe('UpdateAffiliateAccount', () => {
   it('activates account when checklist is confirmed', async () => {
     const affiliateAccountRepository = {
       findById: vi.fn().mockResolvedValue(account),
-      findAll: vi.fn().mockResolvedValue([
-        new AffiliateAccount(
-          account.id,
-          account.marketplace,
-          account.affiliateTag,
-          AffiliateAccountStatus.ACTIVE,
-          'admin@vitrine.local',
-          new Date(),
-          'Evidência de teste',
-        ),
-      ]),
+      findAll: vi
+        .fn()
+        .mockResolvedValue([
+          new AffiliateAccount(
+            account.id,
+            account.marketplace,
+            account.affiliateTag,
+            AffiliateAccountStatus.ACTIVE,
+            'admin@vitrine.local',
+            new Date(),
+            'Evidência de teste',
+          ),
+        ]),
       findByMarketplace: vi.fn(),
       create: vi.fn(),
-      update: vi.fn().mockResolvedValue(
-        new AffiliateAccount(
-          account.id,
-          account.marketplace,
-          account.affiliateTag,
-          AffiliateAccountStatus.ACTIVE,
-          'admin@vitrine.local',
-          new Date(),
-          'Evidência de teste',
+      update: vi
+        .fn()
+        .mockResolvedValue(
+          new AffiliateAccount(
+            account.id,
+            account.marketplace,
+            account.affiliateTag,
+            AffiliateAccountStatus.ACTIVE,
+            'admin@vitrine.local',
+            new Date(),
+            'Evidência de teste',
+          ),
         ),
-      ),
       delete: vi.fn(),
     };
 

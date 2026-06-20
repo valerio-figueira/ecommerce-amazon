@@ -5,7 +5,10 @@ import { BlockType, PageKind, PageStatus } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 
-import { publicCategoryTreeNodeSchema, type PublicCategoryTreeNode } from '@ecommerce-amazon/shared/category/category-schemas';
+import {
+  publicCategoryTreeNodeSchema,
+  type PublicCategoryTreeNode,
+} from '@ecommerce-amazon/shared/category/category-schemas';
 
 import { adminFetchParsed } from './admin-fetch';
 
@@ -30,9 +33,7 @@ function flattenPublicCategories(
   return items.flatMap((item) => {
     const label = prefix ? `${prefix} → ${item.label}` : item.label;
     const current = { slug: item.slug, label };
-    const children = item.subcategories
-      ? flattenPublicCategories(item.subcategories, label)
-      : [];
+    const children = item.subcategories ? flattenPublicCategories(item.subcategories, label) : [];
     return [current, ...children];
   });
 }
@@ -59,15 +60,11 @@ export async function getAdminPageLayout(slug: string): Promise<PageLayoutDto> {
   return adminFetchParsed(`/admin/pages/${encodeURIComponent(slug)}`, pageLayoutDtoSchema);
 }
 
-export async function createPageBlock(
-  slug: string,
-  input: AdminBlockInput,
-): Promise<PageBlockDto> {
-  return adminFetchParsed(
-    `/admin/pages/${encodeURIComponent(slug)}/blocks`,
-    pageBlockDtoSchema,
-    { method: 'POST', body: input },
-  );
+export async function createPageBlock(slug: string, input: AdminBlockInput): Promise<PageBlockDto> {
+  return adminFetchParsed(`/admin/pages/${encodeURIComponent(slug)}/blocks`, pageBlockDtoSchema, {
+    method: 'POST',
+    body: input,
+  });
 }
 
 export async function updatePageBlock(
@@ -82,10 +79,7 @@ export async function updatePageBlock(
   );
 }
 
-export async function deletePageBlock(
-  slug: string,
-  blockId: string,
-): Promise<PageBlockDto[]> {
+export async function deletePageBlock(slug: string, blockId: string): Promise<PageBlockDto[]> {
   return adminFetchParsed(
     `/admin/pages/${encodeURIComponent(slug)}/blocks/${blockId}`,
     z.array(pageBlockDtoSchema),

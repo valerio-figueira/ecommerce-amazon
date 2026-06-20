@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { buildComparisonEphemeralIntro, countEditorialWords } from '@ecommerce-amazon/shared/comparison';
+import {
+  buildComparisonEphemeralIntro,
+  countEditorialWords,
+} from '@ecommerce-amazon/shared/comparison';
 
 import { ComparisonEditorialIntro } from '@/components/comparison/ComparisonEditorialIntro';
 import { ShareComparisonButton } from '@/components/comparison/ShareComparisonButton';
@@ -37,10 +40,13 @@ export default async function CompareEphemeralPage({
       <main className="mx-auto max-w-3xl px-4 py-10">
         <h1 className="text-2xl font-bold text-neutral-900">Comparar produtos</h1>
         <p className="mt-3 text-neutral-600">
-          Selecione de 2 a 3 produtos da <strong>mesma categoria</strong> nos cards da vitrine e
-          use a barra &quot;Comparar&quot; para abrir esta página.
+          Selecione de 2 a 3 produtos da <strong>mesma categoria</strong> nos cards da vitrine e use
+          a barra &quot;Comparar&quot; para abrir esta página.
         </p>
-        <Link href="/" className="mt-6 inline-block text-sm font-medium text-orange-600 hover:underline">
+        <Link
+          href="/"
+          className="mt-6 inline-block text-sm font-medium text-orange-600 hover:underline"
+        >
           Voltar para a vitrine
         </Link>
       </main>
@@ -67,11 +73,10 @@ export default async function CompareEphemeralPage({
     <main className="mx-auto max-w-6xl px-4 py-8 pb-28">
       <div className="mx-auto w-full min-w-0 max-w-3xl">
         <header className="mb-6 space-y-3">
-          <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">Comparativo de produtos</h1>
-          <ComparisonEditorialIntro
-            text={intro}
-            collapsible={countEditorialWords(intro) > 35}
-          />
+          <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">
+            Comparativo de produtos
+          </h1>
+          <ComparisonEditorialIntro text={intro} collapsible={countEditorialWords(intro) > 35} />
           <ShareComparisonButton
             productIds={resolved.map((product) => product.id)}
             products={resolved.map((product) => ({

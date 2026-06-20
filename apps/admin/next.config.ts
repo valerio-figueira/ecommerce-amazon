@@ -7,10 +7,11 @@ import type { NextConfig } from 'next';
 const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 loadDotenv({ path: path.join(monorepoRoot, '.env') });
 
-const devOrigins = process.env['NEXT_ALLOWED_DEV_ORIGINS']
-  ?.split(',')
-  .map((origin) => origin.trim())
-  .filter((origin) => origin.length > 0) ?? [];
+const devOrigins =
+  process.env['NEXT_ALLOWED_DEV_ORIGINS']
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0) ?? [];
 
 const siteName = process.env['SITE_NAME'] ?? process.env['NEXT_PUBLIC_SITE_NAME'] ?? 'Vitrine';
 const siteUrl =

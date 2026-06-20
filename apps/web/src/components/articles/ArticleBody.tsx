@@ -36,9 +36,7 @@ export function ArticleBody({
       {segments.map((segment, index) => {
         if (segment.type === 'html') {
           if (segment.html.trim() === '') return null;
-          return (
-            <div key={`html-${index}`} dangerouslySetInnerHTML={{ __html: segment.html }} />
-          );
+          return <div key={`html-${index}`} dangerouslySetInnerHTML={{ __html: segment.html }} />;
         }
 
         if (segment.type === 'compare') {
@@ -49,11 +47,7 @@ export function ArticleBody({
               className="not-prose my-8"
               aria-label="Comparativo de produtos"
             >
-              <ComparisonTable
-                slugs={segment.slugs}
-                products={products}
-                articleId={article.id}
-              />
+              <ComparisonTable slugs={segment.slugs} products={products} articleId={article.id} />
             </aside>
           );
         }
@@ -94,9 +88,7 @@ export function ArticleHero({ article }: ArticleHeroProps): React.JSX.Element {
       ) : null}
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">{article.title}</h1>
-        {article.excerpt ? (
-          <p className="text-lg text-neutral-600">{article.excerpt}</p>
-        ) : null}
+        {article.excerpt ? <p className="text-lg text-neutral-600">{article.excerpt}</p> : null}
       </div>
     </header>
   );

@@ -66,13 +66,13 @@ flowchart TB
 
 Novo serviço de infraestrutura — **nunca expor plaintext no GET**:
 
-| Item | Decisão |
-|------|---------|
-| Algoritmo | AES-256-GCM (`createCipheriv` / `createDecipheriv`) |
-| Master key | `ENCRYPTION_KEY` — 32 bytes base64 ou hex, **somente no servidor** (`.env`, nunca no DB) |
-| Formato blob | `base64(iv:12 + authTag:16 + ciphertext)` em coluna `credentials_encrypted` |
-| Port domain | `CredentialCipher` em `packages/domain/src/ports/` |
-| Impl | `AesGcmCredentialCipher` em `packages/infrastructure/src/security/` |
+| Item         | Decisão                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| Algoritmo    | AES-256-GCM (`createCipheriv` / `createDecipheriv`)                                      |
+| Master key   | `ENCRYPTION_KEY` — 32 bytes base64 ou hex, **somente no servidor** (`.env`, nunca no DB) |
+| Formato blob | `base64(iv:12 + authTag:16 + ciphertext)` em coluna `credentials_encrypted`              |
+| Port domain  | `CredentialCipher` em `packages/domain/src/ports/`                                       |
+| Impl         | `AesGcmCredentialCipher` em `packages/infrastructure/src/security/`                      |
 
 Validação no boot: se `ENCRYPTION_KEY` ausente/inválida, API e worker **falham fechado** ao tentar salvar/ler credenciais (env vars de tag continuam opcionais).
 
@@ -90,11 +90,11 @@ Reutilizar o padrão de [`AffiliateScaleGateService`](packages/application/src/s
 
 ### C. Autenticação por marketplace (Fase 1)
 
-| Marketplace | Tipo | Campos secretos |
-|-------------|------|-----------------|
-| `amazon_br` | Estático | `accessKeyId`, `secretAccessKey` (+ `region`/`host` opcional com default `webservices.amazon.com.br`) |
-| `shopee_br` | Estático | `partnerId`, `partnerKey` |
-| `mercadolivre_br` | OAuth | **Fase 3** — placeholder na UI ("Em breve") |
+| Marketplace       | Tipo     | Campos secretos                                                                                       |
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `amazon_br`       | Estático | `accessKeyId`, `secretAccessKey` (+ `region`/`host` opcional com default `webservices.amazon.com.br`) |
+| `shopee_br`       | Estático | `partnerId`, `partnerKey`                                                                             |
+| `mercadolivre_br` | OAuth    | **Fase 3** — placeholder na UI ("Em breve")                                                           |
 
 Contratos Zod discriminados em `packages/shared/src/admin/marketplace-credentials-schemas.ts`.
 
@@ -135,13 +135,13 @@ CREATE TABLE marketplace_api_credentials (
 
 ### Use cases (`packages/application/src/use-cases/admin-settings/`)
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `GetMarketplaceCredentialsStatus` | Lista status mascarado por marketplace (sem secrets) |
-| `SaveMarketplaceCredentials` | Valida Zod → encrypt → upsert → invalida Redis → audit `updated_by` |
-| `DeleteMarketplaceCredentials` | Remove + invalida cache |
-| `TestMarketplaceConnectivity` | Recebe credenciais inline **ou** lê do DB; chama gateway de teste; retorna `{ ok, httpStatus, message, rateLimitHint? }` **sem persistir** no teste inline |
-| `ResolveMarketplaceCredentials` | Worker-only: Redis → DB → decrypt |
+| Use case                          | Responsabilidade                                                                                                                                           |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GetMarketplaceCredentialsStatus` | Lista status mascarado por marketplace (sem secrets)                                                                                                       |
+| `SaveMarketplaceCredentials`      | Valida Zod → encrypt → upsert → invalida Redis → audit `updated_by`                                                                                        |
+| `DeleteMarketplaceCredentials`    | Remove + invalida cache                                                                                                                                    |
+| `TestMarketplaceConnectivity`     | Recebe credenciais inline **ou** lê do DB; chama gateway de teste; retorna `{ ok, httpStatus, message, rateLimitHint? }` **sem persistir** no teste inline |
+| `ResolveMarketplaceCredentials`   | Worker-only: Redis → DB → decrypt                                                                                                                          |
 
 ### Gateway de teste (`packages/infrastructure`)
 
@@ -158,14 +158,15 @@ Atualizar `GetOperationalStatus` para incluir `marketplaceCredentials: { amazon_
 
 Rotas em [`admin-settings-routes.ts`](apps/api/src/adapters/http/routes/admin-settings-routes.ts) (admin JWT + `requireAdminOperator` para mutações):
 
-| Método | Rota | Body / notas |
-|--------|------|--------------|
-| GET | `/admin/marketplace-credentials` | Array mascarado: `{ marketplace, authType, configured, publicMetadata, healthStatus, healthMessage, lastHealthCheckAt }` |
-| PUT | `/admin/marketplace-credentials/:marketplace` | Credenciais completas (só no request); response mascarada |
-| DELETE | `/admin/marketplace-credentials/:marketplace` | Admin only |
-| POST | `/admin/marketplace-credentials/:marketplace/test` | Opcional: body com credenciais inline para pre-flight; se vazio, usa salvas |
+| Método | Rota                                               | Body / notas                                                                                                             |
+| ------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/admin/marketplace-credentials`                   | Array mascarado: `{ marketplace, authType, configured, publicMetadata, healthStatus, healthMessage, lastHealthCheckAt }` |
+| PUT    | `/admin/marketplace-credentials/:marketplace`      | Credenciais completas (só no request); response mascarada                                                                |
+| DELETE | `/admin/marketplace-credentials/:marketplace`      | Admin only                                                                                                               |
+| POST   | `/admin/marketplace-credentials/:marketplace/test` | Opcional: body com credenciais inline para pre-flight; se vazio, usa salvas                                              |
 
 **Segurança API:**
+
 - Nunca ecoar `secretAccessKey` / `partnerKey` após save
 - Rate limit no endpoint de teste (reutilizar padrão de rate limit admin existente)
 - Log estruturado sem campos secretos
@@ -191,6 +192,7 @@ Nova aba **Integrações** em [`OperationalSettingsManager.tsx`](apps/admin/src/
 Componente: `MarketplaceIntegrationsPanel.tsx` — um `cms-float-panel` por marketplace:
 
 ### Card Amazon PA-API
+
 - Status pill: `connected` (verde) / `error` (vermelho) / `not_configured` (cinza)
 - `Access Key ID` — input texto
 - `Secret Key` — input `type=password` + botão olho (`Eye`/`EyeOff`)
@@ -199,13 +201,16 @@ Componente: `MarketplaceIntegrationsPanel.tsx` — um `cms-float-panel` por mark
 - Exibir `healthMessage` do último teste (ex.: "403: Associate Tag inválida")
 
 ### Card Shopee Open API
+
 - `Partner ID` + `Partner Key` (mascarado)
 - Mesmo padrão de status + test + save
 
 ### Card Mercado Livre
+
 - Banner "OAuth — disponível na Fase 3" (sem formulário)
 
 ### Melhorias no painel Saúde
+
 - Renderizar `errors[]` de `recentSyncFailures` (hoje omitido na UI)
 - Chips por marketplace com status do vault
 
@@ -268,13 +273,13 @@ Manter `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` como fallback de redirect 
 
 ## Testes
 
-| Alvo | Tipo |
-|------|------|
-| `AesGcmCredentialCipher` round-trip | unit |
-| `SaveMarketplaceCredentials` + cache invalidation mock | unit |
-| `GetMarketplaceCredentialsStatus` nunca retorna secret | unit |
-| `TestMarketplaceConnectivity` com gateway mock | unit |
-| `ResolveMarketplaceCredentials` cache hit/miss | unit |
+| Alvo                                                   | Tipo                         |
+| ------------------------------------------------------ | ---------------------------- |
+| `AesGcmCredentialCipher` round-trip                    | unit                         |
+| `SaveMarketplaceCredentials` + cache invalidation mock | unit                         |
+| `GetMarketplaceCredentialsStatus` nunca retorna secret | unit                         |
+| `TestMarketplaceConnectivity` com gateway mock         | unit                         |
+| `ResolveMarketplaceCredentials` cache hit/miss         | unit                         |
 | `PUT /admin/marketplace-credentials` + `POST .../test` | integration (Fastify inject) |
 
 ---
@@ -282,6 +287,7 @@ Manter `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` como fallback de redirect 
 ## Documentação
 
 Criar [`docs/admin-marketplace-credentials.md`](docs/admin-marketplace-credentials.md) com:
+
 - O quê / por quê (ligação a PRD Core §4 + modo híbrido em [`docs/admin-products-phase1.md`](docs/admin-products-phase1.md))
 - Diagrama de fluxo + separação tag vs API key
 - Rotas, env `ENCRYPTION_KEY`, como testar localmente

@@ -1,8 +1,4 @@
-import {
-  OperatorRole,
-  type Operator,
-  type OperatorRepository,
-} from '@ecommerce-amazon/domain';
+import { OperatorRole, type Operator, type OperatorRepository } from '@ecommerce-amazon/domain';
 
 export type OperatorSummaryDto = {
   id: string;

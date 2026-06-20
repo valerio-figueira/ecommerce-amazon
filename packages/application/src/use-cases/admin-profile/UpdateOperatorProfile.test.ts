@@ -10,13 +10,15 @@ import {
 
 import { UpdateOperatorProfile } from './UpdateOperatorProfile.js';
 
-function createTestOperator(overrides: Partial<{
-  id: string;
-  name: string;
-  bio: string | null;
-  showOnTeam: boolean;
-  teamPublicRole: TeamPublicRole;
-}> = {}): Operator {
+function createTestOperator(
+  overrides: Partial<{
+    id: string;
+    name: string;
+    bio: string | null;
+    showOnTeam: boolean;
+    teamPublicRole: TeamPublicRole;
+  }> = {},
+): Operator {
   const now = new Date();
   return new Operator(
     overrides.id ?? 'op-1',
@@ -57,11 +59,7 @@ describe('UpdateOperatorProfile', () => {
       verify: vi.fn(),
     };
 
-    const useCase = new UpdateOperatorProfile(
-      operatorRepository,
-      authTokenService,
-      () => false,
-    );
+    const useCase = new UpdateOperatorProfile(operatorRepository, authTokenService, () => false);
 
     const result = await useCase.execute({
       operatorId: 'op-1',

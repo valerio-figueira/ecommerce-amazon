@@ -35,10 +35,7 @@ export async function listAdminProducts(
 }
 
 export async function getAdminProduct(slug: string): Promise<AdminProductDetail> {
-  return adminFetchParsed(
-    `/admin/products/${encodeURIComponent(slug)}`,
-    adminProductDetailSchema,
-  );
+  return adminFetchParsed(`/admin/products/${encodeURIComponent(slug)}`, adminProductDetailSchema);
 }
 
 export async function createAdminProduct(body: CreateProductBody): Promise<CreateProductResponse> {

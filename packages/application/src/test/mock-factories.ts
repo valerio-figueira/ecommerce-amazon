@@ -123,9 +123,7 @@ export function createMockPublicWebRevalidator(
   };
 }
 
-export function createMockPageRepository(
-  overrides: Partial<PageRepository> = {},
-): PageRepository {
+export function createMockPageRepository(overrides: Partial<PageRepository> = {}): PageRepository {
   return {
     findPublishedBySlug: vi.fn(),
     findPageBySlug: vi.fn(),

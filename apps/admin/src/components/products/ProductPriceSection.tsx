@@ -114,8 +114,8 @@ export function ProductPriceSection(): React.JSX.Element {
                 <FormLabel className="normal-case tracking-normal">Exibir na home?</FormLabel>
               </ProductFormLabelRow>
               <FormDescription>
-                Quando desativado, o produto deixa de aparecer nos blocos da home (grids e destaque).
-                Continua visível no painel admin e acessível pela página de detalhe.
+                Quando desativado, o produto deixa de aparecer nos blocos da home (grids e
+                destaque). Continua visível no painel admin e acessível pela página de detalhe.
               </FormDescription>
             </div>
             <FormControl>

@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import type { AdminBreadcrumb } from '@/lib/navigation';
 
@@ -36,9 +30,7 @@ export function AdminLayoutProvider({
     [title, breadcrumbs],
   );
 
-  return (
-    <AdminLayoutContext.Provider value={value}>{children}</AdminLayoutContext.Provider>
-  );
+  return <AdminLayoutContext.Provider value={value}>{children}</AdminLayoutContext.Provider>;
 }
 
 export function useAdminLayout() {

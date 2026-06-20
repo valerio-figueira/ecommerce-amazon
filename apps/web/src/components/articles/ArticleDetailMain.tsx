@@ -79,13 +79,8 @@ export async function ArticleDetailMain({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ArticleHero article={article} />
-      {article.cluster ? (
-        <ArticleSeoAnchor cluster={article.cluster} currentSlug={slug} />
-      ) : null}
-      <TrackEngagement
-        eventType={EngagementEventType.ARTICLE_PAGE_VIEW}
-        articleId={article.id}
-      />
+      {article.cluster ? <ArticleSeoAnchor cluster={article.cluster} currentSlug={slug} /> : null}
+      <TrackEngagement eventType={EngagementEventType.ARTICLE_PAGE_VIEW} articleId={article.id} />
       <Suspense fallback={<ArticleDetailBodySkeleton />}>
         <ArticleBodySection article={article} />
       </Suspense>
@@ -123,7 +118,7 @@ export async function generateArticleDetailMetadata(
       url: canonical,
       siteName: brand.name,
       ...(article.publishedAt ? { publishedTime: article.publishedAt } : {}),
-      ...(article.updatedAt ?? article.publishedAt
+      ...((article.updatedAt ?? article.publishedAt)
         ? { modifiedTime: article.updatedAt ?? article.publishedAt }
         : {}),
       ...(article.coverImageUrl ? { images: [{ url: article.coverImageUrl }] } : {}),

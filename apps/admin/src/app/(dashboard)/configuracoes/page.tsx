@@ -33,10 +33,7 @@ export default async function ConfiguracoesPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Configurações"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Configurações' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Configurações' }]}
       />
       <AdminPageCard transparent>
         <OperationalSettingsManager

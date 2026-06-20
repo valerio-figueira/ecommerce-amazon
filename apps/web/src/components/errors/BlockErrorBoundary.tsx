@@ -14,7 +14,10 @@ type BlockErrorBoundaryState = {
   hasError: boolean;
 };
 
-export class BlockErrorBoundary extends Component<BlockErrorBoundaryProps, BlockErrorBoundaryState> {
+export class BlockErrorBoundary extends Component<
+  BlockErrorBoundaryProps,
+  BlockErrorBoundaryState
+> {
   constructor(props: BlockErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };

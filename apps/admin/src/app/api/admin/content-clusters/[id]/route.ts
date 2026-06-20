@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getBffErrorMessage, getBffErrorStatus, resolveBffStatus } from '@/lib/api/bff-error-status';
+import {
+  getBffErrorMessage,
+  getBffErrorStatus,
+  resolveBffStatus,
+} from '@/lib/api/bff-error-status';
 
 import {
   deleteContentCluster,

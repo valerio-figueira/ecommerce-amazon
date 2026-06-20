@@ -38,12 +38,7 @@ export function ArticleCategoryListView({
                 <Pencil className="mr-1 h-3.5 w-3.5" />
                 Editar
               </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => onDelete(item)}
-              >
+              <Button type="button" variant="destructive" size="sm" onClick={() => onDelete(item)}>
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
                 Excluir
               </Button>

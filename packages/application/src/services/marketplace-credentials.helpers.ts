@@ -13,7 +13,9 @@ import {
   type SaveShopeeCredentialsBody,
 } from '@ecommerce-amazon/shared/admin';
 
-function buildAmazonPublicMetadata(credentials: SaveAmazonCredentialsBody): Record<string, unknown> {
+function buildAmazonPublicMetadata(
+  credentials: SaveAmazonCredentialsBody,
+): Record<string, unknown> {
   return {
     accessKeyIdPrefix: credentials.accessKeyId.slice(0, 4),
     accessKeyIdLast4: credentials.accessKeyId.slice(-4),
@@ -23,7 +25,9 @@ function buildAmazonPublicMetadata(credentials: SaveAmazonCredentialsBody): Reco
   };
 }
 
-function buildShopeePublicMetadata(credentials: SaveShopeeCredentialsBody): Record<string, unknown> {
+function buildShopeePublicMetadata(
+  credentials: SaveShopeeCredentialsBody,
+): Record<string, unknown> {
   return {
     partnerId: credentials.partnerId,
     partnerKeyLast4: credentials.partnerKey.slice(-4),

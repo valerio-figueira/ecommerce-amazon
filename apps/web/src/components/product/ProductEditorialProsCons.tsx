@@ -17,8 +17,14 @@ export function ProductEditorialProsCons({
   maxCons = 1,
   className,
 }: ProductEditorialProsConsProps): React.JSX.Element | null {
-  const visiblePros = pros.map((item) => item.trim()).filter(Boolean).slice(0, maxPros);
-  const visibleCons = cons.map((item) => item.trim()).filter(Boolean).slice(0, maxCons);
+  const visiblePros = pros
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, maxPros);
+  const visibleCons = cons
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, maxCons);
 
   if (visiblePros.length === 0 && visibleCons.length === 0) {
     return null;

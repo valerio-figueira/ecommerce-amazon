@@ -6,7 +6,7 @@ todos:
     content: Adicionar BlockType DYNAMIC_PRODUCT_GRID + migration enum + ProductSortField/filtros de catálogo estendidos
     status: completed
   - id: shared-schemas
-    content: "Estender block-schemas.ts: DynamicProductGridPropsSchema, BlockPropsResolver, delivery DTOs"
+    content: 'Estender block-schemas.ts: DynamicProductGridPropsSchema, BlockPropsResolver, delivery DTOs'
     status: completed
   - id: infra-ports
     content: Estender PageRepository + DrizzlePageRepository (mutações transacionais) e PageCacheInvalidator
@@ -27,16 +27,16 @@ isProject: false
 
 ## Contexto atual
 
-| Área | Estado |
-|------|--------|
-| Schemas Zod | [`block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) — 10 blocos estáticos, `parseBlockProps`, `pageBlockDtoSchema` |
-| `BlockType` | [`cms.ts`](packages/domain/src/enums/cms.ts) — **sem** `DYNAMIC_PRODUCT_GRID` |
-| DB enum `block_type` | [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) — mesmo gap |
-| `PageRepository` | [`PageRepository.ts`](packages/domain/src/repositories/PageRepository.ts) — **somente leitura** (`findPublishedBySlug`) |
-| `GetPublishedPageLayout` | [`GetPublishedPageLayout.ts`](packages/application/src/use-cases/page/GetPublishedPageLayout.ts) — repassa props parseadas, cache Redis 5 min |
-| `ListProducts` | [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts) — filtros: `category`, `marketplace`, `sort` (`editorial_score` \| `price_updated_at`) |
-| Cache invalidação | [`CacheInvalidator`](packages/domain/src/gateways/index.ts) — só `invalidateProducts`; chave de página: `vitrine:page:slug:${slug}` |
-| Admin HTTP | **Fora de escopo** (confirmado) — use cases + DI apenas |
+| Área                     | Estado                                                                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schemas Zod              | [`block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) — 10 blocos estáticos, `parseBlockProps`, `pageBlockDtoSchema`                                          |
+| `BlockType`              | [`cms.ts`](packages/domain/src/enums/cms.ts) — **sem** `DYNAMIC_PRODUCT_GRID`                                                                                          |
+| DB enum `block_type`     | [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) — mesmo gap                                                                       |
+| `PageRepository`         | [`PageRepository.ts`](packages/domain/src/repositories/PageRepository.ts) — **somente leitura** (`findPublishedBySlug`)                                                |
+| `GetPublishedPageLayout` | [`GetPublishedPageLayout.ts`](packages/application/src/use-cases/page/GetPublishedPageLayout.ts) — repassa props parseadas, cache Redis 5 min                          |
+| `ListProducts`           | [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts) — filtros: `category`, `marketplace`, `sort` (`editorial_score` \| `price_updated_at`) |
+| Cache invalidação        | [`CacheInvalidator`](packages/domain/src/gateways/index.ts) — só `invalidateProducts`; chave de página: `vitrine:page:slug:${slug}`                                    |
+| Admin HTTP               | **Fora de escopo** (confirmado) — use cases + DI apenas                                                                                                                |
 
 ```mermaid
 flowchart TB
@@ -88,12 +88,12 @@ ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'dynamic_product_grid';
 
 `DynamicProductGridPropsSchema.sortBy` usa valores além dos atuais de [`ProductSortField`](packages/domain/src/enums/cms.ts). Estender enum:
 
-| Prop `sortBy` | Comportamento em `findPublished` |
-|---------------|----------------------------------|
+| Prop `sortBy`     | Comportamento em `findPublished`            |
+| ----------------- | ------------------------------------------- |
 | `editorial_score` | `ORDER BY editorial_score DESC` (existente) |
-| `created_at` | `ORDER BY created_at DESC` |
-| `price_asc` | `ORDER BY price_amount ASC` |
-| `price_desc` | `ORDER BY price_amount DESC` |
+| `created_at`      | `ORDER BY created_at DESC`                  |
+| `price_asc`       | `ORDER BY price_amount ASC`                 |
+| `price_desc`      | `ORDER BY price_amount DESC`                |
 
 Atualizar [`ProductRepository.ts`](packages/domain/src/repositories/ProductRepository.ts) / [`drizzle-product.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-product.repository.ts) com `switch` no `orderBy`.
 
@@ -122,7 +122,9 @@ export const dynamicProductGridPropsSchema = z.object({
   subtitle: z.string().optional(),
   categoryVertical: z.string().optional(),
   minDiscountPercentage: z.number().min(0).max(100).optional(),
-  sortBy: z.enum(['editorial_score', 'created_at', 'price_asc', 'price_desc']).default('editorial_score'),
+  sortBy: z
+    .enum(['editorial_score', 'created_at', 'price_asc', 'price_desc'])
+    .default('editorial_score'),
   limit: z.number().int().min(1).max(24).default(8),
 });
 ```
@@ -328,11 +330,11 @@ Use cases Admin ficam disponíveis no container para `apps/admin` futuro — **s
 
 ## 7. Testes
 
-| Arquivo | Casos |
-|---------|-------|
-| `packages/shared` (novo `block-schemas.test.ts`) | Validação `dynamicProductGridPropsSchema`; defaults `sortBy`/`limit` |
-| `packages/application/src/use-cases/admin-cms/*.test.ts` | Save valida props; Delete reindex mock; Reorder transação |
-| `GetPublishedPageLayout` test | Bloco dynamic → `renderedData` preenchido; produto stale → `amount: null`, `shouldShowPrice: false`; cache hit ainda hidrata |
+| Arquivo                                                  | Casos                                                                                                                        |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `packages/shared` (novo `block-schemas.test.ts`)         | Validação `dynamicProductGridPropsSchema`; defaults `sortBy`/`limit`                                                         |
+| `packages/application/src/use-cases/admin-cms/*.test.ts` | Save valida props; Delete reindex mock; Reorder transação                                                                    |
+| `GetPublishedPageLayout` test                            | Bloco dynamic → `renderedData` preenchido; produto stale → `amount: null`, `shouldShowPrice: false`; cache hit ainda hidrata |
 
 Mocks: estender [`mock-factories.ts`](packages/application/src/test/mock-factories.ts) com `createMockPageRepository`, `createMockPageCacheInvalidator`.
 

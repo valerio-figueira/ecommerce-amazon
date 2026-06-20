@@ -1,8 +1,5 @@
 const PRODUCT_SLUG_PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*';
-const PRODUCT_SHORTCODE_REGEX = new RegExp(
-  `\\[\\[product:(${PRODUCT_SLUG_PATTERN})\\]\\]`,
-  'gi',
-);
+const PRODUCT_SHORTCODE_REGEX = new RegExp(`\\[\\[product:(${PRODUCT_SLUG_PATTERN})\\]\\]`, 'gi');
 const COMPARE_SHORTCODE_REGEX = /\[\[compare:([a-zA-Z0-9\-_,]+)\]\]/gi;
 
 const COMBINED_SHORTCODE_REGEX = new RegExp(

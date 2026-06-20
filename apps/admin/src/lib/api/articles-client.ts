@@ -70,10 +70,7 @@ export async function createAdminArticleClient(
   return createArticleResponseSchema.parse(data);
 }
 
-export async function updateAdminArticleClient(
-  id: string,
-  body: UpdateArticleBody,
-): Promise<void> {
+export async function updateAdminArticleClient(id: string, body: UpdateArticleBody): Promise<void> {
   const parsedBody = updateArticleBodySchema.parse(body);
   const response = await adminClientFetch(`/api/admin/articles/${id}`, {
     method: 'PATCH',

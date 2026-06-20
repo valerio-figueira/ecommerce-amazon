@@ -63,9 +63,6 @@ export function createCorsOriginDelegate(
   }
 
   return (origin: string | undefined, callback: CorsCallback): void => {
-    callback(
-      null,
-      isOriginAllowed(origin, allowedOrigins, { nodeEnv, webPort, adminPort }),
-    );
+    callback(null, isOriginAllowed(origin, allowedOrigins, { nodeEnv, webPort, adminPort }));
   };
 }

@@ -1,7 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { resolveProductCanonicalUrl, resolveProductMetaDescription, resolveProductMetaTitle, buildNotFoundMetadata } from '@ecommerce-amazon/shared/seo';
+import {
+  resolveProductCanonicalUrl,
+  resolveProductMetaDescription,
+  resolveProductMetaTitle,
+  buildNotFoundMetadata,
+} from '@ecommerce-amazon/shared/seo';
 
 import { ProductDetailAffiliateCta } from '@/components/product/ProductDetailAffiliateCta';
 import { ProductDetailStickyCta } from '@/components/product/ProductDetailStickyCta';

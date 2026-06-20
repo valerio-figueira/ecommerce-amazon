@@ -67,10 +67,7 @@ export class UpdateComparison {
     await this.revalidate(updated, existing);
   }
 
-  private async revalidate(
-    updated: ProductComparison,
-    previous: ProductComparison,
-  ): Promise<void> {
+  private async revalidate(updated: ProductComparison, previous: ProductComparison): Promise<void> {
     const paths = new Set<string>([
       updated.canonicalPath(),
       previous.canonicalPath(),

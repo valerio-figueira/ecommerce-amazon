@@ -132,8 +132,8 @@ export function WeeklyTrendsForm({ control }: WeeklyTrendsFormProps): React.JSX.
 
       <CmsFormSection title="Ranking automático" className="cms-form-section-divider">
         <p className="text-sm text-[var(--admin-text-muted)]">
-          Produtos: cliques afiliados nos últimos 7 dias. Artigos: leituras (page views) nos
-          últimos 7 dias. O bloco só aparece na vitrine quando houver dados suficientes.
+          Produtos: cliques afiliados nos últimos 7 dias. Artigos: leituras (page views) nos últimos
+          7 dias. O bloco só aparece na vitrine quando houver dados suficientes.
         </p>
 
         <ProductLimitPicker control={control} />
@@ -178,11 +178,7 @@ export function WeeklyTrendsForm({ control }: WeeklyTrendsFormProps): React.JSX.
             <FormItem>
               <FormLabel>Link — aba Produtos</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={readString(field.value)}
-                  placeholder="/categorias"
-                />
+                <Input {...field} value={readString(field.value)} placeholder="/categorias" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -212,11 +208,7 @@ export function WeeklyTrendsForm({ control }: WeeklyTrendsFormProps): React.JSX.
             <FormItem>
               <FormLabel>Link — aba Artigos</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={readString(field.value)}
-                  placeholder="/artigos"
-                />
+                <Input {...field} value={readString(field.value)} placeholder="/artigos" />
               </FormControl>
               <FormMessage />
             </FormItem>

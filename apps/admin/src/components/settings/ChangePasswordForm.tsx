@@ -58,9 +58,7 @@ export function ChangePasswordForm(): React.JSX.Element {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Alterar senha</DialogTitle>
-          <DialogDescription>
-            Use uma senha forte com pelo menos 8 caracteres.
-          </DialogDescription>
+          <DialogDescription>Use uma senha forte com pelo menos 8 caracteres.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">

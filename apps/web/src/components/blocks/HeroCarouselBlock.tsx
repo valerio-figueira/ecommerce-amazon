@@ -9,7 +9,10 @@ import { heroCarouselPropsSchema } from '@ecommerce-amazon/shared/cms';
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { cn } from '@/lib/utils';
 
-export function HeroCarouselBlock({ block, isFirstBlock = false }: BlockComponentProps): React.JSX.Element {
+export function HeroCarouselBlock({
+  block,
+  isFirstBlock = false,
+}: BlockComponentProps): React.JSX.Element {
   const props = heroCarouselPropsSchema.parse(block.props);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [index, setIndex] = useState(0);

@@ -34,8 +34,20 @@ function TableFooter({
 }: React.HTMLAttributes<HTMLTableSectionElement>): React.JSX.Element {
   return (
     <tfoot
+      className={cn('border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0', className)}
+      {...props}
+    />
+  );
+}
+
+function TableRow({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableRowElement>): React.JSX.Element {
+  return (
+    <tr
       className={cn(
-        'border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0',
+        'border-b border-neutral-200 transition-colors hover:bg-neutral-50/50',
         className,
       )}
       {...props}
@@ -43,16 +55,10 @@ function TableFooter({
   );
 }
 
-function TableRow({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>): React.JSX.Element {
-  return (
-    <tr
-      className={cn('border-b border-neutral-200 transition-colors hover:bg-neutral-50/50', className)}
-      {...props}
-    />
-  );
-}
-
-function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>): React.JSX.Element {
+function TableHead({
+  className,
+  ...props
+}: React.ThHTMLAttributes<HTMLTableCellElement>): React.JSX.Element {
   return (
     <th
       className={cn(
@@ -64,8 +70,13 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   );
 }
 
-function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>): React.JSX.Element {
-  return <td className={cn('px-3 py-3 align-top text-sm text-neutral-800', className)} {...props} />;
+function TableCell({
+  className,
+  ...props
+}: React.TdHTMLAttributes<HTMLTableCellElement>): React.JSX.Element {
+  return (
+    <td className={cn('px-3 py-3 align-top text-sm text-neutral-800', className)} {...props} />
+  );
 }
 
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell };

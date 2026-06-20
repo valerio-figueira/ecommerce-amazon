@@ -1,14 +1,7 @@
 'use client';
 
 import { LineChart as LineChartIcon } from 'lucide-react';
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -36,21 +29,21 @@ export function ClicksTrendChart({ data }: ClicksTrendChartProps): React.JSX.Ele
       ) : (
         <AnalyticsChartFrame height={256}>
           <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
-              <XAxis dataKey="date" tickFormatter={formatDateLabel} fontSize={12} />
-              <YAxis allowDecimals={false} fontSize={12} />
-              <Tooltip
-                labelFormatter={(label) => `Data: ${String(label)}`}
-                formatter={(value) => [String(value), 'Cliques']}
-              />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke="var(--admin-primary)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+            <XAxis dataKey="date" tickFormatter={formatDateLabel} fontSize={12} />
+            <YAxis allowDecimals={false} fontSize={12} />
+            <Tooltip
+              labelFormatter={(label) => `Data: ${String(label)}`}
+              formatter={(value) => [String(value), 'Cliques']}
+            />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="var(--admin-primary)"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
         </AnalyticsChartFrame>
       )}
     </AdminPageCard>

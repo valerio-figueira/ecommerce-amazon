@@ -50,12 +50,7 @@ export function AdminShellLayout({
 
   return (
     <AdminLayoutProvider initialTitle={initialTitle} initialBreadcrumbs={initialBreadcrumbs}>
-      <div
-        className={cn(
-          'admin-app-container',
-          hydrated && collapsed && 'admin-sidebar-narrow',
-        )}
-      >
+      <div className={cn('admin-app-container', hydrated && collapsed && 'admin-sidebar-narrow')}>
         <AdminSidebar
           collapsed={collapsed}
           mobileOpen={mobileOpen}
@@ -73,7 +68,9 @@ export function AdminShellLayout({
         <main className="admin-content-column">{children}</main>
 
         <footer className="admin-app-footer">
-          <small>© {new Date().getFullYear()} {brand.name} — Painel CMS interno</small>
+          <small>
+            © {new Date().getFullYear()} {brand.name} — Painel CMS interno
+          </small>
         </footer>
 
         {mobileOpen && (

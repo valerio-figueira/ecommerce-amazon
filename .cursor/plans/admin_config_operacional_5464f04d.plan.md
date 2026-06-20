@@ -1,12 +1,12 @@
 ---
 name: Admin Config Operacional
-overview: "Substituir o stub `/configuracoes` por um hub operacional completo: gate de contas afiliado (PRD §4.2), gestão de operadores, toggles CMS/feature flags persistidos em `site_settings`, e painel de saúde da plataforma — seguindo Clean Architecture e padrão de painéis flutuantes do admin."
+overview: 'Substituir o stub `/configuracoes` por um hub operacional completo: gate de contas afiliado (PRD §4.2), gestão de operadores, toggles CMS/feature flags persistidos em `site_settings`, e painel de saúde da plataforma — seguindo Clean Architecture e padrão de painéis flutuantes do admin.'
 todos:
   - id: migration-schemas
     content: Migration 0019 (site_settings + validation_notes), Zod schemas shared, seed defaults
     status: completed
   - id: domain-repos
-    content: "Estender ports/repos: SiteSettings, AffiliateAccount, Operator, SyncJobLog read"
+    content: 'Estender ports/repos: SiteSettings, AffiliateAccount, Operator, SyncJobLog read'
     status: completed
   - id: use-cases
     content: Use cases affiliate/operators/password/settings/operational-status + AffiliateScaleGateService + testes
@@ -33,7 +33,7 @@ isProject: false
 
 ## Contexto e baseline
 
-Hoje [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](apps/admin/src/app/(dashboard)/configuracoes/page.tsx) é empty state. O escopo está alinhado a:
+Hoje [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](<apps/admin/src/app/(dashboard)/configuracoes/page.tsx>) é empty state. O escopo está alinhado a:
 
 - **PRD Core §4.2** — validação manual de contas afiliado antes de escala ([`.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md`](.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md))
 - **Stub do admin** — "contas de afiliado, operadores e preferências do CMS"
@@ -42,15 +42,15 @@ Hoje [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](apps/admin/src/ap
 
 ### O que já existe (reutilizar)
 
-| Área | Estado |
-|------|--------|
-| Tabela `affiliate_accounts` | Seed Amazon `active`, Shopee `pending_manual_validation` |
-| `AffiliateAccountRepository` | Só `findByMarketplace` — sem list/update |
-| Gate runtime | [`ResolveAffiliateRedirect`](packages/application/src/use-cases/affiliate/ResolveAffiliateRedirect.ts), [`BuildBatchCheckoutRedirect`](packages/application/src/use-cases/wishlist/BuildBatchCheckoutRedirect.ts) |
-| Operadores | CRUD parcial — só perfil próprio em `/perfil` |
-| Auth admin | JWT sem `role`; hook `onRequest` não distingue admin/editor |
-| `sync_job_logs` | Write-only via worker |
-| Brand | Env-only ([`docs/brand-config.md`](docs/brand-config.md)) — **não** migrar para DB |
+| Área                         | Estado                                                                                                                                                                                                            |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tabela `affiliate_accounts`  | Seed Amazon `active`, Shopee `pending_manual_validation`                                                                                                                                                          |
+| `AffiliateAccountRepository` | Só `findByMarketplace` — sem list/update                                                                                                                                                                          |
+| Gate runtime                 | [`ResolveAffiliateRedirect`](packages/application/src/use-cases/affiliate/ResolveAffiliateRedirect.ts), [`BuildBatchCheckoutRedirect`](packages/application/src/use-cases/wishlist/BuildBatchCheckoutRedirect.ts) |
+| Operadores                   | CRUD parcial — só perfil próprio em `/perfil`                                                                                                                                                                     |
+| Auth admin                   | JWT sem `role`; hook `onRequest` não distingue admin/editor                                                                                                                                                       |
+| `sync_job_logs`              | Write-only via worker                                                                                                                                                                                             |
+| Brand                        | Env-only ([`docs/brand-config.md`](docs/brand-config.md)) — **não** migrar para DB                                                                                                                                |
 
 ```mermaid
 flowchart TB
@@ -91,14 +91,14 @@ flowchart TB
 
 ## Escopo desta entrega
 
-| Incluído | Fora de escopo |
-|----------|----------------|
-| Painel contas afiliado (listar, editar tag, transição de status com checklist) | CRUD cupons (`/cupons` — fase separada) |
-| Gestão de operadores (listar, convidar, role, ativar/desativar) | Convite por e-mail / reset token |
-| Troca de senha do operador logado | Editar brand via UI (permanece `.env`) |
-| Tabela `site_settings` + toggles CMS/feature flags | Draft/preview/publish workflow da home CMS |
-| Painel saúde (env flags, gate global, últimos `sync_job_logs` falhos) | BullMQ dashboard / profundidade de fila |
-| Guard `admin` role em rotas sensíveis | Login social, multi-tenant |
+| Incluído                                                                       | Fora de escopo                             |
+| ------------------------------------------------------------------------------ | ------------------------------------------ |
+| Painel contas afiliado (listar, editar tag, transição de status com checklist) | CRUD cupons (`/cupons` — fase separada)    |
+| Gestão de operadores (listar, convidar, role, ativar/desativar)                | Convite por e-mail / reset token           |
+| Troca de senha do operador logado                                              | Editar brand via UI (permanece `.env`)     |
+| Tabela `site_settings` + toggles CMS/feature flags                             | Draft/preview/publish workflow da home CMS |
+| Painel saúde (env flags, gate global, últimos `sync_job_logs` falhos)          | BullMQ dashboard / profundidade de fila    |
+| Guard `admin` role em rotas sensíveis                                          | Login social, multi-tenant                 |
 
 ---
 
@@ -142,25 +142,25 @@ Seed em [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) com
 
 ### Novos ports
 
-| Port | Métodos |
-|------|---------|
-| `SiteSettingsRepository` | `get()`, `save(settings, updatedBy)` |
+| Port                                    | Métodos                                                                                             |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `SiteSettingsRepository`                | `get()`, `save(settings, updatedBy)`                                                                |
 | `AffiliateAccountRepository` (estender) | `findAll()`, `update(id, { affiliateTag?, status?, validationNotes?, validatedBy?, validatedAt? })` |
-| `OperatorRepository` (estender) | `findAll()`, `create(...)`, `updateAccess(id, { role?, status? })`, `updatePasswordHash(id, hash)` |
-| `SyncJobLogRepository` (estender) | `findRecent({ limit, status? })` |
+| `OperatorRepository` (estender)         | `findAll()`, `create(...)`, `updateAccess(id, { role?, status? })`, `updatePasswordHash(id, hash)`  |
+| `SyncJobLogRepository` (estender)       | `findRecent({ limit, status? })`                                                                    |
 
 ### Use cases novos
 
-| Use case | Regras de negócio |
-|----------|-------------------|
-| `ListAffiliateAccounts` | Admin only |
-| `UpdateAffiliateAccount` | Admin only; transição → `active` exige checklist confirmado + grava `validatedBy`/`validatedAt`/`validationNotes`; → `suspended` bloqueia escala |
-| `ListOperators` | Admin only; nunca expor `passwordHash` |
-| `CreateOperator` | Admin only; email único; senha temporária via `PasswordHasher`; role `admin` \| `editor` |
-| `UpdateOperatorAccess` | Admin only; não desativar a si mesmo; não rebaixar último admin ativo |
-| `ChangeOperatorPassword` | Operador logado; valida senha atual |
-| `GetSiteSettings` / `UpdateSiteSettings` | Read: qualquer operador autenticado; Write: admin only |
-| `GetOperationalStatus` | Resumo read-only: flags env (`RESEND_API_KEY`, `GA4_*`, `STORAGE_DRIVER`), gate afiliado agregado, últimos 10 jobs `failed` |
+| Use case                                 | Regras de negócio                                                                                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ListAffiliateAccounts`                  | Admin only                                                                                                                                       |
+| `UpdateAffiliateAccount`                 | Admin only; transição → `active` exige checklist confirmado + grava `validatedBy`/`validatedAt`/`validationNotes`; → `suspended` bloqueia escala |
+| `ListOperators`                          | Admin only; nunca expor `passwordHash`                                                                                                           |
+| `CreateOperator`                         | Admin only; email único; senha temporária via `PasswordHasher`; role `admin` \| `editor`                                                         |
+| `UpdateOperatorAccess`                   | Admin only; não desativar a si mesmo; não rebaixar último admin ativo                                                                            |
+| `ChangeOperatorPassword`                 | Operador logado; valida senha atual                                                                                                              |
+| `GetSiteSettings` / `UpdateSiteSettings` | Read: qualquer operador autenticado; Write: admin only                                                                                           |
+| `GetOperationalStatus`                   | Resumo read-only: flags env (`RESEND_API_KEY`, `GA4_*`, `STORAGE_DRIVER`), gate afiliado agregado, últimos 10 jobs `failed`                      |
 
 ### Serviço de gate composto
 
@@ -184,23 +184,23 @@ Após JWT válido, carregar operador por `request.adminOperator.id` e retornar *
 
 ### Rotas
 
-| Método | Rota | Acesso | Body / Response |
-|--------|------|--------|-----------------|
-| GET | `/admin/affiliate-accounts` | autenticado | `{ items: AffiliateAccountDto[] }` |
-| PATCH | `/admin/affiliate-accounts/:id` | admin | `{ affiliateTag?, status?, validationNotes?, checklistConfirmed? }` |
-| GET | `/admin/operators` | admin | `{ items: OperatorSummaryDto[] }` |
-| POST | `/admin/operators` | admin | `{ email, name, password, role }` → 201 |
-| PATCH | `/admin/operators/:id` | admin | `{ role?, status? }` |
-| PATCH | `/admin/profile/password` | autenticado | `{ currentPassword, newPassword }` |
-| GET | `/admin/site-settings` | autenticado | `SiteSettingsDto` |
-| PATCH | `/admin/site-settings` | admin | partial body Zod |
-| GET | `/admin/operational-status` | autenticado | env flags + gate + sync failures |
+| Método | Rota                            | Acesso      | Body / Response                                                     |
+| ------ | ------------------------------- | ----------- | ------------------------------------------------------------------- |
+| GET    | `/admin/affiliate-accounts`     | autenticado | `{ items: AffiliateAccountDto[] }`                                  |
+| PATCH  | `/admin/affiliate-accounts/:id` | admin       | `{ affiliateTag?, status?, validationNotes?, checklistConfirmed? }` |
+| GET    | `/admin/operators`              | admin       | `{ items: OperatorSummaryDto[] }`                                   |
+| POST   | `/admin/operators`              | admin       | `{ email, name, password, role }` → 201                             |
+| PATCH  | `/admin/operators/:id`          | admin       | `{ role?, status? }`                                                |
+| PATCH  | `/admin/profile/password`       | autenticado | `{ currentPassword, newPassword }`                                  |
+| GET    | `/admin/site-settings`          | autenticado | `SiteSettingsDto`                                                   |
+| PATCH  | `/admin/site-settings`          | admin       | partial body Zod                                                    |
+| GET    | `/admin/operational-status`     | autenticado | env flags + gate + sync failures                                    |
 
 ### API pública (vitrine)
 
-| Método | Rota | Uso |
-|--------|------|-----|
-| GET | `/site-settings/public` | Subconjunto seguro (`publicIndexingEnabled`, `respectAffiliateGate` + derived `indexingBlocked`) — cache Redis |
+| Método | Rota                    | Uso                                                                                                            |
+| ------ | ----------------------- | -------------------------------------------------------------------------------------------------------------- |
+| GET    | `/site-settings/public` | Subconjunto seguro (`publicIndexingEnabled`, `respectAffiliateGate` + derived `indexingBlocked`) — cache Redis |
 
 ---
 
@@ -264,24 +264,24 @@ Componente: `OperationalHealthPanel.tsx` (read-only)
 
 ## 6. Integrações na vitrine e workers
 
-| Consumidor | Mudança |
-|------------|---------|
-| [`apps/web/src/app/robots.ts`](apps/web/src/app/robots.ts) | Fetch `GET /site-settings/public` (ou helper server interno); `disallow: /` quando indexing bloqueado |
-| [`BuildBatchCheckoutRedirect`](packages/application/src/use-cases/wishlist/BuildBatchCheckoutRedirect.ts) | Checar `batchCheckoutEnabled` |
-| [`ProcessTriggeredAlerts`](packages/application/src/use-cases/alert/ProcessTriggeredAlerts.ts) | Checar `priceAlertsEnabled` |
-| [`CMSBlockOrderManager`](apps/admin/src/components/cms/CMSBlockOrderManager.tsx) | Se `publishConfirmRequired`, `AlertDialog` antes de salvar ordem/blocos (mínimo) |
+| Consumidor                                                                                                | Mudança                                                                                               |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [`apps/web/src/app/robots.ts`](apps/web/src/app/robots.ts)                                                | Fetch `GET /site-settings/public` (ou helper server interno); `disallow: /` quando indexing bloqueado |
+| [`BuildBatchCheckoutRedirect`](packages/application/src/use-cases/wishlist/BuildBatchCheckoutRedirect.ts) | Checar `batchCheckoutEnabled`                                                                         |
+| [`ProcessTriggeredAlerts`](packages/application/src/use-cases/alert/ProcessTriggeredAlerts.ts)            | Checar `priceAlertsEnabled`                                                                           |
+| [`CMSBlockOrderManager`](apps/admin/src/components/cms/CMSBlockOrderManager.tsx)                          | Se `publishConfirmRequired`, `AlertDialog` antes de salvar ordem/blocos (mínimo)                      |
 
 ---
 
 ## 7. Testes
 
-| Alvo | Tipo |
-|------|------|
-| `UpdateAffiliateAccount` — promote com/sem checklist | unit |
-| `UpdateOperatorAccess` — não desativar self / último admin | unit |
-| `ChangeOperatorPassword` — senha atual inválida | unit |
-| `UpdateSiteSettings` — parse Zod + cache invalidation mock | unit |
-| Gate composto (settings + affiliate pending) | unit em `ResolveAffiliateRedirect` / `BuildBatchCheckoutRedirect` |
+| Alvo                                                       | Tipo                                                              |
+| ---------------------------------------------------------- | ----------------------------------------------------------------- |
+| `UpdateAffiliateAccount` — promote com/sem checklist       | unit                                                              |
+| `UpdateOperatorAccess` — não desativar self / último admin | unit                                                              |
+| `ChangeOperatorPassword` — senha atual inválida            | unit                                                              |
+| `UpdateSiteSettings` — parse Zod + cache invalidation mock | unit                                                              |
+| Gate composto (settings + affiliate pending)               | unit em `ResolveAffiliateRedirect` / `BuildBatchCheckoutRedirect` |
 
 ---
 

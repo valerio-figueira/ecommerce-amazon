@@ -4,13 +4,13 @@ Os planos são a **fonte de especificação**. A documentação em `docs/` descr
 
 ## Visão geral
 
-| Plano | Arquivo | Foco | Status implementação |
-|-------|---------|------|----------------------|
-| PRD Core | [prd_plataforma_afiliação_de44933f.plan.md](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) | Negócio, workers, UX, retenção, entidades | Parcial — backend core + seed; web fase 1 (home) |
-| PRD Growth | [prd_growth_aquisicao_trafego.plan.md](../.cursor/plans/prd_growth_aquisicao_trafego.plan.md) | SEO, conteúdo, social, páginas-ímã | Parcial — entidades/API seed; páginas web pendentes |
-| Arquitetura Técnica | [arquitetura_tecnica_node.plan.md](../.cursor/plans/arquitetura_tecnica_node.plan.md) | Clean Architecture, filas, cache, testes | Implementado (scaffold + camadas) |
-| UI Home Vitrine | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md) | CMS Home fase 1, blocos, seed ESTORE | **Concluído** — ver [cms-home-phase1.md](./cms-home-phase1.md) |
-| UI/UX Home (wireframe) | [ui_ux_home_vitrine_287e750c.plan.md](../.cursor/plans/ui_ux_home_vitrine_287e750c.plan.md) | Referência visual ESTORE | Referência de design; não é spec técnica |
+| Plano                  | Arquivo                                                                                                 | Foco                                      | Status implementação                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| PRD Core               | [prd_plataforma_afiliação_de44933f.plan.md](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) | Negócio, workers, UX, retenção, entidades | Parcial — backend core + seed; web fase 1 (home)               |
+| PRD Growth             | [prd_growth_aquisicao_trafego.plan.md](../.cursor/plans/prd_growth_aquisicao_trafego.plan.md)           | SEO, conteúdo, social, páginas-ímã        | Parcial — entidades/API seed; páginas web pendentes            |
+| Arquitetura Técnica    | [arquitetura_tecnica_node.plan.md](../.cursor/plans/arquitetura_tecnica_node.plan.md)                   | Clean Architecture, filas, cache, testes  | Implementado (scaffold + camadas)                              |
+| UI Home Vitrine        | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md)                                     | CMS Home fase 1, blocos, seed ESTORE      | **Concluído** — ver [cms-home-phase1.md](./cms-home-phase1.md) |
+| UI/UX Home (wireframe) | [ui_ux_home_vitrine_287e750c.plan.md](../.cursor/plans/ui_ux_home_vitrine_287e750c.plan.md)             | Referência visual ESTORE                  | Referência de design; não é spec técnica                       |
 
 ## PRD Core — Plataforma de Afiliação
 
@@ -127,11 +127,11 @@ flowchart TB
 
 ## Quando consultar qual plano
 
-| Tarefa | Consultar |
-|--------|-----------|
-| Nova entidade ou regra de negócio | PRD Core §1–4 |
-| Nova rota API | PRD Core §5 + [api-rest.md](./api-rest.md) + `03-api-rest.mdc` |
-| Novo job/fila worker | PRD Core pipelines + [worker-pipelines.md](./worker-pipelines.md) |
-| Novo bloco CMS | UI Home plan + [cms-home-phase1.md](./cms-home-phase1.md) |
-| Artigo, cupom, coleção, SEO | PRD Growth + `07-growth-seo-content.mdc` |
-| Estrutura de pastas / DI | Arquitetura plan + [architecture.md](./architecture.md) |
+| Tarefa                            | Consultar                                                         |
+| --------------------------------- | ----------------------------------------------------------------- |
+| Nova entidade ou regra de negócio | PRD Core §1–4                                                     |
+| Nova rota API                     | PRD Core §5 + [api-rest.md](./api-rest.md) + `03-api-rest.mdc`    |
+| Novo job/fila worker              | PRD Core pipelines + [worker-pipelines.md](./worker-pipelines.md) |
+| Novo bloco CMS                    | UI Home plan + [cms-home-phase1.md](./cms-home-phase1.md)         |
+| Artigo, cupom, coleção, SEO       | PRD Growth + `07-growth-seo-content.mdc`                          |
+| Estrutura de pastas / DI          | Arquitetura plan + [architecture.md](./architecture.md)           |

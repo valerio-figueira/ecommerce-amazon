@@ -64,10 +64,13 @@ function formatSpecsList(groups: SpecGroup[]): string {
     }
   }
 
-  return groupedLines.slice(0, 16).join('\n') || entries
-    .slice(0, 12)
-    .map(([key, value]) => `- ${key}: ${value}`)
-    .join('\n');
+  return (
+    groupedLines.slice(0, 16).join('\n') ||
+    entries
+      .slice(0, 12)
+      .map(([key, value]) => `- ${key}: ${value}`)
+      .join('\n')
+  );
 }
 
 export function buildProductSeoLlmPrompt(input: ProductSeoLlmPromptInput): string {
@@ -155,7 +158,9 @@ export function parseProductSeoLlmResponse(raw: string): ProductSeoLlmResponse {
   try {
     parsed = JSON.parse(jsonMatch[0]);
   } catch {
-    throw new Error('JSON inválido. Verifique se a IA retornou apenas o objeto metaTitle/metaDescription.');
+    throw new Error(
+      'JSON inválido. Verifique se a IA retornou apenas o objeto metaTitle/metaDescription.',
+    );
   }
 
   if (!isRecord(parsed)) {

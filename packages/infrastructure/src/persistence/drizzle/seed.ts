@@ -80,8 +80,7 @@ const BENTO_HUB_MIX_BLOCK_PROPS = {
 
 const FLASH_DEALS_BLOCK_PROPS = {
   title: 'Ofertas Relâmpago',
-  subtitle:
-    'Maiores descontos detectados nas últimas horas — confira antes que o preço suba',
+  subtitle: 'Maiores descontos detectados nas últimas horas — confira antes que o preço suba',
   minDiscountPercentage: 30,
   sortBy: 'discount_percent_desc',
   limit: 12,
@@ -129,7 +128,11 @@ async function runSeed(): Promise<void> {
   const now = new Date();
 
   try {
-    logger.info(devSeed ? 'Running development seed (with demo catalog)' : 'Running production bootstrap seed');
+    logger.info(
+      devSeed
+        ? 'Running development seed (with demo catalog)'
+        : 'Running production bootstrap seed',
+    );
 
     await seedArticleCategories(db, now, logger);
 
@@ -197,135 +200,135 @@ async function insertProductSeed(
   ]);
 
   await db.insert(schema.products).values([
-      {
-        id: SEED_PRODUCT_AMAZON_ID,
-        marketplace: Marketplace.AMAZON_BR,
-        externalId: 'B0SEED001',
-        slug: 'cadeira-ergonomica-home-office',
-        titleClean: 'Cadeira Ergonômica Home Office',
-        titleRaw: 'Cadeira Ergonômica Home Office Pro',
-        shortDescription: 'Cadeira com apoio lombar ajustável para longas jornadas.',
-        priceAmount: '899.90',
-        priceStrikethrough: '1299.90',
-        currency: 'BRL',
-        stalePrice: false,
-        priceUpdatedAt: now,
-        affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED001',
-        images: [PEXELS.chair],
-        specsNormalized: legacyRecordToSpecGroups({ material: 'Mesh', peso_maximo: '120kg' }),
-        editorialScore: 85,
-        availability: ProductAvailability.IN_STOCK,
-        rating: '4.60',
-        reviewCount: 128,
-        categoryId: SEED_CATEGORY_HOME_OFFICE_ID,
-        tags: ['ergonomica', 'home-office'],
-        metaTitle: formatWebPageTitle('Cadeira Ergonômica Home Office', brand),
-        metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
-        pros: ['Apoio lombar', 'Braços ajustáveis'],
-        cons: ['Montagem demorada'],
-        createdAt: now,
-      },
-      {
-        id: SEED_PRODUCT_SHOPEE_ID,
-        marketplace: Marketplace.SHOPEE_BR,
-        externalId: 'SHOPEE-SEED-002',
-        slug: 'headset-gamer-7-1',
-        titleClean: 'Headset Gamer 7.1 Surround',
-        titleRaw: 'Headset Gamer 7.1 RGB USB',
-        shortDescription: 'Headset com som surround virtual e microfone removível.',
-        priceAmount: '249.90',
-        currency: 'BRL',
-        stalePrice: false,
-        priceUpdatedAt: now,
-        affiliateDeepLink: 'https://shopee.com.br/headset-gamer-seed',
-        images: [PEXELS.headset],
-        specsNormalized: legacyRecordToSpecGroups({ conexao: 'USB', surround: '7.1' }),
-        editorialScore: 78,
-        availability: ProductAvailability.IN_STOCK,
-        rating: '4.40',
-        reviewCount: 56,
-        categoryId: SEED_CATEGORY_TECLADOS_ID,
-        tags: ['headset', 'gamer'],
-        createdAt: now,
-      },
-    ]);
-
-    const snapshots = [];
-    for (let day = 30; day >= 0; day -= 3) {
-      const capturedAt = new Date(now);
-      capturedAt.setDate(capturedAt.getDate() - day);
-      const amount = (899.9 - (30 - day) * 5).toFixed(2);
-      snapshots.push({
-        productId: SEED_PRODUCT_AMAZON_ID,
-        amount,
-        currency: 'BRL',
-        source: 'worker_cron' as const,
-        capturedAt,
-      });
-    }
-    await db.insert(schema.priceSnapshots).values(snapshots);
-
-    await db.insert(schema.contentArticles).values({
-      id: SEED_ARTICLE_ID,
-      slug: 'guia-cadeira-ergonomica',
-      title: 'Guia completo: como escolher cadeira ergonômica',
-      excerpt:
-        'Aprenda critérios essenciais para escolher uma cadeira ergonômica ideal para home office.',
-      coverImageUrl: PEXELS.homeOfficeCover,
-      body: '<p>Conteúdo editorial com embed dinâmico de produto abaixo.</p><p>[[product:cadeira-ergonomica-home-office]]</p>',
-      type: ArticleType.GUIDE,
-      status: ArticleStatus.PUBLISHED,
-      authorId: SEED_OPERATOR_ID,
-      categoryId: SEED_ARTICLE_CATEGORY_GUIAS_ID,
-      seoTitle: 'Guia de cadeira ergonômica',
-      seoDescription: 'Aprenda a escolher a cadeira ideal para home office.',
-      seo: {},
-      publishedAt: now,
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    await db.insert(schema.contentProductEmbeds).values({
-      articleId: SEED_ARTICLE_ID,
-      productId: SEED_PRODUCT_AMAZON_ID,
-      position: 1,
-      variant: 'highlight',
-    });
-
-    await db.insert(schema.curatedCollections).values({
-      id: SEED_COLLECTION_ID,
-      slug: 'setup-gamer-iniciante',
-      title: 'Setup gamer para iniciantes',
-      description: 'Seleção curada para montar seu primeiro setup.',
-      coverImageUrl: PEXELS.gamingCover,
-      campaignOrigin: 'pinterest',
-      utmDefaults: { utm_source: 'pinterest', utm_medium: 'social', utm_campaign: 'setup-gamer' },
-      ctaText: 'Ver ofertas do setup',
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    await db.insert(schema.collectionProducts).values([
-      { collectionId: SEED_COLLECTION_ID, productId: SEED_PRODUCT_SHOPEE_ID, sortOrder: 0 },
-      { collectionId: SEED_COLLECTION_ID, productId: SEED_PRODUCT_AMAZON_ID, sortOrder: 1 },
-    ]);
-
-    const validUntil = new Date(now);
-    validUntil.setDate(validUntil.getDate() + 30);
-
-    await db.insert(schema.coupons).values({
-      id: SEED_COUPON_ID,
+    {
+      id: SEED_PRODUCT_AMAZON_ID,
       marketplace: Marketplace.AMAZON_BR,
-      code: 'VITRINE10',
-      description: '10% off em seleção home office',
-      discountValue: '10.00',
-      discountType: DiscountType.PERCENT,
-      validFrom: now,
-      validUntil,
-      status: CouponStatus.ACTIVE,
-      sourceUrl: 'https://www.amazon.com.br/deals',
-      lastVerifiedAt: now,
+      externalId: 'B0SEED001',
+      slug: 'cadeira-ergonomica-home-office',
+      titleClean: 'Cadeira Ergonômica Home Office',
+      titleRaw: 'Cadeira Ergonômica Home Office Pro',
+      shortDescription: 'Cadeira com apoio lombar ajustável para longas jornadas.',
+      priceAmount: '899.90',
+      priceStrikethrough: '1299.90',
+      currency: 'BRL',
+      stalePrice: false,
+      priceUpdatedAt: now,
+      affiliateDeepLink: 'https://www.amazon.com.br/dp/B0SEED001',
+      images: [PEXELS.chair],
+      specsNormalized: legacyRecordToSpecGroups({ material: 'Mesh', peso_maximo: '120kg' }),
+      editorialScore: 85,
+      availability: ProductAvailability.IN_STOCK,
+      rating: '4.60',
+      reviewCount: 128,
+      categoryId: SEED_CATEGORY_HOME_OFFICE_ID,
+      tags: ['ergonomica', 'home-office'],
+      metaTitle: formatWebPageTitle('Cadeira Ergonômica Home Office', brand),
+      metaDescription: 'Compare preço e histórico da cadeira ergonômica mais buscada.',
+      pros: ['Apoio lombar', 'Braços ajustáveis'],
+      cons: ['Montagem demorada'],
+      createdAt: now,
+    },
+    {
+      id: SEED_PRODUCT_SHOPEE_ID,
+      marketplace: Marketplace.SHOPEE_BR,
+      externalId: 'SHOPEE-SEED-002',
+      slug: 'headset-gamer-7-1',
+      titleClean: 'Headset Gamer 7.1 Surround',
+      titleRaw: 'Headset Gamer 7.1 RGB USB',
+      shortDescription: 'Headset com som surround virtual e microfone removível.',
+      priceAmount: '249.90',
+      currency: 'BRL',
+      stalePrice: false,
+      priceUpdatedAt: now,
+      affiliateDeepLink: 'https://shopee.com.br/headset-gamer-seed',
+      images: [PEXELS.headset],
+      specsNormalized: legacyRecordToSpecGroups({ conexao: 'USB', surround: '7.1' }),
+      editorialScore: 78,
+      availability: ProductAvailability.IN_STOCK,
+      rating: '4.40',
+      reviewCount: 56,
+      categoryId: SEED_CATEGORY_TECLADOS_ID,
+      tags: ['headset', 'gamer'],
+      createdAt: now,
+    },
+  ]);
+
+  const snapshots = [];
+  for (let day = 30; day >= 0; day -= 3) {
+    const capturedAt = new Date(now);
+    capturedAt.setDate(capturedAt.getDate() - day);
+    const amount = (899.9 - (30 - day) * 5).toFixed(2);
+    snapshots.push({
+      productId: SEED_PRODUCT_AMAZON_ID,
+      amount,
+      currency: 'BRL',
+      source: 'worker_cron' as const,
+      capturedAt,
     });
+  }
+  await db.insert(schema.priceSnapshots).values(snapshots);
+
+  await db.insert(schema.contentArticles).values({
+    id: SEED_ARTICLE_ID,
+    slug: 'guia-cadeira-ergonomica',
+    title: 'Guia completo: como escolher cadeira ergonômica',
+    excerpt:
+      'Aprenda critérios essenciais para escolher uma cadeira ergonômica ideal para home office.',
+    coverImageUrl: PEXELS.homeOfficeCover,
+    body: '<p>Conteúdo editorial com embed dinâmico de produto abaixo.</p><p>[[product:cadeira-ergonomica-home-office]]</p>',
+    type: ArticleType.GUIDE,
+    status: ArticleStatus.PUBLISHED,
+    authorId: SEED_OPERATOR_ID,
+    categoryId: SEED_ARTICLE_CATEGORY_GUIAS_ID,
+    seoTitle: 'Guia de cadeira ergonômica',
+    seoDescription: 'Aprenda a escolher a cadeira ideal para home office.',
+    seo: {},
+    publishedAt: now,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  await db.insert(schema.contentProductEmbeds).values({
+    articleId: SEED_ARTICLE_ID,
+    productId: SEED_PRODUCT_AMAZON_ID,
+    position: 1,
+    variant: 'highlight',
+  });
+
+  await db.insert(schema.curatedCollections).values({
+    id: SEED_COLLECTION_ID,
+    slug: 'setup-gamer-iniciante',
+    title: 'Setup gamer para iniciantes',
+    description: 'Seleção curada para montar seu primeiro setup.',
+    coverImageUrl: PEXELS.gamingCover,
+    campaignOrigin: 'pinterest',
+    utmDefaults: { utm_source: 'pinterest', utm_medium: 'social', utm_campaign: 'setup-gamer' },
+    ctaText: 'Ver ofertas do setup',
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  await db.insert(schema.collectionProducts).values([
+    { collectionId: SEED_COLLECTION_ID, productId: SEED_PRODUCT_SHOPEE_ID, sortOrder: 0 },
+    { collectionId: SEED_COLLECTION_ID, productId: SEED_PRODUCT_AMAZON_ID, sortOrder: 1 },
+  ]);
+
+  const validUntil = new Date(now);
+  validUntil.setDate(validUntil.getDate() + 30);
+
+  await db.insert(schema.coupons).values({
+    id: SEED_COUPON_ID,
+    marketplace: Marketplace.AMAZON_BR,
+    code: 'VITRINE10',
+    description: '10% off em seleção home office',
+    discountValue: '10.00',
+    discountType: DiscountType.PERCENT,
+    validFrom: now,
+    validUntil,
+    status: CouponStatus.ACTIVE,
+    sourceUrl: 'https://www.amazon.com.br/deals',
+    lastVerifiedAt: now,
+  });
 }
 
 async function seedCategories(
@@ -421,9 +424,7 @@ async function seedHomePage(
 
   const brand = getBrandConfig(loadEnv());
 
-  const blocks = devSeed
-    ? buildDevHomePageBlocks()
-    : buildProductionHomePageBlocks(brand);
+  const blocks = devSeed ? buildDevHomePageBlocks() : buildProductionHomePageBlocks(brand);
 
   await insertPageWithBlocks(
     db,
@@ -440,7 +441,11 @@ async function seedHomePage(
     blocks,
   );
 
-  logger.info(devSeed ? 'Home page CMS seed inserted (dev layout)' : 'Home page CMS seed inserted (production layout)');
+  logger.info(
+    devSeed
+      ? 'Home page CMS seed inserted (dev layout)'
+      : 'Home page CMS seed inserted (production layout)',
+  );
 }
 
 function buildProductionHomePageBlocks(
@@ -489,126 +494,122 @@ function buildProductionHomePageBlocks(
 
 function buildDevHomePageBlocks(): Parameters<typeof insertPageWithBlocks>[2] {
   return [
-      {
-        id: SEED_BLOCK_HERO_CAROUSEL_ID,
-        type: BlockType.HERO_CAROUSEL,
-        sortOrder: 0,
-        props: {
-          slides: [
-            {
-              imageUrl: 'https://placehold.co/1200x800?text=Setup+Gamer',
-              title: 'Monte seu setup gamer completo',
-              subtitle: 'Seleção curada com os melhores custo-benefício',
-              ctaLabel: 'Ver coleção',
-              ctaHref: '/colecoes/setup-gamer-iniciante',
-            },
-            {
-              imageUrl: 'https://placehold.co/1200x800?text=Home+Office',
-              title: 'Home office ergonômico',
-              subtitle: 'Produtos testados pela nossa curadoria',
-              ctaLabel: 'Explorar',
-              linkedProductSlug: 'cadeira-ergonomica-home-office',
-            },
-          ],
-          autoplay: true,
-          intervalMs: 6000,
-        },
+    {
+      id: SEED_BLOCK_HERO_CAROUSEL_ID,
+      type: BlockType.HERO_CAROUSEL,
+      sortOrder: 0,
+      props: {
+        slides: [
+          {
+            imageUrl: 'https://placehold.co/1200x800?text=Setup+Gamer',
+            title: 'Monte seu setup gamer completo',
+            subtitle: 'Seleção curada com os melhores custo-benefício',
+            ctaLabel: 'Ver coleção',
+            ctaHref: '/colecoes/setup-gamer-iniciante',
+          },
+          {
+            imageUrl: 'https://placehold.co/1200x800?text=Home+Office',
+            title: 'Home office ergonômico',
+            subtitle: 'Produtos testados pela nossa curadoria',
+            ctaLabel: 'Explorar',
+            linkedProductSlug: 'cadeira-ergonomica-home-office',
+          },
+        ],
+        autoplay: true,
+        intervalMs: 6000,
       },
-      {
-        id: SEED_BLOCK_DYNAMIC_GRID_ID,
-        type: BlockType.DYNAMIC_PRODUCT_GRID,
-        sortOrder: 1,
-        props: FLASH_DEALS_BLOCK_PROPS,
+    },
+    {
+      id: SEED_BLOCK_DYNAMIC_GRID_ID,
+      type: BlockType.DYNAMIC_PRODUCT_GRID,
+      sortOrder: 1,
+      props: FLASH_DEALS_BLOCK_PROPS,
+    },
+    {
+      id: SEED_BLOCK_BENTO_ID,
+      type: BlockType.CATEGORY_BENTO_GRID,
+      sortOrder: 2,
+      props: {
+        title: 'Categorias populares',
+        tiles: [
+          {
+            title: 'Home office',
+            subtitle: 'Curadoria ergonômica',
+            imageUrl: 'https://placehold.co/400x400?text=Office',
+            size: 'large',
+            categorySlug: 'home-office',
+          },
+          {
+            title: 'Games',
+            subtitle: 'Setup gamer',
+            imageUrl: 'https://placehold.co/300x300?text=Games',
+            size: 'small',
+            categorySlug: 'games',
+          },
+          {
+            title: 'Eletrônicos',
+            subtitle: 'Tech selecionada',
+            imageUrl: 'https://placehold.co/300x300?text=Tech',
+            size: 'small',
+            categorySlug: 'eletronicos',
+          },
+          {
+            title: 'Ergonomia',
+            subtitle: 'Conforto no dia a dia',
+            imageUrl: 'https://placehold.co/300x300?text=Ergo',
+            size: 'small',
+            categorySlug: 'home-office',
+          },
+          {
+            title: 'Periféricos',
+            subtitle: 'Mouse, teclado e mais',
+            imageUrl: 'https://placehold.co/300x300?text=Perif',
+            size: 'small',
+            categorySlug: 'games',
+          },
+          {
+            title: 'Destaques',
+            subtitle: 'Seleção editorial',
+            imageUrl: 'https://placehold.co/400x400?text=Top',
+            size: 'large',
+            href: '/colecoes/setup-gamer-iniciante',
+          },
+        ],
       },
-      {
-        id: SEED_BLOCK_BENTO_ID,
-        type: BlockType.CATEGORY_BENTO_GRID,
-        sortOrder: 2,
-        props: {
-          title: 'Categorias populares',
-          tiles: [
-            {
-              title: 'Home office',
-              subtitle: 'Curadoria ergonômica',
-              imageUrl: 'https://placehold.co/400x400?text=Office',
-              size: 'large',
-              categorySlug: 'home-office',
-            },
-            {
-              title: 'Games',
-              subtitle: 'Setup gamer',
-              imageUrl: 'https://placehold.co/300x300?text=Games',
-              size: 'small',
-              categorySlug: 'games',
-            },
-            {
-              title: 'Eletrônicos',
-              subtitle: 'Tech selecionada',
-              imageUrl: 'https://placehold.co/300x300?text=Tech',
-              size: 'small',
-              categorySlug: 'eletronicos',
-            },
-            {
-              title: 'Ergonomia',
-              subtitle: 'Conforto no dia a dia',
-              imageUrl: 'https://placehold.co/300x300?text=Ergo',
-              size: 'small',
-              categorySlug: 'home-office',
-            },
-            {
-              title: 'Periféricos',
-              subtitle: 'Mouse, teclado e mais',
-              imageUrl: 'https://placehold.co/300x300?text=Perif',
-              size: 'small',
-              categorySlug: 'games',
-            },
-            {
-              title: 'Destaques',
-              subtitle: 'Seleção editorial',
-              imageUrl: 'https://placehold.co/400x400?text=Top',
-              size: 'large',
-              href: '/colecoes/setup-gamer-iniciante',
-            },
-          ],
-        },
+    },
+    {
+      id: SEED_BLOCK_PILLS_ID,
+      type: BlockType.CATEGORY_PILLS,
+      sortOrder: 3,
+      props: {
+        categorySlugs: ['home-office', 'games', 'eletronicos'],
+        linkedBlockId: SEED_BLOCK_GRID_ID,
       },
-      {
-        id: SEED_BLOCK_PILLS_ID,
-        type: BlockType.CATEGORY_PILLS,
-        sortOrder: 3,
-        props: {
-          categorySlugs: ['home-office', 'games', 'eletronicos'],
-          linkedBlockId: SEED_BLOCK_GRID_ID,
-        },
+    },
+    {
+      id: SEED_BLOCK_GRID_ID,
+      type: BlockType.PRODUCT_GRID,
+      sortOrder: 4,
+      props: {
+        title: 'Produtos populares',
+        categorySlug: null,
+        sort: 'editorial_score',
+        pageSize: 12,
+        columns: 4,
+        catalogHref: '/categorias/home-office',
       },
-      {
-        id: SEED_BLOCK_GRID_ID,
-        type: BlockType.PRODUCT_GRID,
-        sortOrder: 4,
-        props: {
-          title: 'Produtos populares',
-          categorySlug: null,
-          sort: 'editorial_score',
-          pageSize: 12,
-          columns: 4,
-          catalogHref: '/categorias/home-office',
-        },
+    },
+    {
+      id: SEED_BLOCK_COLLECTION_ID,
+      type: BlockType.CURATED_COLLECTION,
+      sortOrder: 5,
+      props: {
+        collectionSlugs: ['setup-gamer-iniciante', 'home-office-essencial', 'perifericos-premium'],
+        autoplay: true,
+        intervalMs: 8000,
       },
-      {
-        id: SEED_BLOCK_COLLECTION_ID,
-        type: BlockType.CURATED_COLLECTION,
-        sortOrder: 5,
-        props: {
-          collectionSlugs: [
-            'setup-gamer-iniciante',
-            'home-office-essencial',
-            'perifericos-premium',
-          ],
-          autoplay: true,
-          intervalMs: 8000,
-        },
-      },
-    ];
+    },
+  ];
 }
 
 async function ensureFlashDealsHomeLayout(
@@ -682,7 +683,8 @@ async function ensureFlashDealsHomeLayout(
   const duplicateDynamicIds = blocks
     .filter(
       (row) =>
-        parseBlockType(row.type) === BlockType.DYNAMIC_PRODUCT_GRID && row.id !== SEED_BLOCK_DYNAMIC_GRID_ID,
+        parseBlockType(row.type) === BlockType.DYNAMIC_PRODUCT_GRID &&
+        row.id !== SEED_BLOCK_DYNAMIC_GRID_ID,
     )
     .map((row) => row.id);
 
@@ -801,7 +803,7 @@ async function seedCollections(
       tags: ['mouse', 'gamer'],
       createdAt: now,
     },
-  ] ;
+  ];
 
   for (const product of extraProducts) {
     const existing = await db
@@ -893,9 +895,7 @@ async function ensureBentoHubMixHomeBlock(
   db: ReturnType<typeof drizzle<typeof schema>>,
   logger: ReturnType<typeof createConsoleLogger>,
 ): Promise<void> {
-  await db.execute(
-    sql`ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'bento_hub_mix'`,
-  );
+  await db.execute(sql`ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'bento_hub_mix'`);
 
   const homePage = await db
     .select({ id: schema.pages.id })
@@ -1272,7 +1272,8 @@ async function seedContentClusters(
       id: SEED_ARTICLE_SPOKE_1_ID,
       slug: 'ajuste-lombar-cadeira-ergonomica',
       title: 'Ajuste lombar: o que observar na cadeira ergonômica',
-      excerpt: 'Entenda como o suporte lombar correto reduz fadiga em jornadas longas de home office.',
+      excerpt:
+        'Entenda como o suporte lombar correto reduz fadiga em jornadas longas de home office.',
       coverImageUrl: PEXELS.chair,
       body: '<p>Conteúdo satélite sobre ajuste lombar e ergonomia.</p>',
       type: ArticleType.GUIDE,

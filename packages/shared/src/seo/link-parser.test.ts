@@ -17,8 +17,7 @@ describe('injectInternalLinks', () => {
   });
 
   it('skips keywords inside existing anchor tags', () => {
-    const html =
-      '<a href="/existente">cadeira ergonômica</a> e cadeira ergonômica solta.';
+    const html = '<a href="/existente">cadeira ergonômica</a> e cadeira ergonômica solta.';
     const result = injectInternalLinks(html, [
       { keyword: 'cadeira ergonômica', targetUrl: '/produtos/cadeira', maxMatches: 2 },
     ]);

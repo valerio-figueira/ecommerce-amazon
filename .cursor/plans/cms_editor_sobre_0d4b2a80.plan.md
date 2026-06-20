@@ -1,6 +1,6 @@
 ---
 name: CMS Editor Sobre
-overview: "Implementar a Fase 5 do plano `about_contact_pages`: editor visual da página Sobre no Admin (`/paginas/sobre`), endpoint PATCH autenticado, revalidação da vitrine `/sobre`, e toggle rascunho/publicado — sem preview draft na vitrine."
+overview: 'Implementar a Fase 5 do plano `about_contact_pages`: editor visual da página Sobre no Admin (`/paginas/sobre`), endpoint PATCH autenticado, revalidação da vitrine `/sobre`, e toggle rascunho/publicado — sem preview draft na vitrine.'
 todos:
   - id: api-patch
     content: PATCH /admin/institutional-pages/:slug + schemas Zod + estender repository/use case com status, lastUpdated e web revalidate
@@ -26,7 +26,7 @@ isProject: false
 
 A infraestrutura da Sobre **já está pronta** (migrations, seed, Zod, GET público/admin, vitrine `/sobre`, equipe via `/perfil`). O gap é exclusivamente o **editor Admin** e o **PATCH** que o plano deixou como pendente ([`admin-about-editor`](.cursor/plans/about_contact_pages_d59258c4.plan.md)).
 
-Hoje, `/paginas/sobre` abre erroneamente o [`CMSBlockOrderManager`](apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx) (editor de blocos da home), porque não há ramificação por `pageKind`.
+Hoje, `/paginas/sobre` abre erroneamente o [`CMSBlockOrderManager`](<apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx>) (editor de blocos da home), porque não há ramificação por `pageKind`.
 
 ```mermaid
 flowchart LR
@@ -43,13 +43,13 @@ flowchart LR
 
 ## Escopo desta entrega
 
-| Incluído | Fora de escopo |
-|----------|----------------|
-| `AboutPageEditor` com painéis flutuantes | Preview `?preview=draft` na vitrine |
-| `PATCH /admin/institutional-pages/:slug` | `/contato` editável via CMS |
-| Toggle rascunho/publicado no save | Drag-and-drop / WYSIWYG completo |
-| Revalidação ISR de `/sobre` após save | Cards de equipe no editor (vêm de `/perfil`) |
-| Lista `/paginas` com CTA correto por `pageKind` | Publish workflow da home CMS |
+| Incluído                                        | Fora de escopo                               |
+| ----------------------------------------------- | -------------------------------------------- |
+| `AboutPageEditor` com painéis flutuantes        | Preview `?preview=draft` na vitrine          |
+| `PATCH /admin/institutional-pages/:slug`        | `/contato` editável via CMS                  |
+| Toggle rascunho/publicado no save               | Drag-and-drop / WYSIWYG completo             |
+| Revalidação ISR de `/sobre` após save           | Cards de equipe no editor (vêm de `/perfil`) |
+| Lista `/paginas` com CTA correto por `pageKind` | Publish workflow da home CMS                 |
 
 ---
 
@@ -111,10 +111,10 @@ Criar [`apps/admin/src/app/api/admin/institutional-pages/[slug]/route.ts`](apps/
 
 ### Clients
 
-| Arquivo | Uso |
-|---------|-----|
-| `apps/admin/src/lib/api/institutional-pages.ts` | Server component (`adminFetchParsed`) |
-| `apps/admin/src/lib/api/institutional-pages-client.ts` | Client component (save) |
+| Arquivo                                                | Uso                                   |
+| ------------------------------------------------------ | ------------------------------------- |
+| `apps/admin/src/lib/api/institutional-pages.ts`        | Server component (`adminFetchParsed`) |
+| `apps/admin/src/lib/api/institutional-pages-client.ts` | Client component (save)               |
 
 Schemas de resposta: estender `institutionalPageResponseSchema` com `status` + `pageKind` (`adminInstitutionalPageResponseSchema`).
 
@@ -124,13 +124,13 @@ Schemas de resposta: estender `institutionalPageResponseSchema` com `status` + `
 
 ### Roteamento
 
-[`apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx`](apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx):
+[`apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx`](<apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx>):
 
 1. Buscar página na lista (`listAdminPages`) ou GET institucional
 2. Se `pageKind === institutional` → renderizar `AboutPageEditor`
 3. Senão → manter `CMSBlockOrderManager`
 
-[`apps/admin/src/app/(dashboard)/paginas/page.tsx`](apps/admin/src/app/(dashboard)/paginas/page.tsx):
+[`apps/admin/src/app/(dashboard)/paginas/page.tsx`](<apps/admin/src/app/(dashboard)/paginas/page.tsx>):
 
 - CTA condicional: **"Editar conteúdo"** (`institutional`) vs **"Editar blocos"** (`block_layout`)
 - Badge opcional de tipo (`Institucional` / `Blocos`)
@@ -141,15 +141,15 @@ Novo diretório `apps/admin/src/components/about/`:
 
 **`AboutPageEditor.tsx`** — client component, `react-hook-form` + `zodResolver` (padrão [`ProfileForm.tsx`](apps/admin/src/components/profile/ProfileForm.tsx)), layout [`11-admin-floating-panels.mdc`](.cursor/rules/11-admin-floating-panels.mdc):
 
-| Painel | Campos |
-|--------|--------|
-| Contexto + ações | Título da página, status pill, botões **Salvar rascunho** / **Publicar**, link "Ver na vitrine" (`/sobre`) |
-| SEO | `seoTitle`, `seoDescription` + contadores de caracteres (reutilizar padrão de [`ArticleForm`](apps/admin/src/components/articles/ArticleForm.tsx)) |
-| Hero | `heroTitle`, `heroIntro` |
+| Painel           | Campos                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contexto + ações | Título da página, status pill, botões **Salvar rascunho** / **Publicar**, link "Ver na vitrine" (`/sobre`)                                                                                                    |
+| SEO              | `seoTitle`, `seoDescription` + contadores de caracteres (reutilizar padrão de [`ArticleForm`](apps/admin/src/components/articles/ArticleForm.tsx))                                                            |
+| Hero             | `heroTitle`, `heroIntro`                                                                                                                                                                                      |
 | Seções fixas (4) | Accordion/tabs por `id` (`proposta`, `metodo`, `afiliados`, `equipe`): `title`, lista editável de `paragraphs`, `listItems` opcional; hint de HTML permitido; `#afiliados` mostra aviso de callout automático |
-| Equipe | `teamSectionIntro` + callout informativo linkando `/perfil` |
-| Próximos passos | `trafficDirection.title`, `intro`, links (1–3) com `label`, `href` (path `/...`), `description` opcional |
-| Meta | `lastUpdated` (read-only, atualizado no save) |
+| Equipe           | `teamSectionIntro` + callout informativo linkando `/perfil`                                                                                                                                                   |
+| Próximos passos  | `trafficDirection.title`, `intro`, links (1–3) com `label`, `href` (path `/...`), `description` opcional                                                                                                      |
+| Meta             | `lastUpdated` (read-only, atualizado no save)                                                                                                                                                                 |
 
 **Subcomponentes sugeridos** (manter arquivos pequenos):
 

@@ -33,7 +33,10 @@ function makeProduct(id: string, categoryId?: string): Product {
     titleClean: `Produto ${id}`,
     titleRaw: `Produto ${id}`,
     price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
-    affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
+    affiliateLink: AffiliateLink.create(
+      'https://www.amazon.com.br/dp/test?tag=vitrine-20',
+      'amazon_br',
+    ),
     images: [],
     specsNormalized: [],
     editorialScore: 80,
@@ -68,10 +71,12 @@ describe('GetComparisonByIdentifier', () => {
       findBySlug: vi.fn(),
     });
     const productRepository = createMockProductRepository({
-      findByIds: vi.fn().mockResolvedValue([
-        makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
-        makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
+          makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
+        ]),
       findSimilarPublishedByCategory: vi.fn().mockResolvedValue([]),
     });
     const categoryRepository = createMockCategoryRepository({
@@ -107,10 +112,12 @@ describe('GetComparisonByIdentifier', () => {
       findByShareToken: vi.fn(),
     });
     const productRepository = createMockProductRepository({
-      findByIds: vi.fn().mockResolvedValue([
-        makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
-        makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
+          makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
+        ]),
       findSimilarPublishedByCategory: vi.fn().mockResolvedValue([]),
     });
     const categoryRepository = createMockCategoryRepository({
@@ -145,10 +152,12 @@ describe('GetComparisonByIdentifier', () => {
       findBySlug: vi.fn().mockResolvedValue(comparison),
     });
     const productRepository = createMockProductRepository({
-      findByIds: vi.fn().mockResolvedValue([
-        makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
-        makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
-      ]),
+      findByIds: vi
+        .fn()
+        .mockResolvedValue([
+          makeProduct(PRODUCT_A_ID, CATEGORY_A_ID),
+          makeProduct(PRODUCT_B_ID, CATEGORY_A_ID),
+        ]),
       findSimilarPublishedByCategory: vi
         .fn()
         .mockResolvedValueOnce([related])

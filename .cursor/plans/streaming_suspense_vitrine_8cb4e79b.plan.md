@@ -1,6 +1,6 @@
 ---
 name: Streaming Suspense Vitrine
-overview: "Eliminar o \"freeze\" residual na vitrine desacoplando navegação do fetch: páginas síncronas com Suspense granular (shell imediato + skeleton só na área lenta), home sem flash pós-hidratação, header estável via cache, e loading.tsx alinhados aos novos fallbacks."
+overview: 'Eliminar o "freeze" residual na vitrine desacoplando navegação do fetch: páginas síncronas com Suspense granular (shell imediato + skeleton só na área lenta), home sem flash pós-hidratação, header estável via cache, e loading.tsx alinhados aos novos fallbacks.'
 todos:
   - id: pattern-async-children
     content: Criar padrão RSC async + fallbacks reutilizáveis (CategoryHeaderSkeleton, CategorySidebarSkeleton, helpers de fetch extraídos)
@@ -12,7 +12,7 @@ todos:
     content: Refatorar artigos/page.tsx e artigos/[slug]/page.tsx com boundaries Suspense (grid, auto-links) + loading.tsx leves
     status: completed
   - id: home-server-prefetch
-    content: "ProductGridBlock e FeaturedProductBlock: prefetch server + initialData client (eliminar flash pós-hidratação)"
+    content: 'ProductGridBlock e FeaturedProductBlock: prefetch server + initialData client (eliminar flash pós-hidratação)'
     status: completed
   - id: header-cache
     content: unstable_cache para category nav tree em SiteHeaderShell (e sidebar se aplicável)
@@ -86,13 +86,13 @@ sequenceDiagram
 
 Criar componentes async por rota em `apps/web/src/components/listing/` (ou subpastas por domínio):
 
-| Componente | Fetch | Fallback |
-|------------|-------|----------|
-| `CategoryShell` | `getCategory(slug)` | `CategoryHeaderSkeleton` (novo, leve) |
-| `CategoryProductsGrid` | `getCategoryProducts(slug, page)` | `ProductGridSkeleton` |
-| `CategorySidebar` | `fetchCategoryTree()` | trecho já existente em `CategoryPageSkeleton` |
-| `ArticleListingGridAsync` | `fetchPublishedArticles(...)` | `ArticleCardSkeleton` grid |
-| `ArticleAutoLinksSection` | `getAutoLinks()` | `null` ou strip mínimo |
+| Componente                | Fetch                             | Fallback                                      |
+| ------------------------- | --------------------------------- | --------------------------------------------- |
+| `CategoryShell`           | `getCategory(slug)`               | `CategoryHeaderSkeleton` (novo, leve)         |
+| `CategoryProductsGrid`    | `getCategoryProducts(slug, page)` | `ProductGridSkeleton`                         |
+| `CategorySidebar`         | `fetchCategoryTree()`             | trecho já existente em `CategoryPageSkeleton` |
+| `ArticleListingGridAsync` | `fetchPublishedArticles(...)`     | `ArticleCardSkeleton` grid                    |
+| `ArticleAutoLinksSection` | `getAutoLinks()`                  | `null` ou strip mínimo                        |
 
 Extrair helpers de fetch que hoje estão inline em `page.tsx` (ex.: `getCategoryProducts` em categorias) para módulos compartilhados com `page.tsx` e os async children.
 
@@ -207,13 +207,13 @@ Avaliar `unstable_cache` também para `fetchCategoryTree` usado na sidebar de ca
 
 ## Fase G — loading.tsx alinhados
 
-| Rota | Ajuste |
-|------|--------|
-| `categorias/[slug]` | Skeleton leve (header parcial + grid) — shell real substitui header rapidamente |
-| `artigos` | Toolbar skeleton + grid (não página inteira opaca) |
-| `artigos/[slug]` | Hero skeleton + corpo (não full page duplicado) |
-| Root `loading.tsx` | Manter `HomePageSkeleton` (home ainda async no layout fetch) |
-| `colecoes`, `produtos` | Revisão cosmética apenas |
+| Rota                   | Ajuste                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `categorias/[slug]`    | Skeleton leve (header parcial + grid) — shell real substitui header rapidamente |
+| `artigos`              | Toolbar skeleton + grid (não página inteira opaca)                              |
+| `artigos/[slug]`       | Hero skeleton + corpo (não full page duplicado)                                 |
+| Root `loading.tsx`     | Manter `HomePageSkeleton` (home ainda async no layout fetch)                    |
+| `colecoes`, `produtos` | Revisão cosmética apenas                                                        |
 
 ---
 

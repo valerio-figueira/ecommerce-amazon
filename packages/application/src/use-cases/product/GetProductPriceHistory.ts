@@ -1,10 +1,7 @@
 import type { PriceSnapshotRepository } from '@ecommerce-amazon/domain';
 import type { CacheStore } from '@ecommerce-amazon/domain';
 
-import {
-  isPriceHistoryResult,
-  type PriceHistoryResult,
-} from './price-history.types.js';
+import { isPriceHistoryResult, type PriceHistoryResult } from './price-history.types.js';
 
 export class GetProductPriceHistory {
   constructor(

@@ -13,7 +13,9 @@ type PageEditorProps = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function PageEditorPage({ params }: PageEditorProps): Promise<React.JSX.Element> {
+export default async function PageEditorPage({
+  params,
+}: PageEditorProps): Promise<React.JSX.Element> {
   const { slug } = await params;
 
   let pages: Awaited<ReturnType<typeof listAdminPages>> = [];

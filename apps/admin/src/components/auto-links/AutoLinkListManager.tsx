@@ -36,9 +36,7 @@ type AutoLinkListManagerProps = {
 
 const DEFAULT_LIMIT = 20;
 
-export function AutoLinkListManager({
-  initialData,
-}: AutoLinkListManagerProps): React.JSX.Element {
+export function AutoLinkListManager({ initialData }: AutoLinkListManagerProps): React.JSX.Element {
   const adminToast = useAdminToast();
   const [items, setItems] = useState(initialData.items);
   const [total, setTotal] = useState(initialData.total);
@@ -132,10 +130,7 @@ export function AutoLinkListManager({
     }
   }
 
-  async function handleToggleActive(
-    item: AdminAutoLinkSummary,
-    isActive: boolean,
-  ): Promise<void> {
+  async function handleToggleActive(item: AdminAutoLinkSummary, isActive: boolean): Promise<void> {
     setTogglingId(item.id);
     try {
       await updateAutoLinkClient(item.id, { isActive });

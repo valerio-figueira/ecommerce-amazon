@@ -98,11 +98,7 @@ export function FeaturedProductForm({
             <FormItem>
               <FormLabel>Texto do botão (opcional)</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={readString(field.value)}
-                  placeholder="Ex: Ver na Amazon"
-                />
+                <Input {...field} value={readString(field.value)} placeholder="Ex: Ver na Amazon" />
               </FormControl>
               <FormDescription>
                 Deixe em branco para usar o texto padrão da vitrine.

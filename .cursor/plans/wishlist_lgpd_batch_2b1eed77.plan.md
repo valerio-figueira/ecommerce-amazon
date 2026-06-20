@@ -1,6 +1,6 @@
 ---
 name: Wishlist LGPD Batch
-overview: "Fechar três lacunas do MVP de retenção: batch checkout no drawer da wishlist (API já existe), fluxo LGPD de cancelamento de alertas (`DELETE /price-alerts/:token` + página web + link nos e-mails), e consentimento de cookies funcionais com opção de apagar a lista (`DELETE /wishlist`)."
+overview: 'Fechar três lacunas do MVP de retenção: batch checkout no drawer da wishlist (API já existe), fluxo LGPD de cancelamento de alertas (`DELETE /price-alerts/:token` + página web + link nos e-mails), e consentimento de cookies funcionais com opção de apagar a lista (`DELETE /wishlist`).'
 todos:
   - id: api-cancel-alert
     content: PriceAlert.cancel() + CancelPriceAlert use case + DELETE /price-alerts/:token + testes
@@ -33,13 +33,13 @@ isProject: false
 
 ## Contexto
 
-| Peça | Estado atual |
-|------|----------------|
+| Peça                            | Estado atual                                                                                                                                                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `POST /wishlist/checkout-batch` | Implementado em [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts) via [`BuildBatchCheckoutRedirect`](packages/application/src/use-cases/wishlist/BuildBatchCheckoutRedirect.ts) |
-| Drawer wishlist | [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx) — só CTA individual via `AffiliateGoLink`; sem batch |
-| Sessão anônima | [`session.ts`](apps/web/src/lib/session.ts) grava `vitrine_session` **sem consentimento** |
-| Alertas LGPD | `POST /price-alerts` + confirm existem; **`DELETE /price-alerts/:token` ausente** |
-| Política legal | [`packages/shared/src/legal/legal-content.ts`](packages/shared/src/legal/legal-content.ts) já documenta cookie `vitrine_session` e cancelamento por e-mail — falta mecanismo |
+| Drawer wishlist                 | [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx) — só CTA individual via `AffiliateGoLink`; sem batch                                                                                         |
+| Sessão anônima                  | [`session.ts`](apps/web/src/lib/session.ts) grava `vitrine_session` **sem consentimento**                                                                                                                                |
+| Alertas LGPD                    | `POST /price-alerts` + confirm existem; **`DELETE /price-alerts/:token` ausente**                                                                                                                                        |
+| Política legal                  | [`packages/shared/src/legal/legal-content.ts`](packages/shared/src/legal/legal-content.ts) já documenta cookie `vitrine_session` e cancelamento por e-mail — falta mecanismo                                             |
 
 ```mermaid
 flowchart TB
@@ -117,12 +117,12 @@ Em [`packages/shared/src/legal/`](packages/shared/src/legal/):
 
 Refatorar [`apps/web/src/lib/session.ts`](apps/web/src/lib/session.ts):
 
-| Função | Comportamento |
-|--------|----------------|
-| `hasFunctionalConsent()` | lê `CONSENT_COOKIE_NAME` |
-| `acceptFunctionalConsent()` | grava cookie consent (12 meses, `SameSite=Lax`) |
-| `getOrCreateSessionId()` | **só grava** `vitrine_session` se consentimento aceito; caso contrário retorna `''` |
-| `clearSessionCookie()` | remove `vitrine_session` (usado ao apagar lista) |
+| Função                      | Comportamento                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `hasFunctionalConsent()`    | lê `CONSENT_COOKIE_NAME`                                                            |
+| `acceptFunctionalConsent()` | grava cookie consent (12 meses, `SameSite=Lax`)                                     |
+| `getOrCreateSessionId()`    | **só grava** `vitrine_session` se consentimento aceito; caso contrário retorna `''` |
+| `clearSessionCookie()`      | remove `vitrine_session` (usado ao apagar lista)                                    |
 
 ### 2.3 Componente `CookieConsentBanner`
 
@@ -150,7 +150,7 @@ Novo [`apps/web/src/components/legal/CookieConsentBanner.tsx`](apps/web/src/comp
 Em [`apps/web/src/lib/api/schemas.ts`](apps/web/src/lib/api/schemas.ts):
 
 ```typescript
-batchCheckoutResponseSchema = z.object({ url: z.string(), itemCount: z.number() })
+batchCheckoutResponseSchema = z.object({ url: z.string(), itemCount: z.number() });
 ```
 
 Helper `checkoutBatch(sessionId, marketplace)` em novo arquivo ou [`client.ts`](apps/web/src/lib/api/client.ts).
@@ -160,7 +160,7 @@ Helper `checkoutBatch(sessionId, marketplace)` em novo arquivo ou [`client.ts`](
 Por grupo de marketplace (já agrupado):
 
 - Botão primário: **“Finalizar na {Amazon/Shopee} ({N} itens)”** — desabilitado se `N === 0` ou sem consentimento.
-- Microcópia PRD: *“Abriremos a {marketplace} com seus itens. Compras finalizadas lá.”*
+- Microcópia PRD: _“Abriremos a {marketplace} com seus itens. Compras finalizadas lá.”_
 - **Amazon:** `window.open(url, '_blank', 'noopener,noreferrer')`.
 - **Shopee/ML:** `url` vem pipe-separated ([`buildBatchCheckout`](packages/infrastructure/src/affiliate/default-affiliate-link.builder.ts)) → abrir cada URL em nova aba com `setTimeout` 500ms entre abas + modal/toast explicativo antes.
 - Loading + tratamento de erro 400 (conta afiliado pending → mensagem amigável).
@@ -202,13 +202,13 @@ Atualizar:
 
 ## Testes e verificação
 
-| Área | Teste |
-|------|-------|
-| `CancelPriceAlert` | token válido → expired; token inválido → err |
-| `ClearWishlist` | remove todos os itens da sessão |
-| `BuildBatchCheckoutRedirect` | gate pending; lista vazia |
-| API | DELETE alert 204; DELETE wishlist 204 |
-| Web | lint/build `apps/web` + `apps/api` |
+| Área                         | Teste                                        |
+| ---------------------------- | -------------------------------------------- |
+| `CancelPriceAlert`           | token válido → expired; token inválido → err |
+| `ClearWishlist`              | remove todos os itens da sessão              |
+| `BuildBatchCheckoutRedirect` | gate pending; lista vazia                    |
+| API                          | DELETE alert 204; DELETE wishlist 204        |
+| Web                          | lint/build `apps/web` + `apps/api`           |
 
 **Smoke manual:**
 

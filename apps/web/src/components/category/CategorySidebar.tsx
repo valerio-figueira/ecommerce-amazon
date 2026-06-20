@@ -18,9 +18,7 @@ export async function CategorySidebar({
 
   return (
     <aside className="mb-8 hidden lg:block">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-        Navegar
-      </p>
+      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">Navegar</p>
       <CategorySidebarTree nodes={categoryTree} activeSlug={slug} />
     </aside>
   );

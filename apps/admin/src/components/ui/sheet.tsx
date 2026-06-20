@@ -73,7 +73,10 @@ export function SheetFooter({
 }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element {
   return (
     <div
-      className={cn('flex flex-col-reverse gap-2 border-t border-[var(--admin-gray)] sm:flex-row sm:justify-end', className)}
+      className={cn(
+        'flex flex-col-reverse gap-2 border-t border-[var(--admin-gray)] sm:flex-row sm:justify-end',
+        className,
+      )}
       {...props}
     />
   );

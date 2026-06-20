@@ -22,9 +22,7 @@ export const createProductBodySchema = z
     images: z
       .array(z.string())
       .default([])
-      .transform((items) =>
-        items.map((item) => item.trim()).filter((item) => item.length > 0),
-      )
+      .transform((items) => items.map((item) => item.trim()).filter((item) => item.length > 0))
       .pipe(z.array(z.string().url())),
     editorialScore: z.number().min(0).max(10),
     rating: z.number().min(0).max(5).optional(),
@@ -32,9 +30,7 @@ export const createProductBodySchema = z
     tags: z
       .array(z.string())
       .default([])
-      .transform((items) =>
-        items.map((item) => item.trim()).filter((item) => item.length > 0),
-      ),
+      .transform((items) => items.map((item) => item.trim()).filter((item) => item.length > 0)),
     pros: z
       .array(z.string())
       .default([])
@@ -47,7 +43,9 @@ export const createProductBodySchema = z
     longDescriptionHtml: z.string().max(50000).default(''),
     metaTitle: z.string().max(200).default(''),
     metaDescription: z.string().max(320).default(''),
-    specsNormalized: specsNormalizedSchema.default([]).transform((groups) => normalizeSpecsGroups(groups)),
+    specsNormalized: specsNormalizedSchema
+      .default([])
+      .transform((groups) => normalizeSpecsGroups(groups)),
     price: z.number().min(0),
     strikethroughPrice: z.number().min(0).optional(),
     shouldShowPrice: z.boolean(),
@@ -219,12 +217,6 @@ export const adminListProductsQuerySchema = z.object({
   search: z.string().trim().max(100).optional(),
   marketplace: marketplaceSchema.optional(),
   sort: z
-    .enum([
-      'editorial_score',
-      'price_updated_at',
-      'created_at',
-      'price_asc',
-      'price_desc',
-    ])
+    .enum(['editorial_score', 'price_updated_at', 'created_at', 'price_asc', 'price_desc'])
     .optional(),
 });

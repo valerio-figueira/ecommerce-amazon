@@ -46,13 +46,10 @@ export function registerAdminRoutes(app: FastifyInstance, container: ApiContaine
     const clientIp = getClientIp(request);
     const rateLimit = loginRateLimiter.check(clientIp);
     if (!rateLimit.allowed) {
-      return reply
-        .status(429)
-        .header('Retry-After', String(rateLimit.retryAfterSeconds))
-        .send({
-          error: 'Too many login attempts. Try again later.',
-          code: 'RATE_LIMITED',
-        });
+      return reply.status(429).header('Retry-After', String(rateLimit.retryAfterSeconds)).send({
+        error: 'Too many login attempts. Try again later.',
+        code: 'RATE_LIMITED',
+      });
     }
 
     try {

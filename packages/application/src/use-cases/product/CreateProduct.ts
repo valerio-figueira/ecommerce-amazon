@@ -92,7 +92,9 @@ export class CreateProduct {
       ...(editorialContent.longDescriptionHtml !== undefined
         ? { longDescriptionHtml: editorialContent.longDescriptionHtml }
         : {}),
-      ...(editorialContent.metaTitle !== undefined ? { metaTitle: editorialContent.metaTitle } : {}),
+      ...(editorialContent.metaTitle !== undefined
+        ? { metaTitle: editorialContent.metaTitle }
+        : {}),
       ...(editorialContent.metaDescription !== undefined
         ? { metaDescription: editorialContent.metaDescription }
         : {}),

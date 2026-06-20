@@ -33,16 +33,16 @@ categoryBentoGridPropsSchema = {
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Enum | `packages/domain/src/enums/cms.ts` |
-| Schema | `packages/shared/src/cms/block-schemas.ts` |
-| Migration | `packages/infrastructure/.../migrations/0005_category_bento_grid.sql` |
-| Web UI | `apps/web/src/components/blocks/CategoryBentoGrid.tsx` |
-| Web block | `apps/web/src/components/blocks/CategoryBentoGridBlock.tsx` |
-| Registry web | `apps/web/src/components/cms/BlockRegistry.tsx` |
-| Admin form | `apps/admin/src/components/cms/props-forms/CategoryBentoGridForm.tsx` |
-| Seed home | `packages/infrastructure/src/persistence/drizzle/seed.ts` |
+| Camada       | Path                                                                  |
+| ------------ | --------------------------------------------------------------------- |
+| Enum         | `packages/domain/src/enums/cms.ts`                                    |
+| Schema       | `packages/shared/src/cms/block-schemas.ts`                            |
+| Migration    | `packages/infrastructure/.../migrations/0005_category_bento_grid.sql` |
+| Web UI       | `apps/web/src/components/blocks/CategoryBentoGrid.tsx`                |
+| Web block    | `apps/web/src/components/blocks/CategoryBentoGridBlock.tsx`           |
+| Registry web | `apps/web/src/components/cms/BlockRegistry.tsx`                       |
+| Admin form   | `apps/admin/src/components/cms/props-forms/CategoryBentoGridForm.tsx` |
+| Seed home    | `packages/infrastructure/src/persistence/drizzle/seed.ts`             |
 
 ## Layout sugerido (6 cards)
 

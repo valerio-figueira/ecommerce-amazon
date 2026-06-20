@@ -12,7 +12,7 @@ todos:
     content: Criar ProductSpecsTable.tsx + extrair formatSpecKey para lib compartilhada
     status: completed
   - id: refactor-page
-    content: "Refatorar page.tsx: hero com rating, PriceDisplay, AffiliateGoLink; integrar seções below-fold"
+    content: 'Refatorar page.tsx: hero com rating, PriceDisplay, AffiliateGoLink; integrar seções below-fold'
     status: completed
   - id: docs
     content: Documentar em docs/product-detail-page.md e atualizar índice docs/
@@ -25,6 +25,7 @@ isProject: false
 ## Contexto
 
 A rota alvo é [`apps/web/src/app/produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx). Hoje ela renderiza:
+
 - Uma única imagem (`object-cover`, sem miniaturas)
 - Título + `PriceDisplay` + CTA raw `<a>` (sem tracking de clique)
 - `longDescriptionHtml` opcional
@@ -72,12 +73,12 @@ flowchart TB
 
 ## Escopo incluído vs. fora
 
-| Incluído (pedido) | Fora (fases futuras) |
-|---|---|
-| Galeria multi-imagem com miniaturas | Gráfico de histórico de preço (`GET /products/:id/price-history` existe, UI não) |
-| Rating abaixo do título | Wishlist no hero |
-| Seção "Análise do Especialista" (prós/contras full) | Alterar `ProductEditorialProsCons` dos cards (limite 2/1 permanece) |
-| Tabela de specs | Novos campos no banco |
+| Incluído (pedido)                                   | Fora (fases futuras)                                                             |
+| --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Galeria multi-imagem com miniaturas                 | Gráfico de histórico de preço (`GET /products/:id/price-history` existe, UI não) |
+| Rating abaixo do título                             | Wishlist no hero                                                                 |
+| Seção "Análise do Especialista" (prós/contras full) | Alterar `ProductEditorialProsCons` dos cards (limite 2/1 permanece)              |
+| Tabela de specs                                     | Novos campos no banco                                                            |
 
 ## 1. Componentes novos em `apps/web/src/components/product/`
 
@@ -159,6 +160,7 @@ Manter intactos: breadcrumb, `ProductJsonLd`, `generateMetadata`, `revalidate = 
 ## 5. Documentação
 
 Criar [`docs/product-detail-page.md`](docs/product-detail-page.md) com:
+
 - Escopo entregue (galeria, análise, specs)
 - Arquivos-chave
 - Como testar localmente (`/produtos/{slug}` com produto que tenha pros/cons/specs no admin)
@@ -174,6 +176,7 @@ pnpm --filter @ecommerce-amazon/web build
 ```
 
 Teste manual:
+
 - Produto com 1 imagem vs. múltiplas imagens (troca de thumb)
 - Produto com preço stale vs. fresh
 - Produto sem pros/cons/specs (seções omitidas, layout não quebra)
@@ -181,13 +184,13 @@ Teste manual:
 
 ## Arquivos tocados (resumo)
 
-| Ação | Arquivo |
-|---|---|
-| Criar | `apps/web/src/components/product/ProductImageGallery.tsx` |
-| Criar | `apps/web/src/components/product/ProductDetailAnalysis.tsx` |
-| Criar | `apps/web/src/components/product/ProductSpecsTable.tsx` |
-| Criar | `apps/web/src/lib/format-spec-key.ts` |
-| Editar | `apps/web/src/app/produtos/[slug]/page.tsx` |
+| Ação   | Arquivo                                                                |
+| ------ | ---------------------------------------------------------------------- |
+| Criar  | `apps/web/src/components/product/ProductImageGallery.tsx`              |
+| Criar  | `apps/web/src/components/product/ProductDetailAnalysis.tsx`            |
+| Criar  | `apps/web/src/components/product/ProductSpecsTable.tsx`                |
+| Criar  | `apps/web/src/lib/format-spec-key.ts`                                  |
+| Editar | `apps/web/src/app/produtos/[slug]/page.tsx`                            |
 | Editar | `apps/web/src/components/articles/ComparisonTable.tsx` (import helper) |
-| Criar | `docs/product-detail-page.md` |
-| Editar | `docs/README.md` (índice) |
+| Criar  | `docs/product-detail-page.md`                                          |
+| Editar | `docs/README.md` (índice)                                              |

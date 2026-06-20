@@ -10,9 +10,7 @@ type ArticlePostFooterProps = {
   article: ArticlePublicDetail;
 };
 
-export function ArticlePostFooter({
-  article,
-}: ArticlePostFooterProps): React.JSX.Element | null {
+export function ArticlePostFooter({ article }: ArticlePostFooterProps): React.JSX.Element | null {
   const brand = getServerBrandConfig();
   const author = article.author;
   const authorName = author?.name ?? formatEditorialTeamName(brand);

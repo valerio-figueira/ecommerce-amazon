@@ -2,10 +2,7 @@
 
 let logoutInProgress = false;
 
-export async function adminClientFetch(
-  path: string,
-  init?: RequestInit,
-): Promise<Response> {
+export async function adminClientFetch(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(path, {
     ...init,
     cache: 'no-store',
@@ -23,10 +20,7 @@ export async function adminClientFetch(
   return response;
 }
 
-export async function adminClientJson(
-  path: string,
-  init?: RequestInit,
-): Promise<unknown> {
+export async function adminClientJson(path: string, init?: RequestInit): Promise<unknown> {
   const response = await adminClientFetch(path, init);
 
   if (!response.ok) {

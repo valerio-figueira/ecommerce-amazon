@@ -27,11 +27,7 @@ export async function generateSitemaps(): Promise<Array<{ id: number }>> {
   return Array.from({ length: totalPages }, (_, index) => ({ id: index }));
 }
 
-export default async function sitemap({
-  id,
-}: {
-  id: number;
-}): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
   const base = getSiteBaseUrl();
   const page = id + 1;
 

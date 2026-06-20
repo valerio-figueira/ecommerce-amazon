@@ -3,10 +3,7 @@ import Link from 'next/link';
 
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { Button } from '@/components/ui/button';
-import {
-  adminArticleStatusLabel,
-  formatAdminArticleUpdatedAt,
-} from '@/lib/article-admin-format';
+import { adminArticleStatusLabel, formatAdminArticleUpdatedAt } from '@/lib/article-admin-format';
 import { cn } from '@/lib/utils';
 import { ArticleStatus } from '@ecommerce-amazon/domain';
 import type { AdminArticleSummary } from '@ecommerce-amazon/shared/admin';
@@ -16,10 +13,7 @@ type ArticleListCardProps = {
   onDelete: (article: AdminArticleSummary) => void;
 };
 
-export function ArticleListCard({
-  article,
-  onDelete,
-}: ArticleListCardProps): React.JSX.Element {
+export function ArticleListCard({ article, onDelete }: ArticleListCardProps): React.JSX.Element {
   const isPublished = article.status === ArticleStatus.PUBLISHED;
   const coverSrc = article.coverImageUrl ?? undefined;
 
@@ -51,9 +45,7 @@ export function ArticleListCard({
           {article.title}
         </Link>
 
-        {article.excerpt ? (
-          <p className="admin-article-card__excerpt">{article.excerpt}</p>
-        ) : null}
+        {article.excerpt ? <p className="admin-article-card__excerpt">{article.excerpt}</p> : null}
 
         <p className="admin-article-card__meta">
           /artigos/{article.slug} · Atualizado {formatAdminArticleUpdatedAt(article.updatedAt)}

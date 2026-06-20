@@ -7,13 +7,7 @@ import { useFieldArray } from 'react-hook-form';
 import type { AboutPageEditorFormValues } from '@/components/about/about-editor-types';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Button } from '@/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input, Textarea } from '@/components/ui/input';
 
 type AboutTrafficLinksFieldsProps = {

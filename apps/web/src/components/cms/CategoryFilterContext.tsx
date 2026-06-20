@@ -15,10 +15,7 @@ export function CategoryFilterProvider({
   children: React.ReactNode;
 }): React.JSX.Element {
   const [categorySlug, setCategorySlug] = useState<string | null>(null);
-  const value = useMemo(
-    () => ({ categorySlug, setCategorySlug }),
-    [categorySlug],
-  );
+  const value = useMemo(() => ({ categorySlug, setCategorySlug }), [categorySlug]);
   return <CategoryFilterContext.Provider value={value}>{children}</CategoryFilterContext.Provider>;
 }
 

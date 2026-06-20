@@ -1,5 +1,8 @@
 import type { AdminCategoryTreeNode } from '@ecommerce-amazon/shared/admin';
-import { buildCategoryTree, flattenCategoryTree } from '@ecommerce-amazon/shared/category/build-category-tree';
+import {
+  buildCategoryTree,
+  flattenCategoryTree,
+} from '@ecommerce-amazon/shared/category/build-category-tree';
 
 export type CategoryFlatOption = {
   id: string;
@@ -45,7 +48,10 @@ export function collectCategoryNodes(nodes: AdminCategoryTreeNode[]): AdminCateg
   ]);
 }
 
-export function collectCategoryDescendantIds(categoryId: string, nodes: AdminCategoryTreeNode[]): Set<string> {
+export function collectCategoryDescendantIds(
+  categoryId: string,
+  nodes: AdminCategoryTreeNode[],
+): Set<string> {
   const all = collectCategoryNodes(nodes);
   const byParent = new Map<string | null, AdminCategoryTreeNode[]>();
 
@@ -83,7 +89,9 @@ export function buildCategoryParentOptions(
   const options: CategoryParentOption[] = [];
 
   function walk(branch: AdminCategoryTreeNode[], depth: number, ancestors: string[]) {
-    for (const node of [...branch].sort((a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label))) {
+    for (const node of [...branch].sort(
+      (a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label),
+    )) {
       if (excludeIds.has(node.id)) {
         continue;
       }

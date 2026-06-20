@@ -30,12 +30,12 @@ isProject: false
 
 ## Contexto e decisões já alinhadas
 
-| Decisão | Escolha |
-|---------|---------|
-| Marketplaces | Amazon + Shopee + **Mercado Livre** (migration + stub fetcher) |
-| Escopo desta fase | **Listagem + criar** (sem edição) |
-| `shouldShowPrice` | **Não criar coluna nova** — mapear ao modelo existente (`stale_price` invertido) |
-| Editorial score | UI **0–10**; persistência **0–100** (seed usa `85`; badge em [`product-badges.ts`](apps/web/src/lib/product-badges.ts) exige `≥ 80` → UI `≥ 8,0`) |
+| Decisão           | Escolha                                                                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Marketplaces      | Amazon + Shopee + **Mercado Livre** (migration + stub fetcher)                                                                                    |
+| Escopo desta fase | **Listagem + criar** (sem edição)                                                                                                                 |
+| `shouldShowPrice` | **Não criar coluna nova** — mapear ao modelo existente (`stale_price` invertido)                                                                  |
+| Editorial score   | UI **0–10**; persistência **0–100** (seed usa `85`; badge em [`product-badges.ts`](apps/web/src/lib/product-badges.ts) exige `≥ 80` → UI `≥ 8,0`) |
 
 O catálogo já tem entidade, tabela e `ProductRepository.save()` (upsert). O gap é operador-driven create + rotas admin; workers hoje só **atualizam** produtos existentes ([`SyncCatalogBatch`](packages/application/src/use-cases/sync/SyncCatalogBatch.ts) faz `continue` se não achar `externalId`).
 
@@ -73,15 +73,15 @@ O SLA 24h continua valendo em leitura pública via [`PriceComplianceService`](pa
 
 Adicionar marketplace em toda a cadeia (single migration `0006_mercadolivre_br.sql`):
 
-| Camada | Arquivo |
-|--------|---------|
-| Enum | [`packages/domain/src/enums/index.ts`](packages/domain/src/enums/index.ts) |
-| Parsers | [`packages/domain/src/enums/parsers.ts`](packages/domain/src/enums/parsers.ts) |
-| Drizzle enum | [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) |
-| Fetcher stub | novo `MercadoLivreFetcherStrategy` em [`marketplace-fetcher.strategy.ts`](packages/infrastructure/src/marketplace/strategies/marketplace-fetcher.strategy.ts) + registro no factory |
+| Camada            | Arquivo                                                                                                                                                                                                                   |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Enum              | [`packages/domain/src/enums/index.ts`](packages/domain/src/enums/index.ts)                                                                                                                                                |
+| Parsers           | [`packages/domain/src/enums/parsers.ts`](packages/domain/src/enums/parsers.ts)                                                                                                                                            |
+| Drizzle enum      | [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts)                                                                                      |
+| Fetcher stub      | novo `MercadoLivreFetcherStrategy` em [`marketplace-fetcher.strategy.ts`](packages/infrastructure/src/marketplace/strategies/marketplace-fetcher.strategy.ts) + registro no factory                                       |
 | Affiliate builder | [`default-affiliate-link.builder.ts`](packages/infrastructure/src/affiliate/default-affiliate-link.builder.ts) — URL base `https://produto.mercadolivre.com.br/MLB-{id}` (stub; tag ML via env futura `ML_AFFILIATE_TAG`) |
-| Shared Zod | [`block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) enums de marketplace |
-| Web label | [`apps/web/src/lib/format.ts`](apps/web/src/lib/format.ts) → `'Mercado Livre'` |
+| Shared Zod        | [`block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) enums de marketplace                                                                                                                                       |
+| Web label         | [`apps/web/src/lib/format.ts`](apps/web/src/lib/format.ts) → `'Mercado Livre'`                                                                                                                                            |
 
 ---
 
@@ -100,11 +100,11 @@ export function parseMarketplaceProductUrl(rawUrl: string): ParsedProductUrl | n
 
 **Regex/padrões MVP:**
 
-| Marketplace | Padrões |
-|-------------|---------|
-| Amazon BR | `/dp/([A-Z0-9]{10})`, `/gp/product/([A-Z0-9]{10})` |
-| Shopee BR | `/product/\d+/(\d+)`, `-i\.(\d+)\.(\d+)` → externalId composto `{shopId}.{itemId}` |
-| Mercado Livre | `(MLB-?\d+)` normalizado para `MLB123456789` |
+| Marketplace   | Padrões                                                                            |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Amazon BR     | `/dp/([A-Z0-9]{10})`, `/gp/product/([A-Z0-9]{10})`                                 |
+| Shopee BR     | `/product/\d+/(\d+)`, `-i\.(\d+)\.(\d+)` → externalId composto `{shopId}.{itemId}` |
+| Mercado Livre | `(MLB-?\d+)` normalizado para `MLB123456789`                                       |
 
 - Usado no **frontend** em `handleAffiliateLinkChange` (UX imediata).
 - Revalidado no **backend** em `CreateProduct` (não confiar só no client).
@@ -150,10 +150,10 @@ Fluxo:
 
 Novo arquivo [`apps/api/src/adapters/http/routes/admin-product-routes.ts`](apps/api/src/adapters/http/routes/admin-product-routes.ts), registrado em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts):
 
-| Método | Rota | Use case |
-|--------|------|----------|
-| `GET` | `/admin/products` | `ListProducts` (existente) + presenter **admin** |
-| `POST` | `/admin/products` | `CreateProduct` |
+| Método | Rota              | Use case                                         |
+| ------ | ----------------- | ------------------------------------------------ |
+| `GET`  | `/admin/products` | `ListProducts` (existente) + presenter **admin** |
+| `POST` | `/admin/products` | `CreateProduct`                                  |
 
 Presenter admin estendido em [`product.presenter.ts`](apps/api/src/adapters/presenters/product.presenter.ts):
 
@@ -176,10 +176,10 @@ apps/admin/src/app/api/admin/products/route.ts    # BFF GET + POST
 
 ### 5.2 Rotas de página
 
-| Rota | Componente | Padrão |
-|------|------------|--------|
-| [`/produtos`](apps/admin/src/app/(dashboard)/produtos/page.tsx) | Substituir empty state | Copiar [`paginas/page.tsx`](apps/admin/src/app/(dashboard)/paginas/page.tsx): server fetch, toolbar, rows com marketplace badge, stale pill, score, botão "Novo produto" |
-| `/produtos/novo` | `ProductForm` | Client form full-width em `AdminPageCard` |
+| Rota                                                              | Componente             | Padrão                                                                                                                                                                     |
+| ----------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`/produtos`](<apps/admin/src/app/(dashboard)/produtos/page.tsx>) | Substituir empty state | Copiar [`paginas/page.tsx`](<apps/admin/src/app/(dashboard)/paginas/page.tsx>): server fetch, toolbar, rows com marketplace badge, stale pill, score, botão "Novo produto" |
+| `/produtos/novo`                                                  | `ProductForm`          | Client form full-width em `AdminPageCard`                                                                                                                                  |
 
 Nav `/produtos` já existe em [`navigation.ts`](apps/admin/src/lib/navigation.ts).
 
@@ -215,11 +215,11 @@ Reutilizar tokens existentes (`cms-form-section-title`, `cms-shell`, `AdminPageC
 
 ## 6. Testes
 
-| Área | O quê |
-|------|-------|
-| `parse-product-url.test.ts` | Amazon dp/gp, Shopee product/i., ML MLB-* |
-| `CreateProduct.test.ts` | duplicata externalId, slug collision, shouldShowPrice → stale, snapshot manual |
-| Smoke manual | cadastrar produto ML + Amazon; listar; verificar vitrine pública |
+| Área                        | O quê                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `parse-product-url.test.ts` | Amazon dp/gp, Shopee product/i., ML MLB-\*                                     |
+| `CreateProduct.test.ts`     | duplicata externalId, slug collision, shouldShowPrice → stale, snapshot manual |
+| Smoke manual                | cadastrar produto ML + Amazon; listar; verificar vitrine pública               |
 
 ---
 

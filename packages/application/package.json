@@ -16,7 +16,7 @@
     "dev": "tsc -p tsconfig.json --watch",
     "test": "vitest run"
   },
-    "dependencies": {
+  "dependencies": {
     "@ecommerce-amazon/domain": "*",
     "@ecommerce-amazon/shared": "*",
     "zod": "^3.25.51"

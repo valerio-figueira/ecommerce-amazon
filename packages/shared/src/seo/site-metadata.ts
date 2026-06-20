@@ -1,8 +1,7 @@
 import type { BrandConfig } from '../config/brand.js';
 import { formatWebHomeTitle } from '../config/brand.js';
 
-const DEFAULT_DESCRIPTION =
-  'Descubra ofertas selecionadas com histórico de preços e alertas.';
+const DEFAULT_DESCRIPTION = 'Descubra ofertas selecionadas com histórico de preços e alertas.';
 
 export type SiteMetadata = {
   metadataBase?: URL;
@@ -71,9 +70,7 @@ export type FacetedListingMetadataInput = {
   openGraph?: SiteMetadata['openGraph'];
 };
 
-export function buildFacetedListingMetadata(
-  input: FacetedListingMetadataInput,
-): SiteMetadata {
+export function buildFacetedListingMetadata(input: FacetedListingMetadataInput): SiteMetadata {
   const page = input.page ?? 1;
   const shouldNoindex = page > 1 || Boolean(input.hasFacetParams);
 

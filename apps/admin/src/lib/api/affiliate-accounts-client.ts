@@ -44,9 +44,7 @@ export async function updateAffiliateAccountClient(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error(
-      await readClientErrorMessage(response, 'Falha ao atualizar conta de afiliado'),
-    );
+    throw new Error(await readClientErrorMessage(response, 'Falha ao atualizar conta de afiliado'));
   }
   const payload: unknown = await response.json();
   return affiliateAccountSchema.parse(payload);

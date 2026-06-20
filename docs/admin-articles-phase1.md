@@ -41,29 +41,29 @@ flowchart LR
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| UI listagem | `ArticleListManager.tsx`, `ArticleListCard.tsx`, `AdminPagination.tsx` |
-| UI formulário | `apps/admin/src/components/articles/ArticleForm.tsx`, `ArticleCoverField.tsx`, `ArticleMetaBox.tsx` |
-| Editor TipTap | `apps/admin/src/components/articles/ArticleEditor.tsx` |
-| Toolbar + modo HTML | `apps/admin/src/components/articles/ArticleEditorToolbar.tsx`, `ArticleEditorModeTabs.tsx`, `useEditorToolbarState.ts` |
-| Extensão embed | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts` |
-| Dicas de campo + prompt IA | `ArticleFieldHint.tsx`, `ArticleLlmPromptHelper.tsx`, `lib/article-llm-prompt.ts` |
-| BFF | `apps/admin/src/app/api/admin/articles/**` |
-| API | `apps/api/src/adapters/http/routes/admin-article-routes.ts` |
-| Use cases | `packages/application/src/use-cases/admin-article/` |
-| Schemas | `packages/shared/src/admin/article-schemas.ts` |
+| Camada                     | Path                                                                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| UI listagem                | `ArticleListManager.tsx`, `ArticleListCard.tsx`, `AdminPagination.tsx`                                                 |
+| UI formulário              | `apps/admin/src/components/articles/ArticleForm.tsx`, `ArticleCoverField.tsx`, `ArticleMetaBox.tsx`                    |
+| Editor TipTap              | `apps/admin/src/components/articles/ArticleEditor.tsx`                                                                 |
+| Toolbar + modo HTML        | `apps/admin/src/components/articles/ArticleEditorToolbar.tsx`, `ArticleEditorModeTabs.tsx`, `useEditorToolbarState.ts` |
+| Extensão embed             | `apps/admin/src/components/articles/extensions/ProductEmbedExtension.ts`                                               |
+| Dicas de campo + prompt IA | `ArticleFieldHint.tsx`, `ArticleLlmPromptHelper.tsx`, `lib/article-llm-prompt.ts`                                      |
+| BFF                        | `apps/admin/src/app/api/admin/articles/**`                                                                             |
+| API                        | `apps/api/src/adapters/http/routes/admin-article-routes.ts`                                                            |
+| Use cases                  | `packages/application/src/use-cases/admin-article/`                                                                    |
+| Schemas                    | `packages/shared/src/admin/article-schemas.ts`                                                                         |
 
 ## API admin
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/admin/articles` | Lista paginada (`page`, `pageSize`, `search`, `status`) → `{ items, total, page, pageSize }` |
-| GET | `/admin/articles?picker=true` | Resumo publicados (CMS picker) |
-| GET | `/admin/articles/:id` | Detalhe completo |
-| POST | `/admin/articles` | Cria rascunho/publicado (201) |
-| PATCH | `/admin/articles/:id` | Atualiza (204) |
-| DELETE | `/admin/articles/:id` | Remove (204) |
+| Método | Rota                          | Descrição                                                                                    |
+| ------ | ----------------------------- | -------------------------------------------------------------------------------------------- |
+| GET    | `/admin/articles`             | Lista paginada (`page`, `pageSize`, `search`, `status`) → `{ items, total, page, pageSize }` |
+| GET    | `/admin/articles?picker=true` | Resumo publicados (CMS picker)                                                               |
+| GET    | `/admin/articles/:id`         | Detalhe completo                                                                             |
+| POST   | `/admin/articles`             | Cria rascunho/publicado (201)                                                                |
+| PATCH  | `/admin/articles/:id`         | Atualiza (204)                                                                               |
+| DELETE | `/admin/articles/:id`         | Remove (204)                                                                                 |
 
 ## Como testar
 
@@ -82,13 +82,13 @@ npm run dev -w @ecommerce-amazon/admin
 
 ## Listagem admin (`/artigos`)
 
-| Recurso | Detalhe |
-|---------|---------|
-| Layout | Grid alinhado à vitrine web (`ArticleCard`): capa 16:10, 1–3 colunas |
-| Busca | Debounce 300ms; query `search` (título, resumo ou slug) |
-| Paginação | 12 itens/página; `AdminPagination` com intervalo e números de página |
-| Card | Capa, status (Publicado/Rascunho), título, resumo, slug, data de atualização, Editar + Excluir |
-| BFF | `GET /api/admin/articles?page&pageSize&search&status` |
+| Recurso   | Detalhe                                                                                        |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| Layout    | Grid alinhado à vitrine web (`ArticleCard`): capa 16:10, 1–3 colunas                           |
+| Busca     | Debounce 300ms; query `search` (título, resumo ou slug)                                        |
+| Paginação | 12 itens/página; `AdminPagination` com intervalo e números de página                           |
+| Card      | Capa, status (Publicado/Rascunho), título, resumo, slug, data de atualização, Editar + Excluir |
+| BFF       | `GET /api/admin/articles?page&pageSize&search&status`                                          |
 
 ## Próximos passos
 

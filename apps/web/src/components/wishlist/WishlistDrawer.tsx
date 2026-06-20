@@ -145,7 +145,11 @@ export function WishlistDrawer(): React.JSX.Element | null {
                           >
                             Ver oferta
                           </AffiliateGoLink>
-                          <Button size="sm" variant="ghost" onClick={() => void removeItem(item.id)}>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => void removeItem(item.id)}
+                          >
                             Remover
                           </Button>
                         </div>

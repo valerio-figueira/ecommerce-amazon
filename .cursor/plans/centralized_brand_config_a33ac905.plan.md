@@ -102,27 +102,27 @@ export function getBrandConfig(): BrandConfig; // usa loadEnv()
 
 **Helpers de título** (evitam repetir padrões `| Vitrine`, `— Vitrine CMS`):
 
-| Função | Exemplo |
-|--------|---------|
-| `formatWebPageTitle(page)` | `"Artigos \| Vitrine"` |
-| `formatWebHomeTitle()` | `"Vitrine — Curadoria inteligente"` |
-| `formatAdminPageTitle(page)` | `"Produtos — Vitrine CMS"` |
-| `formatEditorialTeamName()` | `"Redação Vitrine"` |
+| Função                         | Exemplo                                           |
+| ------------------------------ | ------------------------------------------------- |
+| `formatWebPageTitle(page)`     | `"Artigos \| Vitrine"`                            |
+| `formatWebHomeTitle()`         | `"Vitrine — Curadoria inteligente"`               |
+| `formatAdminPageTitle(page)`   | `"Produtos — Vitrine CMS"`                        |
+| `formatEditorialTeamName()`    | `"Redação Vitrine"`                               |
 | `formatCopyrightNotice(year?)` | `"© 2026 Vitrine. Todos os direitos reservados."` |
 
 ### 2. Estender `envSchema` (não ler `process.env` solto)
 
 Em [`packages/shared/src/index.ts`](packages/shared/src/index.ts), adicionar ao `envSchemaBase`:
 
-| Variável | Default | Notas |
-|----------|---------|-------|
-| `SITE_NAME` | `'Vitrine'` | Canônica server-side |
-| `COMPANY_LEGAL_NAME` | `'Vitrine Ltda'` | Footer/legal futuro |
-| `CONTACT_EMAIL` | `'contato@vitrine.com.br'` | E-mails transacionais |
-| `NEXT_PUBLIC_SITE_NAME` | optional | Fallback para Next client |
-| `NEXT_PUBLIC_SITE_URL` | optional | Já usada no web |
-| `SITE_SOCIAL_INSTAGRAM` | default do `BRAND_DEFAULTS` | Opcional |
-| `SITE_SOCIAL_TELEGRAM` | default do `BRAND_DEFAULTS` | Opcional |
+| Variável                | Default                     | Notas                     |
+| ----------------------- | --------------------------- | ------------------------- |
+| `SITE_NAME`             | `'Vitrine'`                 | Canônica server-side      |
+| `COMPANY_LEGAL_NAME`    | `'Vitrine Ltda'`            | Footer/legal futuro       |
+| `CONTACT_EMAIL`         | `'contato@vitrine.com.br'`  | E-mails transacionais     |
+| `NEXT_PUBLIC_SITE_NAME` | optional                    | Fallback para Next client |
+| `NEXT_PUBLIC_SITE_URL`  | optional                    | Já usada no web           |
+| `SITE_SOCIAL_INSTAGRAM` | default do `BRAND_DEFAULTS` | Opcional                  |
+| `SITE_SOCIAL_TELEGRAM`  | default do `BRAND_DEFAULTS` | Opcional                  |
 
 No `.transform()`, unificar URL pública:
 
@@ -157,16 +157,16 @@ env: {
 
 #### Web (~12 arquivos)
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`site-url.ts`](apps/web/src/lib/site-url.ts) | Delegar para `getBrandConfig().url` (ou `createBrandConfig` no edge) |
-| [`layout.tsx`](apps/web/src/app/layout.tsx) | `formatWebHomeTitle()` |
-| [`page.tsx`](apps/web/src/app/page.tsx) | metadata + `<h1>` |
-| [`not-found.tsx`](apps/web/src/app/not-found.tsx), [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx), [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | `formatWebPageTitle(...)` |
-| [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx) | JSON-LD org fallback → `brand.name` |
-| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) | `brand.name.toUpperCase()` |
-| [`Footer.tsx`](apps/web/src/components/layout/Footer.tsx) | `formatCopyrightNotice()` com `new Date().getFullYear()` |
-| [`ArticlePostFooter.tsx`](apps/web/src/components/articles/ArticlePostFooter.tsx) | `formatEditorialTeamName()` |
+| Arquivo                                                                                                                                                                                 | Mudança                                                              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`site-url.ts`](apps/web/src/lib/site-url.ts)                                                                                                                                           | Delegar para `getBrandConfig().url` (ou `createBrandConfig` no edge) |
+| [`layout.tsx`](apps/web/src/app/layout.tsx)                                                                                                                                             | `formatWebHomeTitle()`                                               |
+| [`page.tsx`](apps/web/src/app/page.tsx)                                                                                                                                                 | metadata + `<h1>`                                                    |
+| [`not-found.tsx`](apps/web/src/app/not-found.tsx), [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx), [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | `formatWebPageTitle(...)`                                            |
+| [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx)                                                                                                                   | JSON-LD org fallback → `brand.name`                                  |
+| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx)                                                                                                                       | `brand.name.toUpperCase()`                                           |
+| [`Footer.tsx`](apps/web/src/components/layout/Footer.tsx)                                                                                                                               | `formatCopyrightNotice()` com `new Date().getFullYear()`             |
+| [`ArticlePostFooter.tsx`](apps/web/src/components/articles/ArticlePostFooter.tsx)                                                                                                       | `formatEditorialTeamName()`                                          |
 
 **Fora de escopo desta entrega:** LLM prompts admin, cookie keys (`vitrine_session`), cache prefixes Redis — são identificadores técnicos, não copy de marca.
 

@@ -34,37 +34,37 @@ flowchart LR
 
 ## Schema (migration `0016`)
 
-| Tabela / coluna | Descrição |
-|-----------------|-----------|
-| `content_clusters` | `id`, `name`, `slug` UNIQUE, `description`, `pilar_article_id` → `content_articles`, timestamps |
-| `content_articles.cluster_id` | FK → `content_clusters`, ON DELETE SET NULL |
+| Tabela / coluna               | Descrição                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| `content_clusters`            | `id`, `name`, `slug` UNIQUE, `description`, `pilar_article_id` → `content_articles`, timestamps |
+| `content_articles.cluster_id` | FK → `content_clusters`, ON DELETE SET NULL                                                     |
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0016_content_clusters.sql` |
-| Schema | `packages/infrastructure/src/persistence/drizzle/schema/content-clusters.ts` |
-| Domain | `packages/domain/src/entities/ContentCluster.ts` |
+| Camada     | Path                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------- |
+| Migration  | `packages/infrastructure/src/persistence/drizzle/migrations/0016_content_clusters.sql`       |
+| Schema     | `packages/infrastructure/src/persistence/drizzle/schema/content-clusters.ts`                 |
+| Domain     | `packages/domain/src/entities/ContentCluster.ts`                                             |
 | Repository | `packages/infrastructure/src/persistence/repositories/drizzle-content-cluster.repository.ts` |
-| Use cases | `packages/application/src/use-cases/content-cluster/` |
-| Público | `packages/application/src/use-cases/content/GetArticleWithEmbeds.ts` |
-| Schemas | `packages/shared/src/admin/content-cluster-schemas.ts` |
-| API admin | `apps/api/src/adapters/http/routes/admin-content-cluster-routes.ts` |
-| Vitrine | `apps/web/src/components/articles/ArticleSeoAnchor.tsx`, `ArticleClusterCarousel.tsx` |
-| Admin UI | `apps/admin/src/app/(dashboard)/content-clusters/page.tsx` |
+| Use cases  | `packages/application/src/use-cases/content-cluster/`                                        |
+| Público    | `packages/application/src/use-cases/content/GetArticleWithEmbeds.ts`                         |
+| Schemas    | `packages/shared/src/admin/content-cluster-schemas.ts`                                       |
+| API admin  | `apps/api/src/adapters/http/routes/admin-content-cluster-routes.ts`                          |
+| Vitrine    | `apps/web/src/components/articles/ArticleSeoAnchor.tsx`, `ArticleClusterCarousel.tsx`        |
+| Admin UI   | `apps/admin/src/app/(dashboard)/content-clusters/page.tsx`                                   |
 
 ## API
 
 ### Admin — `/admin/content-clusters`
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/admin/content-clusters` | `{ items: ContentClusterAdminSummary[] }` |
-| POST | `/admin/content-clusters` | Create → `{ id }` |
-| GET | `/admin/content-clusters/:id` | Detail + members (draft + published) |
-| PATCH | `/admin/content-clusters/:id` | Update → `204` |
-| DELETE | `/admin/content-clusters/:id` | `204` |
+| Método | Rota                          | Descrição                                 |
+| ------ | ----------------------------- | ----------------------------------------- |
+| GET    | `/admin/content-clusters`     | `{ items: ContentClusterAdminSummary[] }` |
+| POST   | `/admin/content-clusters`     | Create → `{ id }`                         |
+| GET    | `/admin/content-clusters/:id` | Detail + members (draft + published)      |
+| PATCH  | `/admin/content-clusters/:id` | Update → `204`                            |
+| DELETE | `/admin/content-clusters/:id` | `204`                                     |
 
 Artigos admin aceitam `clusterId` opcional em create/update.
 
@@ -81,7 +81,14 @@ Campo novo:
     "role": "pilar",
     "pilarArticle": { "slug": "guia-cadeira-ergonomica", "title": "..." },
     "members": [
-      { "id": "...", "slug": "...", "title": "...", "excerpt": "...", "isPilar": true, "publishedAt": "..." }
+      {
+        "id": "...",
+        "slug": "...",
+        "title": "...",
+        "excerpt": "...",
+        "isPilar": true,
+        "publishedAt": "..."
+      }
     ]
   }
 }

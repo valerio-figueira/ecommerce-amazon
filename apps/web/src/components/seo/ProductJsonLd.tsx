@@ -16,9 +16,7 @@ export function ProductJsonLd({ product, siteBaseUrl }: ProductJsonLdProps): Rea
     id: product.id,
     marketplace: product.marketplace,
     images: product.images,
-    ...(product.metaDescription !== undefined
-      ? { metaDescription: product.metaDescription }
-      : {}),
+    ...(product.metaDescription !== undefined ? { metaDescription: product.metaDescription } : {}),
     ...(product.canonicalUrl !== undefined ? { canonicalUrl: product.canonicalUrl } : {}),
     availability: product.availability,
     shouldShowPrice: !product.price.isStale && product.price.amount !== null,

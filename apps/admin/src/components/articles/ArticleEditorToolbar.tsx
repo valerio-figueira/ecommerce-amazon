@@ -42,12 +42,7 @@ export function ArticleEditorToolbar({
   };
 
   return (
-    <div
-      className={cn(
-        'admin-rich-editor__toolbar',
-        formatDisabled && 'is-format-disabled',
-      )}
-    >
+    <div className={cn('admin-rich-editor__toolbar', formatDisabled && 'is-format-disabled')}>
       <ToolbarButton
         title="Título H2"
         active={editor?.isActive('heading', { level: 2 }) ?? false}

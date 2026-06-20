@@ -25,10 +25,7 @@ export class CreateArticle {
     private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
-  async execute(
-    input: CreateArticleBody,
-    authorId: string,
-  ): Promise<{ id: string }> {
+  async execute(input: CreateArticleBody, authorId: string): Promise<{ id: string }> {
     await assertUniqueArticleSlug(this.contentRepository, input.slug);
 
     const now = new Date();

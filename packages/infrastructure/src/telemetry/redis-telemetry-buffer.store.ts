@@ -323,10 +323,7 @@ export class RedisTelemetryBufferStore implements TelemetryBufferStore {
     }
 
     if (event.placement) {
-      this.incrWithTtl(
-        pipeline,
-        pendingKey('clicks', 'day', day, 'placement', event.placement),
-      );
+      this.incrWithTtl(pipeline, pendingKey('clicks', 'day', day, 'placement', event.placement));
     }
 
     if (event.blockId) {

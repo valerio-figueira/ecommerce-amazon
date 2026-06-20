@@ -209,8 +209,8 @@ function CategoryTreeNodeRow({
 
       {hasChildren && isExpanded && (
         <ul className="category-tree category-tree--nested" role="group">
-          {node.subcategories!
-            .slice()
+          {node
+            .subcategories!.slice()
             .sort((a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label))
             .map((child, index) => (
               <CategoryTreeNodeRow

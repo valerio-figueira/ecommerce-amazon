@@ -57,6 +57,8 @@ export async function updateArticleCategoryClient(
 }
 
 export async function deleteArticleCategoryClient(id: string): Promise<void> {
-  const response = await adminClientFetch(`/api/admin/article-categories/${id}`, { method: 'DELETE' });
+  const response = await adminClientFetch(`/api/admin/article-categories/${id}`, {
+    method: 'DELETE',
+  });
   if (!response.ok) throw new Error(await readErrorMessage(response));
 }

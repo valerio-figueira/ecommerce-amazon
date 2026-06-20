@@ -26,13 +26,13 @@ isProject: false
 
 Grande parte da spec **já existe** no repositório:
 
-| Requisito | Status |
-|-----------|--------|
+| Requisito                                  | Status                                                                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `products.meta_title` / `meta_description` | Existe como `text` nullable em [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) (L111–112) |
-| `Product.metaTitle` / `metaDescription` | Existe em [`Product.ts`](packages/domain/src/entities/Product.ts) |
-| Mapper produto | Mapeia meta fields em [`product.mapper.ts`](packages/infrastructure/src/persistence/mappers/product.mapper.ts) |
-| API presenter | Expõe meta no detalhe em [`product.presenter.ts`](apps/api/src/adapters/presenters/product.presenter.ts) |
-| Preço stale | `Price.isStale`, `Product.markPriceStale()`, SLA 24h via `PriceComplianceService`, presenter nulla `amount` |
+| `Product.metaTitle` / `metaDescription`    | Existe em [`Product.ts`](packages/domain/src/entities/Product.ts)                                                              |
+| Mapper produto                             | Mapeia meta fields em [`product.mapper.ts`](packages/infrastructure/src/persistence/mappers/product.mapper.ts)                 |
+| API presenter                              | Expõe meta no detalhe em [`product.presenter.ts`](apps/api/src/adapters/presenters/product.presenter.ts)                       |
+| Preço stale                                | `Price.isStale`, `Product.markPriceStale()`, SLA 24h via `PriceComplianceService`, presenter nulla `amount`                    |
 
 **Não alterar** `meta_title`/`meta_description` de `text` para `varchar(255)` — funcionalmente equivalente, evita migration desnecessária; o projeto não usa `varchar` em nenhum lugar hoje.
 
@@ -139,12 +139,12 @@ Mesma lógica em [`GetWishlist.ts`](packages/application/src/use-cases/wishlist/
 
 Não criar entidade `ClickEvent` (telemetria write-only, padrão atual). Estender o contrato existente:
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`ProductComparisonRepository.ts`](packages/domain/src/repositories/ProductComparisonRepository.ts) (`ClickEventRepository`) | `blockId?: string` no payload de `record()` |
-| [`RecordClickEvent.ts`](packages/application/src/use-cases/events/RecordClickEvent.ts) | Aceitar e repassar `blockId?` |
-| [`schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts) | `blockId: z.string().uuid().optional()` em `RecordClickSchema` |
-| [`drizzle-content.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts) | Persistir `blockId` no insert |
+| Arquivo                                                                                                                      | Mudança                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [`ProductComparisonRepository.ts`](packages/domain/src/repositories/ProductComparisonRepository.ts) (`ClickEventRepository`) | `blockId?: string` no payload de `record()`                    |
+| [`RecordClickEvent.ts`](packages/application/src/use-cases/events/RecordClickEvent.ts)                                       | Aceitar e repassar `blockId?`                                  |
+| [`schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts)                                                                | `blockId: z.string().uuid().optional()` em `RecordClickSchema` |
+| [`drizzle-content.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts)        | Persistir `blockId` no insert                                  |
 
 Web/CMS: **fora do escopo desta entrega** — blocos passarão `blockId` quando o front for instrumentado; a coluna e a API já aceitarão o campo.
 
@@ -188,14 +188,14 @@ Mencionar `Product.shouldShowPrice` em [`docs/domain-model.md`](docs/domain-mode
 
 ## Arquivos tocados (resumo)
 
-| Camada | Arquivos |
-|--------|----------|
-| Schema | `packages/infrastructure/.../schema/index.ts` |
-| Domain | `Product.ts`, `ProductComparisonRepository.ts`, `domain.test.ts` |
-| Application | `RecordClickEvent.ts`, `GetWishlist.ts` |
+| Camada         | Arquivos                                                                   |
+| -------------- | -------------------------------------------------------------------------- |
+| Schema         | `packages/infrastructure/.../schema/index.ts`                              |
+| Domain         | `Product.ts`, `ProductComparisonRepository.ts`, `domain.test.ts`           |
+| Application    | `RecordClickEvent.ts`, `GetWishlist.ts`                                    |
 | Infrastructure | `product.mapper.ts`, `drizzle-content.repository.ts`, migration SQL gerada |
-| API | `product.presenter.ts`, `schemas.ts` |
-| Docs | `database-schema.md`, `domain-model.md` |
+| API            | `product.presenter.ts`, `schemas.ts`                                       |
+| Docs           | `database-schema.md`, `domain-model.md`                                    |
 
 ---
 

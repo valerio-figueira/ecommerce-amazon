@@ -35,7 +35,9 @@ export function ProductThumbnail({
   const [failed, setFailed] = useState(false);
   const trimmed = src?.trim();
   const showImage =
-    trimmed !== undefined && (trimmed.startsWith('https://') || trimmed.startsWith('http://')) && !failed;
+    trimmed !== undefined &&
+    (trimmed.startsWith('https://') || trimmed.startsWith('http://')) &&
+    !failed;
 
   return (
     <div

@@ -5,10 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ZodError } from 'zod';
 
-import {
-  BLOCK_TYPE_LABELS,
-  isEditableBlockType,
-} from '@/components/cms/block-type-labels';
+import { BLOCK_TYPE_LABELS, isEditableBlockType } from '@/components/cms/block-type-labels';
 import { getBlockTypeMeta } from '@/components/cms/block-type-meta';
 import {
   BannerFormFields,
@@ -188,8 +185,12 @@ export function BlockPropsSheet({
       void listProductsClient({ pageSize: 50 }).then(setProducts);
     }
     if (BENTO_HUB_MIX_BLOCK_TYPES.has(block.type)) {
-      void listAdminCollectionsClient().then(setCollections).catch(() => setCollections([]));
-      void listAdminArticlesClient().then(setArticles).catch(() => setArticles([]));
+      void listAdminCollectionsClient()
+        .then(setCollections)
+        .catch(() => setCollections([]));
+      void listAdminArticlesClient()
+        .then(setArticles)
+        .catch(() => setArticles([]));
     }
   }, [block, open]);
 

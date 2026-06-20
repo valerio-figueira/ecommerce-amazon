@@ -12,10 +12,7 @@ import {
   Table2,
 } from 'lucide-react';
 
-import {
-  ToolbarButton,
-  ToolbarSeparator,
-} from '@/components/editor/toolbar-primitives';
+import { ToolbarButton, ToolbarSeparator } from '@/components/editor/toolbar-primitives';
 import { useEditorToolbarState } from '@/components/editor/useEditorToolbarState';
 import { cn } from '@/lib/utils';
 
@@ -39,8 +36,7 @@ export function ProductEditorToolbar({
     if (!editor || formatDisabled) return;
 
     const linkAttrs = editor.getAttributes('link');
-    const previousUrl =
-      typeof linkAttrs['href'] === 'string' ? linkAttrs['href'] : undefined;
+    const previousUrl = typeof linkAttrs['href'] === 'string' ? linkAttrs['href'] : undefined;
     const url = window.prompt('URL do link', previousUrl ?? 'https://');
     if (url === null) return;
 
@@ -53,12 +49,7 @@ export function ProductEditorToolbar({
   }
 
   return (
-    <div
-      className={cn(
-        'admin-rich-editor__toolbar',
-        formatDisabled && 'is-format-disabled',
-      )}
-    >
+    <div className={cn('admin-rich-editor__toolbar', formatDisabled && 'is-format-disabled')}>
       <ToolbarButton
         title="Título de seção (H3)"
         active={editor?.isActive('heading', { level: 3 }) ?? false}
@@ -122,11 +113,7 @@ export function ProductEditorToolbar({
         disabled={formatDisabled || !editor}
         onClick={() =>
           run(() =>
-            editor
-              ?.chain()
-              .focus()
-              .insertTable({ rows: 4, cols: 2, withHeaderRow: true })
-              .run(),
+            editor?.chain().focus().insertTable({ rows: 4, cols: 2, withHeaderRow: true }).run(),
           )
         }
       >

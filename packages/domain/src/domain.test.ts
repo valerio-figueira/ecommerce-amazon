@@ -75,9 +75,7 @@ describe('Product', () => {
       createdAt: new Date(),
     });
 
-    product.updatePrice(
-      Price.create({ amount: 80, currency: 'BRL', updatedAt: new Date() }),
-    );
+    product.updatePrice(Price.create({ amount: 80, currency: 'BRL', updatedAt: new Date() }));
 
     const events = product.pullDomainEvents();
     expect(events).toHaveLength(1);

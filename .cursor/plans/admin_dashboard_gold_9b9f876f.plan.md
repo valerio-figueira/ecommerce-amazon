@@ -1,12 +1,12 @@
 ---
 name: Admin Dashboard Gold
-overview: "Implementar o cockpit analítico do admin em duas fases: Fase 1 com métricas first-party (click_events + saúde do catálogo) após corrigir telemetria duplicada; Fase 2 integrando GA4 Data API para pageviews, aquisição e CTR real."
+overview: 'Implementar o cockpit analítico do admin em duas fases: Fase 1 com métricas first-party (click_events + saúde do catálogo) após corrigir telemetria duplicada; Fase 2 integrando GA4 Data API para pageviews, aquisição e CTR real.'
 todos:
   - id: telemetry-hygiene
-    content: "Fase 0: gravar origin contextual no /go, remover recordClick duplicado, propagar articleId e origin similar"
+    content: 'Fase 0: gravar origin contextual no /go, remover recordClick duplicado, propagar articleId e origin similar'
     status: completed
   - id: schema-migration
-    content: "Migration click_events: article_id + índices; ClickOrigin.SIMILAR; atualizar RecordClickSchema e repository"
+    content: 'Migration click_events: article_id + índices; ClickOrigin.SIMILAR; atualizar RecordClickSchema e repository'
     status: completed
   - id: analytics-backend
     content: AnalyticsRepository + use cases + GET /admin/analytics/* com Zod schemas
@@ -15,7 +15,7 @@ todos:
     content: Instalar recharts; componentes analytics; substituir placeholder em (dashboard)/page.tsx
     status: completed
   - id: ga4-data-api
-    content: "Fase 2: Ga4AnalyticsGateway + cache Redis + seção tráfego/CTR no dashboard (após GA4 web)"
+    content: 'Fase 2: Ga4AnalyticsGateway + cache Redis + seção tráfego/CTR no dashboard (após GA4 web)'
     status: completed
   - id: docs-dashboard
     content: Criar docs/admin-dashboard-phase1.md e indexar em docs/README.md
@@ -27,15 +27,16 @@ isProject: false
 
 ## Estado atual (baseline)
 
-| Área | Situação |
-|------|----------|
-| Telemetria write | [`click_events`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) + `POST /events/click` + `GET /go/:slug` — **write-only** |
-| Telemetria read | **Inexistente** — `ClickEventRepository` só tem `record()` |
-| GA4 web | Plano em [`.cursor/plans/analytics_integration_ga4_bec34d62.plan.md`](.cursor/plans/analytics_integration_ga4_bec34d62.plan.md), **não implementado** |
-| Admin dashboard | Placeholder em [`apps/admin/src/app/(dashboard)/page.tsx`](apps/admin/src/app/(dashboard)/page.tsx) com KPIs `—` |
-| Charts | Sem `recharts` nem componentes de gráfico |
+| Área             | Situação                                                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telemetria write | [`click_events`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) + `POST /events/click` + `GET /go/:slug` — **write-only**           |
+| Telemetria read  | **Inexistente** — `ClickEventRepository` só tem `record()`                                                                                            |
+| GA4 web          | Plano em [`.cursor/plans/analytics_integration_ga4_bec34d62.plan.md`](.cursor/plans/analytics_integration_ga4_bec34d62.plan.md), **não implementado** |
+| Admin dashboard  | Placeholder em [`apps/admin/src/app/(dashboard)/page.tsx`](<apps/admin/src/app/(dashboard)/page.tsx>) com KPIs `—`                                    |
+| Charts           | Sem `recharts` nem componentes de gráfico                                                                                                             |
 
 **Decisões confirmadas:**
+
 - Faseado: Fase 1 = dados internos; Fase 2 = GA4 Data API
 - Contagem: **1 evento por clique** — gravar origin contextual no `/go`; remover `recordClick` duplicado no client
 
@@ -49,27 +50,27 @@ isProject: false
 
 ### Pilar A — Conversão e catálogo (fonte: PostgreSQL)
 
-| Métrica | Query base | Notas |
-|---------|------------|-------|
-| Total cliques de saída | `COUNT(*)` em `click_events` filtrado por período | Excluir `redirect_go` após fix |
-| Top 10 produtos | `GROUP BY product_id` + JOIN `products` | Ordenar por `click_count DESC` |
-| Distribuição por marketplace | `GROUP BY products.marketplace` via JOIN | Pie chart Recharts |
+| Métrica                      | Query base                                        | Notas                          |
+| ---------------------------- | ------------------------------------------------- | ------------------------------ |
+| Total cliques de saída       | `COUNT(*)` em `click_events` filtrado por período | Excluir `redirect_go` após fix |
+| Top 10 produtos              | `GROUP BY product_id` + JOIN `products`           | Ordenar por `click_count DESC` |
+| Distribuição por marketplace | `GROUP BY products.marketplace` via JOIN          | Pie chart Recharts             |
 
 ### Pilar B — Origem e atribuição (fonte: PostgreSQL + GA4 na Fase 2)
 
-| Métrica | Fase 1 | Fase 2 |
-|---------|--------|--------|
+| Métrica                            | Fase 1                                                                           | Fase 2                                |
+| ---------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------- |
 | Distribuição por ponto de inserção | % de cliques por `origin` (`listagem`, `detalhe`, `embed`, `coleção`, `similar`) | CTR real = cliques / impressões (GA4) |
-| Top artigos conversores | `GROUP BY article_id` onde `origin = embed` | Cruzar com `article_view` GA4 |
+| Top artigos conversores            | `GROUP BY article_id` onde `origin = embed`                                      | Cruzar com `article_view` GA4         |
 
 **Gap crítico hoje:** `click_events` não tem `article_id`. Embeds em artigos disparam `origin=embed` sem saber qual artigo.
 
 ### Pilar C — Saúde operacional (fonte: PostgreSQL, tabela `products`)
 
-| Métrica | SQL |
-|---------|-----|
-| Stale rate | `COUNT(stale_price = true OR price_updated_at < now() - 24h) / COUNT(*)` em produtos `visible = true` |
-| Produtos esgotados | `COUNT(availability = 'out_of_stock')` em produtos visíveis |
+| Métrica            | SQL                                                                                                   |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| Stale rate         | `COUNT(stale_price = true OR price_updated_at < now() - 24h) / COUNT(*)` em produtos `visible = true` |
+| Produtos esgotados | `COUNT(availability = 'out_of_stock')` em produtos visíveis                                           |
 
 Sem tabela nova — consulta direta com índice existente [`products_stale_price_idx`](packages/infrastructure/src/persistence/drizzle/schema/index.ts).
 
@@ -114,6 +115,7 @@ flowchart TB
 ```
 
 **Princípio de performance:**
+
 - Cliques: agregações SQL com índices (sem raw pageviews no PG)
 - Pageviews/tráfego: GA4 Data API server-side, cache Redis 30 min
 - Rollup diário (`click_daily_aggregates`) — **YAGNI até volume justificar**; adiar para fase pós-MVP se queries < 200ms
@@ -141,12 +143,12 @@ origin: query.origin ?? 'redirect_go',
 
 ### 0.3 Propagar contexto de atribuição
 
-| Mudança | Arquivos |
-|---------|----------|
-| `articleId` opcional no clique | schema + `RecordClickSchema` + `AffiliateGoLink` + `recordClick` chain |
-| `articleId` nos embeds | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx) → `ArticleProductEmbed` → `ProductCard` → `AffiliateGoLink` |
+| Mudança                         | Arquivos                                                                                                                                                                                                                                      |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `articleId` opcional no clique  | schema + `RecordClickSchema` + `AffiliateGoLink` + `recordClick` chain                                                                                                                                                                        |
+| `articleId` nos embeds          | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx) → `ArticleProductEmbed` → `ProductCard` → `AffiliateGoLink`                                                                                                             |
 | Origin `similar` para carrossel | Novo valor em `ClickOrigin` enum; [`ProductSimilarCarousel.tsx`](apps/web/src/components/product/ProductSimilarCarousel.tsx) usa `clickOrigin="similar"` em vez de `blockId="product-similar"` (string inválida para UUID no `GoQuerySchema`) |
-| `blockId` no `/go` | Já funciona via query string; garantir UUIDs reais de `page_blocks` nos blocos CMS |
+| `blockId` no `/go`              | Já funciona via query string; garantir UUIDs reais de `page_blocks` nos blocos CMS                                                                                                                                                            |
 
 ---
 
@@ -172,12 +174,12 @@ Adicionar `ClickOrigin.SIMILAR = 'similar'` em [`packages/domain/src/enums/index
 
 ### 1.2 Camada de leitura (Clean Architecture)
 
-| Camada | Artefato |
-|--------|----------|
-| Port | `AnalyticsRepository` em `packages/domain` — métodos de agregação |
+| Camada    | Artefato                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Port      | `AnalyticsRepository` em `packages/domain` — métodos de agregação                                                                                       |
 | Use cases | `GetClickAnalyticsOverview`, `GetTopClickedProducts`, `GetClicksByOrigin`, `GetClicksByMarketplace`, `GetConvertingArticles`, `GetCatalogHealthMetrics` |
-| Infra | `DrizzleAnalyticsRepository` com queries Drizzle (`count`, `groupBy`, `sql`) |
-| Shared | Zod response schemas em `packages/shared/src/admin/analytics-schemas.ts` |
+| Infra     | `DrizzleAnalyticsRepository` com queries Drizzle (`count`, `groupBy`, `sql`)                                                                            |
+| Shared    | Zod response schemas em `packages/shared/src/admin/analytics-schemas.ts`                                                                                |
 
 **Regra de filtro universal nas queries de clique:**
 
@@ -190,13 +192,13 @@ WHERE occurred_at BETWEEN :from AND :to
 
 Novo arquivo [`apps/api/src/adapters/http/routes/admin-analytics-routes.ts`](apps/api/src/adapters/http/routes/admin-analytics-routes.ts), registrado em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts):
 
-| Rota | Retorno |
-|------|---------|
-| `GET /admin/analytics/overview?from=&to=` | totalClicks, clicksTrend (por dia), catalogHealth (staleRate, outOfStockCount) |
-| `GET /admin/analytics/clicks/by-origin?from=&to=` | `{ origin, count, sharePercent }[]` |
-| `GET /admin/analytics/clicks/by-marketplace?from=&to=` | `{ marketplace, count, sharePercent }[]` |
-| `GET /admin/analytics/clicks/top-products?from=&to=&limit=10` | `{ productId, slug, title, marketplace, clickCount }[]` |
-| `GET /admin/analytics/articles/converting?from=&to=&limit=10` | `{ articleId, slug, title, clickCount }[]` |
+| Rota                                                          | Retorno                                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `GET /admin/analytics/overview?from=&to=`                     | totalClicks, clicksTrend (por dia), catalogHealth (staleRate, outOfStockCount) |
+| `GET /admin/analytics/clicks/by-origin?from=&to=`             | `{ origin, count, sharePercent }[]`                                            |
+| `GET /admin/analytics/clicks/by-marketplace?from=&to=`        | `{ marketplace, count, sharePercent }[]`                                       |
+| `GET /admin/analytics/clicks/top-products?from=&to=&limit=10` | `{ productId, slug, title, marketplace, clickCount }[]`                        |
+| `GET /admin/analytics/articles/converting?from=&to=&limit=10` | `{ articleId, slug, title, clickCount }[]`                                     |
 
 Query params: `from`/`to` ISO date; default últimos 30 dias.
 
@@ -204,7 +206,7 @@ Query params: `from`/`to` ISO date; default últimos 30 dias.
 
 **Dependência:** `recharts` em [`apps/admin/package.json`](apps/admin/package.json).
 
-**Estrutura da página** [`apps/admin/src/app/(dashboard)/page.tsx`](apps/admin/src/app/(dashboard)/page.tsx):
+**Estrutura da página** [`apps/admin/src/app/(dashboard)/page.tsx`](<apps/admin/src/app/(dashboard)/page.tsx>):
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -222,15 +224,15 @@ Query params: `from`/`to` ISO date; default últimos 30 dias.
 
 **Novos componentes** em `apps/admin/src/components/analytics/`:
 
-| Componente | Responsabilidade |
-|------------|------------------|
-| `DashboardKpiCard.tsx` | Extrair padrão de KPI do placeholder atual |
-| `ClicksTrendChart.tsx` | `LineChart` Recharts |
-| `MarketplacePieChart.tsx` | `PieChart` com labels pt-BR (Amazon, Shopee, Mercado Livre) |
-| `OriginBarChart.tsx` | Barras horizontais por `origin` |
-| `TopProductsTable.tsx` | Lista ranqueada com link para `/produtos/[slug]` |
-| `ConvertingArticlesTable.tsx` | Lista com link para `/artigos/[id]` |
-| `DateRangeSelect.tsx` | Presets 7d / 30d / 90d (client island mínimo) |
+| Componente                    | Responsabilidade                                            |
+| ----------------------------- | ----------------------------------------------------------- |
+| `DashboardKpiCard.tsx`        | Extrair padrão de KPI do placeholder atual                  |
+| `ClicksTrendChart.tsx`        | `LineChart` Recharts                                        |
+| `MarketplacePieChart.tsx`     | `PieChart` com labels pt-BR (Amazon, Shopee, Mercado Livre) |
+| `OriginBarChart.tsx`          | Barras horizontais por `origin`                             |
+| `TopProductsTable.tsx`        | Lista ranqueada com link para `/produtos/[slug]`            |
+| `ConvertingArticlesTable.tsx` | Lista com link para `/artigos/[id]`                         |
+| `DateRangeSelect.tsx`         | Presets 7d / 30d / 90d (client island mínimo)               |
 
 **Data fetching:** RSC server-side via `adminFetchParsed` + schemas Zod ([`admin-fetch.ts`](apps/admin/src/lib/api/admin-fetch.ts)). Gráficos client (`'use client'`) recebem props serializadas.
 
@@ -258,20 +260,20 @@ Service account com role **Viewer** na propriedade GA4. Credencial **somente ser
 
 ### 2.2 Gateway GA4
 
-| Artefato | Detalhe |
-|----------|---------|
-| Port | `Ga4AnalyticsGateway` em `packages/domain` |
-| Infra | `GoogleAnalyticsDataGateway` usando `@google-analytics/data` |
-| Cache | Redis TTL 30 min por query key (`ga4:traffic:{from}:{to}`) |
-| DI | Wire em [`api-container.ts`](packages/infrastructure/src/di/api-container.ts) |
+| Artefato | Detalhe                                                                       |
+| -------- | ----------------------------------------------------------------------------- |
+| Port     | `Ga4AnalyticsGateway` em `packages/domain`                                    |
+| Infra    | `GoogleAnalyticsDataGateway` usando `@google-analytics/data`                  |
+| Cache    | Redis TTL 30 min por query key (`ga4:traffic:{from}:{to}`)                    |
+| DI       | Wire em [`api-container.ts`](packages/infrastructure/src/di/api-container.ts) |
 
 **Métricas GA4 expostas no admin:**
 
-| Métrica dashboard | GA4 query |
-|-------------------|-----------|
-| Pageviews por canal | `sessionDefaultChannelGroup` + `screenPageViews` |
-| CTR por origem | `affiliate_click` count / `view_item` ou pageviews na página de detalhe |
-| Artigos mais vistos | evento `article_view` agrupado por `article_slug` |
+| Métrica dashboard   | GA4 query                                                               |
+| ------------------- | ----------------------------------------------------------------------- |
+| Pageviews por canal | `sessionDefaultChannelGroup` + `screenPageViews`                        |
+| CTR por origem      | `affiliate_click` count / `view_item` ou pageviews na página de detalhe |
+| Artigos mais vistos | evento `article_view` agrupado por `article_slug`                       |
 
 Novos endpoints (ou extensão de `/admin/analytics/overview`):
 
@@ -293,37 +295,37 @@ flowchart LR
   GA4Web --> F2[Fase 2 GA4 Data API]
 ```
 
-| Ordem | Entrega | Estimativa relativa |
-|-------|---------|---------------------|
-| 1 | Fix telemetria (Fase 0) | Pequena — 4–6 arquivos web + 1 rota API |
-| 2 | Migration + enum `similar` + `article_id` | Pequena |
-| 3 | Repository + use cases + rotas admin | Média |
-| 4 | Dashboard UI + recharts | Média |
-| 5 | GA4 web (plano existente) | Média |
-| 6 | GA4 Data API + seção tráfego | Média |
+| Ordem | Entrega                                   | Estimativa relativa                     |
+| ----- | ----------------------------------------- | --------------------------------------- |
+| 1     | Fix telemetria (Fase 0)                   | Pequena — 4–6 arquivos web + 1 rota API |
+| 2     | Migration + enum `similar` + `article_id` | Pequena                                 |
+| 3     | Repository + use cases + rotas admin      | Média                                   |
+| 4     | Dashboard UI + recharts                   | Média                                   |
+| 5     | GA4 web (plano existente)                 | Média                                   |
+| 6     | GA4 Data API + seção tráfego              | Média                                   |
 
 ---
 
 ## Testes e validação
 
-| Cenário | Como validar |
-|---------|--------------|
-| Contagem única | 1 clique em CTA → exatamente 1 row em `click_events` com origin contextual |
-| Atribuição artigo | Clique em embed de artigo → `article_id` preenchido |
-| Stale rate | Seed com produto `stale_price=true` → KPI reflete % |
-| API auth | `GET /admin/analytics/*` sem JWT → 401 |
-| Dashboard vazio | Período sem cliques → gráficos com estado vazio (`AdminEmptyState`) |
-| GA4 Fase 2 | Comparar totais admin vs painel GA4 Explorar (tolerância ~5%) |
+| Cenário           | Como validar                                                               |
+| ----------------- | -------------------------------------------------------------------------- |
+| Contagem única    | 1 clique em CTA → exatamente 1 row em `click_events` com origin contextual |
+| Atribuição artigo | Clique em embed de artigo → `article_id` preenchido                        |
+| Stale rate        | Seed com produto `stale_price=true` → KPI reflete %                        |
+| API auth          | `GET /admin/analytics/*` sem JWT → 401                                     |
+| Dashboard vazio   | Período sem cliques → gráficos com estado vazio (`AdminEmptyState`)        |
+| GA4 Fase 2        | Comparar totais admin vs painel GA4 Explorar (tolerância ~5%)              |
 
 ---
 
 ## Documentação (ao concluir cada fase)
 
-| Fase | Doc |
-|------|-----|
-| Fase 0–1 | Criar [`docs/admin-dashboard-phase1.md`](docs/admin-dashboard-phase1.md) — métricas, rotas, schema, como testar |
-| Fase 2 | Estender doc + seção GA4 Data API; atualizar [`docs/ga4-analytics.md`](docs/ga4-analytics.md) (criado pelo plano GA4) |
-| Índice | [`docs/README.md`](docs/README.md) + [`docs/dev-setup.md`](docs/dev-setup.md) (env vars GA4) |
+| Fase     | Doc                                                                                                                   |
+| -------- | --------------------------------------------------------------------------------------------------------------------- |
+| Fase 0–1 | Criar [`docs/admin-dashboard-phase1.md`](docs/admin-dashboard-phase1.md) — métricas, rotas, schema, como testar       |
+| Fase 2   | Estender doc + seção GA4 Data API; atualizar [`docs/ga4-analytics.md`](docs/ga4-analytics.md) (criado pelo plano GA4) |
+| Índice   | [`docs/README.md`](docs/README.md) + [`docs/dev-setup.md`](docs/dev-setup.md) (env vars GA4)                          |
 
 ---
 

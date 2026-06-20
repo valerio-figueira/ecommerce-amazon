@@ -1,9 +1,9 @@
 ---
 name: Artigos Comparações Produtos
-overview: "Implementar o shortcode `[[compare:slug1,slug2,slug3]]` end-to-end: parser compartilhado, resolução batch de produtos em `GET /articles/:slug`, componente `ComparisonTable` responsivo na vitrine, e helper no editor admin para inserir o shortcode."
+overview: 'Implementar o shortcode `[[compare:slug1,slug2,slug3]]` end-to-end: parser compartilhado, resolução batch de produtos em `GET /articles/:slug`, componente `ComparisonTable` responsivo na vitrine, e helper no editor admin para inserir o shortcode.'
 todos:
   - id: shared-parser
-    content: "Estender article-shortcodes.ts: segment compare, extractAllEmbedSlugsFromBody, testes Vitest"
+    content: 'Estender article-shortcodes.ts: segment compare, extractAllEmbedSlugsFromBody, testes Vitest'
     status: completed
   - id: api-embedded-products
     content: productPublicDetailSchema + embeddedProducts em articlePublicDetailSchema; estender GetArticleWithEmbeds + presenter + DI
@@ -63,7 +63,7 @@ Estender [`article-shortcodes.ts`](packages/shared/src/content/article-shortcode
 **Regex compare** (alinhada ao spec, slugs individuais validados em kebab-case após split):
 
 ```ts
-/\[\[compare:([a-zA-Z0-9\-_,]+)\]\]/gi
+/\[\[compare:([a-zA-Z0-9\-_,]+)\]\]/gi;
 ```
 
 **Novo tipo de segmento:**
@@ -74,12 +74,12 @@ Estender [`article-shortcodes.ts`](packages/shared/src/content/article-shortcode
 
 **Funções:**
 
-| Função | Comportamento |
-|--------|---------------|
-| `parseCompareSlugs(raw: string)` | Split por `,`, trim, filtra vazios, valida slug kebab-case |
-| `extractCompareSlugGroupsFromBody(html)` | Lista de grupos (para validação) |
-| `extractAllEmbedSlugsFromBody(html)` | União deduplicada de slugs de `product` + `compare` |
-| `parseArticleShortcodes(html)` | **Single-pass** com regex combinada ordenada por índice no HTML |
+| Função                                   | Comportamento                                                   |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `parseCompareSlugs(raw: string)`         | Split por `,`, trim, filtra vazios, valida slug kebab-case      |
+| `extractCompareSlugGroupsFromBody(html)` | Lista de grupos (para validação)                                |
+| `extractAllEmbedSlugsFromBody(html)`     | União deduplicada de slugs de `product` + `compare`             |
+| `parseArticleShortcodes(html)`           | **Single-pass** com regex combinada ordenada por índice no HTML |
 
 **Regras de validação (render, não parse):**
 
@@ -101,7 +101,7 @@ Adicionar em [`product-schemas.ts`](packages/shared/src/admin/product-schemas.ts
 Estender [`articlePublicDetailSchema`](packages/shared/src/admin/article-schemas.ts):
 
 ```ts
-embeddedProducts: z.record(z.string(), productPublicDetailSchema.nullable())
+embeddedProducts: z.record(z.string(), productPublicDetailSchema.nullable());
 ```
 
 ### 2.2 Use case
@@ -142,14 +142,14 @@ Criar [`apps/web/src/components/articles/ComparisonTable.tsx`](apps/web/src/comp
 
 **Desktop (`md+`):** tabela shadcn com colunas = produtos.
 
-| Linha | Conteúdo |
-|-------|----------|
-| Cabeçalho | Imagem quadrada pequena (`images[0]`), título (`line-clamp-2`), `PriceDisplay` |
-| Badges | Reutilizar [`resolveEditorialBadge`](apps/web/src/lib/product-badges.ts) + badges contextuais de comparação: **Melhor Geral** (maior `editorialScore`) e **Custo-Benefício** (menor preço não-stale); sem badges de urgência se stale |
-| Specs | União ordenada das chaves de `specs`; valor ou `-`; label humanizada (`peso_maximo` → "Peso maximo") |
-| Prós / Contras | Reutilizar [`ProductEditorialProsCons`](apps/web/src/components/product/ProductEditorialProsCons.tsx) por coluna (max 2 prós, 1 contra) |
-| Avaliação | [`ProductRating`](apps/web/src/components/product/ProductRating.tsx) |
-| Ações | [`ProductCardActions`](apps/web/src/components/product/ProductCardActions.tsx) com `editorial` + `clickOrigin="embed"`; CTA "Ver preço na {marketplace}" |
+| Linha          | Conteúdo                                                                                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cabeçalho      | Imagem quadrada pequena (`images[0]`), título (`line-clamp-2`), `PriceDisplay`                                                                                                                                                        |
+| Badges         | Reutilizar [`resolveEditorialBadge`](apps/web/src/lib/product-badges.ts) + badges contextuais de comparação: **Melhor Geral** (maior `editorialScore`) e **Custo-Benefício** (menor preço não-stale); sem badges de urgência se stale |
+| Specs          | União ordenada das chaves de `specs`; valor ou `-`; label humanizada (`peso_maximo` → "Peso maximo")                                                                                                                                  |
+| Prós / Contras | Reutilizar [`ProductEditorialProsCons`](apps/web/src/components/product/ProductEditorialProsCons.tsx) por coluna (max 2 prós, 1 contra)                                                                                               |
+| Avaliação      | [`ProductRating`](apps/web/src/components/product/ProductRating.tsx)                                                                                                                                                                  |
+| Ações          | [`ProductCardActions`](apps/web/src/components/product/ProductCardActions.tsx) com `editorial` + `clickOrigin="embed"`; CTA "Ver preço na {marketplace}"                                                                              |
 
 Wrapper: `aside.not-prose my-8` (mesmo padrão de embed editorial).
 
@@ -207,11 +207,11 @@ Criar [`CompareEmbedExtension.ts`](apps/admin/src/components/articles/extensions
 
 ## 5. Documentação e verificação
 
-| Arquivo | Ação |
-|---------|------|
-| [`docs/articles-public-rendering.md`](docs/articles-public-rendering.md) | Pipeline compare + `embeddedProducts` |
-| [`docs/api-rest.md`](docs/api-rest.md) | Campo `embeddedProducts` em `GET /articles/:slug` |
-| [`docs/README.md`](docs/README.md) | Link se doc ficar separado (`articles-comparison-shortcode.md`) |
+| Arquivo                                                                  | Ação                                                            |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| [`docs/articles-public-rendering.md`](docs/articles-public-rendering.md) | Pipeline compare + `embeddedProducts`                           |
+| [`docs/api-rest.md`](docs/api-rest.md)                                   | Campo `embeddedProducts` em `GET /articles/:slug`               |
+| [`docs/README.md`](docs/README.md)                                       | Link se doc ficar separado (`articles-comparison-shortcode.md`) |
 
 **Smoke manual:**
 

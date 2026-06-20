@@ -1,14 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { acceptFunctionalConsent, hasFunctionalConsent } from '@/lib/session';
@@ -69,8 +62,8 @@ export function CookieConsentProvider({
         >
           <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-neutral-700">
-              Usamos um cookie funcional para manter sua lista de desejos neste navegador. Saiba mais
-              na{' '}
+              Usamos um cookie funcional para manter sua lista de desejos neste navegador. Saiba
+              mais na{' '}
               <Link href="/legal#cookies" className="font-medium underline">
                 política de cookies
               </Link>

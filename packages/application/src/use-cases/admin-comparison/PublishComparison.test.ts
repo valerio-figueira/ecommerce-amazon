@@ -31,7 +31,10 @@ function makeProduct(id: string): Product {
     titleClean: `Produto ${id}`,
     titleRaw: `Produto ${id}`,
     price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date() }),
-    affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
+    affiliateLink: AffiliateLink.create(
+      'https://www.amazon.com.br/dp/test?tag=vitrine-20',
+      'amazon_br',
+    ),
     images: [],
     specsNormalized: [],
     editorialScore: 80,
@@ -63,11 +66,7 @@ describe('PublishComparison', () => {
     });
     const webRevalidator = { revalidate: vi.fn() };
 
-    const useCase = new PublishComparison(
-      comparisonRepository,
-      productRepository,
-      webRevalidator,
-    );
+    const useCase = new PublishComparison(comparisonRepository, productRepository, webRevalidator);
 
     await expect(useCase.execute('cmp-1', 'slug-teste')).rejects.toBeInstanceOf(ValidationError);
   });
@@ -91,11 +90,7 @@ describe('PublishComparison', () => {
     });
     const webRevalidator = { revalidate: vi.fn() };
 
-    const useCase = new PublishComparison(
-      comparisonRepository,
-      productRepository,
-      webRevalidator,
-    );
+    const useCase = new PublishComparison(comparisonRepository, productRepository, webRevalidator);
 
     await expect(useCase.execute('cmp-1', 'slug-existente')).rejects.toBeInstanceOf(ConflictError);
   });
@@ -119,11 +114,7 @@ describe('PublishComparison', () => {
     });
     const webRevalidator = { revalidate: vi.fn() };
 
-    const useCase = new PublishComparison(
-      comparisonRepository,
-      productRepository,
-      webRevalidator,
-    );
+    const useCase = new PublishComparison(comparisonRepository, productRepository, webRevalidator);
 
     await useCase.execute('cmp-1', 'produto-a-vs-produto-b');
 

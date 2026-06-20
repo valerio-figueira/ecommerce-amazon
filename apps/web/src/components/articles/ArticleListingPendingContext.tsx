@@ -1,20 +1,13 @@
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useTransition,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useTransition, type ReactNode } from 'react';
 
 type ArticleListingPendingContextValue = {
   isPending: boolean;
   startListingTransition: (callback: () => void) => void;
 };
 
-const ArticleListingPendingContext = createContext<ArticleListingPendingContextValue | null>(
-  null,
-);
+const ArticleListingPendingContext = createContext<ArticleListingPendingContextValue | null>(null);
 
 export function ArticleListingPendingProvider({
   children,

@@ -25,8 +25,15 @@ function makeProduct(id: string): Product {
     slug: `produto-${id.slice(0, 8)}`,
     titleClean: `Produto ${id}`,
     titleRaw: `Produto ${id}`,
-    price: Price.create({ amount: 100, currency: 'BRL', updatedAt: new Date('2025-06-01T12:00:00.000Z') }),
-    affiliateLink: AffiliateLink.create('https://www.amazon.com.br/dp/test?tag=vitrine-20', 'amazon_br'),
+    price: Price.create({
+      amount: 100,
+      currency: 'BRL',
+      updatedAt: new Date('2025-06-01T12:00:00.000Z'),
+    }),
+    affiliateLink: AffiliateLink.create(
+      'https://www.amazon.com.br/dp/test?tag=vitrine-20',
+      'amazon_br',
+    ),
     images: ['https://cdn.example.com/image.jpg'],
     specsNormalized: [
       {

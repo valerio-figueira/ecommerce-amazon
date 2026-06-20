@@ -22,10 +22,7 @@ import {
   PRODUCT_SEO_TITLE_GOOGLE_LIMIT,
 } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
-import {
-  buildProductMetaDescription,
-  buildProductMetaTitle,
-} from '@ecommerce-amazon/shared/seo';
+import { buildProductMetaDescription, buildProductMetaTitle } from '@ecommerce-amazon/shared/seo';
 
 export function ProductAdvancedSeoSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
@@ -40,8 +37,8 @@ export function ProductAdvancedSeoSection(): React.JSX.Element {
     <CmsFormSection title="SEO avançado (opcional)">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-[var(--admin-text-muted)]">
-          Sobrescreva o automático só quando necessário. Use o assistente para sugestões alinhadas ao
-          Google e às regras da vitrine.
+          Sobrescreva o automático só quando necessário. Use o assistente para sugestões alinhadas
+          ao Google e às regras da vitrine.
         </p>
         <ProductSeoLlmPromptHelper />
       </div>

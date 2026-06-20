@@ -2,10 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { ADMIN_SESSION_COOKIE, getSessionFromCookie } from '@/lib/auth/session';
-import {
-  confirmSessionWithApi,
-  getSessionCookieClearOptions,
-} from '@/lib/auth/session-guard';
+import { confirmSessionWithApi, getSessionCookieClearOptions } from '@/lib/auth/session-guard';
 
 export type GuardedSession = {
   id: string;

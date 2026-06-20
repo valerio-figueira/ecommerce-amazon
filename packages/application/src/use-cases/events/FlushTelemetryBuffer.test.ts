@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ClickEventRepository, EngagementEventRepository, TelemetryBufferStore } from '@ecommerce-amazon/domain';
+import type {
+  ClickEventRepository,
+  EngagementEventRepository,
+  TelemetryBufferStore,
+} from '@ecommerce-amazon/domain';
 
 import { FlushTelemetryBuffer } from './FlushTelemetryBuffer.js';
 

@@ -1,14 +1,7 @@
 'use client';
 
 import { Globe } from 'lucide-react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -62,24 +55,24 @@ export function Ga4TrafficSection({
         <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           <AnalyticsChartFrame height={224} className="">
             <AreaChart data={items}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
-                <XAxis
-                  dataKey="channel"
-                  fontSize={11}
-                  interval={0}
-                  angle={-20}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis allowDecimals={false} fontSize={12} />
-                <Tooltip formatter={(value) => [String(value), 'Pageviews']} />
-                <Area
-                  type="monotone"
-                  dataKey="pageViews"
-                  stroke="var(--admin-primary)"
-                  fill="color-mix(in srgb, var(--admin-primary) 20%, transparent)"
-                />
-              </AreaChart>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+              <XAxis
+                dataKey="channel"
+                fontSize={11}
+                interval={0}
+                angle={-20}
+                textAnchor="end"
+                height={60}
+              />
+              <YAxis allowDecimals={false} fontSize={12} />
+              <Tooltip formatter={(value) => [String(value), 'Pageviews']} />
+              <Area
+                type="monotone"
+                dataKey="pageViews"
+                stroke="var(--admin-primary)"
+                fill="color-mix(in srgb, var(--admin-primary) 20%, transparent)"
+              />
+            </AreaChart>
           </AnalyticsChartFrame>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">

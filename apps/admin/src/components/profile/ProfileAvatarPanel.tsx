@@ -18,10 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useAdminToast } from '@/components/ui/admin-toast';
-import {
-  removeOperatorAvatarClient,
-  uploadOperatorAvatarClient,
-} from '@/lib/api/profile-client';
+import { removeOperatorAvatarClient, uploadOperatorAvatarClient } from '@/lib/api/profile-client';
 
 type ProfileAvatarPanelProps = {
   initialAvatarUrl: string | null;
@@ -154,10 +151,7 @@ export function ProfileAvatarPanel({
             selectedFileName={selectedFileName}
             onFileChange={handleFileChange}
             disabled={uploading}
-            hintLines={[
-              'JPG, PNG, GIF ou WebP. Máximo 5 MiB.',
-              'Recorte quadrado até 512×512 px.',
-            ]}
+            hintLines={['JPG, PNG, GIF ou WebP. Máximo 5 MiB.', 'Recorte quadrado até 512×512 px.']}
           />
 
           <div className="admin-profile-photo-actions">
@@ -200,7 +194,8 @@ export function ProfileAvatarPanel({
           <AlertDialogHeader>
             <AlertDialogTitle>Remover foto de perfil?</AlertDialogTitle>
             <AlertDialogDescription>
-              A foto atual será excluída do armazenamento gerenciado. Você pode enviar outra imagem depois.
+              A foto atual será excluída do armazenamento gerenciado. Você pode enviar outra imagem
+              depois.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

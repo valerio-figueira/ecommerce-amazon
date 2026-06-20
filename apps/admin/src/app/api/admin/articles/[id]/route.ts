@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getBffErrorMessage, getBffErrorStatus } from '@/lib/api/bff-error-status';
 
-import {
-  deleteAdminArticle,
-  getAdminArticle,
-  updateAdminArticle,
-} from '@/lib/api/articles';
+import { deleteAdminArticle, getAdminArticle, updateAdminArticle } from '@/lib/api/articles';
 import { updateArticleBodySchema } from '@ecommerce-amazon/shared/admin';
 
 type RouteContext = {

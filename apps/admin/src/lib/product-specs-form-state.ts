@@ -49,9 +49,7 @@ export function specsNormalizedToUiState(groups: SpecGroup[]): SpecBlockState[] 
     is_collapsed_default: group.is_collapsed_default,
     properties:
       group.properties.length > 0
-        ? group.properties.map((property) =>
-            createEmptyPropertyRow(property.key, property.value),
-          )
+        ? group.properties.map((property) => createEmptyPropertyRow(property.key, property.value))
         : [createEmptyPropertyRow()],
   }));
 }

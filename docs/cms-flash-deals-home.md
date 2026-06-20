@@ -2,10 +2,10 @@
 
 Substituição do bloco `featured_product` / `hero_split` por carrossel de promoções com foco em escassez honesta.
 
-| Referência | Arquivo |
-|------------|---------|
+| Referência       | Arquivo                                                        |
+| ---------------- | -------------------------------------------------------------- |
 | Blocos dinâmicos | [cms-dynamic-blocks-phase2.md](./cms-dynamic-blocks-phase2.md) |
-| Home fase 1 | [cms-home-phase1.md](./cms-home-phase1.md) |
+| Home fase 1      | [cms-home-phase1.md](./cms-home-phase1.md)                     |
 
 ## Escopo entregue
 
@@ -51,14 +51,14 @@ flowchart TD
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Sort enum | `packages/domain/src/enums/cms.ts` |
-| Query desconto | `packages/infrastructure/.../drizzle-product.repository.ts` |
-| BFF hidratação | `packages/application/src/use-cases/page/GetPublishedPageLayout.ts` |
-| Carrossel compartilhado | `apps/web/src/components/product/ProductCarousel.tsx` |
-| Bloco web | `apps/web/src/components/blocks/DynamicProductGridBlock.tsx` |
-| Seed / migração | `packages/infrastructure/src/persistence/drizzle/seed.ts` |
+| Camada                  | Path                                                                |
+| ----------------------- | ------------------------------------------------------------------- |
+| Sort enum               | `packages/domain/src/enums/cms.ts`                                  |
+| Query desconto          | `packages/infrastructure/.../drizzle-product.repository.ts`         |
+| BFF hidratação          | `packages/application/src/use-cases/page/GetPublishedPageLayout.ts` |
+| Carrossel compartilhado | `apps/web/src/components/product/ProductCarousel.tsx`               |
+| Bloco web               | `apps/web/src/components/blocks/DynamicProductGridBlock.tsx`        |
+| Seed / migração         | `packages/infrastructure/src/persistence/drizzle/seed.ts`           |
 
 ## Como testar
 

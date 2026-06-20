@@ -34,10 +34,7 @@ export function ProductLimitPicker({ control }: ProductLimitPickerProps): React.
                     key={preset}
                     type="button"
                     onClick={() => field.onChange(preset)}
-                    className={cn(
-                      'cms-limit-chip',
-                      current === preset && 'is-active',
-                    )}
+                    className={cn('cms-limit-chip', current === preset && 'is-active')}
                   >
                     {preset}
                   </button>

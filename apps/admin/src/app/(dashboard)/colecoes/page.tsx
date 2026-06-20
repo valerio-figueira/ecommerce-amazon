@@ -26,10 +26,7 @@ export default async function ColecoesPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Coleções"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Coleções' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Coleções' }]}
       />
       <AdminPageCard transparent>
         {apiUnavailable ? (

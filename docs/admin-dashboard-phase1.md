@@ -26,27 +26,27 @@ Origem `similar` identifica o carrossel de produtos similares na página de deta
 
 Migration `0014_click_events_analytics.sql`:
 
-| Coluna / índice | Uso |
-|-----------------|-----|
-| `article_id` | FK → `content_articles`; preenchido em embeds editoriais |
-| `click_events_occurred_at_idx` | Filtro por período |
-| `click_events_product_occurred_idx` | Top produtos |
-| `click_events_origin_occurred_idx` | Breakdown por origem |
-| `click_events_article_id_idx` | Artigos conversores |
+| Coluna / índice                     | Uso                                                      |
+| ----------------------------------- | -------------------------------------------------------- |
+| `article_id`                        | FK → `content_articles`; preenchido em embeds editoriais |
+| `click_events_occurred_at_idx`      | Filtro por período                                       |
+| `click_events_product_occurred_idx` | Top produtos                                             |
+| `click_events_origin_occurred_idx`  | Breakdown por origem                                     |
+| `click_events_article_id_idx`       | Artigos conversores                                      |
 
 Enum `ClickOrigin.SIMILAR = 'similar'` no domain.
 
 ## API admin (JWT)
 
-| Rota | Descrição |
-|------|-----------|
-| `GET /admin/analytics/overview?from=&to=` | KPIs + tendência + saúde catálogo |
-| `GET /admin/analytics/clicks/by-origin` | % cliques por `origin` |
-| `GET /admin/analytics/clicks/by-marketplace` | Mix de cliques + composição do catálogo visível + índice relativo (`clickIndex`) |
-| `GET /admin/analytics/clicks/top-products?limit=10` | Ranking de produtos |
-| `GET /admin/analytics/articles/converting?limit=10` | Artigos com mais cliques via embed |
-| `GET /admin/analytics/traffic/acquisition` | Pageviews por canal (GA4) |
-| `GET /admin/analytics/ctr/by-origin` | CTR híbrido PG + GA4 |
+| Rota                                                | Descrição                                                                        |
+| --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `GET /admin/analytics/overview?from=&to=`           | KPIs + tendência + saúde catálogo                                                |
+| `GET /admin/analytics/clicks/by-origin`             | % cliques por `origin`                                                           |
+| `GET /admin/analytics/clicks/by-marketplace`        | Mix de cliques + composição do catálogo visível + índice relativo (`clickIndex`) |
+| `GET /admin/analytics/clicks/top-products?limit=10` | Ranking de produtos                                                              |
+| `GET /admin/analytics/articles/converting?limit=10` | Artigos com mais cliques via embed                                               |
+| `GET /admin/analytics/traffic/acquisition`          | Pageviews por canal (GA4)                                                        |
+| `GET /admin/analytics/ctr/by-origin`                | CTR híbrido PG + GA4                                                             |
 
 Query `from`/`to`: ISO datetime; default últimos 30 dias.
 
@@ -75,15 +75,15 @@ Sem credenciais, o dashboard exibe mensagem de configuração na seção GA4.
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Schema | `packages/infrastructure/.../schema/index.ts`, migration `0014_*` |
-| Domain | `packages/domain/src/repositories/AnalyticsRepository.ts` |
-| Use cases | `packages/application/src/use-cases/analytics/` |
-| Infra | `drizzle-analytics.repository.ts`, `google-analytics-data.gateway.ts` |
-| API | `apps/api/.../admin-analytics-routes.ts` |
-| Admin | `apps/admin/src/lib/api/analytics.ts`, `components/analytics/*` |
-| Web (telemetria) | `AffiliateGoLink.tsx`, `go-url.ts`, `ArticleBody.tsx` |
+| Camada           | Path                                                                  |
+| ---------------- | --------------------------------------------------------------------- |
+| Schema           | `packages/infrastructure/.../schema/index.ts`, migration `0014_*`     |
+| Domain           | `packages/domain/src/repositories/AnalyticsRepository.ts`             |
+| Use cases        | `packages/application/src/use-cases/analytics/`                       |
+| Infra            | `drizzle-analytics.repository.ts`, `google-analytics-data.gateway.ts` |
+| API              | `apps/api/.../admin-analytics-routes.ts`                              |
+| Admin            | `apps/admin/src/lib/api/analytics.ts`, `components/analytics/*`       |
+| Web (telemetria) | `AffiliateGoLink.tsx`, `go-url.ts`, `ArticleBody.tsx`                 |
 
 ## Como testar
 

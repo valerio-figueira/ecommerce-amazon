@@ -25,8 +25,7 @@ type ProductCarouselProps = {
 };
 
 const SLIDE_SIZE_CLASS = {
-  default:
-    'min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]',
+  default: 'min-w-0 flex-[0_0_72%] sm:flex-[0_0_48%] md:flex-[0_0_32%] lg:flex-[0_0_24%]',
   sm: 'min-w-0 flex-[0_0_62%] max-w-[210px] sm:flex-[0_0_38%] md:flex-[0_0_calc(28%-0.667rem)] lg:flex-[0_0_calc(22%-0.75rem)]',
 } as const;
 
@@ -109,7 +108,10 @@ export function ProductCarousel({
           <div className={cn('flex touch-pan-y items-stretch', trackGap)}>
             {isLoading
               ? Array.from({ length: Math.min(skeletonCount, 8) }).map((_, index) => (
-                  <div key={index} className={cn(slideClass, SLIDE_INSET_CLASS, isCompactCard && 'flex')}>
+                  <div
+                    key={index}
+                    className={cn(slideClass, SLIDE_INSET_CLASS, isCompactCard && 'flex')}
+                  >
                     <ProductCardSkeleton variant={isCompactCard ? 'compact' : 'default'} />
                   </div>
                 ))

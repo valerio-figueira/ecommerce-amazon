@@ -4,7 +4,13 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { sql } from 'drizzle-orm';
 import { ZodError } from 'zod';
 
-import { DomainError, parseMarketplace, parseProductSortField, ValidationError, type Marketplace } from '@ecommerce-amazon/domain';
+import {
+  DomainError,
+  parseMarketplace,
+  parseProductSortField,
+  ValidationError,
+  type Marketplace,
+} from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 
 import { registerAdminRoutes } from './admin-routes.js';
@@ -18,12 +24,12 @@ import {
 import { toProductCategorySummaryDto } from '../../presenters/category.presenter.js';
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
 import { toComparisonPublicDto } from '../../presenters/comparison.presenter.js';
-import { listArticlesByCategoryQuerySchema, listPublishedArticlesQuerySchema } from '@ecommerce-amazon/shared/admin';
-import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 import {
-  sitemapEntriesQuerySchema,
-  sitemapMetaQuerySchema,
-} from '@ecommerce-amazon/shared/seo';
+  listArticlesByCategoryQuerySchema,
+  listPublishedArticlesQuerySchema,
+} from '@ecommerce-amazon/shared/admin';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
+import { sitemapEntriesQuerySchema, sitemapMetaQuerySchema } from '@ecommerce-amazon/shared/seo';
 import {
   ArticleSlugParamsSchema,
   BatchCheckoutSchema,

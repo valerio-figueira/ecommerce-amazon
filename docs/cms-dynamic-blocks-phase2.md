@@ -2,12 +2,12 @@
 
 Extensão do CMS com blocos orientados a queries de catálogo, use cases Admin (application) e hidratação BFF na entrega pública.
 
-| Referência | Arquivo |
-|------------|---------|
-| Fase 1 | [cms-home-phase1.md](./cms-home-phase1.md) |
-| Schemas Zod | [`packages/shared/src/cms/block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts) |
+| Referência      | Arquivo                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| Fase 1          | [cms-home-phase1.md](./cms-home-phase1.md)                                                          |
+| Schemas Zod     | [`packages/shared/src/cms/block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts)           |
 | Admin use cases | [`packages/application/src/use-cases/admin-cms/`](../packages/application/src/use-cases/admin-cms/) |
-| BFF entrega | [`GetPublishedPageLayout.ts`](../packages/application/src/use-cases/page/GetPublishedPageLayout.ts) |
+| BFF entrega     | [`GetPublishedPageLayout.ts`](../packages/application/src/use-cases/page/GetPublishedPageLayout.ts) |
 
 ## Escopo entregue
 
@@ -45,24 +45,24 @@ flowchart LR
 
 ## Props — `DYNAMIC_PRODUCT_GRID`
 
-| Campo | Tipo | Notas |
-|-------|------|-------|
-| `title` | string 3–60 | obrigatório |
-| `subtitle` | string? | |
-| `categoryVertical` | string? | ex.: `home-office` |
-| `minDiscountPercentage` | number 0–100? | requer `price_strikethrough` no produto |
-| `sortBy` | enum | default `editorial_score`; inclui `discount_percent_desc` para ofertas |
-| `limit` | int 1–24 | default 8 |
+| Campo                   | Tipo          | Notas                                                                  |
+| ----------------------- | ------------- | ---------------------------------------------------------------------- |
+| `title`                 | string 3–60   | obrigatório                                                            |
+| `subtitle`              | string?       |                                                                        |
+| `categoryVertical`      | string?       | ex.: `home-office`                                                     |
+| `minDiscountPercentage` | number 0–100? | requer `price_strikethrough` no produto                                |
+| `sortBy`                | enum          | default `editorial_score`; inclui `discount_percent_desc` para ofertas |
+| `limit`                 | int 1–24      | default 8                                                              |
 
 ## Use cases Admin
 
 Todos retornam `Result<T, ValidationError | EntityNotFoundError>`.
 
-| Use case | Input principal | Efeito |
-|----------|-----------------|--------|
-| `SavePageBlock` | `pageId`, `blockId?`, `type`, `position`, `props` | Valida props, upsert bloco, invalida cache |
-| `DeletePageBlock` | `blockId` | Remove bloco, reindexa `sortOrder`, invalida cache |
-| `UpdatePageBlocksOrder` | `pageId`, `blocksOrder[]` | Reordena em transação, invalida cache |
+| Use case                | Input principal                                   | Efeito                                             |
+| ----------------------- | ------------------------------------------------- | -------------------------------------------------- |
+| `SavePageBlock`         | `pageId`, `blockId?`, `type`, `position`, `props` | Valida props, upsert bloco, invalida cache         |
+| `DeletePageBlock`       | `blockId`                                         | Remove bloco, reindexa `sortOrder`, invalida cache |
+| `UpdatePageBlocksOrder` | `pageId`, `blocksOrder[]`                         | Reordena em transação, invalida cache              |
 
 `position` no input Admin mapeia para `sortOrder` no banco.
 

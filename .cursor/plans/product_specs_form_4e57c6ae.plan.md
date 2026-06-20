@@ -54,7 +54,7 @@ flowchart LR
 ```typescript
 export const CATEGORY_SPEC_TEMPLATES: Readonly<Record<string, readonly string[]>> = {
   'teclados-mecanicos': ['Switches', 'Layout', 'Conexão'],
-  'perifericos': ['Tipo', 'Conexão', 'Compatibilidade'],
+  perifericos: ['Tipo', 'Conexão', 'Compatibilidade'],
   'cadeiras-ergonomicas': ['Peso Máximo Suportado', 'Material', 'Ajuste de Braço'],
 };
 
@@ -69,6 +69,7 @@ export function resolveSpecTemplateForSlugChain(slugChain: string[]): readonly s
 ```
 
 **Decisões:**
+
 - Chave do dicionário = **slug da categoria** (estável; UUIDs não servem para config estática).
 - Valores do template = **labels legíveis** usados também como chaves em `specs_normalized` (exibidos direto no comparador; [`formatSpecKey`](apps/web/src/components/articles/ComparisonTable.tsx) continua compatível).
 - MVP: **3 categorias de exemplo** (acima) + estrutura pronta para expandir. Slugs sem template → seção mostra só atributos customizados + empty state discreto.
@@ -84,7 +85,9 @@ export function resolveSpecTemplateForSlugChain(slugChain: string[]): readonly s
 export function buildCategorySlugChain(
   categoryId: string | undefined,
   options: CategoryFlatOption[],
-): string[] { /* sobe parentId até raiz */ }
+): string[] {
+  /* sobe parentId até raiz */
+}
 ```
 
 **Extrair hook** `useAdminCategoryOptions()` (fetch `/api/admin/categories` + `flattenAdminCategoriesForPicker`) para reutilizar em [`ProductEssentialsSection`](apps/admin/src/components/products/ProductEssentialsSection.tsx) e no novo componente — evita fetch duplicado e centraliza a lista.
@@ -94,23 +97,24 @@ export function buildCategorySlugChain(
 **Criar** [`apps/admin/src/components/products/ProductSpecsForm.tsx`](apps/admin/src/components/products/ProductSpecsForm.tsx).
 
 ### UI
+
 - Usar **`CmsFormSection`** com título **"Especificações do Produto"** (padrão admin existente; **sem** adicionar Accordion — componente não existe no projeto e o escopo pede Card/Accordion; `CmsFormSection` cumpre o papel de card dedicado).
 - Integração RHF via `useFormContext<ProductFormValues>()` + `useWatch('categoryId')` + `useWatch('specsNormalized')`.
 
 ### Comportamento
 
-| Evento | Ação |
-|--------|------|
-| `categoryId` muda | Resolve `slugChain` → `templateKeys = resolveSpecTemplateForSlugChain(slugChain)` |
-| Template encontrado | Renderiza lista vertical: label fixo + `<Input>` por chave |
-| Edição de produto | Valores existentes em `specsNormalized` preenchem inputs automaticamente |
-| Chaves salvas fora do template | Aparecem na seção **Atributos customizados** |
-| Salvar | Envia apenas pares `{ chave: valor }` com ambos não vazios (trim) |
+| Evento                         | Ação                                                                              |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| `categoryId` muda              | Resolve `slugChain` → `templateKeys = resolveSpecTemplateForSlugChain(slugChain)` |
+| Template encontrado            | Renderiza lista vertical: label fixo + `<Input>` por chave                        |
+| Edição de produto              | Valores existentes em `specsNormalized` preenchem inputs automaticamente          |
+| Chaves salvas fora do template | Aparecem na seção **Atributos customizados**                                      |
+| Salvar                         | Envia apenas pares `{ chave: valor }` com ambos não vazios (trim)                 |
 
 **Binding RHF** — campo único no form:
 
 ```typescript
-specsNormalized: Record<string, string>  // default {}
+specsNormalized: Record<string, string>; // default {}
 ```
 
 Cada input de template:
@@ -118,14 +122,21 @@ Cada input de template:
 ```tsx
 <Input
   value={specsNormalized[label] ?? ''}
-  onChange={(e) => form.setValue('specsNormalized', {
-    ...specsNormalized,
-    [label]: e.target.value,
-  }, { shouldDirty: true })}
+  onChange={(e) =>
+    form.setValue(
+      'specsNormalized',
+      {
+        ...specsNormalized,
+        [label]: e.target.value,
+      },
+      { shouldDirty: true },
+    )
+  }
 />
 ```
 
 **Atributos customizados (fallback):**
+
 - Botão ghost/outline: `+ Adicionar atributo customizado`
 - Cada linha: input **Chave** + input **Valor** + botão remover (padrão similar a [`DynamicStringList`](apps/admin/src/components/products/DynamicStringList.tsx))
 - Chaves duplicadas ou vazias: validação inline / ignorar no sanitize antes do submit
@@ -134,6 +145,7 @@ Cada input de template:
 **Mudança de categoria:** não apagar specs existentes; chaves que saem do template migram visualmente para customizados (dados preservados).
 
 **Empty states:**
+
 - Sem categoria: hint "Selecione uma categoria para ver especificações sugeridas"
 - Categoria sem template: só customizados + hint opcional
 
@@ -186,18 +198,18 @@ Atualizar [`docs/admin-products-phase1.md`](docs/admin-products-phase1.md) com s
 
 ## Arquivos principais
 
-| Arquivo | Ação |
-|---------|------|
-| `packages/shared/src/product/spec-templates.ts` | Criar |
-| `apps/admin/src/components/products/ProductSpecsForm.tsx` | Criar |
-| `apps/admin/src/hooks/useAdminCategoryOptions.ts` | Criar (extrair fetch) |
-| `apps/admin/src/lib/api/categories-utils.ts` | `buildCategorySlugChain` |
-| `packages/shared/src/admin/product-schemas.ts` | Campo `specsNormalized` |
-| `apps/admin/src/lib/product-form-values.ts` | Hydration |
-| `apps/admin/src/components/products/ProductForm.tsx` | default + render |
-| `packages/application/.../CreateProduct.ts`, `UpdateProduct.ts` | Persistência |
-| `apps/api/.../product.presenter.ts` | DTO admin |
-| `docs/admin-products-phase1.md` | Doc |
+| Arquivo                                                         | Ação                     |
+| --------------------------------------------------------------- | ------------------------ |
+| `packages/shared/src/product/spec-templates.ts`                 | Criar                    |
+| `apps/admin/src/components/products/ProductSpecsForm.tsx`       | Criar                    |
+| `apps/admin/src/hooks/useAdminCategoryOptions.ts`               | Criar (extrair fetch)    |
+| `apps/admin/src/lib/api/categories-utils.ts`                    | `buildCategorySlugChain` |
+| `packages/shared/src/admin/product-schemas.ts`                  | Campo `specsNormalized`  |
+| `apps/admin/src/lib/product-form-values.ts`                     | Hydration                |
+| `apps/admin/src/components/products/ProductForm.tsx`            | default + render         |
+| `packages/application/.../CreateProduct.ts`, `UpdateProduct.ts` | Persistência             |
+| `apps/api/.../product.presenter.ts`                             | DTO admin                |
+| `docs/admin-products-phase1.md`                                 | Doc                      |
 
 ## Fora de escopo (MVP)
 

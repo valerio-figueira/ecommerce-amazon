@@ -27,13 +27,13 @@ isProject: false
 
 ## Contexto atual
 
-| Área | Estado |
-|------|--------|
-| `content_articles` | `author_id` existe (FK SQL → `operators`); **sem** `category_id` |
-| `operators` | Login CMS; colunas `email`, `name`, `status` — **sem** `avatar_url`, `bio`, `role` |
-| Admin artigos | Form completo; `authorId` já definido no `POST` via `request.adminOperator.id` ([`admin-article-routes.ts`](apps/api/src/adapters/http/routes/admin-article-routes.ts)) |
-| Web `/artigos/[slug]` | `ArticleHero` com byline simples; **sem** author box nem relacionados |
-| API pública | `articlePublicDetailSchema` expõe só `authorName` ([`article-schemas.ts`](packages/shared/src/admin/article-schemas.ts)) |
+| Área                  | Estado                                                                                                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content_articles`    | `author_id` existe (FK SQL → `operators`); **sem** `category_id`                                                                                                        |
+| `operators`           | Login CMS; colunas `email`, `name`, `status` — **sem** `avatar_url`, `bio`, `role`                                                                                      |
+| Admin artigos         | Form completo; `authorId` já definido no `POST` via `request.adminOperator.id` ([`admin-article-routes.ts`](apps/api/src/adapters/http/routes/admin-article-routes.ts)) |
+| Web `/artigos/[slug]` | `ArticleHero` com byline simples; **sem** author box nem relacionados                                                                                                   |
+| API pública           | `articlePublicDetailSchema` expõe só `authorName` ([`article-schemas.ts`](packages/shared/src/admin/article-schemas.ts))                                                |
 
 **Decisão confirmada:** estender `operators` (não renomear para `users`). **Tags** ficam fora desta entrega — apenas `article_categories`.
 
@@ -69,6 +69,7 @@ export const articleCategories = pgTable('article_categories', {
 ```
 
 **Migration:** `migrations/0013_article_taxonomy_authors.sql`
+
 - `CREATE TABLE article_categories`
 - `ALTER TABLE operators ADD COLUMN avatar_url text, bio varchar(250), role operator_role NOT NULL DEFAULT 'admin'`
 - `CREATE TYPE operator_role AS ENUM ('admin', 'editor')`
@@ -76,11 +77,13 @@ export const articleCategories = pgTable('article_categories', {
 - `ALTER TABLE content_articles ADD CONSTRAINT ... author_id → operators(id)` (alinhar Drizzle com SQL existente em 0011)
 
 **Atualizar** [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts):
+
 - Importar `articleCategories`; adicionar `categoryId` em `contentArticles` com `.references()`
 - Adicionar `operatorRoleEnum` + colunas `avatarUrl`, `bio`, `role` em `operators`
 - Declarar `.references(() => operators.id)` em `authorId`
 
 **Seed** ([`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts)):
+
 - 2–3 `article_categories` (ex.: `guias`, `reviews`, `comparativos`)
 - Seed operator com `avatarUrl`, `bio`, `role: 'admin'`
 - Artigo seed com `categoryId` vinculado
@@ -91,13 +94,13 @@ export const articleCategories = pgTable('article_categories', {
 
 ### Novas entidades e ports
 
-| Artefato | Path |
-|----------|------|
-| `ArticleCategory` entity | `packages/domain/src/entities/ArticleCategory.ts` |
-| `OperatorRole` enum | `packages/domain/src/enums/index.ts` |
-| `ArticleCategoryRepository` port | `packages/domain/src/repositories/ArticleCategoryRepository.ts` |
-| Estender `Operator` | `packages/domain/src/entities/Operator.ts` — `avatarUrl`, `bio`, `role` |
-| Estender `ContentArticle` | `packages/domain/src/entities/ContentArticle.ts` — `categoryId: string \| null` |
+| Artefato                         | Path                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `ArticleCategory` entity         | `packages/domain/src/entities/ArticleCategory.ts`                               |
+| `OperatorRole` enum              | `packages/domain/src/enums/index.ts`                                            |
+| `ArticleCategoryRepository` port | `packages/domain/src/repositories/ArticleCategoryRepository.ts`                 |
+| Estender `Operator`              | `packages/domain/src/entities/Operator.ts` — `avatarUrl`, `bio`, `role`         |
+| Estender `ContentArticle`        | `packages/domain/src/entities/ContentArticle.ts` — `categoryId: string \| null` |
 
 ### Repositórios (infra)
 
@@ -117,11 +120,11 @@ Query: `status = published`, `category_id = ?`, `id != ?`, `ORDER BY published_a
 
 ### Use cases novos
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `ListArticleCategories` | Lista para admin + select do form |
-| `CreateArticleCategory` / `UpdateArticleCategory` / `DeleteArticleCategory` | CRUD com validação slug único; delete bloqueado se artigos vinculados (409) |
-| `GetArticleWithEmbeds` (estender) | Resolver `author` (name, avatarUrl, bio), `category` (name, slug), `relatedArticles` |
+| Use case                                                                    | Responsabilidade                                                                     |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `ListArticleCategories`                                                     | Lista para admin + select do form                                                    |
+| `CreateArticleCategory` / `UpdateArticleCategory` / `DeleteArticleCategory` | CRUD com validação slug único; delete bloqueado se artigos vinculados (409)          |
+| `GetArticleWithEmbeds` (estender)                                           | Resolver `author` (name, avatarUrl, bio), `category` (name, slug), `relatedArticles` |
 
 **Cache:** invalidar chave `vitrine:article:slug:{slug}` quando artigo/categoria/autor mudar; TTL 900s mantido.
 
@@ -151,11 +154,11 @@ articlePublicDetailSchema += category, author, relatedArticles
 
 ### Rotas API
 
-| Método | Rota | Auth |
-|--------|------|------|
-| GET/POST | `/admin/article-categories` | JWT |
-| GET/PATCH/DELETE | `/admin/article-categories/:id` | JWT |
-| GET | `/articles/:slug` | público — DTO enriquecido |
+| Método           | Rota                            | Auth                      |
+| ---------------- | ------------------------------- | ------------------------- |
+| GET/POST         | `/admin/article-categories`     | JWT                       |
+| GET/PATCH/DELETE | `/admin/article-categories/:id` | JWT                       |
+| GET              | `/articles/:slug`               | público — DTO enriquecido |
 
 **Arquivos:** [`admin-article-category-routes.ts`](apps/api/src/adapters/http/routes/admin-article-category-routes.ts) (novo), registrar em [`routes/index.ts`](apps/api/src/adapters/http/routes/index.ts); atualizar [`article.presenter.ts`](apps/api/src/adapters/presenters/article.presenter.ts).
 
@@ -197,12 +200,12 @@ Em [`ArticleForm.tsx`](apps/admin/src/components/articles/ArticleForm.tsx) + [`A
 
 ### Componentes novos
 
-| Componente | Responsabilidade |
-|------------|------------------|
+| Componente                  | Responsabilidade                                                               |
+| --------------------------- | ------------------------------------------------------------------------------ |
 | `ArticleMetadataHeader.tsx` | Badge categoria + `hr` + avatar redondo (`rounded-full w-8 h-8`) + nome + data |
-| `ArticleAuthorBox.tsx` | `bg-gray-50 p-6 rounded-2xl` — foto esquerda, nome destaque, bio |
-| `ArticleCard.tsx` | Card simples: capa, título, data |
-| `ArticleRelatedGrid.tsx` | `grid grid-cols-1 md:grid-cols-3 gap-6` com até 3 cards |
+| `ArticleAuthorBox.tsx`      | `bg-gray-50 p-6 rounded-2xl` — foto esquerda, nome destaque, bio               |
+| `ArticleCard.tsx`           | Card simples: capa, título, data                                               |
+| `ArticleRelatedGrid.tsx`    | `grid grid-cols-1 md:grid-cols-3 gap-6` com até 3 cards                        |
 
 ### Refatorar [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx)
 
@@ -232,6 +235,7 @@ Sem chamada direta ao DB no web — tudo via DTO estendido de `GET /articles/:sl
 Criar [`docs/articles-taxonomy-phase2.md`](docs/articles-taxonomy-phase2.md) cobrindo schema, rotas admin, DTO público e componentes web.
 
 Atualizar:
+
 - [`docs/database-schema.md`](docs/database-schema.md) — `article_categories`, colunas em `operators`, `category_id`
 - [`docs/api-rest.md`](docs/api-rest.md) — rotas `/admin/article-categories`, DTO público estendido
 - [`docs/README.md`](docs/README.md) — índice
@@ -258,6 +262,7 @@ npm run build -w @ecommerce-amazon/web
 ```
 
 **Checklist manual:**
+
 1. `/artigos/categorias` — CRUD completo com slug único
 2. Criar artigo com categoria selecionada; `author_id` = operador logado
 3. `/artigos/guia-cadeira-ergonomica` — badge categoria, header com avatar, author box, 0–3 relacionados

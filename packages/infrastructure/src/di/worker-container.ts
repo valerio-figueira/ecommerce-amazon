@@ -122,10 +122,7 @@ export function buildWorkerContainer(env = loadEnv()) {
       hygiene: createQueue(QUEUE_NAMES.HYGIENE, queueConnection),
       couponVerify: createQueue(QUEUE_NAMES.COUPON_VERIFY, queueConnection),
       domainEvents: domainEventsQueue,
-      emailDelivery: createQueue<EmailDeliveryJobData>(
-        QUEUE_NAMES.EMAIL_DELIVERY,
-        queueConnection,
-      ),
+      emailDelivery: createQueue<EmailDeliveryJobData>(QUEUE_NAMES.EMAIL_DELIVERY, queueConnection),
       telemetryFlush: createQueue<TelemetryFlushJobData>(
         QUEUE_NAMES.TELEMETRY_FLUSH,
         queueConnection,

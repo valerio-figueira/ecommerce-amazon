@@ -30,14 +30,8 @@ export type {
 } from './use-cases/content/GetArticleWithEmbeds.js';
 export type { ArticleClusterPublic as ArticleClusterPublicDto } from './use-cases/content-cluster/build-article-cluster-public.js';
 export { ListAdminArticles } from './use-cases/content/ListAdminArticles.js';
-export {
-  CreateArticle,
-  GetAdminArticle,
-} from './use-cases/admin-article/CreateArticle.js';
-export {
-  UpdateArticle,
-  DeleteArticle,
-} from './use-cases/admin-article/UpdateArticle.js';
+export { CreateArticle, GetAdminArticle } from './use-cases/admin-article/CreateArticle.js';
+export { UpdateArticle, DeleteArticle } from './use-cases/admin-article/UpdateArticle.js';
 export { ListActiveAutoLinks } from './use-cases/seo/ListActiveAutoLinks.js';
 export {
   GetSitemapMeta,

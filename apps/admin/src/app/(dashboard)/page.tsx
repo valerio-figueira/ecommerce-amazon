@@ -17,10 +17,7 @@ import { OriginTrendStackedChart } from '@/components/analytics/OriginTrendStack
 import { PagePathTable } from '@/components/analytics/PagePathTable';
 import { PlacementBarChart } from '@/components/analytics/PlacementBarChart';
 import { TopProductsTable } from '@/components/analytics/TopProductsTable';
-import {
-  loadDashboardAnalytics,
-  resolveDateRangeFromSearchParams,
-} from '@/lib/api/analytics';
+import { loadDashboardAnalytics, resolveDateRangeFromSearchParams } from '@/lib/api/analytics';
 import { getServerBrandConfig } from '@/lib/brand';
 
 const brand = getServerBrandConfig();
@@ -64,7 +61,9 @@ export default async function DashboardPage({
           <p className="text-sm text-[color:var(--admin-text-muted)]">
             Cockpit de conversão, atribuição e saúde do catálogo.
           </p>
-          <Suspense fallback={<div className="h-8 w-48 animate-pulse rounded-full bg-neutral-100" />}>
+          <Suspense
+            fallback={<div className="h-8 w-48 animate-pulse rounded-full bg-neutral-100" />}
+          >
             <DateRangeSelect />
           </Suspense>
         </div>

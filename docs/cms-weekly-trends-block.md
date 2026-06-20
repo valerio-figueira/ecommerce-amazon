@@ -2,13 +2,13 @@
 
 Bloco `weekly_trends` na home CMS: ranking automático dos últimos 7 dias com alternância Produtos / Artigos.
 
-| Referência | Arquivo |
-|------------|---------|
-| Plano | [`.cursor/plans/cms_weekly_trends_block_9184fe13.plan.md`](../.cursor/plans/cms_weekly_trends_block_9184fe13.plan.md) |
-| CMS Fase 1 | [cms-home-phase1.md](./cms-home-phase1.md) |
-| Schemas | [`packages/shared/src/cms/block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts) |
-| Use case | [`GetWeeklyTrends.ts`](../packages/application/src/use-cases/trends/GetWeeklyTrends.ts) |
-| BFF | [`GetPublishedPageLayout.ts`](../packages/application/src/use-cases/page/GetPublishedPageLayout.ts) |
+| Referência | Arquivo                                                                                                               |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| Plano      | [`.cursor/plans/cms_weekly_trends_block_9184fe13.plan.md`](../.cursor/plans/cms_weekly_trends_block_9184fe13.plan.md) |
+| CMS Fase 1 | [cms-home-phase1.md](./cms-home-phase1.md)                                                                            |
+| Schemas    | [`packages/shared/src/cms/block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts)                             |
+| Use case   | [`GetWeeklyTrends.ts`](../packages/application/src/use-cases/trends/GetWeeklyTrends.ts)                               |
+| BFF        | [`GetPublishedPageLayout.ts`](../packages/application/src/use-cases/page/GetPublishedPageLayout.ts)                   |
 
 ## O quê
 
@@ -23,10 +23,10 @@ Liga vitrine (produtos por cliques) ao hub editorial (artigos por leituras), usa
 
 ## Métricas e limitações
 
-| Aba | Tabela | Métrica | Janela |
-|-----|--------|---------|--------|
-| Produtos | `click_events` | cliques afiliados (`origin != redirect_go`) | 7 dias rolling |
-| Artigos | `content_engagement_events` | `article_page_view` | 7 dias rolling |
+| Aba      | Tabela                      | Métrica                                     | Janela         |
+| -------- | --------------------------- | ------------------------------------------- | -------------- |
+| Produtos | `click_events`              | cliques afiliados (`origin != redirect_go`) | 7 dias rolling |
+| Artigos  | `content_engagement_events` | `article_page_view`                         | 7 dias rolling |
 
 **Não inclui (MVP):** page views de produto, velocidade semana-a-semana, badges de urgência, ranking exibido ao visitante.
 
@@ -34,16 +34,16 @@ Liga vitrine (produtos por cliques) ao hub editorial (artigos por leituras), usa
 
 ## Props (`weeklyTrendsPropsSchema`)
 
-| Campo | Default | Notas |
-|-------|---------|-------|
-| `title` | `Tendências da semana` | 3–60 chars |
-| `subtitle` | — | Se vazio: *"Baseado na atividade dos últimos 7 dias"* |
-| `defaultTab` | `products` | `products` \| `articles` |
-| `showTabToggle` | `true` | Oculta alternância se só uma aba tem dados |
-| `limit` | `8` | 4–12 itens por aba |
-| `minItems` | `3` | Mínimo para exibir cada aba |
-| `productsCtaHref` / `productsCtaLabel` | `/categorias` / *Ver catálogo completo ➔* | Rodapé aba produtos |
-| `articlesCtaHref` / `articlesCtaLabel` | `/artigos` / *Ver todos os artigos ➔* | Rodapé aba artigos |
+| Campo                                  | Default                                   | Notas                                                 |
+| -------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| `title`                                | `Tendências da semana`                    | 3–60 chars                                            |
+| `subtitle`                             | —                                         | Se vazio: _"Baseado na atividade dos últimos 7 dias"_ |
+| `defaultTab`                           | `products`                                | `products` \| `articles`                              |
+| `showTabToggle`                        | `true`                                    | Oculta alternância se só uma aba tem dados            |
+| `limit`                                | `8`                                       | 4–12 itens por aba                                    |
+| `minItems`                             | `3`                                       | Mínimo para exibir cada aba                           |
+| `productsCtaHref` / `productsCtaLabel` | `/categorias` / _Ver catálogo completo ➔_ | Rodapé aba produtos                                   |
+| `articlesCtaHref` / `articlesCtaLabel` | `/artigos` / _Ver todos os artigos ➔_     | Rodapé aba artigos                                    |
 
 ## Delivery DTO
 
@@ -73,17 +73,17 @@ flowchart LR
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Enum | `packages/domain/src/enums/cms.ts` |
-| Migration | `packages/infrastructure/.../migrations/0022_weekly_trends.sql` |
-| Analytics port | `packages/domain/src/repositories/AnalyticsRepository.ts` |
-| Repo | `packages/infrastructure/.../drizzle-analytics.repository.ts` |
-| Use case | `packages/application/src/use-cases/trends/GetWeeklyTrends.ts` |
-| Web block | `apps/web/src/components/blocks/WeeklyTrendsBlock.tsx` |
-| Article carousel | `apps/web/src/components/articles/ArticleCarousel.tsx` |
-| Admin form | `apps/admin/src/components/cms/props-forms/WeeklyTrendsForm.tsx` |
-| Placement | `packages/shared/src/analytics/placements.ts` → `CMS_WEEKLY_TRENDS` |
+| Camada           | Path                                                                |
+| ---------------- | ------------------------------------------------------------------- |
+| Enum             | `packages/domain/src/enums/cms.ts`                                  |
+| Migration        | `packages/infrastructure/.../migrations/0022_weekly_trends.sql`     |
+| Analytics port   | `packages/domain/src/repositories/AnalyticsRepository.ts`           |
+| Repo             | `packages/infrastructure/.../drizzle-analytics.repository.ts`       |
+| Use case         | `packages/application/src/use-cases/trends/GetWeeklyTrends.ts`      |
+| Web block        | `apps/web/src/components/blocks/WeeklyTrendsBlock.tsx`              |
+| Article carousel | `apps/web/src/components/articles/ArticleCarousel.tsx`              |
+| Admin form       | `apps/admin/src/components/cms/props-forms/WeeklyTrendsForm.tsx`    |
+| Placement        | `packages/shared/src/analytics/placements.ts` → `CMS_WEEKLY_TRENDS` |
 
 ## Como testar
 

@@ -6,25 +6,25 @@ todos:
     content: Migration operators + Drizzle schema + seed com ADMIN_SEED_*
     status: completed
   - id: domain-auth
-    content: "Domain: Operator, OperatorRepository, PasswordHasher, AuthTokenService ports"
+    content: 'Domain: Operator, OperatorRepository, PasswordHasher, AuthTokenService ports'
     status: completed
   - id: app-authenticate
-    content: "Application: AuthenticateOperator + testes unitários"
+    content: 'Application: AuthenticateOperator + testes unitários'
     status: completed
   - id: infra-auth
-    content: "Infrastructure: bcrypt, jose JWT, DrizzleOperatorRepository, DI"
+    content: 'Infrastructure: bcrypt, jose JWT, DrizzleOperatorRepository, DI'
     status: completed
   - id: api-auth-routes
-    content: "API: POST /admin/auth/login, GET /admin/auth/me, hook JWT, CORS"
+    content: 'API: POST /admin/auth/login, GET /admin/auth/me, hook JWT, CORS'
     status: completed
   - id: admin-app-scaffold
-    content: "apps/admin: Next.js 15, Tailwind 4, env, scripts monorepo"
+    content: 'apps/admin: Next.js 15, Tailwind 4, env, scripts monorepo'
     status: completed
   - id: admin-ui-shell
     content: Login + AdminShell (sidebar/header/footer) inspirado php-app
     status: completed
   - id: admin-pages-stub
-    content: "Páginas placeholder: painel, páginas, produtos, artigos, coleções, cupons, config"
+    content: 'Páginas placeholder: painel, páginas, produtos, artigos, coleções, cupons, config'
     status: completed
   - id: admin-auth-flow
     content: Route handlers login/logout, middleware JWT cookie, AdminUserMenu logout
@@ -64,11 +64,11 @@ sequenceDiagram
   Admin-->>Browser: AdminShell + placeholder page
 ```
 
-| App | Porta default | Papel |
-|-----|---------------|-------|
-| [`apps/web`](apps/web) | 3001 | Vitrine pública |
-| **`apps/admin`** (novo) | **3002** | Painel operador |
-| [`apps/api`](apps/api) | 3000 | Auth + futuros `/admin/*` |
+| App                     | Porta default | Papel                     |
+| ----------------------- | ------------- | ------------------------- |
+| [`apps/web`](apps/web)  | 3001          | Vitrine pública           |
+| **`apps/admin`** (novo) | **3002**      | Painel operador           |
+| [`apps/api`](apps/api)  | 3000          | Auth + futuros `/admin/*` |
 
 ---
 
@@ -119,22 +119,22 @@ Drizzle table + enum em [`schema/index.ts`](packages/infrastructure/src/persiste
 
 ### Env ([`packages/shared/src/index.ts`](packages/shared/src/index.ts))
 
-| Variável | Uso |
-|----------|-----|
-| `JWT_SECRET` | Assinatura JWT (obrigatório em prod) |
-| `JWT_EXPIRES_IN` | Default `8h` |
-| `ADMIN_PORT` | Default `3002` — CORS |
-| `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` | Seed local |
+| Variável                                   | Uso                                  |
+| ------------------------------------------ | ------------------------------------ |
+| `JWT_SECRET`                               | Assinatura JWT (obrigatório em prod) |
+| `JWT_EXPIRES_IN`                           | Default `8h`                         |
+| `ADMIN_PORT`                               | Default `3002` — CORS                |
+| `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` | Seed local                           |
 
 Atualizar [`.env.example`](.env.example): `JWT_SECRET`, `ADMIN_PORT=3002`, seed credentials, `CORS_ORIGINS` incluindo `http://localhost:3002`.
 
 ### API routes ([`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts))
 
-| Método | Rota | Auth | Resposta |
-|--------|------|------|----------|
-| POST | `/admin/auth/login` | — | `{ token, operator: { id, email, name } }` |
-| GET | `/admin/auth/me` | Bearer JWT | `{ id, email, name }` |
-| POST | `/admin/auth/logout` | — | 204 (stateless; cookie limpo no admin) |
+| Método | Rota                 | Auth       | Resposta                                   |
+| ------ | -------------------- | ---------- | ------------------------------------------ |
+| POST   | `/admin/auth/login`  | —          | `{ token, operator: { id, email, name } }` |
+| GET    | `/admin/auth/me`     | Bearer JWT | `{ id, email, name }`                      |
+| POST   | `/admin/auth/logout` | —          | 204 (stateless; cookie limpo no admin)     |
 
 - Zod: `AdminLoginSchema` (`email`, `password`)
 - Hook Fastify `onRequest` em prefixo `/admin` (exceto `/admin/auth/login`): valida `Authorization: Bearer` ou preparação para cookies futuros
@@ -197,31 +197,31 @@ Scripts raiz: `dev:admin`, incluir `@ecommerce-amazon/admin` no `build` do [`pac
 
 Replicar **padrões visuais**, não Bootstrap:
 
-| Padrão php-app | Implementação admin |
-|----------------|---------------------|
-| Login: gradiente azul + card ~384px | `(auth)/layout` + `LoginForm` — tokens CSS `--admin-navy`, `--admin-primary`, `--admin-bg` |
-| Grid shell: sidebar 268px + header + content + footer | `AdminShell` com CSS grid / Tailwind |
-| Sidebar: Lucide icons, item ativo com barra azul inset | `AdminSidebar` + `navigation.ts` |
-| Header: título, breadcrumbs, user pill dropdown | `AdminHeader`, `AdminUserMenu` |
-| Content: fundo cinza + `admin-page-card` branco | `AdminPageCard` wrapper |
-| Empty states | `AdminEmptyState` (ícone Lucide + título + hint) |
-| Flash erro login | toast fixo canto inferior direito (estilo GCP simplificado) |
-| Sidebar colapsável desktop + drawer mobile | `localStorage` + overlay ≤850px |
-| `noindex` | metadata `robots: noindex, nofollow` no root layout |
+| Padrão php-app                                         | Implementação admin                                                                        |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Login: gradiente azul + card ~384px                    | `(auth)/layout` + `LoginForm` — tokens CSS `--admin-navy`, `--admin-primary`, `--admin-bg` |
+| Grid shell: sidebar 268px + header + content + footer  | `AdminShell` com CSS grid / Tailwind                                                       |
+| Sidebar: Lucide icons, item ativo com barra azul inset | `AdminSidebar` + `navigation.ts`                                                           |
+| Header: título, breadcrumbs, user pill dropdown        | `AdminHeader`, `AdminUserMenu`                                                             |
+| Content: fundo cinza + `admin-page-card` branco        | `AdminPageCard` wrapper                                                                    |
+| Empty states                                           | `AdminEmptyState` (ícone Lucide + título + hint)                                           |
+| Flash erro login                                       | toast fixo canto inferior direito (estilo GCP simplificado)                                |
+| Sidebar colapsável desktop + drawer mobile             | `localStorage` + overlay ≤850px                                                            |
+| `noindex`                                              | metadata `robots: noindex, nofollow` no root layout                                        |
 
 **Marca:** "Vitrine" / "Painel CMS" (alinhado ao [`layout.tsx`](apps/web/src/app/layout.tsx) da vitrine).
 
 ### Navegação inicial (stubs)
 
-| Rota | Label | Ícone | Conteúdo placeholder |
-|------|-------|-------|------------------------|
-| `/` | Painel | LayoutDashboard | KPI cards estáticos "Em breve" |
-| `/paginas` | Páginas | FileStack | Empty state — editor CMS fase 2 |
-| `/produtos` | Produtos | Package | Empty state — catálogo via worker |
-| `/artigos` | Artigos | Newspaper | Empty state |
-| `/colecoes` | Coleções | Layers | Empty state |
-| `/cupons` | Cupons | Ticket | Empty state |
-| `/configuracoes` | Configurações | Settings | Empty state |
+| Rota             | Label         | Ícone           | Conteúdo placeholder              |
+| ---------------- | ------------- | --------------- | --------------------------------- |
+| `/`              | Painel        | LayoutDashboard | KPI cards estáticos "Em breve"    |
+| `/paginas`       | Páginas       | FileStack       | Empty state — editor CMS fase 2   |
+| `/produtos`      | Produtos      | Package         | Empty state — catálogo via worker |
+| `/artigos`       | Artigos       | Newspaper       | Empty state                       |
+| `/colecoes`      | Coleções      | Layers          | Empty state                       |
+| `/cupons`        | Cupons        | Ticket          | Empty state                       |
+| `/configuracoes` | Configurações | Settings        | Empty state                       |
 
 Cada página exporta `metadata` com título; dashboard passa `breadcrumbs` via context ou props para `AdminHeader`.
 
@@ -282,9 +282,9 @@ Manual: sidebar colapsa/expande; mobile abre drawer; logout limpa sessão; pági
 
 ## Dependências novas
 
-| Pacote | Onde |
-|--------|------|
-| `jose` | shared ou infrastructure (JWT) |
-| `bcryptjs` + `@types/bcryptjs` | infrastructure (hash) |
+| Pacote                         | Onde                           |
+| ------------------------------ | ------------------------------ |
+| `jose`                         | shared ou infrastructure (JWT) |
+| `bcryptjs` + `@types/bcryptjs` | infrastructure (hash)          |
 
 Admin reutiliza `lucide-react`, `clsx`, `tailwind-merge`, `zod` — mesmo stack de [`apps/web`](apps/web).

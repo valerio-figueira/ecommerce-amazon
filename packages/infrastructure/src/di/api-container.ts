@@ -169,9 +169,12 @@ import { ShopeeOpenApiConnectivityGateway } from '../marketplace/shopee/shopee-o
 export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
   const db = createDrizzleClient(env.DATABASE_URL);
-  const cacheRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB), (error) => {
-    logger.warn('Redis cache connection error', { error: error.message });
-  });
+  const cacheRedis = createRedisClient(
+    parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB),
+    (error) => {
+      logger.warn('Redis cache connection error', { error: error.message });
+    },
+  );
   const cache = new RedisCacheStore(cacheRedis);
   const webRevalidator = env.REVALIDATE_SECRET
     ? new HttpPublicWebRevalidator(env.WEB_PUBLIC_URL, env.REVALIDATE_SECRET, logger)
@@ -399,9 +402,19 @@ export function buildApiContainer(env = loadEnv()) {
       getAdminPageLayout: new GetAdminPageLayout(pageRepository),
       listAdminPages: new ListAdminPages(pageRepository),
       listAdminArticles: new ListAdminArticles(contentRepository),
-      createArticle: new CreateArticle(contentRepository, contentClusterRepository, cache, webRevalidator),
+      createArticle: new CreateArticle(
+        contentRepository,
+        contentClusterRepository,
+        cache,
+        webRevalidator,
+      ),
       getAdminArticle: new GetAdminArticle(contentRepository),
-      updateArticle: new UpdateArticle(contentRepository, contentClusterRepository, cache, webRevalidator),
+      updateArticle: new UpdateArticle(
+        contentRepository,
+        contentClusterRepository,
+        cache,
+        webRevalidator,
+      ),
       deleteArticle: new DeleteArticle(contentRepository, cache, webRevalidator),
       listActiveAutoLinks: new ListActiveAutoLinks(autoLinkRepository, cache),
       createAutoLink: new CreateAutoLink(autoLinkRepository, cache, webRevalidator),

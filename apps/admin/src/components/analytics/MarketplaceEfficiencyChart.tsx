@@ -1,15 +1,7 @@
 'use client';
 
 import { Scale } from 'lucide-react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -95,12 +87,7 @@ export function MarketplaceEfficiencyChart({
             <BarChart data={chartData} margin={{ left: 8, right: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
               <XAxis dataKey="marketplace" fontSize={12} />
-              <YAxis
-                allowDecimals={false}
-                fontSize={12}
-                unit="%"
-                domain={[0, 'auto']}
-              />
+              <YAxis allowDecimals={false} fontSize={12} unit="%" domain={[0, 'auto']} />
               <Tooltip
                 formatter={formatTooltipValue}
                 labelFormatter={(label) => String(label)}

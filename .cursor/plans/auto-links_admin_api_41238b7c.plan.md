@@ -1,6 +1,6 @@
 ---
 name: Auto-Links Admin API
-overview: "Estender a implementação parcial de Auto-Links (tabela, parser básico, GET /seo/auto-links) com CRUD admin completo em Clean Architecture, corrigir ordenação do parser, endurecer proteção HTML e invalidar cache Redis nas mutações. Escopo: backend apenas — sem UI admin."
+overview: 'Estender a implementação parcial de Auto-Links (tabela, parser básico, GET /seo/auto-links) com CRUD admin completo em Clean Architecture, corrigir ordenação do parser, endurecer proteção HTML e invalidar cache Redis nas mutações. Escopo: backend apenas — sem UI admin.'
 todos:
   - id: domain-autolink
     content: Extrair AutoLink.ts com AutoLinkId branded, validações e expandir AutoLinkRepository port
@@ -32,18 +32,18 @@ isProject: false
 
 Grande parte da fundação existe e será **estendida**, não recriada do zero:
 
-| Componente | Arquivo | Situação |
-|------------|---------|----------|
-| Tabela `auto_links` | [`0012_auto_links.sql`](packages/infrastructure/src/persistence/drizzle/migrations/0012_auto_links.sql) | OK — sem migration nova obrigatória |
-| Schema Drizzle | [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) L210–223 | OK |
-| Entidade `AutoLink` | [`ContentArticle.ts`](packages/domain/src/entities/ContentArticle.ts) L77–111 | Existe, mas embutida — **mover** para arquivo próprio |
-| Port `AutoLinkRepository` | [`AutoLinkRepository.ts`](packages/domain/src/repositories/AutoLinkRepository.ts) | Só `listActive()` |
-| Repositório Drizzle | [`drizzle-auto-link.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-auto-link.repository.ts) | Só leitura ativa; **ordem errada** (`priority ASC`) |
-| Use case público | [`ListActiveAutoLinks.ts`](packages/application/src/use-cases/seo/ListActiveAutoLinks.ts) | Cache Redis 1h em `vitrine:seo:auto-links` — **sem invalidação** |
-| Rota pública | [`routes/index.ts`](apps/api/src/adapters/http/routes/index.ts) `GET /seo/auto-links` | OK |
-| Parser | [`link-parser.ts`](packages/shared/src/seo/link-parser.ts) | Protege só `<a>`; **sem sort** priority/length |
-| Vitrine | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx) | Injeta em runtime via `injectInternalLinks` — **correto, não alterar fluxo de persistência** |
-| Seed | [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) `seedAutoLinks` | Migra `SEO_KEYWORD_MAP` → DB |
+| Componente                | Arquivo                                                                                                                   | Situação                                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Tabela `auto_links`       | [`0012_auto_links.sql`](packages/infrastructure/src/persistence/drizzle/migrations/0012_auto_links.sql)                   | OK — sem migration nova obrigatória                                                          |
+| Schema Drizzle            | [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) L210–223                             | OK                                                                                           |
+| Entidade `AutoLink`       | [`ContentArticle.ts`](packages/domain/src/entities/ContentArticle.ts) L77–111                                             | Existe, mas embutida — **mover** para arquivo próprio                                        |
+| Port `AutoLinkRepository` | [`AutoLinkRepository.ts`](packages/domain/src/repositories/AutoLinkRepository.ts)                                         | Só `listActive()`                                                                            |
+| Repositório Drizzle       | [`drizzle-auto-link.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-auto-link.repository.ts) | Só leitura ativa; **ordem errada** (`priority ASC`)                                          |
+| Use case público          | [`ListActiveAutoLinks.ts`](packages/application/src/use-cases/seo/ListActiveAutoLinks.ts)                                 | Cache Redis 1h em `vitrine:seo:auto-links` — **sem invalidação**                             |
+| Rota pública              | [`routes/index.ts`](apps/api/src/adapters/http/routes/index.ts) `GET /seo/auto-links`                                     | OK                                                                                           |
+| Parser                    | [`link-parser.ts`](packages/shared/src/seo/link-parser.ts)                                                                | Protege só `<a>`; **sem sort** priority/length                                               |
+| Vitrine                   | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx)                                                     | Injeta em runtime via `injectInternalLinks` — **correto, não alterar fluxo de persistência** |
+| Seed                      | [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) `seedAutoLinks`                                      | Migra `SEO_KEYWORD_MAP` → DB                                                                 |
 
 ```mermaid
 flowchart LR
@@ -86,7 +86,11 @@ interface AutoLinkRepository {
   findById(id: string): Promise<AutoLink | null>;
   findByKeywordNormalized(keyword: string): Promise<AutoLink | null>; // duplicate check (trim + lowercase)
   findAllActiveSortedByPriority(): Promise<AutoLink[]>; // replaces listActive
-  listPaginated(params: { page: number; limit: number; search?: string }): Promise<{ items: AutoLink[]; total: number }>;
+  listPaginated(params: {
+    page: number;
+    limit: number;
+    search?: string;
+  }): Promise<{ items: AutoLink[]; total: number }>;
   delete(id: string): Promise<void>;
 }
 ```
@@ -105,14 +109,14 @@ Extrair chave `AUTO_LINKS_CACHE_KEY = 'vitrine:seo:auto-links'` em shared ou con
 
 Expandir [`drizzle-auto-link.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-auto-link.repository.ts):
 
-| Método | Implementação |
-|--------|---------------|
-| `save` | `insert ... onConflictDoUpdate` por `id` |
-| `findById` | `eq(id)` |
-| `findByKeywordNormalized` | `lower(trim(keyword))` via `sql` ou filtro em memória pós-`ilike` |
+| Método                          | Implementação                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------- |
+| `save`                          | `insert ... onConflictDoUpdate` por `id`                                        |
+| `findById`                      | `eq(id)`                                                                        |
+| `findByKeywordNormalized`       | `lower(trim(keyword))` via `sql` ou filtro em memória pós-`ilike`               |
 | `findAllActiveSortedByPriority` | `where isActive=true` + `orderBy(desc(priority), desc(sql\`length(keyword)\`))` |
-| `listPaginated` | `ilike` em `keyword` e `target_url` quando `search`; `limit/offset`; `count(*)` |
-| `delete` | `delete where id` |
+| `listPaginated`                 | `ilike` em `keyword` e `target_url` quando `search`; `limit/offset`; `count(*)` |
+| `delete`                        | `delete where id`                                                               |
 
 Atualizar import de `AutoLink` para novo arquivo de entidade.
 
@@ -122,18 +126,19 @@ Atualizar import de `AutoLink` para novo arquivo de entidade.
 
 Seguir padrão **throw + domain errors** (igual [`CreateArticleCategory`](packages/application/src/use-cases/admin-article-category/CreateArticleCategory.ts) e [`CreateCuratedCollection`](packages/application/src/use-cases/admin-collection/CreateCuratedCollection.ts)) — mais consistente com CRUD admin existente que `Result<T,E>` do CMS.
 
-| Use case | Arquivo | Regras |
-|----------|---------|--------|
-| `CreateAutoLink` | `CreateAutoLink.ts` | `findByKeywordNormalized` → `ConflictError('Keyword já cadastrada')` pt-BR; `cache.del(AUTO_LINKS_CACHE_KEY)` |
-| `UpdateAutoLink` | `UpdateAutoLink.ts` | `EntityNotFoundError`; se keyword mudou, revalidar unicidade; toggle `isActive`; invalida cache |
-| `DeleteAutoLink` | `DeleteAutoLink.ts` | `EntityNotFoundError`; invalida cache |
-| `ListAutoLinksAdmin` | `ListAutoLinksAdmin.ts` | Paginação + search; DTO admin com todos os campos + ISO dates |
+| Use case             | Arquivo                 | Regras                                                                                                        |
+| -------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `CreateAutoLink`     | `CreateAutoLink.ts`     | `findByKeywordNormalized` → `ConflictError('Keyword já cadastrada')` pt-BR; `cache.del(AUTO_LINKS_CACHE_KEY)` |
+| `UpdateAutoLink`     | `UpdateAutoLink.ts`     | `EntityNotFoundError`; se keyword mudou, revalidar unicidade; toggle `isActive`; invalida cache               |
+| `DeleteAutoLink`     | `DeleteAutoLink.ts`     | `EntityNotFoundError`; invalida cache                                                                         |
+| `ListAutoLinksAdmin` | `ListAutoLinksAdmin.ts` | Paginação + search; DTO admin com todos os campos + ISO dates                                                 |
 
 Helper compartilhado: `auto-link.helpers.ts` com `assertUniqueKeyword(repo, keyword, excludeId?)`.
 
 ### 3.1 Ajustar use case público existente
 
 [`ListActiveAutoLinks.ts`](packages/application/src/use-cases/seo/ListActiveAutoLinks.ts):
+
 - Trocar `listActive()` → `findAllActiveSortedByPriority()`
 - Manter cache 3600s; payload `{ keyword, targetUrl, maxMatches, priority }` (priority opcional no DTO público, útil para debug; parser pode ignorar se pré-ordenado)
 
@@ -163,12 +168,12 @@ Mensagens Zod em **pt-BR** via `.describe()` ou mensagens custom.
 
 Criar [`admin-auto-link-routes.ts`](apps/api/src/adapters/http/routes/admin-auto-link-routes.ts) (convenção do projeto, não subpasta):
 
-| Método | Rota | Status |
-|--------|------|--------|
-| `POST` | `/admin/auto-links` | 201 `{ id }` |
-| `GET` | `/admin/auto-links` | 200 `{ items, total, page, limit }` |
-| `PATCH` | `/admin/auto-links/:id` | 204 |
-| `DELETE` | `/admin/auto-links/:id` | 204 |
+| Método   | Rota                    | Status                              |
+| -------- | ----------------------- | ----------------------------------- |
+| `POST`   | `/admin/auto-links`     | 201 `{ id }`                        |
+| `GET`    | `/admin/auto-links`     | 200 `{ items, total, page, limit }` |
+| `PATCH`  | `/admin/auto-links/:id` | 204                                 |
+| `DELETE` | `/admin/auto-links/:id` | 204                                 |
 
 - Handler de erros espelhando [`admin-article-category-routes.ts`](apps/api/src/adapters/http/routes/admin-article-category-routes.ts): 400/404/409/500
 - Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts) (protegido pelo hook JWT existente)
@@ -183,9 +188,8 @@ Criar [`admin-auto-link-routes.ts`](apps/api/src/adapters/http/routes/admin-auto
 Em `injectInternalLinks`, sort interno defensivo:
 
 ```typescript
-keywords.sort((a, b) =>
-  (b.priority ?? 0) - (a.priority ?? 0) ||
-  b.keyword.length - a.keyword.length
+keywords.sort(
+  (a, b) => (b.priority ?? 0) - (a.priority ?? 0) || b.keyword.length - a.keyword.length,
 );
 ```
 
@@ -214,9 +218,9 @@ Expandir [`link-parser.test.ts`](packages/shared/src/seo/link-parser.test.ts):
 
 ## 7. Testes unitários (application + domain)
 
-| Arquivo | Casos |
-|---------|-------|
-| `packages/domain/src/entities/AutoLink.test.ts` | Validações keyword/url/maxMatches |
+| Arquivo                                                            | Casos                                                                                    |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `packages/domain/src/entities/AutoLink.test.ts`                    | Validações keyword/url/maxMatches                                                        |
 | `packages/application/src/use-cases/auto-links/auto-links.test.ts` | Create conflito keyword; Update not found; Delete invalida cache (mock `CacheStore.del`) |
 
 Rodar: `npm test -- --run auto-link link-parser`
@@ -226,6 +230,7 @@ Rodar: `npm test -- --run auto-link link-parser`
 ## 8. Documentação
 
 Criar [`docs/auto-links-admin.md`](docs/auto-links-admin.md) com:
+
 - Escopo (API admin + parser; UI fora)
 - Fluxo runtime (não persiste HTML modificado)
 - Regras priority/length/maxMatches/zonas protegidas

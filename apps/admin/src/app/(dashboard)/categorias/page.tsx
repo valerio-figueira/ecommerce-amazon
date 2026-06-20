@@ -19,10 +19,7 @@ export default async function CategoriasPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Categorias"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Categorias' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Categorias' }]}
       />
       <AdminPageCard transparent>
         <CategoryTreeManager initialItems={items} />

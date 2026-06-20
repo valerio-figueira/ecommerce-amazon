@@ -95,9 +95,7 @@ export function AboutPageEditor({
       });
 
       adminToast.success(
-        pendingStatusRef.current === 'published'
-          ? 'Página Sobre publicada.'
-          : 'Rascunho salvo.',
+        pendingStatusRef.current === 'published' ? 'Página Sobre publicada.' : 'Rascunho salvo.',
       );
       router.refresh();
     } catch (error) {
@@ -127,12 +125,7 @@ export function AboutPageEditor({
           </p>
         </div>
         <div className="cms-panel-actions flex flex-wrap items-center gap-2">
-          <span
-            className={cn(
-              'cms-status-pill',
-              isPublished ? 'is-published' : 'is-draft',
-            )}
-          >
+          <span className={cn('cms-status-pill', isPublished ? 'is-published' : 'is-draft')}>
             {isPublished ? 'Publicada' : 'Rascunho'}
           </span>
           <Button asChild variant="outline" size="sm">

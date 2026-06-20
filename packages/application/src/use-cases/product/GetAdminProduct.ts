@@ -1,4 +1,8 @@
-import { EntityNotFoundError, type Product, type ProductRepository } from '@ecommerce-amazon/domain';
+import {
+  EntityNotFoundError,
+  type Product,
+  type ProductRepository,
+} from '@ecommerce-amazon/domain';
 
 export class GetAdminProduct {
   constructor(private readonly productRepository: ProductRepository) {}

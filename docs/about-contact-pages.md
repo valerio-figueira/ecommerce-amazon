@@ -10,30 +10,30 @@ Páginas institucionais `/sobre` e `/contato` na vitrine pública, com conteúdo
 
 ## O que foi entregue
 
-| Rota | Fonte de conteúdo |
-|------|-------------------|
-| `/sobre` | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team` |
-| `/contato` | `BrandConfig` + `shared/contact` (estático) |
-| `/legal` | Inalterado — texto em código (`shared/legal`) |
+| Rota       | Fonte de conteúdo                                                              |
+| ---------- | ------------------------------------------------------------------------------ |
+| `/sobre`   | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team` |
+| `/contato` | `BrandConfig` + `shared/contact` (estático)                                    |
+| `/legal`   | Inalterado — texto em código (`shared/legal`)                                  |
 
 ### Seções da Sobre
 
-| Âncora | Conteúdo |
-|--------|----------|
-| `#proposta` | Gancho orientado ao usuário |
-| `#metodo` | Curadoria Amazon + Shopee |
-| `#afiliados` | Callout de disclosure + link `/legal#afiliados` |
-| `#equipe` | Cards de operadores (`show_on_team=true`) |
-| `#proximos-passos` | Link suave para `/artigos` |
+| Âncora             | Conteúdo                                        |
+| ------------------ | ----------------------------------------------- |
+| `#proposta`        | Gancho orientado ao usuário                     |
+| `#metodo`          | Curadoria Amazon + Shopee                       |
+| `#afiliados`       | Callout de disclosure + link `/legal#afiliados` |
+| `#equipe`          | Cards de operadores (`show_on_team=true`)       |
+| `#proximos-passos` | Link suave para `/artigos`                      |
 
 ### API
 
-| Método | Rota | Resposta |
-|--------|------|----------|
-| GET | `/institutional-pages/:slug` | `{ layout, content: AboutPageContent }` (só `published`) |
-| GET | `/team` | `{ members: PublicTeamMember[] }` |
-| GET | `/admin/institutional-pages/:slug` | Mesmo + `status`, `pageKind` (JWT) |
-| PATCH | `/admin/institutional-pages/:slug` | Atualiza `content`, SEO e `status` (JWT) |
+| Método | Rota                               | Resposta                                                 |
+| ------ | ---------------------------------- | -------------------------------------------------------- |
+| GET    | `/institutional-pages/:slug`       | `{ layout, content: AboutPageContent }` (só `published`) |
+| GET    | `/team`                            | `{ members: PublicTeamMember[] }`                        |
+| GET    | `/admin/institutional-pages/:slug` | Mesmo + `status`, `pageKind` (JWT)                       |
+| PATCH  | `/admin/institutional-pages/:slug` | Atualiza `content`, SEO e `status` (JWT)                 |
 
 Ver também [admin-about-page.md](./admin-about-page.md) para o editor no painel.
 
@@ -45,21 +45,21 @@ Novos campos em `operators` (editáveis em Admin `/perfil`):
 
 ## Arquivos-chave
 
-| Artefato | Path |
-|----------|------|
-| Contrato CMS + defaults | [`packages/shared/src/about/`](../packages/shared/src/about/) |
-| Contato estático | [`packages/shared/src/contact/`](../packages/shared/src/contact/) |
-| Sanitização HTML | [`sanitize-institutional-html.ts`](../packages/shared/src/about/sanitize-institutional-html.ts) |
-| JSON-LD About/Contact | [`packages/shared/src/seo/site-json-ld.ts`](../packages/shared/src/seo/site-json-ld.ts) |
-| Use cases | [`GetInstitutionalPage.ts`](../packages/application/src/use-cases/institutional/GetInstitutionalPage.ts), [`GetPublicTeamMembers.ts`](../packages/application/src/use-cases/team/GetPublicTeamMembers.ts) |
-| Rotas API | [`institutional-routes.ts`](../apps/api/src/adapters/http/routes/institutional-routes.ts) |
-| Web Sobre | [`apps/web/src/app/sobre/page.tsx`](../apps/web/src/app/sobre/page.tsx) |
-| Web Contato | [`apps/web/src/app/contato/page.tsx`](../apps/web/src/app/contato/page.tsx) |
-| UI Sobre | [`AboutPageContent.tsx`](../apps/web/src/components/about/AboutPageContent.tsx) |
-| Admin perfil | [`ProfileForm.tsx`](../apps/admin/src/components/profile/ProfileForm.tsx) |
-| Admin editor Sobre | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx) — ver [admin-about-page.md](./admin-about-page.md) |
-| Migrations | `0017_operator_public_profile.sql`, `0018_institutional_pages.sql` |
-| Seed | [`seed.ts`](../packages/infrastructure/src/persistence/drizzle/seed.ts) — `seedAboutPage`, operador demo |
+| Artefato                | Path                                                                                                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contrato CMS + defaults | [`packages/shared/src/about/`](../packages/shared/src/about/)                                                                                                                                             |
+| Contato estático        | [`packages/shared/src/contact/`](../packages/shared/src/contact/)                                                                                                                                         |
+| Sanitização HTML        | [`sanitize-institutional-html.ts`](../packages/shared/src/about/sanitize-institutional-html.ts)                                                                                                           |
+| JSON-LD About/Contact   | [`packages/shared/src/seo/site-json-ld.ts`](../packages/shared/src/seo/site-json-ld.ts)                                                                                                                   |
+| Use cases               | [`GetInstitutionalPage.ts`](../packages/application/src/use-cases/institutional/GetInstitutionalPage.ts), [`GetPublicTeamMembers.ts`](../packages/application/src/use-cases/team/GetPublicTeamMembers.ts) |
+| Rotas API               | [`institutional-routes.ts`](../apps/api/src/adapters/http/routes/institutional-routes.ts)                                                                                                                 |
+| Web Sobre               | [`apps/web/src/app/sobre/page.tsx`](../apps/web/src/app/sobre/page.tsx)                                                                                                                                   |
+| Web Contato             | [`apps/web/src/app/contato/page.tsx`](../apps/web/src/app/contato/page.tsx)                                                                                                                               |
+| UI Sobre                | [`AboutPageContent.tsx`](../apps/web/src/components/about/AboutPageContent.tsx)                                                                                                                           |
+| Admin perfil            | [`ProfileForm.tsx`](../apps/admin/src/components/profile/ProfileForm.tsx)                                                                                                                                 |
+| Admin editor Sobre      | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx) — ver [admin-about-page.md](./admin-about-page.md)                                                                        |
+| Migrations              | `0017_operator_public_profile.sql`, `0018_institutional_pages.sql`                                                                                                                                        |
+| Seed                    | [`seed.ts`](../packages/infrastructure/src/persistence/drizzle/seed.ts) — `seedAboutPage`, operador demo                                                                                                  |
 
 ## Fluxo `/sobre`
 

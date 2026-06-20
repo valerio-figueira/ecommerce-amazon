@@ -1,6 +1,12 @@
 import { and, desc, eq, gte } from 'drizzle-orm';
 
-import { AlertStatus, Marketplace, type PriceAlertRepository, type PriceSnapshotRepository, type WishlistRepository } from '@ecommerce-amazon/domain';
+import {
+  AlertStatus,
+  Marketplace,
+  type PriceAlertRepository,
+  type PriceSnapshotRepository,
+  type WishlistRepository,
+} from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
@@ -10,7 +16,10 @@ export class DrizzlePriceAlertRepository implements PriceAlertRepository {
   constructor(private readonly db: DrizzleClient) {}
 
   async findById(id: string) {
-    const rows = await this.db.select().from(schema.priceAlerts).where(eq(schema.priceAlerts.id, id));
+    const rows = await this.db
+      .select()
+      .from(schema.priceAlerts)
+      .where(eq(schema.priceAlerts.id, id));
     const row = rows[0];
     return row ? mapPriceAlertRow(row) : null;
   }
@@ -134,9 +143,7 @@ export class DrizzleWishlistRepository implements WishlistRepository {
   }
 
   async removeAllBySessionId(sessionId: string) {
-    await this.db
-      .delete(schema.wishlistItems)
-      .where(eq(schema.wishlistItems.sessionId, sessionId));
+    await this.db.delete(schema.wishlistItems).where(eq(schema.wishlistItems.sessionId, sessionId));
   }
 
   async countBySessionAndMarketplace(sessionId: string, marketplace: Marketplace) {

@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getBffErrorMessage, getBffErrorStatus, isUnauthorizedError, isServiceUnavailableError } from '@/lib/api/bff-error-status';
+import {
+  getBffErrorMessage,
+  getBffErrorStatus,
+  isUnauthorizedError,
+  isServiceUnavailableError,
+} from '@/lib/api/bff-error-status';
 
 import { createAutoLink, listAutoLinks } from '@/lib/api/auto-links';
-import {
-  createAutoLinkBodySchema,
-  listAutoLinksQuerySchema,
-} from '@ecommerce-amazon/shared/admin';
+import { createAutoLinkBodySchema, listAutoLinksQuerySchema } from '@ecommerce-amazon/shared/admin';
 
 function resolveErrorStatus(error: unknown, message: string): number {
   if (isUnauthorizedError(error)) return 401;

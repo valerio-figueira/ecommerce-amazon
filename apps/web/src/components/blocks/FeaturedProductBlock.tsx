@@ -34,7 +34,12 @@ export function FeaturedProductBlock({
   const { sessionId } = useWishlist();
 
   const slug = props.productSlug;
-  const { data: product, isLoading, isError, refetch } = useQuery({
+  const {
+    data: product,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['product', slug],
     queryFn: () => apiFetchParsed(`/products/${slug ?? ''}`, productListItemSchema),
     enabled: Boolean(slug),

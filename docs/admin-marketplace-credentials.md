@@ -43,10 +43,10 @@ sequenceDiagram
 
 ### Separação tag vs API key
 
-| Dado | Onde | Uso |
-|------|------|-----|
-| `affiliate_tag` | `affiliate_accounts` | `/go`, batch checkout, gate de escala |
-| Access Key / Secret / Partner Key | `marketplace_api_credentials` | Worker sync de preços/catálogo |
+| Dado                              | Onde                          | Uso                                   |
+| --------------------------------- | ----------------------------- | ------------------------------------- |
+| `affiliate_tag`                   | `affiliate_accounts`          | `/go`, batch checkout, gate de escala |
+| Access Key / Secret / Partner Key | `marketplace_api_credentials` | Worker sync de preços/catálogo        |
 
 ## Schema
 
@@ -54,12 +54,12 @@ Migration `0021_marketplace_api_credentials.sql` — tabela `marketplace_api_cre
 
 ## API admin (JWT)
 
-| Método | Rota | Acesso |
-|--------|------|--------|
-| GET | `/admin/marketplace-credentials` | autenticado — status mascarado |
-| PUT | `/admin/marketplace-credentials/:marketplace` | admin — body com secrets |
-| DELETE | `/admin/marketplace-credentials/:marketplace` | admin |
-| POST | `/admin/marketplace-credentials/:marketplace/test` | admin — body opcional com credenciais inline |
+| Método | Rota                                               | Acesso                                       |
+| ------ | -------------------------------------------------- | -------------------------------------------- |
+| GET    | `/admin/marketplace-credentials`                   | autenticado — status mascarado               |
+| PUT    | `/admin/marketplace-credentials/:marketplace`      | admin — body com secrets                     |
+| DELETE | `/admin/marketplace-credentials/:marketplace`      | admin                                        |
+| POST   | `/admin/marketplace-credentials/:marketplace/test` | admin — body opcional com credenciais inline |
 
 BFF: `apps/admin/src/app/api/admin/marketplace-credentials/`.
 
@@ -77,15 +77,15 @@ Dev default em `packages/shared` (trocar em produção).
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Cipher | `packages/infrastructure/src/security/aes-gcm-credential-cipher.ts` |
-| Resolver + cache | `packages/application/src/services/MarketplaceCredentialResolver.ts` |
-| Use cases | `packages/application/src/use-cases/admin-settings/Get|Save|Delete|TestMarketplace*` |
-| Amazon client | `packages/infrastructure/src/marketplace/amazon/amazon-pa-api.client.ts` |
-| Shopee client | `packages/infrastructure/src/marketplace/shopee/shopee-open-api.client.ts` |
-| Fetchers | `packages/infrastructure/src/marketplace/strategies/marketplace-fetcher.strategy.ts` |
-| UI | `apps/admin/src/components/settings/MarketplaceIntegrationsPanel.tsx` |
+| Camada           | Path                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------ | ---- | ------ | ------------------ |
+| Cipher           | `packages/infrastructure/src/security/aes-gcm-credential-cipher.ts`                  |
+| Resolver + cache | `packages/application/src/services/MarketplaceCredentialResolver.ts`                 |
+| Use cases        | `packages/application/src/use-cases/admin-settings/Get                               | Save | Delete | TestMarketplace\*` |
+| Amazon client    | `packages/infrastructure/src/marketplace/amazon/amazon-pa-api.client.ts`             |
+| Shopee client    | `packages/infrastructure/src/marketplace/shopee/shopee-open-api.client.ts`           |
+| Fetchers         | `packages/infrastructure/src/marketplace/strategies/marketplace-fetcher.strategy.ts` |
+| UI               | `apps/admin/src/components/settings/MarketplaceIntegrationsPanel.tsx`                |
 
 ## Como testar
 

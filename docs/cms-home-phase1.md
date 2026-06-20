@@ -2,13 +2,13 @@
 
 Home **100% dirigida por CMS** (sem Admin UI).
 
-| Referência | Arquivo |
-|------------|---------|
-| Plano UI | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md) |
+| Referência  | Arquivo                                                                                   |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| Plano UI    | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md)                       |
 | Schemas Zod | [`packages/shared/src/cms/block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts) |
-| Domain | [domain-model.md](./domain-model.md) |
-| API | [api-rest.md](./api-rest.md) § CMS |
-| DB | [database-schema.md](./database-schema.md) § CMS |
+| Domain      | [domain-model.md](./domain-model.md)                                                      |
+| API         | [api-rest.md](./api-rest.md) § CMS                                                        |
+| DB          | [database-schema.md](./database-schema.md) § CMS                                          |
 
 ## Escopo entregue
 
@@ -20,12 +20,12 @@ Home **100% dirigida por CMS** (sem Admin UI).
 
 ## Fora de escopo (fase 1)
 
-| Item | Fase |
-|------|------|
-| `apps/admin` — CRUD, drag-and-drop, publish/draft | 3 |
-| `/produtos/[slug]`, artigos, coleções dedicadas | 2 |
+| Item                                                         | Fase        |
+| ------------------------------------------------------------ | ----------- |
+| `apps/admin` — CRUD, drag-and-drop, publish/draft            | 3           |
+| `/produtos/[slug]`, artigos, coleções dedicadas              | 2           |
 | Blocos `curated_collection` e `coupon_strip` com dados reais | 2 (stub UI) |
-| Rotas `POST/PATCH /admin/pages/*` | Admin |
+| Rotas `POST/PATCH /admin/pages/*`                            | Admin       |
 
 ## Fluxo end-to-end
 
@@ -55,24 +55,24 @@ flowchart LR
 
 **PageLayout** — [`PageLayout.ts`](../packages/domain/src/entities/PageLayout.ts)
 
-| Campo | Tipo |
-|-------|------|
-| `id` | uuid |
-| `slug` | string (`home`) |
-| `title` | string |
-| `status` | `PageStatus` (`draft` \| `published`) |
-| `seoTitle`, `seoDescription` | string? |
-| `publishedAt`, `updatedAt` | Date |
+| Campo                        | Tipo                                  |
+| ---------------------------- | ------------------------------------- |
+| `id`                         | uuid                                  |
+| `slug`                       | string (`home`)                       |
+| `title`                      | string                                |
+| `status`                     | `PageStatus` (`draft` \| `published`) |
+| `seoTitle`, `seoDescription` | string?                               |
+| `publishedAt`, `updatedAt`   | Date                                  |
 
 **PageBlock** — [`PageBlock.ts`](../packages/domain/src/entities/PageBlock.ts)
 
-| Campo | Tipo |
-|-------|------|
-| `id` | uuid |
-| `pageId` | uuid FK |
-| `type` | `BlockType` |
-| `sortOrder` | number |
-| `props` | `Record<string, unknown>` |
+| Campo        | Tipo                                               |
+| ------------ | -------------------------------------------------- |
+| `id`         | uuid                                               |
+| `pageId`     | uuid FK                                            |
+| `type`       | `BlockType`                                        |
+| `sortOrder`  | number                                             |
+| `props`      | `Record<string, unknown>`                          |
 | `visibility` | `BlockVisibility` (`all` \| `desktop` \| `mobile`) |
 
 ### Port `PageRepository`
@@ -113,18 +113,18 @@ type PageBlockDto = {
 
 ## Catálogo `BlockType`
 
-| BlockType | Componente React | Props schema | Dados dinâmicos |
-|-----------|------------------|--------------|-----------------|
-| `hero_split` | `HeroSplitBlock` | `heroSplitPropsSchema` | Compõe blocos por ID |
-| `hero_carousel` | `HeroCarouselBlock` | `heroCarouselPropsSchema` | Estático (slides); top-level ou filho de `hero_split` |
-| `featured_product` | `FeaturedProductBlock` | `featuredProductPropsSchema` | `GET /products/:slug` |
-| `category_pills` | `CategoryPillsBlock` | `categoryPillsPropsSchema` | `GET /categories` + context |
-| `product_grid` | `ProductGridBlock` | `productGridPropsSchema` | `GET /products?...` |
-| `rich_text` | `RichTextBlock` | `richTextPropsSchema` | HTML estático |
-| `banner` | `BannerBlock` | `bannerPropsSchema` | Imagem + link |
-| `spacer` | `SpacerBlock` | `spacerPropsSchema` | Espaçamento |
-| `curated_collection` | `CuratedCollectionBlock` | `curatedCollectionPropsSchema` | **Stub** — fase 2 |
-| `coupon_strip` | `CouponStripBlock` | `couponStripPropsSchema` | **Stub** — fase 2 |
+| BlockType            | Componente React         | Props schema                   | Dados dinâmicos                                       |
+| -------------------- | ------------------------ | ------------------------------ | ----------------------------------------------------- |
+| `hero_split`         | `HeroSplitBlock`         | `heroSplitPropsSchema`         | Compõe blocos por ID                                  |
+| `hero_carousel`      | `HeroCarouselBlock`      | `heroCarouselPropsSchema`      | Estático (slides); top-level ou filho de `hero_split` |
+| `featured_product`   | `FeaturedProductBlock`   | `featuredProductPropsSchema`   | `GET /products/:slug`                                 |
+| `category_pills`     | `CategoryPillsBlock`     | `categoryPillsPropsSchema`     | `GET /categories` + context                           |
+| `product_grid`       | `ProductGridBlock`       | `productGridPropsSchema`       | `GET /products?...`                                   |
+| `rich_text`          | `RichTextBlock`          | `richTextPropsSchema`          | HTML estático                                         |
+| `banner`             | `BannerBlock`            | `bannerPropsSchema`            | Imagem + link                                         |
+| `spacer`             | `SpacerBlock`            | `spacerPropsSchema`            | Espaçamento                                           |
+| `curated_collection` | `CuratedCollectionBlock` | `curatedCollectionPropsSchema` | **Stub** — fase 2                                     |
+| `coupon_strip`       | `CouponStripBlock`       | `couponStripPropsSchema`       | **Stub** — fase 2                                     |
 
 ## Schemas Zod — props por bloco
 
@@ -135,15 +135,15 @@ Fonte: [`block-schemas.ts`](../packages/shared/src/cms/block-schemas.ts).
 ```typescript
 {
   slides: Array<{
-    imageUrl: string;      // URL
-    title: string;         // min 1
+    imageUrl: string; // URL
+    title: string; // min 1
     subtitle?: string;
     ctaLabel?: string;
     ctaHref?: string;
     linkedProductSlug?: string;
-  }>;                      // min 1 slide
-  autoplay: boolean;       // default true
-  intervalMs: number;      // default 5000
+  }>; // min 1 slide
+  autoplay: boolean; // default true
+  intervalMs: number; // default 5000
 }
 ```
 
@@ -197,9 +197,9 @@ Comportamento em `filter` + `showSubcategories: true`: ao clicar numa categoria 
 
 ```typescript
 {
-  ratio: '2/1' | '1/1';      // default '2/1'
-  leftBlockId: string;       // uuid
-  rightBlockId: string;      // uuid
+  ratio: '2/1' | '1/1'; // default '2/1'
+  leftBlockId: string; // uuid
+  rightBlockId: string; // uuid
 }
 ```
 
@@ -208,7 +208,10 @@ Blocos referenciados **permanecem** na lista `blocks` da API mas **não** são r
 ### `curated_collection` (stub)
 
 ```typescript
-{ collectionSlug: string; layout: 'carousel' | 'grid'; }
+{
+  collectionSlug: string;
+  layout: 'carousel' | 'grid';
+}
 ```
 
 ### `coupon_strip` (stub)
@@ -220,19 +223,28 @@ Blocos referenciados **permanecem** na lista `blocks` da API mas **não** são r
 ### `rich_text`
 
 ```typescript
-{ html: string; align: 'left' | 'center' | 'right'; }
+{
+  html: string;
+  align: 'left' | 'center' | 'right';
+}
 ```
 
 ### `banner`
 
 ```typescript
-{ imageUrl: string; href: string; alt: string; }
+{
+  imageUrl: string;
+  href: string;
+  alt: string;
+}
 ```
 
 ### `spacer`
 
 ```typescript
-{ size: 'sm' | 'md' | 'lg'; }
+{
+  size: 'sm' | 'md' | 'lg';
+}
 ```
 
 ### `BlockPropsMap`
@@ -243,13 +255,13 @@ Mapa tipado TypeScript ligando cada `BlockType` ao tipo inferido do schema — u
 
 Arquivo: [`seed.ts`](../packages/infrastructure/src/persistence/drizzle/seed.ts) → `seedHomePage()`.
 
-| UUID fixo | type | sortOrder | Notas |
-|-----------|------|-----------|-------|
-| `f2111111-1111-4111-8111-111111111111` | `hero_split` | 0 | ratio 2/1 |
-| `f3111111-1111-4111-8111-111111111111` | `hero_carousel` | 1 | filho esquerdo |
-| `f4111111-1111-4111-8111-111111111111` | `featured_product` | 2 | filho direito |
-| `f5111111-1111-4111-8111-111111111111` | `category_pills` | 3 | linked → grid |
-| `f6111111-1111-4111-8111-111111111111` | `product_grid` | 4 | 12 produtos, 4 col |
+| UUID fixo                              | type               | sortOrder | Notas              |
+| -------------------------------------- | ------------------ | --------- | ------------------ |
+| `f2111111-1111-4111-8111-111111111111` | `hero_split`       | 0         | ratio 2/1          |
+| `f3111111-1111-4111-8111-111111111111` | `hero_carousel`    | 1         | filho esquerdo     |
+| `f4111111-1111-4111-8111-111111111111` | `featured_product` | 2         | filho direito      |
+| `f5111111-1111-4111-8111-111111111111` | `category_pills`   | 3         | linked → grid      |
+| `f6111111-1111-4111-8111-111111111111` | `product_grid`     | 4         | 12 produtos, 4 col |
 
 Page: `f1111111-1111-4111-8111-111111111111`, slug `home`, status `published`.
 
@@ -267,13 +279,13 @@ Use case: [`GetPublishedPageLayout.ts`](../packages/application/src/use-cases/pa
 
 ### Endpoints consumidos pelo web na Home
 
-| Rota | Componente / uso |
-|------|------------------|
-| `GET /pages/home` | SSR `page.tsx` |
+| Rota                                   | Componente / uso                           |
+| -------------------------------------- | ------------------------------------------ |
+| `GET /pages/home`                      | SSR `page.tsx`                             |
 | `GET /products`, `GET /products/:slug` | `ProductGridBlock`, `FeaturedProductBlock` |
-| `GET /categories` | `CategoryPillsBlock` (labels) |
-| `GET/POST/DELETE /wishlist` | `WishlistProvider` + `WishlistDrawer` |
-| `POST /events/click` | CTA marketplace (`origin: listagem`) |
+| `GET /categories`                      | `CategoryPillsBlock` (labels)              |
+| `GET/POST/DELETE /wishlist`            | `WishlistProvider` + `WishlistDrawer`      |
+| `POST /events/click`                   | CTA marketplace (`origin: listagem`)       |
 
 ## apps/web — estrutura
 
@@ -359,17 +371,17 @@ Estado client-side: categoria selecionada nas pills propaga para `ProductGridBlo
 
 ## Padrões UX (regras de conversão)
 
-| Regra | Implementação |
-|-------|---------------|
-| Preço stale | `PriceDisplay` oculta valor numérico; pill âmbar "Consultar preço atualizado" |
-| CTA transparente | "Ver preço na Amazon" / "Ver preço na Shopee" — nunca "Comprar agora" |
-| Cenário A | Imagem/título e CTA primário (preço fresh) → `/produtos/[slug]` mesma aba |
-| Cenário B | CTA secundário (preço fresh) ou primário (stale) → `/go/[slug]` nova aba + `POST /events/click` |
-| Disclaimer | `AffiliateDisclaimer` visível com CTA comercial |
-| Session anônima | Cookie `vitrine_session` → header `x-session-id` |
-| Badges editoriais | `ProductEditorialBadges` — Escolha editorial (`editorialScore >= 80`), Top avaliado, Melhor oferta (strikethrough fresh) |
-| Rating na listagem | `ProductRating` — estrelas + contagem quando dados locais existem |
-| Links afiliado | `rel="noopener sponsored"` via `AffiliateGoLink` |
+| Regra              | Implementação                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Preço stale        | `PriceDisplay` oculta valor numérico; pill âmbar "Consultar preço atualizado"                                            |
+| CTA transparente   | "Ver preço na Amazon" / "Ver preço na Shopee" — nunca "Comprar agora"                                                    |
+| Cenário A          | Imagem/título e CTA primário (preço fresh) → `/produtos/[slug]` mesma aba                                                |
+| Cenário B          | CTA secundário (preço fresh) ou primário (stale) → `/go/[slug]` nova aba + `POST /events/click`                          |
+| Disclaimer         | `AffiliateDisclaimer` visível com CTA comercial                                                                          |
+| Session anônima    | Cookie `vitrine_session` → header `x-session-id`                                                                         |
+| Badges editoriais  | `ProductEditorialBadges` — Escolha editorial (`editorialScore >= 80`), Top avaliado, Melhor oferta (strikethrough fresh) |
+| Rating na listagem | `ProductRating` — estrelas + contagem quando dados locais existem                                                        |
+| Links afiliado     | `rel="noopener sponsored"` via `AffiliateGoLink`                                                                         |
 
 ### Anatomia do `ProductCard` (Gold Standard Fase 1)
 
@@ -394,12 +406,12 @@ Regra Cursor: [`.cursor/rules/06-ux-conversion.mdc`](../.cursor/rules/06-ux-conv
 
 ## Design tokens (`globals.css`)
 
-| Token | Valor |
-|-------|-------|
-| Fundo | `#F7F7F7` |
-| Primary | `#111111` |
-| Radius | `1rem` |
-| Cursor | `pointer` em elementos clicáveis (global) |
+| Token   | Valor                                     |
+| ------- | ----------------------------------------- |
+| Fundo   | `#F7F7F7`                                 |
+| Primary | `#111111`                                 |
+| Radius  | `1rem`                                    |
+| Cursor  | `pointer` em elementos clicáveis (global) |
 
 Stack: Next.js 15, Tailwind, shadcn/ui, TanStack Query.
 
@@ -450,11 +462,11 @@ curl http://localhost:3000/products?sort=editorial_score | jq .
 
 ## Próxima fase
 
-| Entrega | Doc / plano |
-|---------|-------------|
-| `/produtos/[slug]` | PRD Core |
-| `/c/[slug]`, artigos | PRD Growth |
-| Admin CMS | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md) § Admin |
-| Blocos coleção/cupom reais | PRD Growth + API `/collections`, `/coupons` |
+| Entrega                    | Doc / plano                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `/produtos/[slug]`         | PRD Core                                                                    |
+| `/c/[slug]`, artigos       | PRD Growth                                                                  |
+| Admin CMS                  | [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md) § Admin |
+| Blocos coleção/cupom reais | PRD Growth + API `/collections`, `/coupons`                                 |
 
 Contrato admin (preview, publish, reorder) documentado no plano UI — **não implementado**.

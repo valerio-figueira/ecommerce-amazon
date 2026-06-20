@@ -13,9 +13,7 @@ type CategoryShellProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function CategoryShell({
-  params,
-}: CategoryShellProps): Promise<React.JSX.Element> {
+export async function CategoryShell({ params }: CategoryShellProps): Promise<React.JSX.Element> {
   const { slug } = await params;
   const category = await getCategory(slug);
 

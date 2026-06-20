@@ -75,13 +75,13 @@ Arquivo: **`apps/admin/src/components/products/ProductImagesSection.tsx`**
 
 Estrutura com `CmsFormSection title="Galeria de imagens"` + `useFormContext<ProductFormValues>()`:
 
-| Bloco | Comportamento |
-|-------|---------------|
-| **Upload** | `AdminImageFilePicker` → botão "Recortar e enviar" → `AdminImageCropDialog` (aspect `1`, `cropShape="rect"`, 1000×1000) → `uploadAdminImageClient` → `form.setValue('images', [...images, url])` |
-| **Status** | Mensagem inline + `useAdminToast` (padrão [`CollectionCoverField.tsx`](apps/admin/src/components/collections/CollectionCoverField.tsx)) |
-| **Galeria** | Lista ordenada com `ProductThumbnail`, badge de ordem (1 = capa), ↑↓, remover |
-| **URL externa** | Link colapsável "Adicionar por URL" com `Input` + botão adicionar (reutilizar lógica de append de [`ProductImageList.tsx`](apps/admin/src/components/products/ProductImageList.tsx)) |
-| **Empty state** | "Nenhuma imagem. Envie arquivos ou cole URLs HTTPS." |
+| Bloco           | Comportamento                                                                                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Upload**      | `AdminImageFilePicker` → botão "Recortar e enviar" → `AdminImageCropDialog` (aspect `1`, `cropShape="rect"`, 1000×1000) → `uploadAdminImageClient` → `form.setValue('images', [...images, url])` |
+| **Status**      | Mensagem inline + `useAdminToast` (padrão [`CollectionCoverField.tsx`](apps/admin/src/components/collections/CollectionCoverField.tsx))                                                          |
+| **Galeria**     | Lista ordenada com `ProductThumbnail`, badge de ordem (1 = capa), ↑↓, remover                                                                                                                    |
+| **URL externa** | Link colapsável "Adicionar por URL" com `Input` + botão adicionar (reutilizar lógica de append de [`ProductImageList.tsx`](apps/admin/src/components/products/ProductImageList.tsx))             |
+| **Empty state** | "Nenhuma imagem. Envie arquivos ou cole URLs HTTPS."                                                                                                                                             |
 
 Hints via `FormDescription`: primeira imagem = capa na vitrine e listagens.
 
@@ -110,13 +110,13 @@ Atualizar [`docs/admin-products-phase1.md`](docs/admin-products-phase1.md):
 
 ## Arquivos principais
 
-| Ação | Arquivo |
-|------|---------|
-| Editar | [`ProductForm.tsx`](apps/admin/src/components/products/ProductForm.tsx) |
-| Criar | `ProductImagesSection.tsx` |
-| Editar | [`ProductEssentialsSection.tsx`](apps/admin/src/components/products/ProductEssentialsSection.tsx) |
-| Editar (simplificar ou deprecar uso externo) | [`ProductImageList.tsx`](apps/admin/src/components/products/ProductImageList.tsx) |
-| Editar | [`docs/admin-products-phase1.md`](docs/admin-products-phase1.md) |
+| Ação                                         | Arquivo                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Editar                                       | [`ProductForm.tsx`](apps/admin/src/components/products/ProductForm.tsx)                           |
+| Criar                                        | `ProductImagesSection.tsx`                                                                        |
+| Editar                                       | [`ProductEssentialsSection.tsx`](apps/admin/src/components/products/ProductEssentialsSection.tsx) |
+| Editar (simplificar ou deprecar uso externo) | [`ProductImageList.tsx`](apps/admin/src/components/products/ProductImageList.tsx)                 |
+| Editar                                       | [`docs/admin-products-phase1.md`](docs/admin-products-phase1.md)                                  |
 
 ## Fora de escopo
 

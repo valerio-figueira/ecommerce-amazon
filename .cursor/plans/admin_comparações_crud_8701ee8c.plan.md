@@ -18,7 +18,7 @@ todos:
     content: Página /comparacoes, ComparisonListManager/FormSheet (barra 150 palavras + tooltip), BFF routes, nav GitCompare
     status: completed
   - id: web-vitrine
-    content: "[param] + redirect 301; carrossel; share canônico; células voláteis com gate de hidratação"
+    content: '[param] + redirect 301; carrossel; share canônico; células voláteis com gate de hidratação'
     status: completed
   - id: sitemap-docs
     content: UNION sitemap published+slug; docs/admin-comparisons-phase1.md; testes E2E API + atualizações README/api-rest/comparator
@@ -32,7 +32,7 @@ isProject: false
 
 A [fase 1 do comparador](docs/comparator-web-phase1.md) entregou fluxo **UGC** (`POST /comparisons` → `/comparar/{shareToken}`). O schema atual em [`product_comparisons`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) só tem `share_token`, `session_id`, `editorial_intro`, `created_at` — sem status, slug ou SEO.
 
-A recomendação acordada é **CRUD dedicado no Admin** (modelo [coleções](apps/admin/src/app/(dashboard)/colecoes/page.tsx)), **não** bloco CMS genérico. O **slug legível** deixa de ser opcional: é **obrigatório na publicação** e vira URL canônica indexável.
+A recomendação acordada é **CRUD dedicado no Admin** (modelo [coleções](<apps/admin/src/app/(dashboard)/colecoes/page.tsx>)), **não** bloco CMS genérico. O **slug legível** deixa de ser opcional: é **obrigatório na publicação** e vira URL canônica indexável.
 
 ```mermaid
 flowchart TD
@@ -64,21 +64,21 @@ flowchart TD
 
 ## Decisões de produto
 
-| Tópico | Decisão |
-|--------|---------|
-| URL canônica | `/comparar/{slug}` quando `status=published` e `slug` definido |
-| `shareToken` | Mantido (UUID) para links UGC legados e dedupe; redireciona 301 para slug quando publicado |
-| Indexação | `draft` → `noindex`; `published` → `index, follow` |
-| Sitemap | Apenas `status=published` **e** `slug IS NOT NULL` |
-| Carrossel | Automático por `categoryId` dos produtos comparados; flag `showCategoryCarousel` (default `true`) |
-| Intro editorial | Operador edita no admin; publicação exige **≥150 palavras** (Growth); UGC continua com template mínimo na criação |
-| Origem | Campo `source`: `user_generated` \| `curated` (filtro na listagem admin) |
-| Tabela comparativa | Continua runtime do catálogo — **não** editável no admin |
-| Roteamento `[param]` | Regex UUID v4 no use case → query única (sem fallback DB) |
-| Carrossel mínimo | Exibir só se ≥3 itens após filtro; fallback categoria pai; senão omitir |
-| Publicar (150 palavras) | Barra de progresso + focus/tooltip no admin; validação server-side |
-| Preços na tabela | Layout SSR estático; preço/stale em subcomponente com gate de hidratação |
-| Subatribuição afiliado | `comparisonSlug` em links `/go` quando `published` (ascsubtag / sub_id) |
+| Tópico                  | Decisão                                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| URL canônica            | `/comparar/{slug}` quando `status=published` e `slug` definido                                                    |
+| `shareToken`            | Mantido (UUID) para links UGC legados e dedupe; redireciona 301 para slug quando publicado                        |
+| Indexação               | `draft` → `noindex`; `published` → `index, follow`                                                                |
+| Sitemap                 | Apenas `status=published` **e** `slug IS NOT NULL`                                                                |
+| Carrossel               | Automático por `categoryId` dos produtos comparados; flag `showCategoryCarousel` (default `true`)                 |
+| Intro editorial         | Operador edita no admin; publicação exige **≥150 palavras** (Growth); UGC continua com template mínimo na criação |
+| Origem                  | Campo `source`: `user_generated` \| `curated` (filtro na listagem admin)                                          |
+| Tabela comparativa      | Continua runtime do catálogo — **não** editável no admin                                                          |
+| Roteamento `[param]`    | Regex UUID v4 no use case → query única (sem fallback DB)                                                         |
+| Carrossel mínimo        | Exibir só se ≥3 itens após filtro; fallback categoria pai; senão omitir                                           |
+| Publicar (150 palavras) | Barra de progresso + focus/tooltip no admin; validação server-side                                                |
+| Preços na tabela        | Layout SSR estático; preço/stale em subcomponente com gate de hidratação                                          |
+| Subatribuição afiliado  | `comparisonSlug` em links `/go` quando `published` (ascsubtag / sub_id)                                           |
 
 ## 1. Migration e schema Drizzle
 
@@ -133,7 +133,7 @@ Novo [`packages/shared/src/admin/comparison-schemas.ts`](packages/shared/src/adm
 - `comparisonSlugSchema` — mesmo regex de coleções (`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
 - `adminComparisonSummarySchema` — id, shareToken, slug?, status, source, productCount, categoryLabel, updatedAt
 - `adminComparisonDetailSchema` — intro, productIds, seoTitle?, seoDescription?, showCategoryCarousel, publishedAt?, preview de títulos
-- `createAdminComparisonBodySchema` — productIds (2–3), editorialIntro, slug (opcional em draft), seo*, showCategoryCarousel
+- `createAdminComparisonBodySchema` — productIds (2–3), editorialIntro, slug (opcional em draft), seo\*, showCategoryCarousel
 - `updateAdminComparisonBodySchema` — partial + `status` opcional
 - `publishComparisonBodySchema` — slug obrigatório + validação de palavras
 
@@ -160,14 +160,14 @@ Estender [`comparisonPublicDetailSchema`](packages/shared/src/comparison/compari
 
 Pasta `packages/application/src/use-cases/admin-comparison/`:
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `ListAdminComparisons` | Lista para admin com joins leves (títulos, categoria) |
-| `GetAdminComparison` | Detalhe por id |
+| Use case                  | Responsabilidade                                                                   |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `ListAdminComparisons`    | Lista para admin com joins leves (títulos, categoria)                              |
+| `GetAdminComparison`      | Detalhe por id                                                                     |
 | `CreateCuratedComparison` | Operador escolhe 2–3 produtos; `source=curated`, `status=draft`; gera `shareToken` |
-| `UpdateComparison` | Edita intro, slug, SEO, produtos (revalida mesma categoria), carousel flag |
-| `PublishComparison` | Valida slug único, intro ≥150 palavras, produtos ativos; set `published_at` |
-| `DeleteComparison` | Hard delete (cascade) |
+| `UpdateComparison`        | Edita intro, slug, SEO, produtos (revalida mesma categoria), carousel flag         |
+| `PublishComparison`       | Valida slug único, intro ≥150 palavras, produtos ativos; set `published_at`        |
+| `DeleteComparison`        | Hard delete (cascade)                                                              |
 
 Atualizar existentes:
 
@@ -212,14 +212,14 @@ Registrar em [`api-container.ts`](packages/infrastructure/src/di/api-container.t
 
 ### Admin — novo [`admin-comparison-routes.ts`](apps/api/src/adapters/http/routes/admin-comparison-routes.ts)
 
-| Método | Rota | Ação |
-|--------|------|------|
-| GET | `/admin/comparisons` | Listar |
-| GET | `/admin/comparisons/:id` | Detalhe |
-| POST | `/admin/comparisons` | Criar curada (draft) |
-| PATCH | `/admin/comparisons/:id` | Atualizar |
-| POST | `/admin/comparisons/:id/publish` | Publicar (slug obrigatório) |
-| DELETE | `/admin/comparisons/:id` | Excluir |
+| Método | Rota                             | Ação                        |
+| ------ | -------------------------------- | --------------------------- |
+| GET    | `/admin/comparisons`             | Listar                      |
+| GET    | `/admin/comparisons/:id`         | Detalhe                     |
+| POST   | `/admin/comparisons`             | Criar curada (draft)        |
+| PATCH  | `/admin/comparisons/:id`         | Atualizar                   |
+| POST   | `/admin/comparisons/:id/publish` | Publicar (slug obrigatório) |
+| DELETE | `/admin/comparisons/:id`         | Excluir                     |
 
 Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts).
 
@@ -236,7 +236,7 @@ Seguir [`.cursor/rules/11-admin-floating-panels.mdc`](.cursor/rules/11-admin-flo
 
 **Navegação:** item `{ href: '/comparacoes', label: 'Comparações', icon: GitCompare }` em [`navigation.ts`](apps/admin/src/lib/navigation.ts).
 
-**Página:** [`apps/admin/src/app/(dashboard)/comparacoes/page.tsx`](apps/admin/src/app/(dashboard)/comparacoes/page.tsx)
+**Página:** [`apps/admin/src/app/(dashboard)/comparacoes/page.tsx`](<apps/admin/src/app/(dashboard)/comparacoes/page.tsx>)
 
 **Componentes** em `apps/admin/src/components/comparisons/`:
 
@@ -244,7 +244,7 @@ Seguir [`.cursor/rules/11-admin-floating-panels.mdc`](.cursor/rules/11-admin-flo
 - `ComparisonFormSheet` — Sheet lateral (criar/editar):
   - `ProductMultiSelect` reutilizado (min 2, max 3, validação mesma categoria no client)
   - Textarea intro + **barra de progresso visual** (refino §3): ex. `120 / 150 palavras` com cor de preenchimento
-  - Ao clicar **Publicar** com `< 150` palavras: `focus()` no textarea + tooltip/inline: *"Adicione mais X palavras para liberar a indexação e publicação"* (botão Publicar permanece desabilitado abaixo do mínimo)
+  - Ao clicar **Publicar** com `< 150` palavras: `focus()` no textarea + tooltip/inline: _"Adicione mais X palavras para liberar a indexação e publicação"_ (botão Publicar permanece desabilitado abaixo do mínimo)
   - Slug com auto-sugestão (`buildSuggestedComparisonSlug`) e botão “Gerar do título”
   - SEO title/description (opcionais; fallback para título auto `A vs B | marca`)
   - Toggle “Exibir carrossel da categoria”

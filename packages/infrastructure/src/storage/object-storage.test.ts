@@ -105,8 +105,10 @@ describe('createObjectStorage', () => {
       GCS_PROJECT_ID: '',
     });
 
-    expect(storage.isManagedUrl('http://localhost:3000/uploads/admin-avatars/2026/06/avatar-20260615-120000-0123456789abcdef0123456789abcdef.jpg')).toBe(
-      true,
-    );
+    expect(
+      storage.isManagedUrl(
+        'http://localhost:3000/uploads/admin-avatars/2026/06/avatar-20260615-120000-0123456789abcdef0123456789abcdef.jpg',
+      ),
+    ).toBe(true);
   });
 });

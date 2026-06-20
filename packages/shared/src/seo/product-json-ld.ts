@@ -12,10 +12,12 @@ export type ProductJsonLdInput = {
   metaDescription?: string | undefined;
   availability: string;
   shouldShowPrice: boolean;
-  price?: {
-    amount: number;
-    currency: string;
-  } | undefined;
+  price?:
+    | {
+        amount: number;
+        currency: string;
+      }
+    | undefined;
   siteBaseUrl: string;
   canonicalUrl?: string | null | undefined;
 };

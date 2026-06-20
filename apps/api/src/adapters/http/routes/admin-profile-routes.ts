@@ -27,10 +27,7 @@ function handleAdminProfileError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminProfileRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminProfileRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.get('/admin/profile', async (request, reply) => {
@@ -88,7 +85,9 @@ export function registerAdminProfileRoutes(
 
       const file = await request.file();
       if (!file) {
-        return reply.status(400).send({ error: 'Arquivo de avatar ausente.', code: 'VALIDATION_ERROR' });
+        return reply
+          .status(400)
+          .send({ error: 'Arquivo de avatar ausente.', code: 'VALIDATION_ERROR' });
       }
 
       const buffer = await file.toBuffer();

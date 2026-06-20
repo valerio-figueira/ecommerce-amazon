@@ -20,7 +20,10 @@ const ARTICLE_TYPE_LABELS: Record<ArticleType, string> = {
 };
 
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function excerptBodyPreview(body: string, maxLength = 400): string {
@@ -36,7 +39,9 @@ export function buildArticleEditorialLlmPrompt(input: ArticleLlmPromptInput): st
   const typeLabel = ARTICLE_TYPE_LABELS[input.type];
   const statusLabel = input.status === ArticleStatus.PUBLISHED ? 'Publicado' : 'Rascunho';
   const excerpt = input.excerpt.trim() || '(vazio)';
-  const cover = input.coverImageUrl.trim() || '(vazio — sugira URL de imagem livre de direitos ou descreva o banner ideal)';
+  const cover =
+    input.coverImageUrl.trim() ||
+    '(vazio — sugira URL de imagem livre de direitos ou descreva o banner ideal)';
   const seoTitle = input.seoTitle.trim() || '(vazio — vitrine usará o título)';
   const seoDescription = input.seoDescription.trim() || '(vazio — vitrine usará o resumo)';
   const bodyPreview = excerptBodyPreview(input.body);

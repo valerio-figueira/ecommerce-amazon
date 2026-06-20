@@ -10,9 +10,5 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isPriceHistoryResult(value: unknown): value is PriceHistoryResult {
-  return (
-    isRecord(value) &&
-    Array.isArray(value['snapshots']) &&
-    typeof value['days'] === 'number'
-  );
+  return isRecord(value) && Array.isArray(value['snapshots']) && typeof value['days'] === 'number';
 }

@@ -35,20 +35,20 @@ isProject: false
 
 A base está **parcialmente implementada**. Rotas indexáveis principais já têm `generateMetadata` com canonical via [`getSiteBaseUrl()`](apps/web/src/lib/site-url.ts). JSON-LD existe em produto, categoria, coleção e artigo. **Lacunas críticas:**
 
-| Área | Status | Gap |
-|------|--------|-----|
-| Metadados globais | Parcial | Sem `metadataBase`, title template, OG/Twitter global |
-| Sitemap / robots | Ausente | Nenhum `sitemap.ts` ou `robots.ts` |
-| Canonical | Bom | 404 e entidades não encontradas sem `robots: noindex`; categorias sem defesa contra query params (sort/filter/page) |
-| Crawl budget | Ausente | Variações `?sort=`, `?page=`, `?filter_*` podem ser indexadas sem canonical expurgada |
-| Sitemap escalável | Ausente | Endpoint monolítico causaria OOM/timeout com 50k+ URLs |
-| lastmod produto | N/A | `price_updated_at` no CRON geraria lastmod spammy |
-| JSON-LD Home | Ausente | Sem `Organization` / `WebSite` |
-| JSON-LD Categoria | Parcial | `CollectionPage` + breadcrumb; falta `ItemList` de produtos |
-| JSON-LD Artigo | Parcial | Falta `dateModified`, `publisher`, `url`, `mainEntityOfPage` |
-| LCP | Parcial | `ArticleHero` OK; home hero (`BentoHubMix`) sem `priority`; carousel com `priority` em todos os slides |
-| CLS | Risco alto | `ProductGridBlock` / `FeaturedProductBlock` client-fetch com skeletons incompletos |
-| Links `/go/` | Quase OK | `AffiliateGoLink` já usa `noopener sponsored`; `WishlistDrawer` abre `/go/` sem `sponsored` |
+| Área              | Status     | Gap                                                                                                                 |
+| ----------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| Metadados globais | Parcial    | Sem `metadataBase`, title template, OG/Twitter global                                                               |
+| Sitemap / robots  | Ausente    | Nenhum `sitemap.ts` ou `robots.ts`                                                                                  |
+| Canonical         | Bom        | 404 e entidades não encontradas sem `robots: noindex`; categorias sem defesa contra query params (sort/filter/page) |
+| Crawl budget      | Ausente    | Variações `?sort=`, `?page=`, `?filter_*` podem ser indexadas sem canonical expurgada                               |
+| Sitemap escalável | Ausente    | Endpoint monolítico causaria OOM/timeout com 50k+ URLs                                                              |
+| lastmod produto   | N/A        | `price_updated_at` no CRON geraria lastmod spammy                                                                   |
+| JSON-LD Home      | Ausente    | Sem `Organization` / `WebSite`                                                                                      |
+| JSON-LD Categoria | Parcial    | `CollectionPage` + breadcrumb; falta `ItemList` de produtos                                                         |
+| JSON-LD Artigo    | Parcial    | Falta `dateModified`, `publisher`, `url`, `mainEntityOfPage`                                                        |
+| LCP               | Parcial    | `ArticleHero` OK; home hero (`BentoHubMix`) sem `priority`; carousel com `priority` em todos os slides              |
+| CLS               | Risco alto | `ProductGridBlock` / `FeaturedProductBlock` client-fetch com skeletons incompletos                                  |
+| Links `/go/`      | Quase OK   | `AffiliateGoLink` já usa `noopener sponsored`; `WishlistDrawer` abre `/go/` sem `sponsored`                         |
 
 **Decisões confirmadas:** manter `rel="noopener sponsored"`; **não** incluir `/cupons` no sitemap até a página existir.
 
@@ -131,14 +131,14 @@ Refatorar [`apps/web/src/app/layout.tsx`](apps/web/src/app/layout.tsx) para usar
 
 Com `title.template`, páginas filhas devem passar **título curto** (sem sufixo `| Brand`):
 
-| Arquivo | Ajuste |
-|---------|--------|
-| [`apps/web/src/app/page.tsx`](apps/web/src/app/page.tsx) | `title: layout?.seoTitle ?? brand.tagline` (template adiciona brand) |
+| Arquivo                                                                                      | Ajuste                                                                |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [`apps/web/src/app/page.tsx`](apps/web/src/app/page.tsx)                                     | `title: layout?.seoTitle ?? brand.tagline` (template adiciona brand)  |
 | [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | Usar `category.seoTitle ?? category.label`; ver **§1.6 Crawl budget** |
-| [`apps/web/src/app/artigos/page.tsx`](apps/web/src/app/artigos/page.tsx) | `title: 'Artigos'` |
-| [`apps/web/src/app/artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx) | Manter título editorial; adicionar OG `url` + `siteName` |
-| [`apps/web/src/app/colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx) | Remover sufixo hardcoded `| Coleções` |
-| [`packages/shared/src/seo/product-meta.ts`](packages/shared/src/seo/product-meta.ts) | Remover sufixo longo `| Análise, Prós...`; confiar no template ou manter sufixo editorial curto sem brand duplicada |
+| [`apps/web/src/app/artigos/page.tsx`](apps/web/src/app/artigos/page.tsx)                     | `title: 'Artigos'`                                                    |
+| [`apps/web/src/app/artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx)       | Manter título editorial; adicionar OG `url` + `siteName`              |
+| [`apps/web/src/app/colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx)     | Remover sufixo hardcoded `                                            | Coleções`                                                                                   |
+| [`packages/shared/src/seo/product-meta.ts`](packages/shared/src/seo/product-meta.ts)         | Remover sufixo longo `                                                | Análise, Prós...`; confiar no template ou manter sufixo editorial curto sem brand duplicada |
 
 ### 1.4 Canonical + noindex em fallbacks
 
@@ -208,7 +208,7 @@ Novo use case [`packages/application/src/use-cases/seo/ListSitemapEntries.ts`](p
 
 ```typescript
 type SitemapEntry = {
-  path: string;           // e.g. "/produtos/foo"
+  path: string; // e.g. "/produtos/foo"
   lastModified: Date;
   changeFrequency?: 'daily' | 'weekly' | 'monthly';
   priority?: number;
@@ -217,12 +217,12 @@ type SitemapEntry = {
 
 Consultas Drizzle leves (somente `slug` + timestamp):
 
-| Entidade | Filtro | Path | lastModified |
-|----------|--------|------|--------------|
-| Categorias ativas | `deleted_at IS NULL` | `/categorias/{slug}` | `updated_at` |
-| Produtos publicados visíveis | `status=published AND visible=true` | `/produtos/{slug}` | **`updated_at` apenas** — ver §2.4 |
-| Artigos publicados | `status=published` | `/artigos/{slug}` | `updated_at` |
-| Coleções públicas | `is_public=true` | `/colecoes/{slug}` | `updated_at` |
+| Entidade                     | Filtro                              | Path                 | lastModified                       |
+| ---------------------------- | ----------------------------------- | -------------------- | ---------------------------------- |
+| Categorias ativas            | `deleted_at IS NULL`                | `/categorias/{slug}` | `updated_at`                       |
+| Produtos publicados visíveis | `status=published AND visible=true` | `/produtos/{slug}`   | **`updated_at` apenas** — ver §2.4 |
+| Artigos publicados           | `status=published`                  | `/artigos/{slug}`    | `updated_at`                       |
+| Coleções públicas            | `is_public=true`                    | `/colecoes/{slug}`   | `updated_at`                       |
 
 Estáticos hardcoded no use case ou no `sitemap.ts`:
 
@@ -239,10 +239,10 @@ Wire em [`packages/infrastructure/src/di/api-container.ts`](packages/infrastruct
 
 **Correção — dois endpoints leves:**
 
-| Endpoint | Propósito | Resposta |
-|----------|-----------|----------|
-| `GET /seo/sitemap-meta` | Contagem total para fatias | `{ totalEntries, pageSize, totalPages }` |
-| `GET /seo/sitemap-entries?page=N&pageSize=50000` | Fatia paginada | `{ page, pageSize, items: [{ path, lastModified }] }` |
+| Endpoint                                         | Propósito                  | Resposta                                              |
+| ------------------------------------------------ | -------------------------- | ----------------------------------------------------- |
+| `GET /seo/sitemap-meta`                          | Contagem total para fatias | `{ totalEntries, pageSize, totalPages }`              |
+| `GET /seo/sitemap-entries?page=N&pageSize=50000` | Fatia paginada             | `{ page, pageSize, items: [{ path, lastModified }] }` |
 
 Implementar em [`apps/api/src/adapters/http/routes/index.ts`](apps/api/src/adapters/http/routes/index.ts):
 
@@ -265,17 +265,10 @@ export async function generateSitemaps() {
   return Array.from({ length: totalPages }, (_, i) => ({ id: i }));
 }
 
-export default async function sitemap({
-  id,
-}: {
-  id: number;
-}): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
   const base = getSiteBaseUrl();
   const page = id + 1; // id é 0-based
-  const { items } = await apiFetchParsed(
-    `/seo/sitemap-entries?page=${page}`,
-    sitemapEntriesSchema,
-  );
+  const { items } = await apiFetchParsed(`/seo/sitemap-entries?page=${page}`, sitemapEntriesSchema);
   return items.map(({ path, lastModified }) => ({
     url: `${base}${path}`,
     lastModified: new Date(lastModified),
@@ -293,12 +286,12 @@ Next.js gera `/sitemap/0.xml`, `/sitemap/1.xml`, … e um índice `/sitemap.xml`
 
 **Correção:**
 
-| Entidade | Coluna `lastModified` | Justificativa |
-|----------|----------------------|---------------|
-| Produto | **`updated_at` apenas** | Reflete mudanças editoriais/estruturais (status, descrição, specs, slug) |
-| Categoria | `updated_at` | OK |
-| Artigo | `updated_at` | OK |
-| Coleção | `updated_at` | OK |
+| Entidade  | Coluna `lastModified`   | Justificativa                                                            |
+| --------- | ----------------------- | ------------------------------------------------------------------------ |
+| Produto   | **`updated_at` apenas** | Reflete mudanças editoriais/estruturais (status, descrição, specs, slug) |
+| Categoria | `updated_at`            | OK                                                                       |
+| Artigo    | `updated_at`            | OK                                                                       |
+| Coleção   | `updated_at`            | OK                                                                       |
 
 **Explicitamente excluir** `price_updated_at` do sitemap. Variações de preço continuam visíveis na página via catálogo local, mas não disparam re-crawl via sitemap.
 
@@ -332,14 +325,14 @@ export default function robots(): MetadataRoute.Robots {
 
 ### 4.1 LCP — imagens above-the-fold
 
-| Componente | Arquivo | Fix |
-|------------|---------|-----|
-| Bento hero (provável LCP da home) | [`BentoHubMixGrid.tsx`](apps/web/src/components/blocks/BentoHubMixGrid.tsx) | Prop `priority?: boolean` no `BentoHeroSlot`; `PageRenderer` passa `priority={blockIndex === 0}` para o primeiro bloco visual |
-| Hero carousel | [`HeroCarouselBlock.tsx`](apps/web/src/components/blocks/HeroCarouselBlock.tsx) | `priority` **somente** `index === 0`; slides `index > 0`: `loading="lazy"` + **`decoding="async"`**; adicionar `sizes="100vw"` |
-| Curated carousel | [`CuratedCollectionSlide.tsx`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx) | Mesmo padrão: slide 0 `priority`; demais `loading="lazy"` + `decoding="async"` |
-| Banner CMS | [`BannerBlock.tsx`](apps/web/src/components/blocks/BannerBlock.tsx) | `sizes="100vw"`; `priority` quando primeiro bloco |
-| Article hero | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx) | Já OK — opcional `fetchPriority="high"` |
-| Product PDP gallery | [`ProductImageGallery.tsx`](apps/web/src/components/product/ProductImageGallery.tsx) | Já OK |
+| Componente                        | Arquivo                                                                                   | Fix                                                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Bento hero (provável LCP da home) | [`BentoHubMixGrid.tsx`](apps/web/src/components/blocks/BentoHubMixGrid.tsx)               | Prop `priority?: boolean` no `BentoHeroSlot`; `PageRenderer` passa `priority={blockIndex === 0}` para o primeiro bloco visual  |
+| Hero carousel                     | [`HeroCarouselBlock.tsx`](apps/web/src/components/blocks/HeroCarouselBlock.tsx)           | `priority` **somente** `index === 0`; slides `index > 0`: `loading="lazy"` + **`decoding="async"`**; adicionar `sizes="100vw"` |
+| Curated carousel                  | [`CuratedCollectionSlide.tsx`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx) | Mesmo padrão: slide 0 `priority`; demais `loading="lazy"` + `decoding="async"`                                                 |
+| Banner CMS                        | [`BannerBlock.tsx`](apps/web/src/components/blocks/BannerBlock.tsx)                       | `sizes="100vw"`; `priority` quando primeiro bloco                                                                              |
+| Article hero                      | [`ArticleBody.tsx`](apps/web/src/components/articles/ArticleBody.tsx)                     | Já OK — opcional `fetchPriority="high"`                                                                                        |
+| Product PDP gallery               | [`ProductImageGallery.tsx`](apps/web/src/components/product/ProductImageGallery.tsx)      | Já OK                                                                                                                          |
 
 Propagar `isFirstBlock` de [`PageRenderer.tsx`](apps/web/src/components/cms/PageRenderer.tsx) para blocos com imagem hero.
 
@@ -366,11 +359,11 @@ Alinhar aspect ratios em [`HomePageSkeleton`](apps/web/src/components/loading/Ho
 
 Manter **`rel="noopener sponsored"`** conforme regra do projeto ([`01-business-compliance.mdc`](.cursor/rules/01-business-compliance.mdc)).
 
-| Local | Ação |
-|-------|------|
-| [`AffiliateGoLink.tsx`](apps/web/src/components/product/AffiliateGoLink.tsx) | Já conforme — auditar grep final |
-| [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx) | Trocar `window.open(buildGoUrl(...))` por `<a target="_blank" rel="noopener sponsored">` programático ou componente reutilizado |
-| Grep global `/go/` | Garantir zero `<a href="/go/` sem `sponsored` |
+| Local                                                                        | Ação                                                                                                                            |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`AffiliateGoLink.tsx`](apps/web/src/components/product/AffiliateGoLink.tsx) | Já conforme — auditar grep final                                                                                                |
+| [`WishlistDrawer.tsx`](apps/web/src/components/wishlist/WishlistDrawer.tsx)  | Trocar `window.open(buildGoUrl(...))` por `<a target="_blank" rel="noopener sponsored">` programático ou componente reutilizado |
+| Grep global `/go/`                                                           | Garantir zero `<a href="/go/` sem `sponsored`                                                                                   |
 
 Atualizar [`docs/go-redirect-seo.md`](docs/go-redirect-seo.md) com checklist de auditoria de `rel`.
 
@@ -391,12 +384,12 @@ Testes Vitest espelhando padrão de [`category-json-ld.test.ts`](packages/shared
 
 ### 6.2 Injeção por página
 
-| Página | Schema |
-|--------|--------|
-| [`apps/web/src/app/page.tsx`](apps/web/src/app/page.tsx) | `@graph`: `Organization` + `WebSite` via componente [`SiteJsonLd.tsx`](apps/web/src/components/seo/SiteJsonLd.tsx) |
-| [`apps/web/src/app/artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx) | Refatorar para `buildArticleJsonLd`: adicionar `dateModified`, `publisher` (Organization), `mainEntityOfPage`, `url`. Expor `updatedAt` no DTO público |
-| [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | Adicionar `ItemList` com URLs absolutas dos produtos já carregados (`products.slice(0, 10)`) |
-| Produto / Coleção | Manter builders existentes; opcional breadcrumb JSON-LD no produto |
+| Página                                                                                       | Schema                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`apps/web/src/app/page.tsx`](apps/web/src/app/page.tsx)                                     | `@graph`: `Organization` + `WebSite` via componente [`SiteJsonLd.tsx`](apps/web/src/components/seo/SiteJsonLd.tsx)                                     |
+| [`apps/web/src/app/artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx)       | Refatorar para `buildArticleJsonLd`: adicionar `dateModified`, `publisher` (Organization), `mainEntityOfPage`, `url`. Expor `updatedAt` no DTO público |
+| [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | Adicionar `ItemList` com URLs absolutas dos produtos já carregados (`products.slice(0, 10)`)                                                           |
+| Produto / Coleção                                                                            | Manter builders existentes; opcional breadcrumb JSON-LD no produto                                                                                     |
 
 **FAQPage:** não há estrutura FAQ no domínio/schema de artigos hoje — **fora de escopo** até existir campo ou tipo editorial dedicado. Documentar como próximo passo.
 

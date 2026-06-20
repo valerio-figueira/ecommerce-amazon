@@ -4,8 +4,7 @@ export type ProductId = string & { readonly __brand: 'ProductId' };
 export type AutoLinkId = string & { readonly __brand: 'AutoLinkId' };
 export type Slug = string & { readonly __brand: 'Slug' };
 
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function isProductId(value: string): value is ProductId {
@@ -61,12 +60,7 @@ export class Price {
     if (props.amount < 0) {
       throw new DomainError('Price cannot be negative', 'INVALID_PRICE');
     }
-    return new Price(
-      props.amount,
-      props.currency,
-      props.updatedAt,
-      props.isStale ?? false,
-    );
+    return new Price(props.amount, props.currency, props.updatedAt, props.isStale ?? false);
   }
 
   droppedByPercent(other: Price): number | null {

@@ -9,9 +9,7 @@ import {
 
 describe('product-meta', () => {
   it('builds default meta title from titleClean', () => {
-    expect(buildProductMetaTitle('Elements Magna')).toBe(
-      'Elements Magna — Análise e Ofertas',
-    );
+    expect(buildProductMetaTitle('Elements Magna')).toBe('Elements Magna — Análise e Ofertas');
   });
 
   it('builds default meta description from titleClean', () => {

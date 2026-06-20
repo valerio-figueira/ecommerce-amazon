@@ -19,10 +19,7 @@ export default async function AutoLinksPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Auto-Links"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Auto-Links' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Auto-Links' }]}
       />
       <AdminPageCard transparent>
         <AutoLinkListManager initialData={initialData} />

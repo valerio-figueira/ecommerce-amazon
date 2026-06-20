@@ -37,14 +37,14 @@ isProject: false
 
 **Campos desta entrega** (adaptados ao modelo `operators`, não ao php-app):
 
-| Campo | Editável |
-|-------|----------|
-| E-mail | Não (readonly) |
-| Nome | Sim |
-| Bio (até 250 chars) | Sim |
-| Foto de perfil | Sim (upload separado) |
-| Papel (`admin` / `editor`) | Não (badge readonly) |
-| Status (`active` / `disabled`) | Não (badge readonly) |
+| Campo                          | Editável              |
+| ------------------------------ | --------------------- |
+| E-mail                         | Não (readonly)        |
+| Nome                           | Sim                   |
+| Bio (até 250 chars)            | Sim                   |
+| Foto de perfil                 | Sim (upload separado) |
+| Papel (`admin` / `editor`)     | Não (badge readonly)  |
+| Status (`active` / `disabled`) | Não (badge readonly)  |
 
 **Fora do escopo:** troca de senha, gestão de outros operadores, campos inexistentes no schema (telefone, cargo, setor).
 
@@ -117,12 +117,12 @@ Constante de prefixo: `admin-avatars/` com chave `admin-avatars/YYYY/MM/avatar-Y
 
 ### Infrastructure — [`packages/infrastructure/src/storage/`](packages/infrastructure/src/storage/)
 
-| Arquivo | Driver | Comportamento |
-|---------|--------|---------------|
-| `object-storage.factory.ts` | — | Lê `STORAGE_DRIVER` e instancia o adapter |
-| `filesystem-object.storage.ts` | `filesystem` (default dev) | Grava em `STORAGE_LOCAL_ROOT`; URL pública via `STORAGE_PUBLIC_BASE_URL` |
-| `s3-object.storage.ts` | `s3` | `@aws-sdk/client-s3` — `PutObject` / `DeleteObject`; URL `https://{bucket}.s3.{region}.amazonaws.com/{key}` ou custom domain |
-| `gcs-object.storage.ts` | `gcs` | `@google-cloud/storage` — upload/delete; URL `https://storage.googleapis.com/{bucket}/{key}` |
+| Arquivo                        | Driver                     | Comportamento                                                                                                                |
+| ------------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `object-storage.factory.ts`    | —                          | Lê `STORAGE_DRIVER` e instancia o adapter                                                                                    |
+| `filesystem-object.storage.ts` | `filesystem` (default dev) | Grava em `STORAGE_LOCAL_ROOT`; URL pública via `STORAGE_PUBLIC_BASE_URL`                                                     |
+| `s3-object.storage.ts`         | `s3`                       | `@aws-sdk/client-s3` — `PutObject` / `DeleteObject`; URL `https://{bucket}.s3.{region}.amazonaws.com/{key}` ou custom domain |
+| `gcs-object.storage.ts`        | `gcs`                      | `@google-cloud/storage` — upload/delete; URL `https://storage.googleapis.com/{bucket}/{key}`                                 |
 
 `isManagedUrl` valida domínio/base + regex do prefixo `admin-avatars/` — impede renderizar/deletar URLs externas (mesma ideia de [`AdminProfilePhotoUploadService::isManagedAvatarUrl`](file:///home/josevalerio/Documents/php-app/src/services/Admin/AdminProfilePhotoUploadService.php)).
 
@@ -166,12 +166,12 @@ Implementar em [`drizzle-operator.repository.ts`](packages/infrastructure/src/pe
 
 ### Use cases — `packages/application/src/use-cases/admin-profile/`
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `GetOperatorProfile` | Carrega operador por `request.adminOperator.id`; retorna DTO sem `passwordHash` |
-| `UpdateOperatorProfile` | Valida `name` (1–120) e `bio` (≤250); persiste; **reemite JWT** com nome atualizado |
-| `UploadOperatorAvatar` | Valida MIME (jpeg/png/gif/webp) e tamanho (≤5 MiB); grava via `ObjectStorage`; remove avatar anterior se `isManagedUrl`; atualiza `avatar_url` |
-| `RemoveOperatorAvatar` | Deleta objeto gerenciado + zera `avatar_url` |
+| Use case                | Responsabilidade                                                                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GetOperatorProfile`    | Carrega operador por `request.adminOperator.id`; retorna DTO sem `passwordHash`                                                                |
+| `UpdateOperatorProfile` | Valida `name` (1–120) e `bio` (≤250); persiste; **reemite JWT** com nome atualizado                                                            |
+| `UploadOperatorAvatar`  | Valida MIME (jpeg/png/gif/webp) e tamanho (≤5 MiB); grava via `ObjectStorage`; remove avatar anterior se `isManagedUrl`; atualiza `avatar_url` |
+| `RemoveOperatorAvatar`  | Deleta objeto gerenciado + zera `avatar_url`                                                                                                   |
 
 Validação de imagem em helper puro `validateAvatarImage(buffer, mime)` (testável).
 
@@ -184,12 +184,12 @@ Validação de imagem em helper puro `validateAvatarImage(buffer, mime)` (testá
 
 ### API routes — [`apps/api/src/adapters/http/routes/admin-profile-routes.ts`](apps/api/src/adapters/http/routes/admin-profile-routes.ts)
 
-| Método | Rota | Body |
-|--------|------|------|
-| GET | `/admin/profile` | — |
-| PATCH | `/admin/profile` | JSON `{ name, bio }` |
-| POST | `/admin/profile/avatar` | `multipart/form-data`, campo `avatar` |
-| DELETE | `/admin/profile/avatar` | — |
+| Método | Rota                    | Body                                  |
+| ------ | ----------------------- | ------------------------------------- |
+| GET    | `/admin/profile`        | —                                     |
+| PATCH  | `/admin/profile`        | JSON `{ name, bio }`                  |
+| POST   | `/admin/profile/avatar` | `multipart/form-data`, campo `avatar` |
+| DELETE | `/admin/profile/avatar` | —                                     |
 
 - Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts).
 - Adicionar `@fastify/multipart` com limite 5 MiB.
@@ -205,9 +205,9 @@ Incluir `avatarUrl` no payload para o header — ou buscar perfil no layout. **R
 
 Criar em [`apps/admin/src/app/api/admin/profile/`](apps/admin/src/app/api/admin/profile/):
 
-| Handler | Proxy para API |
-|---------|----------------|
-| `route.ts` GET/PATCH | `/admin/profile` |
+| Handler                       | Proxy para API          |
+| ----------------------------- | ----------------------- |
+| `route.ts` GET/PATCH          | `/admin/profile`        |
 | `avatar/route.ts` POST/DELETE | `/admin/profile/avatar` |
 
 - Novo helper [`admin-fetch-multipart.ts`](apps/admin/src/lib/api/admin-fetch-multipart.ts): repassa `FormData` sem `Content-Type` manual (boundary automático).
@@ -218,19 +218,19 @@ Criar em [`apps/admin/src/app/api/admin/profile/`](apps/admin/src/app/api/admin/
 
 ## 4. UI — tela `/perfil`
 
-### Rota — [`apps/admin/src/app/(dashboard)/perfil/page.tsx`](apps/admin/src/app/(dashboard)/perfil/page.tsx)
+### Rota — [`apps/admin/src/app/(dashboard)/perfil/page.tsx`](<apps/admin/src/app/(dashboard)/perfil/page.tsx>)
 
 - Server Component: carrega perfil via `getOperatorProfile()`.
 - `AdminPageHeader` com breadcrumbs: Painel → Meu perfil.
 
 ### Componentes — [`apps/admin/src/components/profile/`](apps/admin/src/components/profile/)
 
-| Componente | Função |
-|------------|--------|
-| `OperatorProfilePage.tsx` | Layout 2 colunas inspirado no php-app |
-| `ProfileAvatarPanel.tsx` | Preview circular, file input, botões "Recortar e aplicar" / "Remover foto", status `aria-live` |
-| `ProfileAvatarCropDialog.tsx` | Modal com `react-easy-crop`; exporta canvas 512×512 JPEG 0.92 |
-| `ProfileForm.tsx` | `react-hook-form` + Zod: name, bio; blocos "Identificação", "Sobre", "Conta" (role/status readonly) |
+| Componente                    | Função                                                                                              |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `OperatorProfilePage.tsx`     | Layout 2 colunas inspirado no php-app                                                               |
+| `ProfileAvatarPanel.tsx`      | Preview circular, file input, botões "Recortar e aplicar" / "Remover foto", status `aria-live`      |
+| `ProfileAvatarCropDialog.tsx` | Modal com `react-easy-crop`; exporta canvas 512×512 JPEG 0.92                                       |
+| `ProfileForm.tsx`             | `react-hook-form` + Zod: name, bio; blocos "Identificação", "Sobre", "Conta" (role/status readonly) |
 
 ### Layout visual (espelhando php-app, adaptado ao Tailwind do admin)
 
@@ -270,30 +270,30 @@ Atualizar [`AdminUserMenu.tsx`](apps/admin/src/components/admin/AdminUserMenu.ts
 ```
 
 - Exibir foto real no pill quando `avatarUrl` for URL gerenciada (`isManagedUrl` replicado client-side via prefixo/base ou flag `isManagedAvatar` no DTO).
-- Propagar `avatarUrl` pelo shell: [`layout.tsx`](apps/admin/src/app/(dashboard)/layout.tsx) → `AdminShell` → `AdminHeader` → `AdminUserMenu`.
+- Propagar `avatarUrl` pelo shell: [`layout.tsx`](<apps/admin/src/app/(dashboard)/layout.tsx>) → `AdminShell` → `AdminHeader` → `AdminUserMenu`.
 
 ---
 
 ## 6. Dependências npm
 
-| Pacote | Onde |
-|--------|------|
-| `@fastify/multipart` | `apps/api` |
-| `@fastify/static` | `apps/api` (dev filesystem) |
-| `@aws-sdk/client-s3` | `packages/infrastructure` |
-| `@google-cloud/storage` | `packages/infrastructure` |
-| `react-easy-crop` | `apps/admin` |
+| Pacote                  | Onde                        |
+| ----------------------- | --------------------------- |
+| `@fastify/multipart`    | `apps/api`                  |
+| `@fastify/static`       | `apps/api` (dev filesystem) |
+| `@aws-sdk/client-s3`    | `packages/infrastructure`   |
+| `@google-cloud/storage` | `packages/infrastructure`   |
+| `react-easy-crop`       | `apps/admin`                |
 
 ---
 
 ## 7. Testes
 
-| Alvo | Tipo |
-|------|------|
-| `validateAvatarImage` | unit (MIME, tamanho) |
-| `FilesystemObjectStorage.isManagedUrl` / `extractKeyFromUrl` | unit |
-| `createObjectStorage` factory | unit (driver inválido, defaults) |
-| `UpdateOperatorProfile` | unit com repo mock |
+| Alvo                                                         | Tipo                             |
+| ------------------------------------------------------------ | -------------------------------- |
+| `validateAvatarImage`                                        | unit (MIME, tamanho)             |
+| `FilesystemObjectStorage.isManagedUrl` / `extractKeyFromUrl` | unit                             |
+| `createObjectStorage` factory                                | unit (driver inválido, defaults) |
+| `UpdateOperatorProfile`                                      | unit com repo mock               |
 
 ---
 

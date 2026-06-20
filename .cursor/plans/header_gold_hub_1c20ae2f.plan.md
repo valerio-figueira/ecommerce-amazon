@@ -1,15 +1,15 @@
 ---
 name: Header Gold Hub
-overview: "Refatorar o header da vitrine para ancoragem fixa (Logo + hub Categorias + links editoriais + ações), removendo links diretos por categoria raiz. Desktop: flyout 2 colunas; mobile: drawer com accordion — reutilizando a árvore de GET /categories já existente."
+overview: 'Refatorar o header da vitrine para ancoragem fixa (Logo + hub Categorias + links editoriais + ações), removendo links diretos por categoria raiz. Desktop: flyout 2 colunas; mobile: drawer com accordion — reutilizando a árvore de GET /categories já existente.'
 todos:
   - id: flyout-desktop
-    content: "Criar CategoryCatalogFlyout (2 colunas: raízes + subcategorias dinâmicas) e estilos CSS"
+    content: 'Criar CategoryCatalogFlyout (2 colunas: raízes + subcategorias dinâmicas) e estilos CSS'
     status: completed
   - id: drawer-mobile
     content: Refatorar MobileNavDrawer → CategoryCatalogDrawer (accordion só catálogo, mobile)
     status: completed
   - id: header-layout
-    content: "Reestruturar SiteHeader: logo esquerda, hub Categorias, links editoriais fixos, remover CategoryMegaMenu"
+    content: 'Reestruturar SiteHeader: logo esquerda, hub Categorias, links editoriais fixos, remover CategoryMegaMenu'
     status: completed
   - id: cleanup-docs
     content: Remover CategoryMegaMenu + CSS obsoleto; atualizar docs/categories-hierarchy.md; build web
@@ -47,10 +47,10 @@ flowchart LR
 
 ### Barra fixa (nunca cresce com o catálogo)
 
-| Zona | Elementos fixos |
-|------|-----------------|
+| Zona     | Elementos fixos                                                            |
+| -------- | -------------------------------------------------------------------------- |
 | Esquerda | Logo **VITRINE** (`/`) → botão **Categorias** → Artigos \| Cupons \| Sobre |
-| Direita | Ícone busca + ícone favoritos (wishlist) |
+| Direita  | Ícone busca + ícone favoritos (wishlist)                                   |
 
 Remover da barra: link "Catálogo", `navCategories.map(CategoryMegaMenu)`.
 
@@ -113,11 +113,11 @@ Decisões de layout:
 
 ## Fase 4 — CSS e limpeza
 
-| Ação | Arquivo |
-|------|---------|
+| Ação                               | Arquivo                                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Adicionar estilos flyout 2 colunas | [`globals.css`](apps/web/src/app/globals.css) — `.category-catalog-flyout__left`, `__right`, `__root-item--active` |
-| Remover estilos obsoletos | `.category-mega-menu__*` (substituídos pelo flyout) |
-| Deletar componente morto | `CategoryMegaMenu.tsx` |
+| Remover estilos obsoletos          | `.category-mega-menu__*` (substituídos pelo flyout)                                                                |
+| Deletar componente morto           | `CategoryMegaMenu.tsx`                                                                                             |
 
 Manter drawer CSS; ajustar nomes se renomear componente.
 
@@ -143,11 +143,11 @@ Manter drawer CSS; ajustar nomes se renomear componente.
 
 ## Arquivos tocados (resumo)
 
-| Arquivo | Ação |
-|---------|------|
-| `SiteHeader.tsx` | Reestruturar layout Gold |
-| `CategoryCatalogFlyout.tsx` | **Criar** — flyout 2 colunas desktop |
-| `CategoryCatalogDrawer.tsx` | **Criar/refatorar** a partir de `MobileNavDrawer` |
-| `CategoryMegaMenu.tsx` | **Remover** |
-| `globals.css` | Estilos flyout; limpar mega-menu |
-| `docs/categories-hierarchy.md` | Documentar novo padrão |
+| Arquivo                        | Ação                                              |
+| ------------------------------ | ------------------------------------------------- |
+| `SiteHeader.tsx`               | Reestruturar layout Gold                          |
+| `CategoryCatalogFlyout.tsx`    | **Criar** — flyout 2 colunas desktop              |
+| `CategoryCatalogDrawer.tsx`    | **Criar/refatorar** a partir de `MobileNavDrawer` |
+| `CategoryMegaMenu.tsx`         | **Remover**                                       |
+| `globals.css`                  | Estilos flyout; limpar mega-menu                  |
+| `docs/categories-hierarchy.md` | Documentar novo padrão                            |

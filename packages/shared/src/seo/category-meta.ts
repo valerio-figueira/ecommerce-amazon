@@ -8,18 +8,13 @@ export function buildCategorySeoTitle(label: string): string {
 export function buildCategorySeoDescription(label: string, parentLabel?: string | null): string {
   const trimmed = label.trim();
   const context =
-    parentLabel?.trim() && parentLabel.trim() !== trimmed
-      ? ` em ${parentLabel.trim()}`
-      : '';
+    parentLabel?.trim() && parentLabel.trim() !== trimmed ? ` em ${parentLabel.trim()}` : '';
 
   return `Compare produtos curados em ${trimmed}${context}. Histórico de preços, análises editoriais e ofertas monitoradas na Amazon, Shopee e Mercado Livre.`;
 }
 
 /** Editorial override: DB value when set, otherwise automated template. */
-export function resolveCategorySeoTitle(
-  label: string,
-  editorialOverride?: string | null,
-): string {
+export function resolveCategorySeoTitle(label: string, editorialOverride?: string | null): string {
   const trimmed = editorialOverride?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {
     return trimmed;

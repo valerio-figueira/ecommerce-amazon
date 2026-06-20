@@ -23,11 +23,7 @@ import { contentClusters } from './content-clusters.js';
 
 export { articleCategories, categories, contentClusters };
 
-export const marketplaceEnum = pgEnum('marketplace', [
-  'amazon_br',
-  'shopee_br',
-  'mercadolivre_br',
-]);
+export const marketplaceEnum = pgEnum('marketplace', ['amazon_br', 'shopee_br', 'mercadolivre_br']);
 export const availabilityEnum = pgEnum('availability', ['in_stock', 'out_of_stock', 'unknown']);
 export const alertStatusEnum = pgEnum('alert_status', [
   'pending',
@@ -277,7 +273,9 @@ export const collectionProducts = pgTable(
       .references(() => products.id, { onDelete: 'cascade' }),
     sortOrder: integer('sort_order').notNull().default(0),
   },
-  (table) => [unique('collection_products_collection_product_idx').on(table.collectionId, table.productId)],
+  (table) => [
+    unique('collection_products_collection_product_idx').on(table.collectionId, table.productId),
+  ],
 );
 
 export const productComparisons = pgTable(

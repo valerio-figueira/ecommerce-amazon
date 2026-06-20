@@ -1,4 +1,7 @@
-import type { EngagementEventTypeValue, EngagementPlacementValue } from '@ecommerce-amazon/shared/analytics';
+import type {
+  EngagementEventTypeValue,
+  EngagementPlacementValue,
+} from '@ecommerce-amazon/shared/analytics';
 
 import { getApiUrl } from '@/lib/api/client';
 

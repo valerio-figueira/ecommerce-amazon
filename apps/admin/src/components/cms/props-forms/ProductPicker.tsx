@@ -38,8 +38,7 @@ export function ProductPicker({
     if (!query) return products;
     return products.filter(
       (product) =>
-        product.title.toLowerCase().includes(query) ||
-        product.slug.toLowerCase().includes(query),
+        product.title.toLowerCase().includes(query) || product.slug.toLowerCase().includes(query),
     );
   }, [filter, products]);
 
@@ -52,10 +51,7 @@ export function ProductPicker({
         placeholder="Buscar por nome ou slug…"
         className="text-sm"
       />
-      <Select
-        {...(value !== '' ? { value } : {})}
-        onValueChange={onChange}
-      >
+      <Select {...(value !== '' ? { value } : {})} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

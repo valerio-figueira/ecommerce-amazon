@@ -74,14 +74,26 @@ describe('GetWeeklyTrends', () => {
 
     const analyticsRepository = {
       getTopClickedProducts: vi.fn().mockResolvedValue([
-        { productId: PRODUCT_A_ID, slug: 'prod-a', title: 'A', marketplace: 'amazon_br', clickCount: 10 },
-        { productId: PRODUCT_B_ID, slug: 'prod-b', title: 'B', marketplace: 'amazon_br', clickCount: 5 },
+        {
+          productId: PRODUCT_A_ID,
+          slug: 'prod-a',
+          title: 'A',
+          marketplace: 'amazon_br',
+          clickCount: 10,
+        },
+        {
+          productId: PRODUCT_B_ID,
+          slug: 'prod-b',
+          title: 'B',
+          marketplace: 'amazon_br',
+          clickCount: 5,
+        },
       ]),
     };
     const engagementAnalyticsRepository = {
-      getTopArticlesByEvent: vi.fn().mockResolvedValue([
-        { articleId: ARTICLE_A_ID, slug: 'art-a', title: 'Art A', count: 8 },
-      ]),
+      getTopArticlesByEvent: vi
+        .fn()
+        .mockResolvedValue([{ articleId: ARTICLE_A_ID, slug: 'art-a', title: 'Art A', count: 8 }]),
     };
     const productRepository = {
       findByIds: vi.fn().mockResolvedValue([productB, productA]),
@@ -123,8 +135,20 @@ describe('GetWeeklyTrends', () => {
     const useCase = new GetWeeklyTrends(
       {
         getTopClickedProducts: vi.fn().mockResolvedValue([
-          { productId: PRODUCT_B_ID, slug: 'hidden-prod', title: 'Hidden', marketplace: 'amazon_br', clickCount: 20 },
-          { productId: PRODUCT_A_ID, slug: 'visible-prod', title: 'Visible', marketplace: 'amazon_br', clickCount: 5 },
+          {
+            productId: PRODUCT_B_ID,
+            slug: 'hidden-prod',
+            title: 'Hidden',
+            marketplace: 'amazon_br',
+            clickCount: 20,
+          },
+          {
+            productId: PRODUCT_A_ID,
+            slug: 'visible-prod',
+            title: 'Visible',
+            marketplace: 'amazon_br',
+            clickCount: 5,
+          },
         ]),
       },
       { getTopArticlesByEvent: vi.fn().mockResolvedValue([]) },
@@ -154,9 +178,11 @@ describe('GetWeeklyTrends', () => {
     const useCase = new GetWeeklyTrends(
       { getTopClickedProducts: vi.fn().mockResolvedValue([]) },
       {
-        getTopArticlesByEvent: vi.fn().mockResolvedValue([
-          { articleId: ARTICLE_A_ID, slug: 'draft-art', title: 'Draft', count: 4 },
-        ]),
+        getTopArticlesByEvent: vi
+          .fn()
+          .mockResolvedValue([
+            { articleId: ARTICLE_A_ID, slug: 'draft-art', title: 'Draft', count: 4 },
+          ]),
       },
       { findByIds: vi.fn().mockResolvedValue([]) },
       {

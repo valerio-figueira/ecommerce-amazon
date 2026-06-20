@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { getBffErrorMessage, getBffErrorStatus, resolveBffStatus } from '@/lib/api/bff-error-status';
+import {
+  getBffErrorMessage,
+  getBffErrorStatus,
+  resolveBffStatus,
+} from '@/lib/api/bff-error-status';
 import { createAffiliateAccount, listAffiliateAccounts } from '@/lib/api/affiliate-accounts';
 import { createAffiliateAccountBodySchema } from '@ecommerce-amazon/shared/admin';
 

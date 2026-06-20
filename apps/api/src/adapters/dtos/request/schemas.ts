@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 import { BlockType } from '@ecommerce-amazon/domain';
-import { clickPlacementSchema, recordEngagementEventSchema } from '@ecommerce-amazon/shared/analytics';
+import {
+  clickPlacementSchema,
+  recordEngagementEventSchema,
+} from '@ecommerce-amazon/shared/analytics';
 
 export const ListProductsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),

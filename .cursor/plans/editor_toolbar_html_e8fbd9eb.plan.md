@@ -57,7 +57,7 @@ Em `ArticleEditor.tsx`, configurar `StarterKit` para alinhar ao contrato editori
 StarterKit.configure({
   heading: { levels: [2, 3] }, // só H2/H3 no toolbar (SEO)
   // manter bulletList, orderedList, bold, italic, strike (default)
-})
+});
 ```
 
 Manter `Link`, `Placeholder`, `ProductEmbedExtension` inalterados.
@@ -70,16 +70,16 @@ Manter `Link`, `Placeholder`, `ProductEmbedExtension` inalterados.
 
 Props: `editor: Editor | null`, `onInsertProduct: () => void`, `disabled?: boolean` (true no modo HTML).
 
-| Botão | Ícone (lucide-react) | Comando TipTap | Estado ativo |
-|-------|---------------------|----------------|--------------|
-| H2 | `Heading2` | `toggleHeading({ level: 2 })` | `editor.isActive('heading', { level: 2 })` |
-| H3 | `Heading3` | `toggleHeading({ level: 3 })` | `editor.isActive('heading', { level: 3 })` |
-| Negrito | `Bold` | `toggleBold()` | `editor.isActive('bold')` |
-| Itálico | `Italic` | `toggleItalic()` | `editor.isActive('italic')` |
-| Riscado | `Strikethrough` | `toggleStrike()` | `editor.isActive('strike')` |
-| Lista marcada | `List` | `toggleBulletList()` | `editor.isActive('bulletList')` |
-| Lista numerada | `ListOrdered` | `toggleOrderedList()` | `editor.isActive('orderedList')` |
-| Inserir produto | `Package` | callback `onInsertProduct` | — |
+| Botão           | Ícone (lucide-react) | Comando TipTap                | Estado ativo                               |
+| --------------- | -------------------- | ----------------------------- | ------------------------------------------ |
+| H2              | `Heading2`           | `toggleHeading({ level: 2 })` | `editor.isActive('heading', { level: 2 })` |
+| H3              | `Heading3`           | `toggleHeading({ level: 3 })` | `editor.isActive('heading', { level: 3 })` |
+| Negrito         | `Bold`               | `toggleBold()`                | `editor.isActive('bold')`                  |
+| Itálico         | `Italic`             | `toggleItalic()`              | `editor.isActive('italic')`                |
+| Riscado         | `Strikethrough`      | `toggleStrike()`              | `editor.isActive('strike')`                |
+| Lista marcada   | `List`               | `toggleBulletList()`          | `editor.isActive('bulletList')`            |
+| Lista numerada  | `ListOrdered`        | `toggleOrderedList()`         | `editor.isActive('orderedList')`           |
+| Inserir produto | `Package`            | callback `onInsertProduct`    | —                                          |
 
 **Estilo dos botões (Tailwind):**
 
@@ -139,10 +139,10 @@ Ao clicar "Visual":
 
 ### Durante edição
 
-| Modo | Fluxo |
-|------|--------|
+| Modo   | Fluxo                                                                             |
+| ------ | --------------------------------------------------------------------------------- |
 | Visual | `onUpdate` → `onChange(serializeArticleBody(getHTML()))` + `/produto` (como hoje) |
-| HTML | `textarea onChange` → `setHtmlDraft` + `onChange(next)` imediato |
+| HTML   | `textarea onChange` → `setHtmlDraft` + `onChange(next)` imediato                  |
 
 ### Prop `value` externa (ex.: colar JSON da LLM)
 
@@ -154,7 +154,8 @@ Ao clicar "Visual":
 Classes conforme spec:
 
 ```tsx
-className="min-h-[320px] w-full resize-y rounded-b-lg border-0 bg-gray-50 px-3 py-3 font-mono text-sm leading-relaxed text-neutral-800 whitespace-pre-wrap focus:outline-none focus:ring-2 focus:ring-[var(--admin-focus-ring)]"
+className =
+  'min-h-[320px] w-full resize-y rounded-b-lg border-0 bg-gray-50 px-3 py-3 font-mono text-sm leading-relaxed text-neutral-800 whitespace-pre-wrap focus:outline-none focus:ring-2 focus:ring-[var(--admin-focus-ring)]';
 ```
 
 - Toolbar **desabilitada** (`disabled`, `opacity-50`, `pointer-events-none`) no modo HTML
@@ -166,12 +167,12 @@ className="min-h-[320px] w-full resize-y rounded-b-lg border-0 bg-gray-50 px-3 p
 
 Responsabilidades finais:
 
-| Peça | Função |
-|------|--------|
-| `ArticleEditor.tsx` | Orquestra mode, editor TipTap, sync, modal produto |
-| `ArticleEditorToolbar.tsx` | Botões de formatação + produto |
-| `ArticleEditorModeTabs.tsx` | Toggle Visual/HTML |
-| `ProductEmbedExtension.ts` | Sem mudança de contrato |
+| Peça                        | Função                                             |
+| --------------------------- | -------------------------------------------------- |
+| `ArticleEditor.tsx`         | Orquestra mode, editor TipTap, sync, modal produto |
+| `ArticleEditorToolbar.tsx`  | Botões de formatação + produto                     |
+| `ArticleEditorModeTabs.tsx` | Toggle Visual/HTML                                 |
+| `ProductEmbedExtension.ts`  | Sem mudança de contrato                            |
 
 Remover o bloco solto com `<Button>Inserir produto</Button>` abaixo do editor — integrar na toolbar.
 

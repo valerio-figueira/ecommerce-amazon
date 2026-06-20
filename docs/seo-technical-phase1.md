@@ -2,11 +2,11 @@
 
 Metadados globais, sitemap paginado, robots, JSON-LD site-wide, crawl budget e Core Web Vitals na vitrine.
 
-| Referência | Plano |
-|------------|-------|
-| Especificação | [`.cursor/plans/full_platform_seo_audit_f09d3fa5.plan.md`](../.cursor/plans/full_platform_seo_audit_f09d3fa5.plan.md) |
-| Links afiliados | [go-redirect-seo.md](./go-redirect-seo.md) |
-| Marca / URLs | [brand-config.md](./brand-config.md) |
+| Referência      | Plano                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Especificação   | [`.cursor/plans/full_platform_seo_audit_f09d3fa5.plan.md`](../.cursor/plans/full_platform_seo_audit_f09d3fa5.plan.md) |
+| Links afiliados | [go-redirect-seo.md](./go-redirect-seo.md)                                                                            |
+| Marca / URLs    | [brand-config.md](./brand-config.md)                                                                                  |
 
 ## Escopo entregue
 
@@ -38,12 +38,12 @@ Metadados globais, sitemap paginado, robots, JSON-LD site-wide, crawl budget e C
 
 ### JSON-LD
 
-| Página | Schema |
-|--------|--------|
-| `/` | `Organization` + `WebSite` (Sitelinks Searchbox → `/artigos?q=`) |
-| `/categorias/[slug]` | `BreadcrumbList`, `CollectionPage`, `ItemList` (top 10 produtos) |
-| `/artigos/[slug]` | `Article` enriquecido (`dateModified`, `publisher`, `url`, cluster `ItemList`) |
-| `/produtos/[slug]` | `Product` (existente) |
+| Página               | Schema                                                                         |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `/`                  | `Organization` + `WebSite` (Sitelinks Searchbox → `/artigos?q=`)               |
+| `/categorias/[slug]` | `BreadcrumbList`, `CollectionPage`, `ItemList` (top 10 produtos)               |
+| `/artigos/[slug]`    | `Article` enriquecido (`dateModified`, `publisher`, `url`, cluster `ItemList`) |
+| `/produtos/[slug]`   | `Product` (existente)                                                          |
 
 Builders: [`packages/shared/src/seo/site-json-ld.ts`](../packages/shared/src/seo/site-json-ld.ts)
 
@@ -68,11 +68,11 @@ apps/api/src/adapters/http/routes/index.ts  → /seo/sitemap-*
 
 ## Env vars
 
-| Variável | Uso |
-|----------|-----|
+| Variável                                  | Uso                                     |
+| ----------------------------------------- | --------------------------------------- |
 | `WEB_PUBLIC_URL` / `NEXT_PUBLIC_SITE_URL` | `metadataBase`, canonical, sitemap URLs |
-| `NEXT_PUBLIC_API_URL` | Web → API para sitemap entries |
-| `SITE_NAME` | Title template e JSON-LD Organization |
+| `NEXT_PUBLIC_API_URL`                     | Web → API para sitemap entries          |
+| `SITE_NAME`                               | Title template e JSON-LD Organization   |
 
 ## Como testar
 

@@ -1,7 +1,4 @@
-import {
-  type ArticleCategoryRepository,
-  type ContentRepository,
-} from '@ecommerce-amazon/domain';
+import { type ArticleCategoryRepository, type ContentRepository } from '@ecommerce-amazon/domain';
 
 export class ListPublishedArticlesByCategory {
   constructor(

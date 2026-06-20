@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 
-import { ArticleDetailMain, generateArticleDetailMetadata } from '@/components/articles/ArticleDetailMain';
+import {
+  ArticleDetailMain,
+  generateArticleDetailMetadata,
+} from '@/components/articles/ArticleDetailMain';
 import { ArticleDetailHeroSkeleton } from '@/components/loading/ArticleDetailHeroSkeleton';
 import { LoadingAnnouncer } from '@/components/loading/LoadingAnnouncer';
 

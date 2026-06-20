@@ -32,9 +32,7 @@ function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.
         alt=""
         fill
         sizes={
-          tile.size === 'large'
-            ? '(max-width: 768px) 100vw, 50vw'
-            : '(max-width: 768px) 50vw, 25vw'
+          tile.size === 'large' ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 50vw, 25vw'
         }
         className={cn(
           'object-cover transition-transform duration-500 ease-out',
@@ -78,10 +76,7 @@ function CategoryBentoTileCard({ tile }: CategoryBentoTileCardProps): React.JSX.
   return <article className={cardClassName}>{content}</article>;
 }
 
-export function CategoryBentoGrid({
-  title,
-  tiles,
-}: CategoryBentoGridPropsView): React.JSX.Element {
+export function CategoryBentoGrid({ title, tiles }: CategoryBentoGridPropsView): React.JSX.Element {
   return (
     <section>
       <h2 className="mb-5 text-2xl font-bold text-neutral-900 md:mb-6 md:text-3xl">{title}</h2>

@@ -26,10 +26,7 @@ export default async function ComparacoesPage(): Promise<React.JSX.Element> {
     <>
       <AdminPageHeader
         title="Comparações"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Comparações' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Comparações' }]}
       />
       <AdminPageCard transparent>
         {apiUnavailable ? (

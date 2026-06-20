@@ -32,9 +32,7 @@ export class UpdateAffiliateAccount {
     }
 
     const nextStatus =
-      input.status !== undefined
-        ? parseAffiliateAccountStatus(input.status)
-        : account.status;
+      input.status !== undefined ? parseAffiliateAccountStatus(input.status) : account.status;
 
     if (
       nextStatus === AffiliateAccountStatus.ACTIVE &&

@@ -1,4 +1,8 @@
-import { Marketplace, type AffiliateLinkBuilder, type AffiliateTrackingParams } from '@ecommerce-amazon/domain';
+import {
+  Marketplace,
+  type AffiliateLinkBuilder,
+  type AffiliateTrackingParams,
+} from '@ecommerce-amazon/domain';
 
 export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
   constructor(

@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 
-import {
-  AffiliateGoLink,
-  type AffiliateClickOrigin,
-} from '@/components/product/AffiliateGoLink';
+import { AffiliateGoLink, type AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
 import { marketplaceLabel } from '@/lib/format';
@@ -46,11 +43,7 @@ export function ProductCardActions({
   const detailHref = `/produtos/${product.slug}`;
   const editorialStackGap =
     'flex shrink-0 flex-col items-stretch justify-center gap-2 self-center sm:gap-2.5';
-  const stackGap = editorial
-    ? editorialStackGap
-    : compact
-      ? 'space-y-1'
-      : 'space-y-2';
+  const stackGap = editorial ? editorialStackGap : compact ? 'space-y-1' : 'space-y-2';
   const editorialButtonClass = 'px-4 py-2.5 text-sm';
   const buttonClass = editorial
     ? editorialButtonClass

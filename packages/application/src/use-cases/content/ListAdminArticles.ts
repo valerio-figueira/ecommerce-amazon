@@ -1,7 +1,4 @@
-import {
-  ArticleStatus,
-  type ContentRepository,
-} from '@ecommerce-amazon/domain';
+import { ArticleStatus, type ContentRepository } from '@ecommerce-amazon/domain';
 
 export class ListAdminArticles {
   constructor(private readonly contentRepository: ContentRepository) {}

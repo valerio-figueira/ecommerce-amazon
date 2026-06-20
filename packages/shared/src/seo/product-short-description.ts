@@ -1,5 +1,8 @@
 export function buildShortDescriptionFromPros(pros: string[]): string | undefined {
-  const highlights = pros.map((item) => item.trim()).filter((item) => item.length > 0).slice(0, 3);
+  const highlights = pros
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .slice(0, 3);
   if (highlights.length === 0) {
     return undefined;
   }

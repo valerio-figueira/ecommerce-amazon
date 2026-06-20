@@ -1,7 +1,4 @@
-import {
-  PriceComplianceService,
-  type ProductRepository,
-} from '@ecommerce-amazon/domain';
+import { PriceComplianceService, type ProductRepository } from '@ecommerce-amazon/domain';
 
 export class GetProductBySlug {
   constructor(

@@ -65,7 +65,8 @@ export class UpdateProduct {
 
     await this.productRepository.save(product);
 
-    const priceBecameVisible = input.shouldShowPrice && (wasStale || previousAmount !== input.price);
+    const priceBecameVisible =
+      input.shouldShowPrice && (wasStale || previousAmount !== input.price);
     if (input.price > 0 && input.shouldShowPrice && priceBecameVisible) {
       await this.snapshotRepository.insertBatch([
         PriceSnapshot.create({

@@ -71,12 +71,17 @@ export function ProductGridBlock({
   queryParams.set('sort', props.sort);
   queryParams.set('visibleOnly', 'true');
 
-  const isDefaultQuery =
-    activeCategory === (props.categorySlug ?? undefined) &&
-    !categorySlug;
+  const isDefaultQuery = activeCategory === (props.categorySlug ?? undefined) && !categorySlug;
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['products', activeCategory, props.sort, props.pageSize, props.marketplace, 'home-visible'],
+    queryKey: [
+      'products',
+      activeCategory,
+      props.sort,
+      props.pageSize,
+      props.marketplace,
+      'home-visible',
+    ],
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
     initialData: isDefaultQuery ? initialProducts : undefined,
     staleTime: isDefaultQuery && initialProducts ? 60_000 : 0,

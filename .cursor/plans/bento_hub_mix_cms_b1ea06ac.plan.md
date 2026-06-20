@@ -1,6 +1,6 @@
 ---
 name: Bento Hub Mix CMS
-overview: "Implementar o bloco CMS `BENTO_HUB_MIX` de ponta a ponta: enum + migration, schema Zod com 3 slots heterogêneos, hidratação server-side no BFF, componente RSC na vitrine, formulário admin com pickers e preview ao vivo, seed e documentação."
+overview: 'Implementar o bloco CMS `BENTO_HUB_MIX` de ponta a ponta: enum + migration, schema Zod com 3 slots heterogêneos, hidratação server-side no BFF, componente RSC na vitrine, formulário admin com pickers e preview ao vivo, seed e documentação.'
 todos:
   - id: schema-enum-migration
     content: Adicionar BlockType.BENTO_HUB_MIX, migration 0010, bentoHubMixPropsSchema + renderedBentoHubMix DTO em block-schemas.ts
@@ -71,6 +71,7 @@ slot3: discriminatedUnion:
 ```
 
 **Validações Zod extras:**
+
 - `entityId` obrigatório em slot1
 - `productIds` máximo 3 em slot3
 - `coverImageUrl` obrigatório quando `contentType === 'article'` (artigos não têm cover no DB — ver [`content_articles`](packages/infrastructure/src/persistence/drizzle/schema/index.ts))
@@ -99,21 +100,21 @@ Atualizar `stripRenderedData` em [`GetPublishedPageLayout.ts`](packages/applicat
 
 ## 2. Domain + persistência
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`packages/domain/src/enums/cms.ts`](packages/domain/src/enums/cms.ts) | `BENTO_HUB_MIX = 'bento_hub_mix'` |
-| [`packages/infrastructure/.../schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) | Adicionar valor ao `blockTypeEnum` |
-| `migrations/0010_bento_hub_mix.sql` | `ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'bento_hub_mix';` (padrão de [`0003_dynamic_product_grid.sql`](packages/infrastructure/src/persistence/drizzle/migrations/0003_dynamic_product_grid.sql)) |
+| Arquivo                                                                                                          | Mudança                                                                                                                                                                                                    |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`packages/domain/src/enums/cms.ts`](packages/domain/src/enums/cms.ts)                                           | `BENTO_HUB_MIX = 'bento_hub_mix'`                                                                                                                                                                          |
+| [`packages/infrastructure/.../schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) | Adicionar valor ao `blockTypeEnum`                                                                                                                                                                         |
+| `migrations/0010_bento_hub_mix.sql`                                                                              | `ALTER TYPE "block_type" ADD VALUE IF NOT EXISTS 'bento_hub_mix';` (padrão de [`0003_dynamic_product_grid.sql`](packages/infrastructure/src/persistence/drizzle/migrations/0003_dynamic_product_grid.sql)) |
 
 ### Repositório de artigos (pré-requisito admin + hydration)
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`packages/domain/src/repositories/ContentRepository.ts`](packages/domain/src/repositories/ContentRepository.ts) | `findArticleById(id)`, `listPublishedSummaries(): { id, slug, title }[]` |
-| [`drizzle-content.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts) | Implementar métodos (filtrar `status = 'published'`) |
-| Novo use case `ListAdminArticles` | Lista resumida para picker |
-| [`apps/api/.../routes`](apps/api/src/adapters/http/routes/index.ts) | `GET /admin/articles` → `{ items: [{ id, slug, title }] }` |
-| DI container | Registrar use case |
+| Arquivo                                                                                                               | Mudança                                                                  |
+| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`packages/domain/src/repositories/ContentRepository.ts`](packages/domain/src/repositories/ContentRepository.ts)      | `findArticleById(id)`, `listPublishedSummaries(): { id, slug, title }[]` |
+| [`drizzle-content.repository.ts`](packages/infrastructure/src/persistence/repositories/drizzle-content.repository.ts) | Implementar métodos (filtrar `status = 'published'`)                     |
+| Novo use case `ListAdminArticles`                                                                                     | Lista resumida para picker                                               |
+| [`apps/api/.../routes`](apps/api/src/adapters/http/routes/index.ts)                                                   | `GET /admin/articles` → `{ items: [{ id, slug, title }] }`               |
+| DI container                                                                                                          | Registrar use case                                                       |
 
 Coleções e produtos já têm `findById` / `findByIds` — reutilizar.
 
@@ -127,21 +128,21 @@ Adicionar branch `BlockType.BENTO_HUB_MIX` em `hydrateBlock()` com **fetch paral
 
 ```typescript
 const [slot1, slot2, slot3] = await Promise.all([
-  resolveSlot1(props.slot1),   // collection.findById | article.findById
-  resolveSlot2(props.slot2),   // product.findById → toProductDeliveryItem
-  resolveSlot3(props.slot3),   // ListProducts(limit:3) | findByIds
+  resolveSlot1(props.slot1), // collection.findById | article.findById
+  resolveSlot2(props.slot2), // product.findById → toProductDeliveryItem
+  resolveSlot3(props.slot3), // ListProducts(limit:3) | findByIds
 ]);
 ```
 
 **Regras de resolução:**
 
-| Slot | Fonte | Link gerado | Fallback |
-|------|-------|-------------|----------|
-| 1 collection | `CuratedCollectionRepository.findById` | `/colecoes/{slug}` | `null` → skeleton na web |
-| 1 article | `ContentRepository.findArticleById` | `/artigos/{slug}` | idem |
-| 2 product | `ProductRepository.findById` | `/produtos/{slug}` | idem |
-| 3 category | `ListProducts({ category, pageSize: 3, sort: editorial_score, visibleOnly: true })` | header → `/categorias/{slug}` | lista vazia → skeleton |
-| 3 products | `findByIds` preservando ordem do array | cada item → `/produtos/{slug}` | omitir IDs inválidos |
+| Slot         | Fonte                                                                               | Link gerado                    | Fallback                 |
+| ------------ | ----------------------------------------------------------------------------------- | ------------------------------ | ------------------------ |
+| 1 collection | `CuratedCollectionRepository.findById`                                              | `/colecoes/{slug}`             | `null` → skeleton na web |
+| 1 article    | `ContentRepository.findArticleById`                                                 | `/artigos/{slug}`              | idem                     |
+| 2 product    | `ProductRepository.findById`                                                        | `/produtos/{slug}`             | idem                     |
+| 3 category   | `ListProducts({ category, pageSize: 3, sort: editorial_score, visibleOnly: true })` | header → `/categorias/{slug}`  | lista vazia → skeleton   |
+| 3 products   | `findByIds` preservando ordem do array                                              | cada item → `/produtos/{slug}` | omitir IDs inválidos     |
 
 Filtrar produtos com `shouldShowPrice` antes de mapear (mesma regra do flash deals). Slot 2 mantém produto mesmo stale (exibe CTA "Consultar preço", sem badge de desconto).
 
@@ -155,11 +156,11 @@ Injetar `GetCuratedCollection` não é necessário — `findById` na coleção b
 
 ### Arquivos novos
 
-| Arquivo | Responsabilidade |
-|---------|------------------|
+| Arquivo                                                                                                      | Responsabilidade                                            |
+| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | [`apps/web/src/components/blocks/BentoHubMixBlock.tsx`](apps/web/src/components/blocks/BentoHubMixBlock.tsx) | RSC — parse props, lê `renderedBentoHubMix`, delega ao grid |
-| `apps/web/src/components/blocks/BentoHubMixGrid.tsx` | Layout + tiles (sem `'use client'`) |
-| `apps/web/src/components/blocks/BentoHubMixSkeleton.tsx` | Placeholder animado por slot ausente |
+| `apps/web/src/components/blocks/BentoHubMixGrid.tsx`                                                         | Layout + tiles (sem `'use client'`)                         |
+| `apps/web/src/components/blocks/BentoHubMixSkeleton.tsx`                                                     | Placeholder animado por slot ausente                        |
 
 ### Layout (conforme spec)
 
@@ -170,6 +171,7 @@ Slots 2/3: 1×1 cada
 ```
 
 **Estética** (evoluir [`CategoryBentoGrid.tsx`](apps/web/src/components/blocks/CategoryBentoGrid.tsx)):
+
 - `rounded-3xl`, `border border-gray-100`, `shadow-sm`
 - Imagem `object-cover` + gradiente overlay (`from-black/50`)
 - Hover: `scale-[1.02]` no card + `scale-105` na imagem
@@ -199,24 +201,25 @@ Registrar em [`BlockRegistry.tsx`](apps/web/src/components/cms/BlockRegistry.tsx
 
 Três `CmsFormSection` fixas (não array de tiles como `CategoryBentoGridForm`):
 
-| Seção | Campos |
-|-------|--------|
-| Slot 1 — Destaque | `Select` tipo (coleção/artigo) → picker por ID; inputs título, subtítulo, URL cover |
-| Slot 2 — Oferta | `ProductIdPicker` (busca local + select por **id**, baseado em [`ProductPicker.tsx`](apps/admin/src/components/cms/props-forms/ProductPicker.tsx)) |
-| Slot 3 — Lista | `Select` tipo (categoria/produtos) → `Select` categoria **ou** `ProductMultiPicker` (max 3) |
+| Seção             | Campos                                                                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Slot 1 — Destaque | `Select` tipo (coleção/artigo) → picker por ID; inputs título, subtítulo, URL cover                                                                |
+| Slot 2 — Oferta   | `ProductIdPicker` (busca local + select por **id**, baseado em [`ProductPicker.tsx`](apps/admin/src/components/cms/props-forms/ProductPicker.tsx)) |
+| Slot 3 — Lista    | `Select` tipo (categoria/produtos) → `Select` categoria **ou** `ProductMultiPicker` (max 3)                                                        |
 
 ### Pickers novos (reutilizáveis)
 
-| Componente | API |
-|------------|-----|
+| Componente           | API                                                     |
+| -------------------- | ------------------------------------------------------- |
 | `CollectionIdPicker` | `GET /api/admin/collections` (já existe — retorna `id`) |
-| `ArticleIdPicker` | `GET /api/admin/articles` (novo) |
-| `ProductIdPicker` | `listProductsClient` — `onChange(id)` em vez de slug |
-| `ProductMultiPicker` | Checkbox/lista com cap 3 |
+| `ArticleIdPicker`    | `GET /api/admin/articles` (novo)                        |
+| `ProductIdPicker`    | `listProductsClient` — `onChange(id)` em vez de slug    |
+| `ProductMultiPicker` | Checkbox/lista com cap 3                                |
 
 ### Preview ao vivo (primeiro no admin)
 
 `BentoHubMixPreview.tsx` — client subcomponent dentro do form:
+
 - `useWatch({ control })` para reagir a mudanças
 - Mini grid CSS espelhando o layout web (`md:grid-cols-3`)
 - Tiles com título/cover dos pickers carregados (ou placeholders cinza)
@@ -233,6 +236,7 @@ Três `CmsFormSection` fixas (não array de tiles como `CategoryBentoGridForm`):
 ### Seed
 
 Em [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts), função idempotente `ensureBentoHubMixHomeBlock()`:
+
 - Inserir bloco após `category_bento_grid` (sort ~2.5 ou reordenar)
 - Slot1: coleção `setup-gamer-iniciante` (id do seed)
 - Slot2: produto headset (maior desconto do seed)
@@ -246,6 +250,7 @@ Em [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts), funçã
 ### Documentação
 
 Criar [`docs/cms-bento-hub-mix.md`](docs/cms-bento-hub-mix.md) com:
+
 - Escopo dos 3 slots e o que ficou fora (ex.: countdown, cupons)
 - Fluxo BFF → RSC
 - Arquivos-chave

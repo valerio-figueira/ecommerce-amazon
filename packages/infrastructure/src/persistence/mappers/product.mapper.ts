@@ -78,9 +78,7 @@ export function mapProductToRow(product: Product): typeof schema.products.$infer
     shortDescription: product.shortDescription,
     longDescriptionHtml: product.longDescriptionHtml,
     priceAmount: String(product.price.amount),
-    priceStrikethrough: product.strikethroughPrice
-      ? String(product.strikethroughPrice)
-      : undefined,
+    priceStrikethrough: product.strikethroughPrice ? String(product.strikethroughPrice) : undefined,
     currency: product.price.currency,
     stalePrice: product.price.isStale,
     priceUpdatedAt: product.price.updatedAt,

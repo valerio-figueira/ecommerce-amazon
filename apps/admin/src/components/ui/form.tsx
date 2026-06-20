@@ -73,24 +73,16 @@ export function FormLabel({
 }: React.ComponentPropsWithoutRef<typeof Label>): React.JSX.Element {
   const { error, formItemId } = useFormField();
   return (
-    <Label
-      className={cn(error && 'text-red-600', className)}
-      htmlFor={formItemId}
-      {...props}
-    />
+    <Label className={cn(error && 'text-red-600', className)} htmlFor={formItemId} {...props} />
   );
 }
 
-export function FormControl({
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element {
+export function FormControl({ ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
   return (
     <div
       id={formItemId}
-      aria-describedby={
-        error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`
-      }
+      aria-describedby={error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`}
       aria-invalid={!!error}
       {...props}
     />

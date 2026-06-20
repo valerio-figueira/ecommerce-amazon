@@ -184,11 +184,7 @@ export function ProductCard({
               alt={product.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes={
-                isCompact
-                  ? '(max-width:768px) 40vw, 18vw'
-                  : '(max-width:768px) 50vw, 25vw'
-              }
+              sizes={isCompact ? '(max-width:768px) 40vw, 18vw' : '(max-width:768px) 50vw, 25vw'}
             />
           )}
           {showDiscountBadge ? (

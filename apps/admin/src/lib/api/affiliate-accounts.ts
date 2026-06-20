@@ -38,7 +38,11 @@ export async function updateAffiliateAccount(
 }
 
 export async function deleteAffiliateAccount(id: string): Promise<{ deleted: true }> {
-  return adminFetchParsed(`/admin/affiliate-accounts/${id}`, z.object({ deleted: z.literal(true) }), {
-    method: 'DELETE',
-  });
+  return adminFetchParsed(
+    `/admin/affiliate-accounts/${id}`,
+    z.object({ deleted: z.literal(true) }),
+    {
+      method: 'DELETE',
+    },
+  );
 }

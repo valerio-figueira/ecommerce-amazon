@@ -6,13 +6,13 @@ todos:
     content: Criar resolveLeafCategoryId + buildCascadePath em packages/shared com testes Vitest
     status: completed
   - id: fix-cascade-select
-    content: "Refatorar CategoryCascadeSelect: 4 níveis, hidratação, limpar categoryId inválido, sync via helper"
+    content: 'Refatorar CategoryCascadeSelect: 4 níveis, hidratação, limpar categoryId inválido, sync via helper'
     status: completed
   - id: product-form-submit
-    content: "ProductForm: resolver folha no submit + mensagens pt-BR"
+    content: 'ProductForm: resolver folha no submit + mensagens pt-BR'
     status: completed
   - id: header-root-links
-    content: "CategoryCatalogFlyout/Drawer: raízes clicáveis mantendo hover"
+    content: 'CategoryCatalogFlyout/Drawer: raízes clicáveis mantendo hover'
     status: completed
   - id: seed-leaf-categories
     content: Ajustar seed para produtos em categorias folha
@@ -85,12 +85,12 @@ Reutilizar `CategoryFlatOption` de [`categories-utils.ts`](apps/admin/src/lib/ap
 
 Arquivo: [`apps/admin/src/components/categories/CategoryCascadeSelect.tsx`](apps/admin/src/components/categories/CategoryCascadeSelect.tsx)
 
-| Mudança | Detalhe |
-|---------|---------|
-| 4º select | Adicionar `categoryCascadeLevel4` + select condicional (alinhar com `MAX_CATEGORY_DEPTH`) |
-| Hidratação | Ao carregar `categoryId`, preencher todos os níveis; se o ID **não for folha**, limpar `categoryId` e exibir aviso inline (“Selecione a subcategoria mais específica”) |
-| Handlers | Unificar lógica: ao mudar qualquer nível, recalcular `categoryId` via helper (evita estado stale) |
-| `handleLevel3/4` | Validar `isLeaf` antes de setar (hoje level3 seta sem checar) |
+| Mudança          | Detalhe                                                                                                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4º select        | Adicionar `categoryCascadeLevel4` + select condicional (alinhar com `MAX_CATEGORY_DEPTH`)                                                                              |
+| Hidratação       | Ao carregar `categoryId`, preencher todos os níveis; se o ID **não for folha**, limpar `categoryId` e exibir aviso inline (“Selecione a subcategoria mais específica”) |
+| Handlers         | Unificar lógica: ao mudar qualquer nível, recalcular `categoryId` via helper (evita estado stale)                                                                      |
+| `handleLevel3/4` | Validar `isLeaf` antes de setar (hoje level3 seta sem checar)                                                                                                          |
 
 Atualizar [`product-form-values.ts`](apps/admin/src/lib/product-form-values.ts) com `categoryCascadeLevel4`.
 
@@ -140,15 +140,15 @@ Atualizar [docs/categories-hierarchy.md](docs/categories-hierarchy.md):
 
 ## Arquivos principais
 
-| Arquivo | Ação |
-|---------|------|
-| `packages/shared/src/category/resolve-cascade-category-id.ts` | Novo + testes |
+| Arquivo                                                          | Ação                              |
+| ---------------------------------------------------------------- | --------------------------------- |
+| `packages/shared/src/category/resolve-cascade-category-id.ts`    | Novo + testes                     |
 | `apps/admin/src/components/categories/CategoryCascadeSelect.tsx` | Corrigir sync/hidratação/4 níveis |
-| `apps/admin/src/components/products/ProductForm.tsx` | Resolver folha no submit |
-| `apps/admin/src/lib/product-form-values.ts` | `level4` |
-| `apps/web/src/components/layout/CategoryCatalogFlyout.tsx` | Raízes clicáveis |
-| `packages/infrastructure/src/persistence/drizzle/seed.ts` | Produtos em folha |
-| `docs/categories-hierarchy.md` | Atualizar |
+| `apps/admin/src/components/products/ProductForm.tsx`             | Resolver folha no submit          |
+| `apps/admin/src/lib/product-form-values.ts`                      | `level4`                          |
+| `apps/web/src/components/layout/CategoryCatalogFlyout.tsx`       | Raízes clicáveis                  |
+| `packages/infrastructure/src/persistence/drizzle/seed.ts`        | Produtos em folha                 |
+| `docs/categories-hierarchy.md`                                   | Atualizar                         |
 
 ## Como testar
 

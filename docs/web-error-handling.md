@@ -35,18 +35,18 @@ flowchart TD
 
 ### Camada API
 
-| Arquivo | Função |
-|---------|--------|
-| [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.ts) | `ApiError`, `isNotFoundError`, throws tipados com status HTTP |
+| Arquivo                                                                       | Função                                                               |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.ts)         | `ApiError`, `isNotFoundError`, throws tipados com status HTTP        |
 | [`apps/web/src/lib/api/safe-fetch.ts`](../apps/web/src/lib/api/safe-fetch.ts) | `fetchOrNotFound` (404 → null, 5xx → throw), `fetchPageLayoutOrNull` |
 
 ### Páginas Next.js
 
-| Arquivo | Quando aparece |
-|---------|----------------|
-| [`apps/web/src/app/not-found.tsx`](../apps/web/src/app/not-found.tsx) | `notFound()` ou URL inexistente |
-| [`apps/web/src/app/error.tsx`](../apps/web/src/app/error.tsx) | Erro de render/fetch não tratado em rotas filhas |
-| [`apps/web/src/app/global-error.tsx`](../apps/web/src/app/global-error.tsx) | Falha no `layout.tsx` raiz |
+| Arquivo                                                                     | Quando aparece                                   |
+| --------------------------------------------------------------------------- | ------------------------------------------------ |
+| [`apps/web/src/app/not-found.tsx`](../apps/web/src/app/not-found.tsx)       | `notFound()` ou URL inexistente                  |
+| [`apps/web/src/app/error.tsx`](../apps/web/src/app/error.tsx)               | Erro de render/fetch não tratado em rotas filhas |
+| [`apps/web/src/app/global-error.tsx`](../apps/web/src/app/global-error.tsx) | Falha no `layout.tsx` raiz                       |
 
 Componentes compartilhados em [`apps/web/src/components/errors/`](../apps/web/src/components/errors/).
 
@@ -73,12 +73,12 @@ Páginas que usam `fetchOrNotFound`:
 
 Blocos client com React Query:
 
-| Bloco | Comportamento em erro |
-|-------|----------------------|
-| `FeaturedProductBlock` | `BlockErrorFallback` + retry |
-| `ProductGridBlock` | `BlockErrorFallback` + retry; título/CTA permanecem |
-| `CategoryPillsRow` | Pill "Todos" + aviso discreto |
-| `BentoHubMixGrid` | `BlockUnavailableFallback` em slots SSR vazios (não skeleton) |
+| Bloco                  | Comportamento em erro                                         |
+| ---------------------- | ------------------------------------------------------------- |
+| `FeaturedProductBlock` | `BlockErrorFallback` + retry                                  |
+| `ProductGridBlock`     | `BlockErrorFallback` + retry; título/CTA permanecem           |
+| `CategoryPillsRow`     | Pill "Todos" + aviso discreto                                 |
+| `BentoHubMixGrid`      | `BlockUnavailableFallback` em slots SSR vazios (não skeleton) |
 
 React Query defaults em [`providers.tsx`](../apps/web/src/app/providers.tsx): `retry: 1`, `refetchOnWindowFocus: false`.
 

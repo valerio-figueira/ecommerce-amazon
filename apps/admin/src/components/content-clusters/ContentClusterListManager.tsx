@@ -132,8 +132,8 @@ export function ContentClusterListManager({
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir cluster?</AlertDialogTitle>
             <AlertDialogDescription>
-              O cluster &quot;{deleteTarget?.name}&quot; será removido. Os artigos vinculados
-              perdem a associação, mas não são excluídos.
+              O cluster &quot;{deleteTarget?.name}&quot; será removido. Os artigos vinculados perdem
+              a associação, mas não são excluídos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

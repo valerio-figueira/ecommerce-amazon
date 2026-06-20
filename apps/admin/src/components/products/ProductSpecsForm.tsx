@@ -110,10 +110,7 @@ export function ProductSpecsForm({ onRegisterSync }: ProductSpecsFormProps): Rea
 
   function handleAddSuggestedBlock(): void {
     const existingGroups = uiStateToSpecsNormalized(blocks);
-    updateBlocks([
-      ...blocks,
-      buildSuggestedBlockFromTemplate(templateKeys, existingGroups),
-    ]);
+    updateBlocks([...blocks, buildSuggestedBlockFromTemplate(templateKeys, existingGroups)]);
     syncToForm();
   }
 

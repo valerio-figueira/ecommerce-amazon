@@ -111,7 +111,10 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-[color:var(--admin-navy)]" htmlFor="profile-email">
+                <label
+                  className="text-sm font-medium text-[color:var(--admin-navy)]"
+                  htmlFor="profile-email"
+                >
                   E-mail (início de sessão)
                 </label>
                 <div className="admin-profile-input-group mt-1.5">
@@ -127,7 +130,10 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
                     aria-describedby="profile-email-note"
                   />
                 </div>
-                <p id="profile-email-note" className="mt-1.5 text-xs text-[color:var(--admin-text-muted)]">
+                <p
+                  id="profile-email-note"
+                  className="mt-1.5 text-xs text-[color:var(--admin-text-muted)]"
+                >
                   Este endereço é o identificador de acesso e não pode ser alterado nesta página.
                 </p>
               </div>
@@ -250,7 +256,9 @@ export function ProfileForm({ profile }: ProfileFormProps): React.JSX.Element {
                     name={network}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="capitalize">{network === 'x' ? 'X (Twitter)' : network}</FormLabel>
+                        <FormLabel className="capitalize">
+                          {network === 'x' ? 'X (Twitter)' : network}
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} type="url" placeholder="https://" />
                         </FormControl>

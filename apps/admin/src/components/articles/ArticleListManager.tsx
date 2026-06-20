@@ -19,7 +19,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { deleteAdminArticleClient, listAdminArticlesClient } from '@/lib/api/articles-client';
-import type { AdminArticlesListResponse, AdminArticleSummary } from '@ecommerce-amazon/shared/admin';
+import type {
+  AdminArticlesListResponse,
+  AdminArticleSummary,
+} from '@ecommerce-amazon/shared/admin';
 
 import { ArticleListCard } from './ArticleListCard';
 
@@ -29,9 +32,7 @@ type ArticleListManagerProps = {
 
 const DEFAULT_PAGE_SIZE = 12;
 
-export function ArticleListManager({
-  initialData,
-}: ArticleListManagerProps): React.JSX.Element {
+export function ArticleListManager({ initialData }: ArticleListManagerProps): React.JSX.Element {
   const adminToast = useAdminToast();
   const [items, setItems] = useState(initialData.items);
   const [total, setTotal] = useState(initialData.total);
@@ -182,8 +183,7 @@ export function ArticleListManager({
             </>
           ) : (
             <>
-              Listagem editorial · <strong>{total}</strong>{' '}
-              {total === 1 ? 'item' : 'itens'}
+              Listagem editorial · <strong>{total}</strong> {total === 1 ? 'item' : 'itens'}
             </>
           )}
           {loading ? ' · atualizando…' : ''}
@@ -220,11 +220,7 @@ export function ArticleListManager({
           <>
             <div className="admin-article-grid" aria-busy={loading} aria-live="polite">
               {items.map((article) => (
-                <ArticleListCard
-                  key={article.id}
-                  article={article}
-                  onDelete={setDeleteTarget}
-                />
+                <ArticleListCard key={article.id} article={article} onDelete={setDeleteTarget} />
               ))}
             </div>
 

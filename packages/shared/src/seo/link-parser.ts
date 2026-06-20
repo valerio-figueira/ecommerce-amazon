@@ -38,10 +38,7 @@ function linkKeywordOccurrences(segment: string, item: SeoKeywordMap): string {
   });
 }
 
-export function injectInternalLinks(
-  htmlContent: string,
-  keywords: SeoKeywordMap[],
-): string {
+export function injectInternalLinks(htmlContent: string, keywords: SeoKeywordMap[]): string {
   const sortedKeywords = sortKeywords(keywords);
   let result = htmlContent;
 

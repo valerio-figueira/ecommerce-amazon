@@ -15,8 +15,7 @@ export async function generateMetadata(): Promise<import('next').Metadata> {
   return {
     title: layout?.seoTitle ?? layout?.title ?? brand.tagline,
     description:
-      layout?.seoDescription ??
-      'Descubra ofertas selecionadas com histórico de preços e alertas.',
+      layout?.seoDescription ?? 'Descubra ofertas selecionadas com histórico de preços e alertas.',
     alternates: {
       canonical: buildPageCanonical('/', brand),
     },

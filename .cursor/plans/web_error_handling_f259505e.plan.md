@@ -60,6 +60,7 @@ flowchart TD
 ```
 
 **Arquivos-chave hoje:**
+
 - Layout raiz: [`apps/web/src/app/layout.tsx`](apps/web/src/app/layout.tsx) — sem `error.tsx` / `not-found.tsx`
 - Home CMS: [`apps/web/src/app/page.tsx`](apps/web/src/app/page.tsx) → [`PageRenderer.tsx`](apps/web/src/components/cms/PageRenderer.tsx)
 - Cliente API: [`apps/web/src/lib/api/client.ts`](apps/web/src/lib/api/client.ts) — `throw new Error('API error …')` sem código HTTP tipado
@@ -111,10 +112,11 @@ Novo arquivo [`apps/web/src/lib/api/safe-fetch.ts`](apps/web/src/lib/api/safe-fe
 ```ts
 // 404 → null (caller chama notFound())
 // 5xx / rede → rethrow (aciona error.tsx)
-export async function fetchOrNotFound<T>(path, schema): Promise<T | null>
+export async function fetchOrNotFound<T>(path, schema): Promise<T | null>;
 ```
 
 Atualizar helpers em:
+
 - [`produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx)
 - [`artigos/[slug]/page.tsx`](apps/web/src/app/artigos/[slug]/page.tsx)
 - [`colecoes/[slug]/page.tsx`](apps/web/src/app/colecoes/[slug]/page.tsx)
@@ -122,14 +124,14 @@ Atualizar helpers em:
 
 ### Componentes UI compartilhados (novos em `apps/web/src/components/errors/`)
 
-| Componente | Uso |
-|------------|-----|
-| `ErrorPageLayout` | Layout centralizado para 404/500 (título, descrição, ações) |
-| `NotFoundContent` | Copy pt-BR: "Página não encontrada" + link para home e busca de categorias |
-| `ServerErrorContent` | Copy pt-BR: "Algo deu errado" + botão "Tentar novamente" (`reset` do `error.tsx`) |
-| `BlockErrorFallback` | Fallback compacto para blocos CMS: ícone + "Não foi possível carregar esta seção" + retry opcional |
-| `BlockUnavailableFallback` | Slot sem conteúdo (dados SSR ausentes): "Conteúdo indisponível" — sem skeleton |
-| `BlockErrorBoundary` | Class component client (`componentDidCatch`) que renderiza `BlockErrorFallback` |
+| Componente                 | Uso                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ErrorPageLayout`          | Layout centralizado para 404/500 (título, descrição, ações)                                        |
+| `NotFoundContent`          | Copy pt-BR: "Página não encontrada" + link para home e busca de categorias                         |
+| `ServerErrorContent`       | Copy pt-BR: "Algo deu errado" + botão "Tentar novamente" (`reset` do `error.tsx`)                  |
+| `BlockErrorFallback`       | Fallback compacto para blocos CMS: ícone + "Não foi possível carregar esta seção" + retry opcional |
+| `BlockUnavailableFallback` | Slot sem conteúdo (dados SSR ausentes): "Conteúdo indisponível" — sem skeleton                     |
+| `BlockErrorBoundary`       | Class component client (`componentDidCatch`) que renderiza `BlockErrorFallback`                    |
 
 Estilo: reutilizar tokens existentes (`--primary`, `--radius`), [`Button`](apps/web/src/components/ui/button.tsx) e padrão tipográfico da vitrine (neutral-600, títulos bold).
 
@@ -140,16 +142,19 @@ Estilo: reutilizar tokens existentes (`--primary`, `--radius`), [`Button`](apps/
 Criar em [`apps/web/src/app/`](apps/web/src/app/):
 
 ### [`not-found.tsx`](apps/web/src/app/not-found.tsx) (Server Component)
+
 - Renderiza `ErrorPageLayout` + `NotFoundContent`
 - Metadata: `title: 'Página não encontrada | Vitrine'`
 - Cobre todos os `notFound()` já existentes em 4 rotas de detalhe
 
 ### [`error.tsx`](apps/web/src/app/error.tsx) (Client Component — obrigatório)
+
 - Props: `{ error, reset }` do Next.js
 - Renderiza `ServerErrorContent` com `reset()` no botão
 - `useEffect` opcional: `console.error` em dev (sem Sentry no MVP)
 
 ### [`global-error.tsx`](apps/web/src/app/global-error.tsx) (Client Component)
+
 - Fallback quando o próprio `layout.tsx` quebra
 - HTML/body inline mínimo + mensagem pt-BR + botão recarregar (`reset`)
 - Não depende de `globals.css` nem de `Providers`
@@ -171,16 +176,16 @@ Criar em [`apps/web/src/app/`](apps/web/src/app/):
 
 ### Blocos client com React Query
 
-| Bloco | Mudança |
-|-------|---------|
+| Bloco                      | Mudança                                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | **`FeaturedProductBlock`** | Separar `isLoading` → skeleton; `isError` → `BlockErrorFallback` com `refetch`; `!slug` / produto invisível → `null` ou unavailable |
-| **`ProductGridBlock`** | `isError` → mensagem abaixo do título ("Não foi possível carregar os produtos") + retry; manter título/CTA visíveis |
-| **`CategoryPillsRow`** | `isError` → manter pill "Todos" + texto discreto "Categorias indisponíveis" (não bloqueia o grid) |
+| **`ProductGridBlock`**     | `isError` → mensagem abaixo do título ("Não foi possível carregar os produtos") + retry; manter título/CTA visíveis                 |
+| **`CategoryPillsRow`**     | `isError` → manter pill "Todos" + texto discreto "Categorias indisponíveis" (não bloqueia o grid)                                   |
 
 ### Bloco SSR com skeleton enganoso
 
-| Bloco | Mudança |
-|-------|---------|
+| Bloco                 | Mudança                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`BentoHubMixGrid`** | Trocar `BentoHubMixSkeleton` por `BlockUnavailableFallback` quando `slotN` é `null` — dados já vêm hidratados no SSR; null = conteúdo ausente, não loading |
 
 ### React Query defaults em [`providers.tsx`](apps/web/src/app/providers.tsx)
@@ -190,7 +195,7 @@ new QueryClient({
   defaultOptions: {
     queries: { retry: 1, refetchOnWindowFocus: false },
   },
-})
+});
 ```
 
 Evita retries longos que prolongam estados de loading nos blocos.
@@ -199,10 +204,10 @@ Evita retries longos que prolongam estados de loading nos blocos.
 
 ## 4. Outras rotas server desprotegidas
 
-| Rota | Problema | Correção |
-|------|----------|----------|
-| [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx) | `Promise.all` sem catch → 500 genérico | Deixar throw para `error.tsx` (comportamento correto após criar a página) ou, se preferir degradação parcial, catch só em categorias |
-| [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | `getCategoryProducts` sem try/catch | Usar `fetchOrNotFound` / try-catch: categoria existe mas produtos falham → renderizar categoria com `BlockErrorFallback` inline na grade |
+| Rota                                                                        | Problema                               | Correção                                                                                                                                 |
+| --------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`artigos/page.tsx`](apps/web/src/app/artigos/page.tsx)                     | `Promise.all` sem catch → 500 genérico | Deixar throw para `error.tsx` (comportamento correto após criar a página) ou, se preferir degradação parcial, catch só em categorias     |
+| [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | `getCategoryProducts` sem try/catch    | Usar `fetchOrNotFound` / try-catch: categoria existe mas produtos falham → renderizar categoria com `BlockErrorFallback` inline na grade |
 
 A home ([`page.tsx`](apps/web/src/app/page.tsx)) mantém fallback atual para layout ausente (mensagem de seed), mas passa a usar `ApiError` se quisermos distinguir 5xx (throw) de layout inexistente (404 → fallback atual).
 
@@ -225,6 +230,7 @@ Não há testes unitários em `apps/web` hoje. Validar manualmente:
 ## 6. Documentação
 
 Criar [`docs/web-error-handling.md`](docs/web-error-handling.md) com:
+
 - Fluxo 404/500/blocos
 - Arquivos-chave
 - Como testar localmente

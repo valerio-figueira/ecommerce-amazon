@@ -13,11 +13,7 @@ type ListingPaginationProps = {
   isPending?: boolean;
 };
 
-function buildPageHref(
-  pathname: string,
-  searchParams: URLSearchParams,
-  page: number,
-): string {
+function buildPageHref(pathname: string, searchParams: URLSearchParams, page: number): string {
   const params = new URLSearchParams(searchParams.toString());
   if (page <= 1) {
     params.delete('page');

@@ -18,7 +18,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { collectCategoryNodes } from '@/lib/api/categories-utils';
-import { adminCategoriesResponseSchema, type AdminCategoryTreeNode } from '@ecommerce-amazon/shared/admin';
+import {
+  adminCategoriesResponseSchema,
+  type AdminCategoryTreeNode,
+} from '@ecommerce-amazon/shared/admin';
 
 import { CategoryFormSheet } from './CategoryFormSheet';
 import { CategoryTreeView } from './CategoryTreeView';

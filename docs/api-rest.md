@@ -15,12 +15,12 @@ Regras: [`.cursor/rules/03-api-rest.mdc`](../.cursor/rules/03-api-rest.mdc). Pla
 
 ## Fluxo de erro
 
-| Status | Causa |
-|--------|-------|
-| 400 | `ZodError`, `ValidationError`, `DomainError` |
-| 404 | Recurso não encontrado / não publicado |
-| 500 | Erro inesperado |
-| 204 | Sucesso sem corpo (`DELETE`, `POST /events/click`) |
+| Status | Causa                                              |
+| ------ | -------------------------------------------------- |
+| 400    | `ZodError`, `ValidationError`, `DomainError`       |
+| 404    | Recurso não encontrado / não publicado             |
+| 500    | Erro inesperado                                    |
+| 204    | Sucesso sem corpo (`DELETE`, `POST /events/click`) |
 
 ## Health
 
@@ -113,15 +113,15 @@ Cache Redis: chave `vitrine:page:slug:{slug}`, TTL 300s.
 
 **Query (Zod `ListProductsQuerySchema`):**
 
-| Param | Tipo | Default | Notas |
-|-------|------|---------|-------|
-| `page` | int > 0 | 1 | |
-| `pageSize` | int ≤ 100 | 20 | |
-| `category` | string | — | Filtra subárvore via `category_id` (slug + descendentes) |
-| `marketplace` | `amazon_br` \| `shopee_br` | — | |
-| `sort` | `editorial_score` \| `price_updated_at` | `editorial_score` | |
-| `visibleOnly` | `true` \| `false` | — | Quando `search` é informado, default `true` |
-| `search` | string (max 100) | — | `ilike` em `titleClean`, `titleRaw`, `slug` |
+| Param         | Tipo                                    | Default           | Notas                                                    |
+| ------------- | --------------------------------------- | ----------------- | -------------------------------------------------------- |
+| `page`        | int > 0                                 | 1                 |                                                          |
+| `pageSize`    | int ≤ 100                               | 20                |                                                          |
+| `category`    | string                                  | —                 | Filtra subárvore via `category_id` (slug + descendentes) |
+| `marketplace` | `amazon_br` \| `shopee_br`              | —                 |                                                          |
+| `sort`        | `editorial_score` \| `price_updated_at` | `editorial_score` |                                                          |
+| `visibleOnly` | `true` \| `false`                       | —                 | Quando `search` é informado, default `true`              |
+| `search`      | string (max 100)                        | —                 | `ilike` em `titleClean`, `titleRaw`, `slug`              |
 
 **Response:**
 
@@ -140,23 +140,23 @@ Presenter: [`apps/api/src/adapters/presenters/product.presenter.ts`](../apps/api
 
 ```typescript
 type ProductPriceDto = {
-  amount: number | null;   // null se isStale
+  amount: number | null; // null se isStale
   currency: string;
   isStale: boolean;
-  updatedAt: string;       // ISO 8601
+  updatedAt: string; // ISO 8601
   strikethrough?: number;
 };
 
 type ProductListItemDto = {
   id: string;
   slug: string;
-  title: string;           // titleClean
+  title: string; // titleClean
   price: ProductPriceDto;
   marketplace: string;
   rating?: number;
   reviewCount?: number;
-  imageUrl?: string;       // primeira imagem
-  goUrl: string;           // /go/{slug} — mascaramento afiliado
+  imageUrl?: string; // primeira imagem
+  goUrl: string; // /go/{slug} — mascaramento afiliado
 };
 ```
 
@@ -218,8 +218,8 @@ Ver [go-redirect-seo.md](./go-redirect-seo.md).
 
 ```typescript
 {
-  email: string;      // email válido
-  productId: string;  // uuid
+  email: string; // email válido
+  productId: string; // uuid
   targetPrice: number; // positivo
 }
 ```
@@ -341,44 +341,44 @@ Coleção curada com produtos ordenados + metadados UTM.
 
 ### Admin — `/admin/collections`
 
-| Método | Rota | Body / response |
-|--------|------|-----------------|
-| `GET` | `/admin/collections` | `{ items: AdminCollectionSummary[] }` |
-| `GET` | `/admin/collections/:id` | `AdminCollection` |
-| `POST` | `/admin/collections` | `CreateCollectionBody` → `{ id }` |
-| `PATCH` | `/admin/collections/:id` | `UpdateCollectionBody` → `204` |
-| `DELETE` | `/admin/collections/:id` | `204` |
+| Método   | Rota                     | Body / response                       |
+| -------- | ------------------------ | ------------------------------------- |
+| `GET`    | `/admin/collections`     | `{ items: AdminCollectionSummary[] }` |
+| `GET`    | `/admin/collections/:id` | `AdminCollection`                     |
+| `POST`   | `/admin/collections`     | `CreateCollectionBody` → `{ id }`     |
+| `PATCH`  | `/admin/collections/:id` | `UpdateCollectionBody` → `204`        |
+| `DELETE` | `/admin/collections/:id` | `204`                                 |
 
 ### Admin — `/admin/comparisons`
 
-| Método | Rota | Body / response |
-|--------|------|-----------------|
-| `GET` | `/admin/comparisons` | `{ items: AdminComparisonSummary[] }` |
-| `GET` | `/admin/comparisons/:id` | `AdminComparisonDetail` |
-| `POST` | `/admin/comparisons` | `CreateAdminComparisonBody` → `{ id }` |
-| `PATCH` | `/admin/comparisons/:id` | `UpdateAdminComparisonBody` → `204` |
-| `POST` | `/admin/comparisons/:id/publish` | `{ slug }` → `204` |
-| `DELETE` | `/admin/comparisons/:id` | `204` |
+| Método   | Rota                             | Body / response                        |
+| -------- | -------------------------------- | -------------------------------------- |
+| `GET`    | `/admin/comparisons`             | `{ items: AdminComparisonSummary[] }`  |
+| `GET`    | `/admin/comparisons/:id`         | `AdminComparisonDetail`                |
+| `POST`   | `/admin/comparisons`             | `CreateAdminComparisonBody` → `{ id }` |
+| `PATCH`  | `/admin/comparisons/:id`         | `UpdateAdminComparisonBody` → `204`    |
+| `POST`   | `/admin/comparisons/:id/publish` | `{ slug }` → `204`                     |
+| `DELETE` | `/admin/comparisons/:id`         | `204`                                  |
 
 Ver [admin-comparisons-phase1.md](./admin-comparisons-phase1.md).
 
 ### Admin — `/admin/articles`
 
-| Método | Rota | Body / response |
-|--------|------|-----------------|
-| `GET` | `/admin/articles` | `{ items: AdminArticleSummary[] }` — query `?status=` ou `?picker=true` |
-| `GET` | `/admin/articles/:id` | `AdminArticleDetail` |
-| `POST` | `/admin/articles` | `CreateArticleBody` → `{ id }` |
-| `PATCH` | `/admin/articles/:id` | `UpdateArticleBody` → `204` |
-| `DELETE` | `/admin/articles/:id` | `204` |
+| Método   | Rota                  | Body / response                                                         |
+| -------- | --------------------- | ----------------------------------------------------------------------- |
+| `GET`    | `/admin/articles`     | `{ items: AdminArticleSummary[] }` — query `?status=` ou `?picker=true` |
+| `GET`    | `/admin/articles/:id` | `AdminArticleDetail`                                                    |
+| `POST`   | `/admin/articles`     | `CreateArticleBody` → `{ id }`                                          |
+| `PATCH`  | `/admin/articles/:id` | `UpdateArticleBody` → `204`                                             |
+| `DELETE` | `/admin/articles/:id` | `204`                                                                   |
 
 ### Admin — `/admin/article-categories`
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| `GET` | `/admin/article-categories` | `{ items: ArticleCategorySummary[] }` |
-| `POST` | `/admin/article-categories` | `CreateArticleCategoryBody` → `{ id }` |
-| `PATCH` | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204` |
+| Método   | Rota                            | Descrição                              |
+| -------- | ------------------------------- | -------------------------------------- |
+| `GET`    | `/admin/article-categories`     | `{ items: ArticleCategorySummary[] }`  |
+| `POST`   | `/admin/article-categories`     | `CreateArticleCategoryBody` → `{ id }` |
+| `PATCH`  | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204`    |
 | `DELETE` | `/admin/article-categories/:id` | `204` (409 se categoria tiver artigos) |
 
 `CreateArticleBody` / `UpdateArticleBody` incluem `categoryId` e `clusterId` opcionais.
@@ -387,13 +387,13 @@ Ver [admin-comparisons-phase1.md](./admin-comparisons-phase1.md).
 
 Doc: [content-clusters-hub-spoke.md](./content-clusters-hub-spoke.md).
 
-| Método | Rota | Body / response |
-|--------|------|-----------------|
-| `GET` | `/admin/content-clusters` | `{ items: ContentClusterAdminSummary[] }` |
-| `POST` | `/admin/content-clusters` | `CreateContentClusterBody` → `{ id }` |
-| `GET` | `/admin/content-clusters/:id` | Detail + members |
-| `PATCH` | `/admin/content-clusters/:id` | `UpdateContentClusterBody` → `204` |
-| `DELETE` | `/admin/content-clusters/:id` | `204` |
+| Método   | Rota                          | Body / response                           |
+| -------- | ----------------------------- | ----------------------------------------- |
+| `GET`    | `/admin/content-clusters`     | `{ items: ContentClusterAdminSummary[] }` |
+| `POST`   | `/admin/content-clusters`     | `CreateContentClusterBody` → `{ id }`     |
+| `GET`    | `/admin/content-clusters/:id` | Detail + members                          |
+| `PATCH`  | `/admin/content-clusters/:id` | `UpdateContentClusterBody` → `204`        |
+| `DELETE` | `/admin/content-clusters/:id` | `204`                                     |
 
 Mutações invalidam cache `vitrine:article:slug:*` dos membros afetados.
 
@@ -401,12 +401,12 @@ Mutações invalidam cache `vitrine:article:slug:*` dos membros afetados.
 
 Doc: [auto-links-admin.md](./auto-links-admin.md).
 
-| Método | Rota | Body / query | Resposta |
-|--------|------|--------------|----------|
-| `GET` | `/admin/auto-links` | `?page=&limit=&search=` | `AdminAutoLinkListResponse` |
-| `POST` | `/admin/auto-links` | `CreateAutoLinkBody` | 201 `{ id }` |
-| `PATCH` | `/admin/auto-links/:id` | `UpdateAutoLinkBody` (parcial) | 204 |
-| `DELETE` | `/admin/auto-links/:id` | — | 204 |
+| Método   | Rota                    | Body / query                   | Resposta                    |
+| -------- | ----------------------- | ------------------------------ | --------------------------- |
+| `GET`    | `/admin/auto-links`     | `?page=&limit=&search=`        | `AdminAutoLinkListResponse` |
+| `POST`   | `/admin/auto-links`     | `CreateAutoLinkBody`           | 201 `{ id }`                |
+| `PATCH`  | `/admin/auto-links/:id` | `UpdateAutoLinkBody` (parcial) | 204                         |
+| `DELETE` | `/admin/auto-links/:id` | —                              | 204                         |
 
 Mutações invalidam cache Redis `vitrine:seo:auto-links`. Keyword duplicada → 409.
 
@@ -414,9 +414,9 @@ Mutações invalidam cache Redis `vitrine:seo:auto-links`. Keyword duplicada →
 
 Doc: [auto-links-admin.md](./auto-links-admin.md).
 
-| Método | Rota | Query | Resposta |
-|--------|------|-------|----------|
-| `GET` | `/admin/internal-link-targets` | `?search=&productLimit=&selectedUrl=` | `SearchInternalLinkTargetsResponse` |
+| Método | Rota                           | Query                                 | Resposta                            |
+| ------ | ------------------------------ | ------------------------------------- | ----------------------------------- |
+| `GET`  | `/admin/internal-link-targets` | `?search=&productLimit=&selectedUrl=` | `SearchInternalLinkTargetsResponse` |
 
 - `search` — filtra categorias, coleções, artigos e produtos (produtos/artigos exigem ≥2 caracteres)
 - `productLimit` — default 20, máx. 50
@@ -641,20 +641,20 @@ Implementação: [`admin-analytics-routes.ts`](../apps/api/src/adapters/http/rou
 
 Query comum: `from`, `to` (ISO datetime; default últimos 30 dias).
 
-| Rota | Response |
-|------|----------|
-| `GET /admin/analytics/overview` | `analyticsOverviewResponseSchema` |
-| `GET /admin/analytics/clicks/by-origin` | `clicksByOriginResponseSchema` |
-| `GET /admin/analytics/clicks/by-marketplace` | `clicksByMarketplaceResponseSchema` |
-| `GET /admin/analytics/clicks/top-products?limit=10` | `topClickedProductsResponseSchema` |
-| `GET /admin/analytics/articles/converting?limit=10` | `convertingArticlesResponseSchema` |
-| `GET /admin/analytics/traffic/acquisition` | `ga4TrafficAcquisitionResponseSchema` (requer `GA4_*` env) |
-| `GET /admin/analytics/ctr/by-origin` | `ctrByOriginResponseSchema` |
-| `GET /admin/analytics/clicks/by-placement` | `clicksByPlacementResponseSchema` |
-| `GET /admin/analytics/clicks/by-block` | `clicksByBlockResponseSchema` |
-| `GET /admin/analytics/clicks/by-page` | `clicksByPageResponseSchema` |
-| `GET /admin/analytics/clicks/trend-by-origin` | `clicksTrendByOriginResponseSchema` |
-| `GET /admin/analytics/engagement/funnel` | `editorialFunnelResponseSchema` |
+| Rota                                                | Response                                                   |
+| --------------------------------------------------- | ---------------------------------------------------------- |
+| `GET /admin/analytics/overview`                     | `analyticsOverviewResponseSchema`                          |
+| `GET /admin/analytics/clicks/by-origin`             | `clicksByOriginResponseSchema`                             |
+| `GET /admin/analytics/clicks/by-marketplace`        | `clicksByMarketplaceResponseSchema`                        |
+| `GET /admin/analytics/clicks/top-products?limit=10` | `topClickedProductsResponseSchema`                         |
+| `GET /admin/analytics/articles/converting?limit=10` | `convertingArticlesResponseSchema`                         |
+| `GET /admin/analytics/traffic/acquisition`          | `ga4TrafficAcquisitionResponseSchema` (requer `GA4_*` env) |
+| `GET /admin/analytics/ctr/by-origin`                | `ctrByOriginResponseSchema`                                |
+| `GET /admin/analytics/clicks/by-placement`          | `clicksByPlacementResponseSchema`                          |
+| `GET /admin/analytics/clicks/by-block`              | `clicksByBlockResponseSchema`                              |
+| `GET /admin/analytics/clicks/by-page`               | `clicksByPageResponseSchema`                               |
+| `GET /admin/analytics/clicks/trend-by-origin`       | `clicksTrendByOriginResponseSchema`                        |
+| `GET /admin/analytics/engagement/funnel`            | `editorialFunnelResponseSchema`                            |
 
 ---
 
@@ -662,29 +662,29 @@ Query comum: `from`, `to` (ISO datetime; default últimos 30 dias).
 
 Implementação: [`admin-settings-routes.ts`](../apps/api/src/adapters/http/routes/admin-settings-routes.ts). Doc: [admin-operational-settings.md](./admin-operational-settings.md).
 
-| Método | Rota | Acesso |
-|--------|------|--------|
-| GET | `/admin/affiliate-accounts` | JWT |
-| POST | `/admin/affiliate-accounts` | JWT admin |
-| PATCH | `/admin/affiliate-accounts/:id` | JWT admin |
-| DELETE | `/admin/affiliate-accounts/:id` | JWT admin |
-| GET | `/admin/operators` | JWT admin |
-| POST | `/admin/operators` | JWT admin |
-| PATCH | `/admin/operators/:id` | JWT admin |
-| PATCH | `/admin/profile/password` | JWT |
-| GET | `/admin/site-settings` | JWT |
-| PATCH | `/admin/site-settings` | JWT admin |
-| GET | `/admin/operational-status` | JWT |
-| GET | `/admin/marketplace-credentials` | JWT |
-| PUT | `/admin/marketplace-credentials/:marketplace` | JWT admin |
-| DELETE | `/admin/marketplace-credentials/:marketplace` | JWT admin |
-| POST | `/admin/marketplace-credentials/:marketplace/test` | JWT admin |
+| Método | Rota                                               | Acesso    |
+| ------ | -------------------------------------------------- | --------- |
+| GET    | `/admin/affiliate-accounts`                        | JWT       |
+| POST   | `/admin/affiliate-accounts`                        | JWT admin |
+| PATCH  | `/admin/affiliate-accounts/:id`                    | JWT admin |
+| DELETE | `/admin/affiliate-accounts/:id`                    | JWT admin |
+| GET    | `/admin/operators`                                 | JWT admin |
+| POST   | `/admin/operators`                                 | JWT admin |
+| PATCH  | `/admin/operators/:id`                             | JWT admin |
+| PATCH  | `/admin/profile/password`                          | JWT       |
+| GET    | `/admin/site-settings`                             | JWT       |
+| PATCH  | `/admin/site-settings`                             | JWT admin |
+| GET    | `/admin/operational-status`                        | JWT       |
+| GET    | `/admin/marketplace-credentials`                   | JWT       |
+| PUT    | `/admin/marketplace-credentials/:marketplace`      | JWT admin |
+| DELETE | `/admin/marketplace-credentials/:marketplace`      | JWT admin |
+| POST   | `/admin/marketplace-credentials/:marketplace/test` | JWT admin |
 
 ### Público
 
-| Método | Rota | Response |
-|--------|------|----------|
-| GET | `/site-settings/public` | `publicSiteSettingsResponseSchema` |
+| Método | Rota                    | Response                           |
+| ------ | ----------------------- | ---------------------------------- |
+| GET    | `/site-settings/public` | `publicSiteSettingsResponseSchema` |
 
 ---
 
@@ -692,30 +692,30 @@ Implementação: [`admin-settings-routes.ts`](../apps/api/src/adapters/http/rout
 
 Arquivo: [`apps/api/src/adapters/dtos/request/schemas.ts`](../apps/api/src/adapters/dtos/request/schemas.ts)
 
-| Schema | Uso |
-|--------|-----|
-| `ListProductsQuerySchema` | GET /products |
-| `ProductSlugParamsSchema` | GET /products/:slug |
-| `ProductIdParamsSchema` | price-history |
-| `PriceHistoryQuerySchema` | query days |
-| `CreatePriceAlertSchema` | POST /price-alerts |
-| `ConfirmPriceAlertParamsSchema` | confirm |
-| `CancelPriceAlertParamsSchema` | DELETE /price-alerts/:token |
-| `WishlistAddSchema` | POST /wishlist |
-| `WishlistRemoveParamsSchema` | DELETE |
-| `BatchCheckoutSchema` | checkout-batch |
-| `CreateComparisonSchema` | POST /comparisons |
-| `ComparisonIdentifierParamsSchema` | GET comparisons |
-| `RecordClickSchema` | POST /events/click |
-| `ArticleSlugParamsSchema` | GET /articles |
-| `CollectionSlugParamsSchema` | GET /collections |
-| `PageSlugParamsSchema` | GET /pages |
-| `AdminLoginSchema` | POST /admin/auth/login |
-| `AdminPageSlugParamsSchema` | GET/POST/PATCH /admin/pages/:slug/* |
-| `AdminPageBlockParamsSchema` | PATCH/DELETE /admin/pages/:slug/blocks/:id |
-| `CreatePageBlockSchema` | POST /admin/pages/:slug/blocks |
-| `UpdatePageBlockSchema` | PATCH /admin/pages/:slug/blocks/:id |
-| `ReorderPageBlocksSchema` | PATCH /admin/pages/:slug/blocks/reorder |
+| Schema                             | Uso                                        |
+| ---------------------------------- | ------------------------------------------ |
+| `ListProductsQuerySchema`          | GET /products                              |
+| `ProductSlugParamsSchema`          | GET /products/:slug                        |
+| `ProductIdParamsSchema`            | price-history                              |
+| `PriceHistoryQuerySchema`          | query days                                 |
+| `CreatePriceAlertSchema`           | POST /price-alerts                         |
+| `ConfirmPriceAlertParamsSchema`    | confirm                                    |
+| `CancelPriceAlertParamsSchema`     | DELETE /price-alerts/:token                |
+| `WishlistAddSchema`                | POST /wishlist                             |
+| `WishlistRemoveParamsSchema`       | DELETE                                     |
+| `BatchCheckoutSchema`              | checkout-batch                             |
+| `CreateComparisonSchema`           | POST /comparisons                          |
+| `ComparisonIdentifierParamsSchema` | GET comparisons                            |
+| `RecordClickSchema`                | POST /events/click                         |
+| `ArticleSlugParamsSchema`          | GET /articles                              |
+| `CollectionSlugParamsSchema`       | GET /collections                           |
+| `PageSlugParamsSchema`             | GET /pages                                 |
+| `AdminLoginSchema`                 | POST /admin/auth/login                     |
+| `AdminPageSlugParamsSchema`        | GET/POST/PATCH /admin/pages/:slug/\*       |
+| `AdminPageBlockParamsSchema`       | PATCH/DELETE /admin/pages/:slug/blocks/:id |
+| `CreatePageBlockSchema`            | POST /admin/pages/:slug/blocks             |
+| `UpdatePageBlockSchema`            | PATCH /admin/pages/:slug/blocks/:id        |
+| `ReorderPageBlocksSchema`          | PATCH /admin/pages/:slug/blocks/reorder    |
 
 ## Schemas web (client)
 
@@ -725,9 +725,9 @@ Client HTTP: [`apps/web/src/lib/api/client.ts`](../apps/web/src/lib/api/client.t
 
 ## Rotas planejadas (não implementadas)
 
-| Rota | Plano |
-|------|-------|
-| `GET /coupons/:marketplace` | PRD Core |
+| Rota                              | Plano                   |
+| --------------------------------- | ----------------------- |
+| `GET /coupons/:marketplace`       | PRD Core                |
 | `POST /admin/pages/:slug/publish` | Admin CMS draft/publish |
 
 ## CORS

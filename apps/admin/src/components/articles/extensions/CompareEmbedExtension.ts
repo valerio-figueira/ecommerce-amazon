@@ -71,11 +71,10 @@ export function preprocessCompareShortcodesForEditor(body: string): string {
 }
 
 export function serializeCompareEmbeds(html: string): string {
-  return html.replace(
-    /<div[^>]*data-compare-embed[^>]*data-slugs="([^"]+)"[^>]*><\/div>/g,
-    '[[compare:$1]]',
-  ).replace(
-    /<div[^>]*data-compare-embed[^>]*data-slugs="([^"]+)"[^>]*>[\s\S]*?<\/div>/g,
-    '[[compare:$1]]',
-  );
+  return html
+    .replace(/<div[^>]*data-compare-embed[^>]*data-slugs="([^"]+)"[^>]*><\/div>/g, '[[compare:$1]]')
+    .replace(
+      /<div[^>]*data-compare-embed[^>]*data-slugs="([^"]+)"[^>]*>[\s\S]*?<\/div>/g,
+      '[[compare:$1]]',
+    );
 }

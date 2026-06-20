@@ -63,10 +63,10 @@ export function CategoryMultiSelect({
                 onChange={() => toggle(category.slug)}
                 className="h-4 w-4 accent-[var(--admin-primary)]"
               />
-              <span className="flex-1 text-sm">{getCategoryDisplayLabel(category.slug, category.label)}</span>
-              {checked && (
-                <span className="cms-category-order-badge">{order + 1}</span>
-              )}
+              <span className="flex-1 text-sm">
+                {getCategoryDisplayLabel(category.slug, category.label)}
+              </span>
+              {checked && <span className="cms-category-order-badge">{order + 1}</span>}
             </label>
           );
         })}

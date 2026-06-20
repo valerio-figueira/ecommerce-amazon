@@ -62,7 +62,9 @@ function BentoHeroSlot({
         sizes="(max-width: 768px) 100vw, 66vw"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         aria-hidden
-        {...(priority ? { priority: true } : { loading: 'lazy' as const, decoding: 'async' as const })}
+        {...(priority
+          ? { priority: true }
+          : { loading: 'lazy' as const, decoding: 'async' as const })}
       />
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
@@ -188,43 +190,43 @@ function BentoListSlot({
           Nenhum produto publicado nesta seleção.
         </p>
       ) : (
-      <ul className="flex flex-1 flex-col gap-2.5">
-        {slot.products.map((product) => {
-          const listItem = mapDeliveryProductToListItem(product);
-          return (
-            <li key={product.id}>
-              <Link
-                href={`/produtos/${product.slug}`}
-                data-block-id={blockId}
-                onClick={handleProductClick}
-                className="group flex items-center gap-3 rounded-xl p-1 transition-colors hover:bg-neutral-50"
-              >
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-                  {product.imageUrl && (
-                    <RemoteImage
-                      src={product.imageUrl}
-                      alt=""
-                      fill
-                      sizes="48px"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+        <ul className="flex flex-1 flex-col gap-2.5">
+          {slot.products.map((product) => {
+            const listItem = mapDeliveryProductToListItem(product);
+            return (
+              <li key={product.id}>
+                <Link
+                  href={`/produtos/${product.slug}`}
+                  data-block-id={blockId}
+                  onClick={handleProductClick}
+                  className="group flex items-center gap-3 rounded-xl p-1 transition-colors hover:bg-neutral-50"
+                >
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
+                    {product.imageUrl && (
+                      <RemoteImage
+                        src={product.imageUrl}
+                        alt=""
+                        fill
+                        sizes="48px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-1 text-xs font-medium text-neutral-900">
+                      {product.title}
+                    </p>
+                    <PriceDisplay
+                      price={listItem.price}
+                      strikethrough={listItem.price.strikethrough}
+                      compact
                     />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-xs font-medium text-neutral-900">
-                    {product.title}
-                  </p>
-                  <PriceDisplay
-                    price={listItem.price}
-                    strikethrough={listItem.price.strikethrough}
-                    compact
-                  />
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

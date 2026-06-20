@@ -37,7 +37,6 @@ Evoluir **apenas** o campo `longDescriptionHtml` (“Análise completa”) em `[
 
 ## Situação atual vs alvo
 
-
 | Aspecto  | Hoje                                         | Alvo                                               |
 | -------- | -------------------------------------------- | -------------------------------------------------- |
 | UI       | `<Textarea rows={14} font-mono>`             | TipTap WYSIWYG + aba **Código HTML**               |
@@ -45,7 +44,6 @@ Evoluir **apenas** o campo `longDescriptionHtml` (“Análise completa”) em `[
 | Fluxo IA | `ProductLlmPromptHelper` → colar HTML manual | Colar na aba HTML → alternar para Visual e revisar |
 | Tabelas  | HTML manual (`<table>`)                      | Extensões TipTap Table (round-trip seguro)         |
 | Vitrine  | `prose` + `dangerouslySetInnerHTML`          | Inalterado                                         |
-
 
 Referência de implementação: `[ArticleEditor.tsx](apps/admin/src/components/articles/ArticleEditor.tsx)` + `[ArticleEditorToolbar.tsx](apps/admin/src/components/articles/ArticleEditorToolbar.tsx)`.
 
@@ -66,14 +64,11 @@ flowchart LR
   DB --> Web["/produtos/slug prose"]
 ```
 
-
-
 ---
 
 ## 1. Extrair primitivos compartilhados do editor
 
 Criar pasta `[apps/admin/src/components/editor/](apps/admin/src/components/editor/)` com peças reutilizáveis (DRY sem acoplar artigo ↔ produto):
-
 
 | Arquivo                      | Origem                               | Função                                                             |
 | ---------------------------- | ------------------------------------ | ------------------------------------------------------------------ |
@@ -82,7 +77,6 @@ Criar pasta `[apps/admin/src/components/editor/](apps/admin/src/components/edito
 | `RichTextEditorShell.tsx`    | novo                                 | Shell com borda, barra superior (toolbar + tabs), área de conteúdo |
 | `normalize-empty-html.ts`    | novo                                 | Converte `<p></p>`, `<p><br></p>` → `''` antes do `onChange`       |
 | `toolbar-primitives.tsx`     | extrair de `ArticleEditorToolbar`    | `ToolbarButton`, `ToolbarSeparator`                                |
-
 
 Atualizar imports em `[ArticleEditor.tsx](apps/admin/src/components/articles/ArticleEditor.tsx)` e `[ArticleEditorToolbar.tsx](apps/admin/src/components/articles/ArticleEditorToolbar.tsx)` para usar os novos paths (refactor pequeno, sem mudança de comportamento do artigo).
 
@@ -111,7 +105,6 @@ TableRow, TableHeader, TableCell,
 
 ### Toolbar dedicada — `[ProductEditorToolbar.tsx](apps/admin/src/components/products/ProductEditorToolbar.tsx)`
 
-
 | Botão                         | Motivo                                                                                              |
 | ----------------------------- | --------------------------------------------------------------------------------------------------- |
 | H3                            | Seções obrigatórias do prompt (`[product-llm-prompt.ts](apps/admin/src/lib/product-llm-prompt.ts)`) |
@@ -120,7 +113,6 @@ TableRow, TableHeader, TableCell,
 | Table                         | Seção “Destaques e especificações” exige `<table>`                                                  |
 | Link                          | Links internos/externos úteis no review                                                             |
 | **Sem** H2, Produto, Comparar | Específicos de artigos                                                                              |
-
 
 ### Modo dual (igual artigo)
 
@@ -134,10 +126,7 @@ TableRow, TableHeader, TableCell,
 Em `[ProductAnalysisSection.tsx](apps/admin/src/components/products/ProductAnalysisSection.tsx)`, substituir o `<Textarea>` de `longDescriptionHtml` por:
 
 ```tsx
-<ProductLongDescriptionEditor
-  value={field.value ?? ''}
-  onChange={field.onChange}
-/>
+<ProductLongDescriptionEditor value={field.value ?? ''} onChange={field.onChange} />
 ```
 
 Manter `ProductLlmPromptHelper` ao lado do label. Atualizar `FormDescription` para mencionar modo Visual + aba HTML para colar saída da IA.
@@ -197,7 +186,7 @@ Atualizar `[docs/admin-products-phase1.md](docs/admin-products-phase1.md)`:
 
 ## Ordem de implementação
 
-1. Extrair `components/editor/`* + refatorar imports do artigo
+1. Extrair `components/editor/`\* + refatorar imports do artigo
 2. Instalar extensões Table
 3. Implementar `ProductLongDescriptionEditor` + toolbar + CSS
 4. Integrar em `ProductAnalysisSection` + contador de chars

@@ -35,8 +35,7 @@ export class UpdateArticle {
       await assertUniqueArticleSlug(this.contentRepository, input.slug, id);
     }
 
-    const nextClusterId =
-      input.clusterId !== undefined ? input.clusterId : existing.clusterId;
+    const nextClusterId = input.clusterId !== undefined ? input.clusterId : existing.clusterId;
 
     if (input.clusterId === null) {
       const pilarCluster = await this.contentClusterRepository.findByPilarArticleId(existing.id);
@@ -68,8 +67,7 @@ export class UpdateArticle {
       type: input.type ?? existing.type,
       status: nextStatus,
       authorId: existing.authorId,
-      categoryId:
-        input.categoryId !== undefined ? input.categoryId : existing.categoryId,
+      categoryId: input.categoryId !== undefined ? input.categoryId : existing.categoryId,
       clusterId: nextClusterId,
       seoTitle: input.seoTitle !== undefined ? input.seoTitle : existing.seoTitle,
       seoDescription:
@@ -87,8 +85,7 @@ export class UpdateArticle {
     const clusterIds = [
       ...new Set(
         [existing.clusterId, article.clusterId].filter(
-          (clusterId): clusterId is string =>
-            typeof clusterId === 'string' && clusterId.length > 0,
+          (clusterId): clusterId is string => typeof clusterId === 'string' && clusterId.length > 0,
         ),
       ),
     ];

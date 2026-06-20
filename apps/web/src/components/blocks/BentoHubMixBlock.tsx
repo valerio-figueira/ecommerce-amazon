@@ -3,7 +3,10 @@ import { bentoHubMixPropsSchema } from '@ecommerce-amazon/shared/cms';
 import type { BlockComponentProps } from '@/components/cms/BlockRegistry';
 import { BentoHubMixGrid } from '@/components/blocks/BentoHubMixGrid';
 
-export function BentoHubMixBlock({ block, isFirstBlock = false }: BlockComponentProps): React.JSX.Element {
+export function BentoHubMixBlock({
+  block,
+  isFirstBlock = false,
+}: BlockComponentProps): React.JSX.Element {
   bentoHubMixPropsSchema.parse(block.props);
 
   return (

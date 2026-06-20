@@ -24,10 +24,7 @@ export function RichTextEditorModeTabs({
         role="tab"
         aria-selected={mode === 'visual'}
         onClick={() => onModeChange('visual')}
-        className={cn(
-          'admin-rich-editor__mode-tab',
-          mode === 'visual' && 'is-active',
-        )}
+        className={cn('admin-rich-editor__mode-tab', mode === 'visual' && 'is-active')}
       >
         Visual
       </button>
@@ -36,10 +33,7 @@ export function RichTextEditorModeTabs({
         role="tab"
         aria-selected={mode === 'html'}
         onClick={() => onModeChange('html')}
-        className={cn(
-          'admin-rich-editor__mode-tab',
-          mode === 'html' && 'is-active',
-        )}
+        className={cn('admin-rich-editor__mode-tab', mode === 'html' && 'is-active')}
       >
         Código HTML
       </button>

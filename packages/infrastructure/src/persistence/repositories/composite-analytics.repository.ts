@@ -132,12 +132,7 @@ export class CompositeAnalyticsRepository
     return mergeEditorialFunnel(pgMetrics, pending);
   }
 
-  async getTopArticlesByEvent(
-    from: Date,
-    to: Date,
-    eventType: string,
-    limit: number,
-  ) {
+  async getTopArticlesByEvent(from: Date, to: Date, eventType: string, limit: number) {
     const [pgItems, pending] = await Promise.all([
       this.pgAnalytics.getTopArticlesByEvent(from, to, eventType, limit),
       this.bufferStore.getPendingAggregates(from, to),

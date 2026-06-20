@@ -52,7 +52,9 @@ export async function searchInternalLinkTargetsClient(
   const parsed = searchInternalLinkTargetsQuerySchema.parse(params);
   const query = buildQueryString(parsed);
   const path =
-    query.length > 0 ? `/api/admin/internal-link-targets?${query}` : '/api/admin/internal-link-targets';
+    query.length > 0
+      ? `/api/admin/internal-link-targets?${query}`
+      : '/api/admin/internal-link-targets';
   const response = await fetch(path, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(await readErrorMessage(response));

@@ -24,9 +24,9 @@ isProject: false
 
 Documento complementar ao [PRD Core — Plataforma de Afiliação](prd_plataforma_afiliação_de44933f.plan.md).
 
-| Documento | Responsabilidade |
-|-----------|------------------|
-| **PRD Core** | O que o sistema faz: dados, APIs, workers, UX de conversão, entidades |
+| Documento             | Responsabilidade                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| **PRD Core**          | O que o sistema faz: dados, APIs, workers, UX de conversão, entidades                     |
 | **PRD Growth (este)** | Como trazer pessoas até a vitrine: SEO, conteúdo, social, páginas-ímã, operação editorial |
 
 ---
@@ -75,23 +75,25 @@ Usuários raramente buscam um produto específico em site desconhecido. Buscam *
 
 ### 2.2 Tipos de Conteúdo (taxonomia editorial)
 
-| Tipo | Intenção de busca | Exemplo (nicho Home Office) | Objetivo |
-|------|-------------------|----------------------------|----------|
-| **Guia de compra** | "como escolher X" | "Como escolher cadeira ergonômica para dor nas costas" | Confiança + múltiplos embeds |
-| **Comparativo editorial** | "X vs Y" | "Cadeira A vs B vs C: qual vale a pena?" | Link para comparador técnico |
-| **Lista curada** | "melhores X 2026" | "7 melhores mesas ajustáveis até R$800" | Alto CTR em embeds |
-| **Problema → solução** | "X dói / X não funciona" | "Postura errada no home office: 5 upgrades baratos" | Empatia + curadoria |
-| **Review profundo** | "[produto] vale a pena" | "Análise completa: Cadeira X após 90 dias" | Página de detalhe interna rica |
+| Tipo                      | Intenção de busca        | Exemplo (nicho Home Office)                            | Objetivo                       |
+| ------------------------- | ------------------------ | ------------------------------------------------------ | ------------------------------ |
+| **Guia de compra**        | "como escolher X"        | "Como escolher cadeira ergonômica para dor nas costas" | Confiança + múltiplos embeds   |
+| **Comparativo editorial** | "X vs Y"                 | "Cadeira A vs B vs C: qual vale a pena?"               | Link para comparador técnico   |
+| **Lista curada**          | "melhores X 2026"        | "7 melhores mesas ajustáveis até R$800"                | Alto CTR em embeds             |
+| **Problema → solução**    | "X dói / X não funciona" | "Postura errada no home office: 5 upgrades baratos"    | Empatia + curadoria            |
+| **Review profundo**       | "[produto] vale a pena"  | "Análise completa: Cadeira X após 90 dias"             | Página de detalhe interna rica |
 
 ### 2.3 Engenharia de Conteúdo (integração com plataforma)
 
 **Fluxo editorial:**
+
 1. Redator cria artigo no CMS interno (`ContentArticle`).
 2. Ao citar produto, insere shortcode `[[product:slug]]`.
 3. Backend resolve embed em runtime: preço, rating, CTA e badge de queda vêm do **catálogo local** (PRD Core).
 4. Visitante lê conteúdo original → clica no card por conveniência → Cenário A ou B do PRD Core.
 
 **Regras anti-duplicação (obrigatórias):**
+
 - Mínimo **800 palavras** por artigo publicável; guias pilares ≥ **1.500 palavras**.
 - Mínimo **300 palavras** antes do primeiro embed comercial.
 - Proibido copiar descrição de marketplace; specs reescritas ou normalizadas.
@@ -102,6 +104,7 @@ Usuários raramente buscam um produto específico em site desconhecido. Buscam *
 ### 2.4 Estratégia de Keywords (framework operacional)
 
 **Mapa de intenção em três camadas:**
+
 1. **Topo (informational):** volume alto, conversão baixa — guias, tutoriais ("como montar setup").
 2. **Meio (commercial investigation):** comparativos, "melhores X" — principal alvo do hub.
 3. **Fundo (transactional):** nome de produto — capturado por detalhe interna enriquecida + histórico de preço (não competir head-on com Amazon).
@@ -169,23 +172,23 @@ flowchart LR
 
 ### 3.3 Especificação da Coleção Curada (lookbook social)
 
-| Elemento | Especificação |
-|----------|---------------|
-| URL | `/c/[slug-curto-memoravel]` |
-| Título | Espelha hook do vídeo ("5 itens que transformaram minha cozinha") |
-| Hero | Imagem/vídeo loop do conteúdo original |
-| Grid | 4–12 produtos, ordem = ordem de aparição no vídeo |
-| CTA global | "Adicionar todos à lista" + "Ver tudo na Amazon/Shopee" |
-| UTM | `utm_source=pinterest|tiktok|instagram&utm_medium=social&utm_campaign=[slug]` |
-| Performance | LCP < 1.5s (crítico para bounce de tráfego frio) |
+| Elemento    | Especificação                                                     |
+| ----------- | ----------------------------------------------------------------- | ------ | ------------------------------------------------ |
+| URL         | `/c/[slug-curto-memoravel]`                                       |
+| Título      | Espelha hook do vídeo ("5 itens que transformaram minha cozinha") |
+| Hero        | Imagem/vídeo loop do conteúdo original                            |
+| Grid        | 4–12 produtos, ordem = ordem de aparição no vídeo                 |
+| CTA global  | "Adicionar todos à lista" + "Ver tudo na Amazon/Shopee"           |
+| UTM         | `utm_source=pinterest                                             | tiktok | instagram&utm_medium=social&utm_campaign=[slug]` |
+| Performance | LCP < 1.5s (crítico para bounce de tráfego frio)                  |
 
 ### 3.4 Playbook por canal
 
-| Canal | Formato | Frequência MVP | KPI principal |
-|-------|---------|----------------|---------------|
-| **Pinterest** | Pins 2:3, infográficos de lista | 5 pins/semana | Saves, outbound clicks |
-| **TikTok** | Vídeo 15–60s, antes/depois | 3 vídeos/semana | Cliques link bio |
-| **Instagram** | Reels + carrossel produto | 3 posts/semana | Link clicks Stories/bio |
+| Canal         | Formato                         | Frequência MVP  | KPI principal           |
+| ------------- | ------------------------------- | --------------- | ----------------------- |
+| **Pinterest** | Pins 2:3, infográficos de lista | 5 pins/semana   | Saves, outbound clicks  |
+| **TikTok**    | Vídeo 15–60s, antes/depois      | 3 vídeos/semana | Cliques link bio        |
+| **Instagram** | Reels + carrossel produto       | 3 posts/semana  | Link clicks Stories/bio |
 
 **Regra:** cada peça visual = 1 coleção curada dedicada (nunca link genérico para homepage).
 
@@ -208,14 +211,14 @@ Features que geram **conteúdo indexável único**, **recorrência** e **compart
 
 **Especificação Growth (complementa PRD Core §3.4):**
 
-| Dimensão | Regra |
-|----------|-------|
-| Entrada | Checkbox no card, busca, ou link de artigo comparativo |
-| Limite | 2–3 produtos |
-| Conteúdo único | Intro editorial ≥150 palavras + linhas Prós/Contras por produto |
-| SEO | URL indexável `/comparar/[slug-gerado]`; title "A vs B vs C: comparativo completo" |
-| Social | Botão "Compartilhar comparação" → Open Graph com tabela preview |
-| Recirculação | Bloco "Vencedor por categoria" + link para guia relacionado |
+| Dimensão       | Regra                                                                              |
+| -------------- | ---------------------------------------------------------------------------------- |
+| Entrada        | Checkbox no card, busca, ou link de artigo comparativo                             |
+| Limite         | 2–3 produtos                                                                       |
+| Conteúdo único | Intro editorial ≥150 palavras + linhas Prós/Contras por produto                    |
+| SEO            | URL indexável `/comparar/[slug-gerado]`; title "A vs B vs C: comparativo completo" |
+| Social         | Botão "Compartilhar comparação" → Open Graph com tabela preview                    |
+| Recirculação   | Bloco "Vencedor por categoria" + link para guia relacionado                        |
 
 **Calendário editorial:** 1 comparativo indexável/semana alinhado a keyword Meio.
 
@@ -225,14 +228,14 @@ Features que geram **conteúdo indexável único**, **recorrência** e **compart
 
 **Especificação Growth (complementa PRD Core §3.5):**
 
-| Dimensão | Regra |
-|----------|-------|
-| URL principal | `/cupons` (+ `/cupons/shopee`, `/cupons/amazon`) |
-| Conteúdo único | Texto explicativo sobre como usar cupons no nicho + FAQ |
-| Operacional | Curador humano valida cupons 2x/dia nos primeiros 30 dias |
-| Recirculação | Após copiar cupom → modal "Veja ofertas do nicho" (4 cards) |
-| SEO | Title dinâmico "Cupons Shopee válidos hoje — [Mês/Ano]" |
-| Retenção | Email opcional "Avisar novos cupons do nicho" (lead gen) |
+| Dimensão       | Regra                                                       |
+| -------------- | ----------------------------------------------------------- |
+| URL principal  | `/cupons` (+ `/cupons/shopee`, `/cupons/amazon`)            |
+| Conteúdo único | Texto explicativo sobre como usar cupons no nicho + FAQ     |
+| Operacional    | Curador humano valida cupons 2x/dia nos primeiros 30 dias   |
+| Recirculação   | Após copiar cupom → modal "Veja ofertas do nicho" (4 cards) |
+| SEO            | Title dinâmico "Cupons Shopee válidos hoje — [Mês/Ano]"     |
+| Retenção       | Email opcional "Avisar novos cupons do nicho" (lead gen)    |
 
 **Alerta de compliance:** cupons expirados danificam confiança; Pipeline D (Core) é pré-requisito de go-live desta página.
 
@@ -248,22 +251,26 @@ Páginas de produto com gráfico de 90 dias capturam long-tail: "preço históri
 ## 5. Calendário de Lançamento (Primeiros 90 Dias)
 
 ### Fase 0 — Pré-lançamento (semanas 1–2)
+
 - Definir nicho vertical e taxonomia de categorias.
 - Seed 30–50 produtos curados manualmente.
 - Publicar 3 guias pilares (rascunho completo, embeds testados).
 - Criar 2 coleções curadas para campanha social de lançamento.
 
 ### Fase 1 — Lançamento soft (semanas 3–4)
+
 - Go-live com vitrine + hub (5 artigos) + `/cupons` + 1 comparador.
 - Iniciar Pinterest + 1 rede secundária (TikTok ou Instagram).
 - **Não** indexar em massa até conta afiliado validada (gate PRD Core §4.2).
 
 ### Fase 2 — Tração (semanas 5–8)
+
 - Ritmo: 2 artigos/semana + 1 comparativo/semana + 5 pins/semana.
 - Ativar alertas de preço e email capture em cupons.
 - Revisar Search Console; dobrar produção nos clusters com impressões.
 
 ### Fase 3 — Escala (semanas 9–12)
+
 - 30+ artigos indexados; interlinking completo.
 - Expandir cupons para sub-nichos (ex: `/cupons/eletrodomesticos`).
 - Testar paid boost em pins/posts com melhor CTR orgânico.
@@ -293,25 +300,25 @@ Páginas de produto com gráfico de 90 dias capturam long-tail: "preço históri
 
 ## 7. Métricas Globais de Growth (North Star)
 
-| Métrica | Definição | Meta MVP (90d) |
-|---------|-----------|----------------|
-| **Sessões orgânicas/semana** | Google Search | Crescimento 15% WoW após mês 2 |
-| **Sessões sociais/semana** | UTMs Pinterest/TikTok/IG | ≥500/semana ao final fase 2 |
-| **CTR global marketplace** | cliques CTA / sessões | ≥ 2.5% |
-| **Receita por sessão** | comissão / sessões | Baseline + tendência crescente |
-| **Ratio conteúdo/vitrine** | artigos publicados / produtos ativos | ≥ 1:5 |
+| Métrica                      | Definição                            | Meta MVP (90d)                 |
+| ---------------------------- | ------------------------------------ | ------------------------------ |
+| **Sessões orgânicas/semana** | Google Search                        | Crescimento 15% WoW após mês 2 |
+| **Sessões sociais/semana**   | UTMs Pinterest/TikTok/IG             | ≥500/semana ao final fase 2    |
+| **CTR global marketplace**   | cliques CTA / sessões                | ≥ 2.5%                         |
+| **Receita por sessão**       | comissão / sessões                   | Baseline + tendência crescente |
+| **Ratio conteúdo/vitrine**   | artigos publicados / produtos ativos | ≥ 1:5                          |
 
 ---
 
 ## 8. Dependências com PRD Core
 
-| Feature Growth | Entidade / Rota Core | Worker |
-|----------------|---------------------|--------|
-| Embeds em artigos | `ContentArticle`, `ContentProductEmbed` | Pipeline B (preço fresco) |
-| Coleções sociais | `CuratedCollection`, `GET /collections/:slug` | Pipeline B |
-| Comparador | `ProductComparison`, `GET /comparisons/:token` | Pipeline C (specs) |
-| Central de cupons | `Coupon`, `GET /coupons` | **Pipeline D** (novo) |
-| Histórico preço SEO | `PriceSnapshot` | Pipeline B |
+| Feature Growth      | Entidade / Rota Core                           | Worker                    |
+| ------------------- | ---------------------------------------------- | ------------------------- |
+| Embeds em artigos   | `ContentArticle`, `ContentProductEmbed`        | Pipeline B (preço fresco) |
+| Coleções sociais    | `CuratedCollection`, `GET /collections/:slug`  | Pipeline B                |
+| Comparador          | `ProductComparison`, `GET /comparisons/:token` | Pipeline C (specs)        |
+| Central de cupons   | `Coupon`, `GET /coupons`                       | **Pipeline D** (novo)     |
+| Histórico preço SEO | `PriceSnapshot`                                | Pipeline B                |
 
 ---
 

@@ -1,9 +1,6 @@
 import { ZodError } from 'zod';
 
-import {
-  isServiceUnavailableError,
-  isUnauthorizedError,
-} from '@/lib/api/admin-errors';
+import { isServiceUnavailableError, isUnauthorizedError } from '@/lib/api/admin-errors';
 
 const MARKETPLACE_CREDENTIAL_FIELD_LABELS: Record<string, string> = {
   accessKeyId: 'Access Key ID',

@@ -26,11 +26,7 @@ export function AdminUserMenu({
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target;
-      if (
-        target instanceof Node &&
-        menuRef.current &&
-        !menuRef.current.contains(target)
-      ) {
+      if (target instanceof Node && menuRef.current && !menuRef.current.contains(target)) {
         setOpen(false);
       }
     }

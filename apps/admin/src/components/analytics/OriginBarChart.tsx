@@ -1,14 +1,7 @@
 'use client';
 
 import { BarChart3 } from 'lucide-react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
@@ -41,12 +34,12 @@ export function OriginBarChart({ data }: OriginBarChartProps): React.JSX.Element
       ) : (
         <AnalyticsChartFrame height={288}>
           <BarChart data={chartData} layout="vertical" margin={{ left: 24 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
-              <XAxis type="number" allowDecimals={false} fontSize={12} />
-              <YAxis type="category" dataKey="origin" width={130} fontSize={11} />
-              <Tooltip formatter={(value, _name, item) => formatCountWithShare(value, item)} />
-              <Bar dataKey="count" fill="var(--admin-primary)" radius={[0, 4, 4, 0]} />
-            </BarChart>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+            <XAxis type="number" allowDecimals={false} fontSize={12} />
+            <YAxis type="category" dataKey="origin" width={130} fontSize={11} />
+            <Tooltip formatter={(value, _name, item) => formatCountWithShare(value, item)} />
+            <Bar dataKey="count" fill="var(--admin-primary)" radius={[0, 4, 4, 0]} />
+          </BarChart>
         </AnalyticsChartFrame>
       )}
     </AdminPageCard>

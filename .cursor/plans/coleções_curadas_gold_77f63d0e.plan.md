@@ -1,6 +1,6 @@
 ---
 name: Coleções Curadas Gold
-overview: "Completar a feature `curated_collection` aproveitando schema, entidade e `GET /collections/:slug` já existentes: CRUD admin, landing pública em `/colecoes/[slug]`, bloco CMS real na Home, correção de ordenação editorial e SEO/telemetria alinhados ao PRD."
+overview: 'Completar a feature `curated_collection` aproveitando schema, entidade e `GET /collections/:slug` já existentes: CRUD admin, landing pública em `/colecoes/[slug]`, bloco CMS real na Home, correção de ordenação editorial e SEO/telemetria alinhados ao PRD.'
 todos:
   - id: fix-product-order
     content: Corrigir ordenação editorial em GetCuratedCollection (reorder após findByIds)
@@ -38,15 +38,15 @@ isProject: false
 
 A fundação backend **não precisa ser recriada**. O monorepo já tem:
 
-| Camada | Status | Arquivo-chave |
-|--------|--------|---------------|
-| Schema M:N | Pronto | [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) — `curated_collections` + `collection_products` com `sort_order` |
-| Entidade | Pronto | [`packages/domain/src/entities/ContentArticle.ts`](packages/domain/src/entities/ContentArticle.ts) — campos extras vs sua spec: `campaignOrigin`, `utmDefaults`, `ctaText` |
-| Leitura pública | Pronto | [`GetCuratedCollection`](packages/application/src/use-cases/content/GetCuratedCollection.ts) + `GET /collections/:slug` |
-| Seed demo | Pronto | `setup-gamer-iniciante` com 2 produtos em [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) |
-| Admin | Stub | [`apps/admin/src/app/(dashboard)/colecoes/page.tsx`](apps/admin/src/app/(dashboard)/colecoes/page.tsx) |
-| Web bloco CMS | Stub | [`CuratedCollectionBlock.tsx`](apps/web/src/components/blocks/CuratedCollectionBlock.tsx) |
-| Landing pública | Ausente | — |
+| Camada          | Status  | Arquivo-chave                                                                                                                                                                                         |
+| --------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schema M:N      | Pronto  | [`packages/infrastructure/src/persistence/drizzle/schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) — `curated_collections` + `collection_products` com `sort_order` |
+| Entidade        | Pronto  | [`packages/domain/src/entities/ContentArticle.ts`](packages/domain/src/entities/ContentArticle.ts) — campos extras vs sua spec: `campaignOrigin`, `utmDefaults`, `ctaText`                            |
+| Leitura pública | Pronto  | [`GetCuratedCollection`](packages/application/src/use-cases/content/GetCuratedCollection.ts) + `GET /collections/:slug`                                                                               |
+| Seed demo       | Pronto  | `setup-gamer-iniciante` com 2 produtos em [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts)                                                                                        |
+| Admin           | Stub    | [`apps/admin/src/app/(dashboard)/colecoes/page.tsx`](<apps/admin/src/app/(dashboard)/colecoes/page.tsx>)                                                                                              |
+| Web bloco CMS   | Stub    | [`CuratedCollectionBlock.tsx`](apps/web/src/components/blocks/CuratedCollectionBlock.tsx)                                                                                                             |
+| Landing pública | Ausente | —                                                                                                                                                                                                     |
 
 **Decisão confirmada:** rota canônica **`/colecoes/[slug]`** (migrar seed e placeholders que hoje usam `/c/...`).
 
@@ -114,13 +114,13 @@ interface CuratedCollectionRepository {
 
 ### 1.2 Use cases (application)
 
-| Use case | Função |
-|----------|--------|
-| `GetCuratedCollection` | Corrigir ordenação + manter cache `vitrine:collection:slug:{slug}` |
-| `ListCuratedCollections` | Lista resumida (público leve + admin) |
-| `CreateCuratedCollection` | UUID, validação slug único, ≥1 produto |
-| `UpdateCuratedCollection` | Atualiza metadados + reescreve pivot |
-| `DeleteCuratedCollection` | Cascade já existe no schema |
+| Use case                  | Função                                                             |
+| ------------------------- | ------------------------------------------------------------------ |
+| `GetCuratedCollection`    | Corrigir ordenação + manter cache `vitrine:collection:slug:{slug}` |
+| `ListCuratedCollections`  | Lista resumida (público leve + admin)                              |
+| `CreateCuratedCollection` | UUID, validação slug único, ≥1 produto                             |
+| `UpdateCuratedCollection` | Atualiza metadados + reescreve pivot                               |
+| `DeleteCuratedCollection` | Cascade já existe no schema                                        |
 
 **Cache invalidation:** em create/update/delete, `cache.del('vitrine:collection:slug:{slug}')` e `INCR cache:version:product:{id}` para cada produto membro (padrão worker/API).
 
@@ -178,6 +178,7 @@ colecoes/page.tsx (RSC fetch)
 ```
 
 **Novos arquivos:**
+
 - `apps/admin/src/components/collections/CollectionListManager.tsx`
 - `apps/admin/src/components/collections/CollectionFormSheet.tsx`
 - `apps/admin/src/components/collections/CollectionListView.tsx`
@@ -185,6 +186,7 @@ colecoes/page.tsx (RSC fetch)
 - Busca de produtos via `listProductsClient()` existente
 
 **Campos do formulário:**
+
 - Título, slug (auto `slugifyTitle`), descrição editorial
 - URL da capa (`coverImageUrl`)
 - Origem campanha + UTM defaults (chips ou pares chave/valor simples)
@@ -244,7 +246,7 @@ Atualizar [`PageBlockDeliveryDto`](packages/shared/src/cms/block-schemas.ts) com
 Atualizar referências `/c/` → `/colecoes/`:
 
 - [`seed.ts`](packages/infrastructure/src/persistence/drizzle/seed.ts) — `ctaHref` do hero carousel e `href` do bento tile
-- Placeholders admin: [`HeroCarouselForm`](apps/admin/src/components/cms/props-forms/HeroCarouselForm.tsx), [`CategoryBentoGridForm`](apps/admin/src/components/cms/props-forms/CategoryBentoGridForm.tsx), [`colecoes/page.tsx`](apps/admin/src/app/(dashboard)/colecoes/page.tsx)
+- Placeholders admin: [`HeroCarouselForm`](apps/admin/src/components/cms/props-forms/HeroCarouselForm.tsx), [`CategoryBentoGridForm`](apps/admin/src/components/cms/props-forms/CategoryBentoGridForm.tsx), [`colecoes/page.tsx`](<apps/admin/src/app/(dashboard)/colecoes/page.tsx>)
 
 ---
 
@@ -304,12 +306,12 @@ flowchart TD
 
 ## Arquivos com maior impacto
 
-| Área | Criar | Modificar |
-|------|-------|-----------|
-| Domain | `CuratedCollectionRepository.ts` | `enums/index.ts` |
-| Application | `admin-collection/*.ts`, fix `GetCuratedCollection` | `GetPublishedPageLayout.ts`, `index.ts` |
-| Infrastructure | `drizzle-curated-collection.repository.ts`, migration | `api-container.ts`, `seed.ts` |
-| Shared | `admin/collection-schemas.ts`, SEO helper | `cms/block-schemas.ts`, `admin/index.ts` |
-| API | `admin-collection-routes.ts` | `index.ts`, `admin-routes.ts` |
-| Admin | `components/collections/*`, BFF routes | `colecoes/page.tsx`, `block-form-registry.ts` |
-| Web | `app/colecoes/[slug]/page.tsx`, `lib/api/collections.ts` | `CuratedCollectionBlock.tsx`, `schemas.ts` |
+| Área           | Criar                                                    | Modificar                                     |
+| -------------- | -------------------------------------------------------- | --------------------------------------------- |
+| Domain         | `CuratedCollectionRepository.ts`                         | `enums/index.ts`                              |
+| Application    | `admin-collection/*.ts`, fix `GetCuratedCollection`      | `GetPublishedPageLayout.ts`, `index.ts`       |
+| Infrastructure | `drizzle-curated-collection.repository.ts`, migration    | `api-container.ts`, `seed.ts`                 |
+| Shared         | `admin/collection-schemas.ts`, SEO helper                | `cms/block-schemas.ts`, `admin/index.ts`      |
+| API            | `admin-collection-routes.ts`                             | `index.ts`, `admin-routes.ts`                 |
+| Admin          | `components/collections/*`, BFF routes                   | `colecoes/page.tsx`, `block-form-registry.ts` |
+| Web            | `app/colecoes/[slug]/page.tsx`, `lib/api/collections.ts` | `CuratedCollectionBlock.tsx`, `schemas.ts`    |

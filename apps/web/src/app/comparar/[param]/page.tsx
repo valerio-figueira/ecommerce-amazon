@@ -101,9 +101,7 @@ export default async function ComparePersistedPage({
   const siteBaseUrl = getSiteBaseUrl();
   const productTitles = data.products.map((product) => product.title);
   const displayTitle = data.seoTitle ?? buildComparisonDisplayTitle(productTitles);
-  const pageTitle =
-    data.seoTitle ??
-    buildComparisonTitle(productTitles, brand.name);
+  const pageTitle = data.seoTitle ?? buildComparisonTitle(productTitles, brand.name);
   const pageUrl = `${siteBaseUrl}${data.canonicalPath}`;
   const jsonLd = buildComparisonPageJsonLd({
     siteBaseUrl,
@@ -113,14 +111,13 @@ export default async function ComparePersistedPage({
     products: data.products.map((product) => ({
       slug: product.slug,
       title: product.title,
-      ...(product.images[0] ?? product.imageUrl
+      ...((product.images[0] ?? product.imageUrl)
         ? { imageUrl: product.images[0] ?? product.imageUrl }
         : {}),
     })),
   });
 
-  const comparisonSlug =
-    data.status === 'published' && data.slug ? data.slug : undefined;
+  const comparisonSlug = data.status === 'published' && data.slug ? data.slug : undefined;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 pb-28">

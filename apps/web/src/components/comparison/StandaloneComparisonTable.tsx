@@ -58,7 +58,12 @@ export function StandaloneComparisonTable({
       comparisonSlug={comparisonSlug}
       showMarketplace
       footerExtra={
-        <Button type="button" variant="outline" disabled={addingAll} onClick={() => void handleAddAll()}>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={addingAll}
+          onClick={() => void handleAddAll()}
+        >
           {addingAll ? 'Adicionando...' : 'Adicionar todos à lista'}
         </Button>
       }

@@ -1,10 +1,14 @@
 import { DomainError } from '../errors/DomainError.js';
 import { PriceDropped } from '../events/index.js';
+import { Marketplace, ProductAvailability } from '../enums/index.js';
 import {
-  Marketplace,
-  ProductAvailability,
-} from '../enums/index.js';
-import { AffiliateLink, Price, ProductId, Slug, toProductId, toSlug } from '../value-objects/index.js';
+  AffiliateLink,
+  Price,
+  ProductId,
+  Slug,
+  toProductId,
+  toSlug,
+} from '../value-objects/index.js';
 import type { SpecsNormalized } from '../types/spec-group.js';
 
 export type ProductProps = {
@@ -109,9 +113,7 @@ export class Product {
     }
     const previous = this.price;
     if (previous.amount !== newPrice.amount && newPrice.amount < previous.amount) {
-      this._domainEvents.push(
-        new PriceDropped(this.id, previous, newPrice, new Date()),
-      );
+      this._domainEvents.push(new PriceDropped(this.id, previous, newPrice, new Date()));
     }
     this.price = newPrice;
   }

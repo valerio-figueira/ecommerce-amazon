@@ -2,11 +2,11 @@
 
 Comparador standalone na vitrine: seleção de 2–3 produtos da **mesma categoria**, barra flutuante, páginas `/comparar` e URL compartilhável via `shareToken`.
 
-| Referência | Documento |
-|------------|-----------|
-| PRD Core §3.4 | [`.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md`](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) |
-| Comparativos em artigos | [articles-public-rendering.md](./articles-public-rendering.md) |
-| API | [api-rest.md](./api-rest.md) — seção Comparador |
+| Referência              | Documento                                                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| PRD Core §3.4           | [`.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md`](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) |
+| Comparativos em artigos | [articles-public-rendering.md](./articles-public-rendering.md)                                                          |
+| API                     | [api-rest.md](./api-rest.md) — seção Comparador                                                                         |
 
 ## Escopo entregue
 
@@ -42,10 +42,10 @@ Restrições:
 
 ## Rotas web
 
-| Rota | Indexação | Descrição |
-|------|-----------|-----------|
-| `/comparar?p=slug1,slug2` | `noindex, follow` | Comparativo de sessão |
-| `/comparar/[param]` | `draft`: noindex; `published`: index | Slug canônico ou token legado |
+| Rota                      | Indexação                            | Descrição                     |
+| ------------------------- | ------------------------------------ | ----------------------------- |
+| `/comparar?p=slug1,slug2` | `noindex, follow`                    | Comparativo de sessão         |
+| `/comparar/[param]`       | `draft`: noindex; `published`: index | Slug canônico ou token legado |
 
 ## API
 
@@ -71,17 +71,17 @@ Response (`comparisonPublicDetailSchema`):
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Schemas | `packages/shared/src/comparison/` |
-| Intro editorial | `packages/shared/src/comparison/build-editorial-intro.ts` |
-| Use case | `packages/application/src/use-cases/comparison/CreateComparison.ts` |
-| Presenter | `apps/api/src/adapters/presenters/comparison.presenter.ts` |
-| Provider / barra | `apps/web/src/components/comparison/` |
-| Tabela | `apps/web/src/components/comparison/comparison-table-core.tsx` |
-| Intro colapsável | `apps/web/src/components/comparison/ComparisonEditorialIntro.tsx` |
-| Páginas | `apps/web/src/app/comparar/` |
-| JSON-LD | `packages/shared/src/seo/comparison-json-ld.ts` |
+| Camada           | Path                                                                |
+| ---------------- | ------------------------------------------------------------------- |
+| Schemas          | `packages/shared/src/comparison/`                                   |
+| Intro editorial  | `packages/shared/src/comparison/build-editorial-intro.ts`           |
+| Use case         | `packages/application/src/use-cases/comparison/CreateComparison.ts` |
+| Presenter        | `apps/api/src/adapters/presenters/comparison.presenter.ts`          |
+| Provider / barra | `apps/web/src/components/comparison/`                               |
+| Tabela           | `apps/web/src/components/comparison/comparison-table-core.tsx`      |
+| Intro colapsável | `apps/web/src/components/comparison/ComparisonEditorialIntro.tsx`   |
+| Páginas          | `apps/web/src/app/comparar/`                                        |
+| JSON-LD          | `packages/shared/src/seo/comparison-json-ld.ts`                     |
 
 ## SEO
 

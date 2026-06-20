@@ -33,10 +33,7 @@ function handleAdminCollectionError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminCollectionRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminCollectionRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.get('/admin/collections', async (_request, reply) => {

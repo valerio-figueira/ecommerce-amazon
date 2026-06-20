@@ -2,12 +2,12 @@
 
 Mascaramento de links afiliados, rich snippets Schema.org e motor de links internos em artigos.
 
-| Referência | Arquivo |
-|------------|---------|
-| Rota API | `GET /go/:slug` em [`apps/api/src/adapters/http/routes/index.ts`](../apps/api/src/adapters/http/routes/index.ts) |
-| Use case | [`ResolveAffiliateRedirect.ts`](../packages/application/src/use-cases/affiliate/ResolveAffiliateRedirect.ts) |
-| LinkParser | [`packages/shared/src/seo/link-parser.ts`](../packages/shared/src/seo/link-parser.ts) |
-| Página produto | [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx) |
+| Referência     | Arquivo                                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Rota API       | `GET /go/:slug` em [`apps/api/src/adapters/http/routes/index.ts`](../apps/api/src/adapters/http/routes/index.ts) |
+| Use case       | [`ResolveAffiliateRedirect.ts`](../packages/application/src/use-cases/affiliate/ResolveAffiliateRedirect.ts)     |
+| LinkParser     | [`packages/shared/src/seo/link-parser.ts`](../packages/shared/src/seo/link-parser.ts)                            |
+| Página produto | [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx)                      |
 
 ## Escopo entregue
 
@@ -91,11 +91,11 @@ Abrir `http://localhost:3001/produtos/cadeira-ergonomica-home-office` e inspecio
 
 Todo CTA que aponta para `/go/{slug}` deve usar **`rel="noopener sponsored"`** (regra de conformidade afiliado).
 
-| Componente | Status |
-|------------|--------|
-| [`AffiliateGoLink.tsx`](../apps/web/src/components/product/AffiliateGoLink.tsx) | Conforme — único wrapper de CTA afiliado |
-| [`WishlistDrawer.tsx`](../apps/web/src/components/wishlist/WishlistDrawer.tsx) | Conforme — usa `AffiliateGoLink` |
-| Grep `/go/` em `apps/web` | Deve retornar apenas `AffiliateGoLink`, `go-url.ts`, `robots.ts`, `next.config.ts` |
+| Componente                                                                      | Status                                                                             |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [`AffiliateGoLink.tsx`](../apps/web/src/components/product/AffiliateGoLink.tsx) | Conforme — único wrapper de CTA afiliado                                           |
+| [`WishlistDrawer.tsx`](../apps/web/src/components/wishlist/WishlistDrawer.tsx)  | Conforme — usa `AffiliateGoLink`                                                   |
+| Grep `/go/` em `apps/web`                                                       | Deve retornar apenas `AffiliateGoLink`, `go-url.ts`, `robots.ts`, `next.config.ts` |
 
 Auditoria periódica:
 
@@ -108,8 +108,8 @@ Ver também [seo-technical-phase1.md](./seo-technical-phase1.md) para `robots.tx
 
 ## Env vars
 
-| Variável | Uso |
-|----------|-----|
-| `API_INTERNAL_URL` | Rewrite `/go` no Next.js (default: `NEXT_PUBLIC_API_URL`) |
-| `NEXT_PUBLIC_SITE_URL` | URLs absolutas no JSON-LD |
-| `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` | Fallback quando conta DB ausente |
+| Variável                                       | Uso                                                       |
+| ---------------------------------------------- | --------------------------------------------------------- |
+| `API_INTERNAL_URL`                             | Rewrite `/go` no Next.js (default: `NEXT_PUBLIC_API_URL`) |
+| `NEXT_PUBLIC_SITE_URL`                         | URLs absolutas no JSON-LD                                 |
+| `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` | Fallback quando conta DB ausente                          |

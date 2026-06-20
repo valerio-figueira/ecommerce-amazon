@@ -3,7 +3,10 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
-import type { EngagementEventTypeValue, EngagementPlacementValue } from '@ecommerce-amazon/shared/analytics';
+import type {
+  EngagementEventTypeValue,
+  EngagementPlacementValue,
+} from '@ecommerce-amazon/shared/analytics';
 
 import { recordEngagement } from '@/lib/api/engagement';
 import { resolveReferrerPath } from '@/lib/attribution/context';

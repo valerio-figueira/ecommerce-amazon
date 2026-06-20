@@ -34,10 +34,7 @@ function handleAdminComparisonError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export function registerAdminComparisonRoutes(
-  app: FastifyInstance,
-  container: ApiContainer,
-): void {
+export function registerAdminComparisonRoutes(app: FastifyInstance, container: ApiContainer): void {
   const { useCases } = container;
 
   app.get('/admin/comparisons', async (_request, reply) => {

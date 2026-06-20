@@ -67,6 +67,7 @@ flowchart TB
 ```
 
 **Decisões confirmadas:**
+
 - Escopo completo (schema → vitrine)
 - URL pública com **slug global único**: `/categorias/teclados-mecanicos`
 - Produto amarrado à **folha** da árvore (`category_id`); nós intermediários servem navegação/SEO
@@ -80,22 +81,22 @@ flowchart TB
 
 Arquivo dedicado: [`packages/infrastructure/src/persistence/drizzle/schema/categories.ts`](packages/infrastructure/src/persistence/drizzle/schema/categories.ts) (exportar em `schema/index.ts`).
 
-| Campo | Tipo | Notas |
-|-------|------|-------|
-| `id` | `uuid` PK | Alinhado ao padrão do monorepo (não `varchar(36)`) |
-| `slug` | `text` UNIQUE | kebab-case globalmente único |
-| `label` | `text` | Nome amigável |
-| `icon` | `varchar(50)` | Emoji ou nome Lucide |
-| `parent_id` | `uuid` FK → `categories.id` | Nullable = raiz |
-| `sort_order` | `integer` default 0 | Ordenação no menu |
-| `seo_title` | `varchar(150)` | |
-| `seo_description` | `text` | |
-| `description_html` | `text` | Conteúdo editorial no rodapé da listagem |
-| `amazon_browse_node` | `varchar(50)` | Mapeamento futuro worker |
-| `mercadolivre_category_id` | `varchar(50)` | |
-| `shopee_category_id` | `varchar(50)` | Simetria com 3 marketplaces já no enum |
-| `visible` | `boolean` default true | Ocultar nós em rascunho |
-| `created_at` / `updated_at` | `timestamptz` | |
+| Campo                       | Tipo                        | Notas                                              |
+| --------------------------- | --------------------------- | -------------------------------------------------- |
+| `id`                        | `uuid` PK                   | Alinhado ao padrão do monorepo (não `varchar(36)`) |
+| `slug`                      | `text` UNIQUE               | kebab-case globalmente único                       |
+| `label`                     | `text`                      | Nome amigável                                      |
+| `icon`                      | `varchar(50)`               | Emoji ou nome Lucide                               |
+| `parent_id`                 | `uuid` FK → `categories.id` | Nullable = raiz                                    |
+| `sort_order`                | `integer` default 0         | Ordenação no menu                                  |
+| `seo_title`                 | `varchar(150)`              |                                                    |
+| `seo_description`           | `text`                      |                                                    |
+| `description_html`          | `text`                      | Conteúdo editorial no rodapé da listagem           |
+| `amazon_browse_node`        | `varchar(50)`               | Mapeamento futuro worker                           |
+| `mercadolivre_category_id`  | `varchar(50)`               |                                                    |
+| `shopee_category_id`        | `varchar(50)`               | Simetria com 3 marketplaces já no enum             |
+| `visible`                   | `boolean` default true      | Ocultar nós em rascunho                            |
+| `created_at` / `updated_at` | `timestamptz`               |                                                    |
 
 Índices: `parent_id`, `slug`, `(parent_id, sort_order)`.
 
@@ -129,23 +130,24 @@ Arquivo dedicado: [`packages/infrastructure/src/persistence/drizzle/schema/categ
 
 **Públicos** (substituem `ListProductCategories` baseado em produtos):
 
-| Use case | Responsabilidade |
-|----------|------------------|
-| `ListCategoryTree` | Árvore aninhada com `productCount` (visible products only) |
-| `GetCategoryBySlug` | Detalhe SEO + breadcrumbs + filhos diretos |
-| Refatorar `ListProducts` | Filtro `category` via descendentes |
+| Use case                 | Responsabilidade                                           |
+| ------------------------ | ---------------------------------------------------------- |
+| `ListCategoryTree`       | Árvore aninhada com `productCount` (visible products only) |
+| `GetCategoryBySlug`      | Detalhe SEO + breadcrumbs + filhos diretos                 |
+| Refatorar `ListProducts` | Filtro `category` via descendentes                         |
 
 **Admin** (novo namespace `use-cases/admin-category/`):
 
-| Use case | Regras |
-|----------|--------|
+| Use case              | Regras                                              |
+| --------------------- | --------------------------------------------------- |
 | `ListAdminCategories` | Árvore flat indentada ou nested com todos os campos |
-| `CreateCategory` | Valida slug único, parent existe |
-| `UpdateCategory` | Impede mover nó para próprio descendente |
-| `DeleteCategory` | Bloqueia se tem filhos ou produtos vinculados |
-| `ReorderCategories` | Batch update `sort_order` por `parentId` |
+| `CreateCategory`      | Valida slug único, parent existe                    |
+| `UpdateCategory`      | Impede mover nó para próprio descendente            |
+| `DeleteCategory`      | Bloqueia se tem filhos ou produtos vinculados       |
+| `ReorderCategories`   | Batch update `sort_order` por `parentId`            |
 
 **Produtos** — ajustar [`CreateProduct`](packages/application/src/use-cases/product/CreateProduct.ts) / [`UpdateProduct`](packages/application/src/use-cases/product/UpdateProduct.ts):
+
 - Aceitar `categoryId` (UUID)
 - Validar que categoria existe, está `visible`, e é **folha** (sem filhos)
 
@@ -196,12 +198,12 @@ Cache Redis: `vitrine:categories:tree` TTL 10min; `vitrine:category:slug:{slug}`
 
 Registrar em [`admin-routes.ts`](apps/api/src/adapters/http/routes/admin-routes.ts) com JWT guard existente:
 
-| Rota | Body / params |
-|------|---------------|
-| `GET /admin/categories` | Árvore completa (admin fields) |
-| `POST /admin/categories` | `createCategoryBodySchema` |
-| `PATCH /admin/categories/:id` | `updateCategoryBodySchema` |
-| `DELETE /admin/categories/:id` | 409 se filhos/produtos |
+| Rota                              | Body / params                               |
+| --------------------------------- | ------------------------------------------- |
+| `GET /admin/categories`           | Árvore completa (admin fields)              |
+| `POST /admin/categories`          | `createCategoryBodySchema`                  |
+| `PATCH /admin/categories/:id`     | `updateCategoryBodySchema`                  |
+| `DELETE /admin/categories/:id`    | 409 se filhos/produtos                      |
 | `PATCH /admin/categories/reorder` | `{ parentId?, items: [{ id, sortOrder }] }` |
 
 Schemas Zod em [`packages/shared/src/admin/category-schemas.ts`](packages/shared/src/admin/category-schemas.ts).
@@ -218,11 +220,12 @@ DI: registrar `DrizzleCategoryRepository` + use cases em [`api-container.ts`](pa
 
 ### Nova seção `/categorias`
 
-- Rota: [`apps/admin/src/app/(dashboard)/categorias/page.tsx`](apps/admin/src/app/(dashboard)/categorias/page.tsx)
+- Rota: [`apps/admin/src/app/(dashboard)/categorias/page.tsx`](<apps/admin/src/app/(dashboard)/categorias/page.tsx>)
 - Nav: adicionar item **Categorias** em [`navigation.ts`](apps/admin/src/lib/navigation.ts) (ícone `FolderTree`, entre Produtos e Artigos)
 - Padrão visual: painéis flutuantes conforme [`11-admin-floating-panels.mdc`](.cursor/rules/11-admin-floating-panels.mdc)
 
 **Componentes:**
+
 - `CategoryTreeManager` — lista indentada (`padding-left` por nível), drag ou botões ↑↓ para `sort_order`
 - `CategoryFormSheet` — criar/editar: label, slug (auto-gerado do label), parent (select de nós não-folha), icon, campos SEO, `descriptionHtml` (textarea), IDs marketplace
 - Ações: criar subcategoria, editar, excluir (com confirmação)
@@ -240,6 +243,7 @@ Substituir select estático em [`ProductEssentialsSection.tsx`](apps/admin/src/c
 ### CMS blocks
 
 Atualizar pickers que hoje usam `GET /categories` flat:
+
 - [`CategoryMultiSelect.tsx`](apps/admin/src/components/cms/props-forms/CategoryMultiSelect.tsx) — labels indentados (`Games → Periféricos`)
 - [`CategoryBentoGridForm.tsx`](apps/admin/src/components/cms/props-forms/CategoryBentoGridForm.tsx) — opção "link" aponta para `/categorias/{slug}`
 - Remover duplicação em `dynamic-grid-form-meta.ts` — labels vêm da API
@@ -262,6 +266,7 @@ Nova rota: [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/cate
 ### Navegação
 
 [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx):
+
 - Buscar `GET /categories` no server (layout ou componente server wrapper)
 - Renderizar links de **raiz** no menu; opcional dropdown simples para 1º nível de filhos
 
@@ -288,13 +293,13 @@ Nova rota: [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/cate
 
 ## 7. Testes
 
-| Área | Arquivo sugerido |
-|------|------------------|
-| `buildCategoryTree` | `packages/shared/src/category/build-category-tree.test.ts` |
-| Use cases admin | `packages/application/src/use-cases/admin-category/admin-category.test.ts` |
-| Filtro descendentes | `packages/infrastructure/src/persistence/repositories/drizzle-category.repository.test.ts` (ou integration) |
-| Schemas | `packages/shared/src/admin/category-schemas.test.ts` |
-| SEO JSON-LD categoria | `packages/shared/src/seo/category-json-ld.test.ts` |
+| Área                  | Arquivo sugerido                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `buildCategoryTree`   | `packages/shared/src/category/build-category-tree.test.ts`                                                  |
+| Use cases admin       | `packages/application/src/use-cases/admin-category/admin-category.test.ts`                                  |
+| Filtro descendentes   | `packages/infrastructure/src/persistence/repositories/drizzle-category.repository.test.ts` (ou integration) |
+| Schemas               | `packages/shared/src/admin/category-schemas.test.ts`                                                        |
+| SEO JSON-LD categoria | `packages/shared/src/seo/category-json-ld.test.ts`                                                          |
 
 ---
 
@@ -303,6 +308,7 @@ Nova rota: [`apps/web/src/app/categorias/[slug]/page.tsx`](apps/web/src/app/cate
 Criar [`docs/categories-hierarchy.md`](docs/categories-hierarchy.md) com escopo, migração, contratos API, fluxo admin/vitrine e preparação worker (browse nodes).
 
 Atualizar:
+
 - [`docs/database-schema.md`](docs/database-schema.md) — tabela `categories`, FK em `products`
 - [`docs/domain-model.md`](docs/domain-model.md) — entidade `Category`, ports, use cases
 - [`docs/api-rest.md`](docs/api-rest.md) — endpoints novos/alterados
@@ -330,12 +336,12 @@ flowchart LR
 
 ## Riscos e mitigações
 
-| Risco | Mitigação |
-|-------|-----------|
-| CMS blocks com slugs antigos | Seed preserva slugs raiz; validação Zod em blocos continua por slug string |
-| Breaking `GET /products?category` | Documentar; comportamento novo (subárvore) é o desejado para silo SEO |
-| Slug duplicado em subárvores | Constraint UNIQUE global + validação no create |
-| Delete categoria com produtos | `ON DELETE SET NULL` no FK + bloqueio explícito no use case admin |
+| Risco                             | Mitigação                                                                  |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| CMS blocks com slugs antigos      | Seed preserva slugs raiz; validação Zod em blocos continua por slug string |
+| Breaking `GET /products?category` | Documentar; comportamento novo (subárvore) é o desejado para silo SEO      |
+| Slug duplicado em subárvores      | Constraint UNIQUE global + validação no create                             |
+| Delete categoria com produtos     | `ON DELETE SET NULL` no FK + bloqueio explícito no use case admin          |
 
 ## Fora de escopo desta entrega
 

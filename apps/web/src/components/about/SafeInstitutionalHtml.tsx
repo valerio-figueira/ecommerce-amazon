@@ -20,7 +20,5 @@ export function SafeInstitutionalHtml({
     return <Tag className={className}>{sanitized}</Tag>;
   }
 
-  return (
-    <Tag className={className} dangerouslySetInnerHTML={{ __html: sanitized }} />
-  );
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }

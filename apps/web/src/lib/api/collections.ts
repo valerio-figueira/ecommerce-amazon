@@ -15,5 +15,8 @@ export async function fetchCuratedCollection(
   params.set('page', String(page));
   params.set('pageSize', String(pageSize));
 
-  return fetchOrNotFound(`/collections/${slug}?${params.toString()}`, curatedCollectionDetailSchema);
+  return fetchOrNotFound(
+    `/collections/${slug}?${params.toString()}`,
+    curatedCollectionDetailSchema,
+  );
 }

@@ -80,7 +80,10 @@ export function OperatorsPanel({ initialItems }: OperatorsPanelProps): React.JSX
     }
   }
 
-  async function changeRole(operator: OperatorSummary, nextRole: 'admin' | 'editor'): Promise<void> {
+  async function changeRole(
+    operator: OperatorSummary,
+    nextRole: 'admin' | 'editor',
+  ): Promise<void> {
     try {
       await updateOperatorAccessClient(operator.id, { role: nextRole });
       adminToast.success('Papel do operador atualizado.');
@@ -152,13 +155,18 @@ export function OperatorsPanel({ initialItems }: OperatorsPanelProps): React.JSX
           <SheetHeader>
             <SheetTitle>Convidar operador</SheetTitle>
             <SheetDescription>
-              Crie uma conta com senha temporária. O operador deve trocar a senha no primeiro acesso.
+              Crie uma conta com senha temporária. O operador deve trocar a senha no primeiro
+              acesso.
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="operator-name">Nome</Label>
-              <Input id="operator-name" value={name} onChange={(event) => setName(event.target.value)} />
+              <Input
+                id="operator-name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="operator-email">E-mail</Label>

@@ -72,9 +72,6 @@ export class PriceAlert {
   }
 
   shouldTrigger(currentPrice: Price): boolean {
-    return (
-      this.status === AlertStatus.ACTIVE &&
-      currentPrice.meetsTarget(this.targetPrice)
-    );
+    return this.status === AlertStatus.ACTIVE && currentPrice.meetsTarget(this.targetPrice);
   }
 }

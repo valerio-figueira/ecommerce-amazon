@@ -83,7 +83,9 @@ export function AffiliateAccountsPanel({
   const [checklistConfirmed, setChecklistConfirmed] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [newMarketplace, setNewMarketplace] = useState<CreateAffiliateAccountBody['marketplace'] | ''>('');
+  const [newMarketplace, setNewMarketplace] = useState<
+    CreateAffiliateAccountBody['marketplace'] | ''
+  >('');
   const [newTag, setNewTag] = useState('');
   const [creating, setCreating] = useState(false);
 
@@ -231,7 +233,10 @@ export function AffiliateAccountsPanel({
         ))}
       </div>
 
-      <AlertDialog open={validateTarget !== null} onOpenChange={(open) => !open && setValidateTarget(null)}>
+      <AlertDialog
+        open={validateTarget !== null}
+        onOpenChange={(open) => !open && setValidateTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Validar conta de afiliado</AlertDialogTitle>
@@ -283,7 +288,10 @@ export function AffiliateAccountsPanel({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir conta de afiliado</AlertDialogTitle>
@@ -394,7 +402,9 @@ function AffiliateAccountCard({
           {account.validatedBy ? (
             <p className="mt-2 text-xs text-[var(--admin-text-muted)]">
               Validada por {account.validatedBy}
-              {account.validatedAt ? ` em ${new Date(account.validatedAt).toLocaleString('pt-BR')}` : ''}
+              {account.validatedAt
+                ? ` em ${new Date(account.validatedAt).toLocaleString('pt-BR')}`
+                : ''}
             </p>
           ) : null}
         </div>
@@ -407,11 +417,23 @@ function AffiliateAccountCard({
               </Button>
             ) : null}
             {account.status === 'active' || account.status === 'suspended' ? (
-              <Button type="button" size="sm" variant="outline" onClick={onToggleSuspend} disabled={saving}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={onToggleSuspend}
+                disabled={saving}
+              >
                 {account.status === 'suspended' ? 'Reativar' : 'Suspender'}
               </Button>
             ) : null}
-            <Button type="button" size="sm" variant="destructive" onClick={onDelete} disabled={saving}>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={onDelete}
+              disabled={saving}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Excluir
             </Button>

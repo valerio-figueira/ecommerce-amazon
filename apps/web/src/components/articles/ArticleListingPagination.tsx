@@ -11,11 +11,7 @@ type ArticleListingPaginationProps = {
   totalPages: number;
 };
 
-function buildPageHref(
-  pathname: string,
-  searchParams: URLSearchParams,
-  page: number,
-): string {
+function buildPageHref(pathname: string, searchParams: URLSearchParams, page: number): string {
   const params = new URLSearchParams(searchParams.toString());
   if (page <= 1) {
     params.delete('page');
@@ -46,32 +42,32 @@ export function ArticleListingPagination({
         isPending && 'opacity-70',
       )}
     >
-        {page > 1 ? (
-          <Link
-            href={buildPageHref(pathname, searchParams, page - 1)}
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
-            onClick={() => startListingTransition(() => undefined)}
-          >
-            Anterior
-          </Link>
-        ) : (
-          <span className="rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-400">
-            Anterior
-          </span>
-        )}
-        {page < totalPages ? (
-          <Link
-            href={buildPageHref(pathname, searchParams, page + 1)}
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
-            onClick={() => startListingTransition(() => undefined)}
-          >
-            Próxima
-          </Link>
-        ) : (
-          <span className="rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-400">
-            Próxima
-          </span>
-        )}
+      {page > 1 ? (
+        <Link
+          href={buildPageHref(pathname, searchParams, page - 1)}
+          className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
+          onClick={() => startListingTransition(() => undefined)}
+        >
+          Anterior
+        </Link>
+      ) : (
+        <span className="rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-400">
+          Anterior
+        </span>
+      )}
+      {page < totalPages ? (
+        <Link
+          href={buildPageHref(pathname, searchParams, page + 1)}
+          className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50"
+          onClick={() => startListingTransition(() => undefined)}
+        >
+          Próxima
+        </Link>
+      ) : (
+        <span className="rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-400">
+          Próxima
+        </span>
+      )}
     </nav>
   );
 }

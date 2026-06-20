@@ -1,9 +1,6 @@
 import { asc, and, count, eq, ne } from 'drizzle-orm';
 
-import {
-  ArticleCategory,
-  type ArticleCategoryRepository,
-} from '@ecommerce-amazon/domain';
+import { ArticleCategory, type ArticleCategoryRepository } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';

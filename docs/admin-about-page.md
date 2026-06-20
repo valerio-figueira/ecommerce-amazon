@@ -32,35 +32,35 @@ flowchart LR
 
 ## Painéis do editor
 
-| Painel | Campos |
-|--------|--------|
-| Contexto | Status, link vitrine, Salvar rascunho / Publicar |
-| SEO | `seoTitle`, `seoDescription` |
-| Hero | `heroTitle`, `heroIntro` |
-| Seções fixas | `proposta`, `metodo`, `afiliados`, `equipe` — título, parágrafos, listas |
-| Equipe | `teamSectionIntro` + aviso sobre `/perfil` |
-| Próximos passos | `trafficDirection` (título, intro, 1–3 links internos) |
-| Meta | `lastUpdated` (auto no save) |
+| Painel          | Campos                                                                   |
+| --------------- | ------------------------------------------------------------------------ |
+| Contexto        | Status, link vitrine, Salvar rascunho / Publicar                         |
+| SEO             | `seoTitle`, `seoDescription`                                             |
+| Hero            | `heroTitle`, `heroIntro`                                                 |
+| Seções fixas    | `proposta`, `metodo`, `afiliados`, `equipe` — título, parágrafos, listas |
+| Equipe          | `teamSectionIntro` + aviso sobre `/perfil`                               |
+| Próximos passos | `trafficDirection` (título, intro, 1–3 links internos)                   |
+| Meta            | `lastUpdated` (auto no save)                                             |
 
 ## API
 
-| Método | Rota | Body |
-|--------|------|------|
-| GET | `/admin/institutional-pages/:slug` | — |
-| PATCH | `/admin/institutional-pages/:slug` | `{ content, seoTitle?, seoDescription?, status? }` |
+| Método | Rota                               | Body                                               |
+| ------ | ---------------------------------- | -------------------------------------------------- |
+| GET    | `/admin/institutional-pages/:slug` | —                                                  |
+| PATCH  | `/admin/institutional-pages/:slug` | `{ content, seoTitle?, seoDescription?, status? }` |
 
 `content` validado por `aboutPageContentSchema`; save passa por `parseAboutPageContent` (sanitização XSS).
 
 ## Arquivos-chave
 
-| Artefato | Path |
-|----------|------|
-| Editor principal | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx) |
-| Rota Admin | [`paginas/[slug]/page.tsx`](../apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx) |
-| BFF | [`api/admin/institutional-pages/[slug]/route.ts`](../apps/admin/src/app/api/admin/institutional-pages/[slug]/route.ts) |
-| Client API | [`institutional-pages-client.ts`](../apps/admin/src/lib/api/institutional-pages-client.ts) |
-| Use case | [`GetInstitutionalPage.ts`](../packages/application/src/use-cases/institutional/GetInstitutionalPage.ts) |
-| Schemas | [`about-content.schema.ts`](../packages/shared/src/about/about-content.schema.ts) |
+| Artefato         | Path                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Editor principal | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx)                                        |
+| Rota Admin       | [`paginas/[slug]/page.tsx`](<../apps/admin/src/app/(dashboard)/paginas/[slug]/page.tsx>)                               |
+| BFF              | [`api/admin/institutional-pages/[slug]/route.ts`](../apps/admin/src/app/api/admin/institutional-pages/[slug]/route.ts) |
+| Client API       | [`institutional-pages-client.ts`](../apps/admin/src/lib/api/institutional-pages-client.ts)                             |
+| Use case         | [`GetInstitutionalPage.ts`](../packages/application/src/use-cases/institutional/GetInstitutionalPage.ts)               |
+| Schemas          | [`about-content.schema.ts`](../packages/shared/src/about/about-content.schema.ts)                                      |
 
 ## Como testar
 

@@ -8,12 +8,12 @@ Evitar strings `"Vitrine"` espalhadas em dezenas de arquivos. Alterar a marca em
 
 ## Onde está
 
-| Artefato | Path |
-|----------|------|
-| Módulo principal | [`packages/shared/src/config/brand.ts`](../packages/shared/src/config/brand.ts) |
-| Env tipado | [`packages/shared/src/index.ts`](../packages/shared/src/index.ts) (`SITE_NAME`, `WEB_PUBLIC_URL`, etc.) |
-| Web (server) | [`apps/web/src/lib/site-url.ts`](../apps/web/src/lib/site-url.ts) → `getServerBrandConfig()` |
-| Admin (server/client) | [`apps/admin/src/lib/brand.ts`](../apps/admin/src/lib/brand.ts) |
+| Artefato              | Path                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Módulo principal      | [`packages/shared/src/config/brand.ts`](../packages/shared/src/config/brand.ts)                         |
+| Env tipado            | [`packages/shared/src/index.ts`](../packages/shared/src/index.ts) (`SITE_NAME`, `WEB_PUBLIC_URL`, etc.) |
+| Web (server)          | [`apps/web/src/lib/site-url.ts`](../apps/web/src/lib/site-url.ts) → `getServerBrandConfig()`            |
+| Admin (server/client) | [`apps/admin/src/lib/brand.ts`](../apps/admin/src/lib/brand.ts)                                         |
 
 Import:
 
@@ -34,28 +34,28 @@ const brand = getClientBrandConfig(); // lê só NEXT_PUBLIC_* (forwarded em nex
 
 ## Variáveis de ambiente
 
-| Variável | Default | Uso |
-|----------|---------|-----|
-| `SITE_NAME` | `Vitrine` | Nome público (canônico server-side) |
-| `NEXT_PUBLIC_SITE_NAME` | — | Fallback para bundle client (forwarded de `SITE_NAME` no `next.config`) |
-| `COMPANY_LEGAL_NAME` | `Vitrine Ltda` | Rodapé/legal futuro |
-| `CONTACT_EMAIL` | `contato@vitrine.com.br` | E-mails transacionais (conteúdo) |
-| `SITE_TAGLINE` | `Curadoria inteligente` | Subtítulo home/metadata |
-| `WEB_PUBLIC_URL` | `http://localhost:${WEB_PORT}` | URL canônica server |
-| `NEXT_PUBLIC_SITE_URL` | — | URL pública Next (unificada com `WEB_PUBLIC_URL` no transform) |
-| `SITE_SOCIAL_INSTAGRAM` | `https://instagram.com/vitrine` | Redes sociais |
-| `SITE_SOCIAL_TELEGRAM` | `https://t.me/vitrine_ofertas` | Redes sociais |
+| Variável                | Default                         | Uso                                                                     |
+| ----------------------- | ------------------------------- | ----------------------------------------------------------------------- |
+| `SITE_NAME`             | `Vitrine`                       | Nome público (canônico server-side)                                     |
+| `NEXT_PUBLIC_SITE_NAME` | —                               | Fallback para bundle client (forwarded de `SITE_NAME` no `next.config`) |
+| `COMPANY_LEGAL_NAME`    | `Vitrine Ltda`                  | Rodapé/legal futuro                                                     |
+| `CONTACT_EMAIL`         | `contato@vitrine.com.br`        | E-mails transacionais (conteúdo)                                        |
+| `SITE_TAGLINE`          | `Curadoria inteligente`         | Subtítulo home/metadata                                                 |
+| `WEB_PUBLIC_URL`        | `http://localhost:${WEB_PORT}`  | URL canônica server                                                     |
+| `NEXT_PUBLIC_SITE_URL`  | —                               | URL pública Next (unificada com `WEB_PUBLIC_URL` no transform)          |
+| `SITE_SOCIAL_INSTAGRAM` | `https://instagram.com/vitrine` | Redes sociais                                                           |
+| `SITE_SOCIAL_TELEGRAM`  | `https://t.me/vitrine_ofertas`  | Redes sociais                                                           |
 
 `EMAIL_FROM` permanece separado (remetente Resend).
 
 ## Helpers de copy
 
-| Função | Exemplo |
-|--------|---------|
-| `formatWebPageTitle(page, brand)` | `Artigos \| Vitrine` |
-| `formatWebHomeTitle(brand)` | `Vitrine — Curadoria inteligente` |
-| `formatAdminPageTitle(page, brand)` | `Produtos — Vitrine CMS` |
-| `formatEditorialTeamName(brand)` | `Redação Vitrine` |
+| Função                               | Exemplo                                         |
+| ------------------------------------ | ----------------------------------------------- |
+| `formatWebPageTitle(page, brand)`    | `Artigos \| Vitrine`                            |
+| `formatWebHomeTitle(brand)`          | `Vitrine — Curadoria inteligente`               |
+| `formatAdminPageTitle(page, brand)`  | `Produtos — Vitrine CMS`                        |
+| `formatEditorialTeamName(brand)`     | `Redação Vitrine`                               |
 | `formatCopyrightNotice(brand, year)` | `© 2026 Vitrine. Todos os direitos reservados.` |
 
 ## Fluxo

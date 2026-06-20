@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import { Category, ValidationError, type CategoryRepository, type PublicWebRevalidator } from '@ecommerce-amazon/domain';
+import {
+  Category,
+  ValidationError,
+  type CategoryRepository,
+  type PublicWebRevalidator,
+} from '@ecommerce-amazon/domain';
 import type { CreateCategoryBody, AdminCategoryTreeNode } from '@ecommerce-amazon/shared/admin';
 import { buildCategoryTree } from '@ecommerce-amazon/shared/category/build-category-tree';
 

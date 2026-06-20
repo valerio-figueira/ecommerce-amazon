@@ -6,13 +6,7 @@ import { useWatch, type Control, type UseFormSetValue } from 'react-hook-form';
 import type { AboutPageEditorFormValues } from '@/components/about/about-editor-types';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
 import { Button } from '@/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import type { AboutSectionId } from '@ecommerce-amazon/shared/about';
 
@@ -131,7 +125,9 @@ export function AboutSectionFields({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium text-[color:var(--admin-navy)]">Itens de lista (opcional)</p>
+          <p className="text-sm font-medium text-[color:var(--admin-navy)]">
+            Itens de lista (opcional)
+          </p>
           <Button
             type="button"
             variant="outline"
@@ -166,9 +162,7 @@ export function AboutSectionFields({
                 size="icon"
                 className="shrink-0 text-[var(--admin-text-muted)]"
                 aria-label="Remover item"
-                onClick={() =>
-                  updateListItems(listItems.filter((_, index) => index !== listIndex))
-                }
+                onClick={() => updateListItems(listItems.filter((_, index) => index !== listIndex))}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

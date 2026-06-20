@@ -2,8 +2,7 @@ export const PRICE_STALE_HOURS = 24;
 
 export class PriceComplianceService {
   isStale(priceUpdatedAt: Date, now: Date = new Date()): boolean {
-    const hoursElapsed =
-      (now.getTime() - priceUpdatedAt.getTime()) / (1000 * 60 * 60);
+    const hoursElapsed = (now.getTime() - priceUpdatedAt.getTime()) / (1000 * 60 * 60);
     return hoursElapsed > PRICE_STALE_HOURS;
   }
 
@@ -34,7 +33,9 @@ export class TitleHygieneService {
 }
 
 export class ComparisonSpecMatcher {
-  getComparableKeys(products: { specsNormalized: { properties: { key: string }[] }[] }[]): string[] {
+  getComparableKeys(
+    products: { specsNormalized: { properties: { key: string }[] }[] }[],
+  ): string[] {
     if (products.length === 0) return [];
 
     const flattenKeys = (groups: { properties: { key: string }[] }[]): Set<string> => {

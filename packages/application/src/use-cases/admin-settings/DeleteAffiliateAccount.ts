@@ -1,7 +1,4 @@
-import {
-  EntityNotFoundError,
-  type AffiliateAccountRepository,
-} from '@ecommerce-amazon/domain';
+import { EntityNotFoundError, type AffiliateAccountRepository } from '@ecommerce-amazon/domain';
 
 import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
 

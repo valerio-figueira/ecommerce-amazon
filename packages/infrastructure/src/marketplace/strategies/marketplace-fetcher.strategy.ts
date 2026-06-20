@@ -82,7 +82,7 @@ export class AmazonFetcherStrategy implements MarketplaceFetcher {
         rawTitle: item.title ?? `Amazon Product ${externalId}`,
         price: Price.create({
           amount: item.priceAmount ?? 0,
-          currency: (item.priceCurrency === 'USD' ? 'USD' : 'BRL'),
+          currency: item.priceCurrency === 'USD' ? 'USD' : 'BRL',
           updatedAt: new Date(),
           isStale: false,
         }),

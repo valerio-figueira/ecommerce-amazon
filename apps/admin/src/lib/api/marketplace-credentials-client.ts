@@ -20,7 +20,9 @@ function readApiError(payload: unknown, fallback: string): string {
   return parsed.success ? (parsed.data.error ?? fallback) : fallback;
 }
 
-export async function listMarketplaceCredentialsClient(): Promise<MarketplaceCredentialStatusDto[]> {
+export async function listMarketplaceCredentialsClient(): Promise<
+  MarketplaceCredentialStatusDto[]
+> {
   const response = await adminClientFetch('/api/admin/marketplace-credentials', {
     cache: 'no-store',
   });

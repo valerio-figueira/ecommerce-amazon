@@ -23,9 +23,7 @@ function marketplaceLabel(marketplace: string): string {
  * Generates a Portuguese editorial intro for persisted comparison pages.
  * Targets Growth guideline (≥150 words) and API minimum (≥150 characters).
  */
-export function buildComparisonEditorialIntro(
-  input: BuildComparisonEditorialIntroInput,
-): string {
+export function buildComparisonEditorialIntro(input: BuildComparisonEditorialIntroInput): string {
   const { products, categoryLabel } = input;
   if (products.length < 2) {
     return 'Comparativo editorial entre produtos selecionados na vitrine.';
@@ -73,9 +71,7 @@ export function buildComparisonEditorialIntro(
   return text;
 }
 
-export function buildComparisonEphemeralIntro(
-  input: BuildComparisonEditorialIntroInput,
-): string {
+export function buildComparisonEphemeralIntro(input: BuildComparisonEditorialIntroInput): string {
   const titles = input.products.map((p) => p.title);
   const categoryPhrase = input.categoryLabel ? ` em ${input.categoryLabel}` : '';
   return `Comparativo rápido${categoryPhrase}: ${titles.join(' vs ')}. Confira preços, specs e prós/contras na tabela abaixo.`;

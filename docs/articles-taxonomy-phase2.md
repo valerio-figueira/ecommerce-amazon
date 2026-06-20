@@ -28,36 +28,36 @@ flowchart LR
 
 ## Schema (migration `0013`)
 
-| Tabela / coluna | Descrição |
-|-----------------|-----------|
-| `article_categories` | `id`, `name`, `slug` UNIQUE |
-| `operators.avatar_url` | URL da foto do autor |
-| `operators.bio` | varchar(250) |
-| `operators.role` | enum `admin` \| `editor` |
+| Tabela / coluna                | Descrição                                     |
+| ------------------------------ | --------------------------------------------- |
+| `article_categories`           | `id`, `name`, `slug` UNIQUE                   |
+| `operators.avatar_url`         | URL da foto do autor                          |
+| `operators.bio`                | varchar(250)                                  |
+| `operators.role`               | enum `admin` \| `editor`                      |
 | `content_articles.category_id` | FK → `article_categories`, ON DELETE SET NULL |
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
+| Camada    | Path                                                                                           |
+| --------- | ---------------------------------------------------------------------------------------------- |
 | Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0013_article_taxonomy_authors.sql` |
-| Schema | `packages/infrastructure/src/persistence/drizzle/schema/article-categories.ts` |
-| Domain | `packages/domain/src/entities/ArticleCategory.ts`, `ContentArticle.categoryId` |
-| Use cases | `packages/application/src/use-cases/admin-article-category/`, `GetArticleWithEmbeds.ts` |
-| API admin | `apps/api/src/adapters/http/routes/admin-article-category-routes.ts` |
-| Schemas | `packages/shared/src/admin/article-category-schemas.ts`, `article-schemas.ts` |
-| Admin UI | `apps/admin/src/components/article-categories/`, `ArticleForm.tsx` |
-| Web | `ArticlePostFooter.tsx`, `ArticleRelatedGrid.tsx` |
+| Schema    | `packages/infrastructure/src/persistence/drizzle/schema/article-categories.ts`                 |
+| Domain    | `packages/domain/src/entities/ArticleCategory.ts`, `ContentArticle.categoryId`                 |
+| Use cases | `packages/application/src/use-cases/admin-article-category/`, `GetArticleWithEmbeds.ts`        |
+| API admin | `apps/api/src/adapters/http/routes/admin-article-category-routes.ts`                           |
+| Schemas   | `packages/shared/src/admin/article-category-schemas.ts`, `article-schemas.ts`                  |
+| Admin UI  | `apps/admin/src/components/article-categories/`, `ArticleForm.tsx`                             |
+| Web       | `ArticlePostFooter.tsx`, `ArticleRelatedGrid.tsx`                                              |
 
 ## API
 
 ### Admin — `/admin/article-categories`
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/admin/article-categories` | `{ items: ArticleCategorySummary[] }` |
-| POST | `/admin/article-categories` | `CreateArticleCategoryBody` → `{ id }` |
-| PATCH | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204` |
+| Método | Rota                            | Descrição                                |
+| ------ | ------------------------------- | ---------------------------------------- |
+| GET    | `/admin/article-categories`     | `{ items: ArticleCategorySummary[] }`    |
+| POST   | `/admin/article-categories`     | `CreateArticleCategoryBody` → `{ id }`   |
+| PATCH  | `/admin/article-categories/:id` | `UpdateArticleCategoryBody` → `204`      |
 | DELETE | `/admin/article-categories/:id` | `204` (409 se houver artigos vinculados) |
 
 ### Público — `GET /articles/:slug`

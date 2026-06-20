@@ -26,7 +26,9 @@ export function readShopeeResponseBlock(body: unknown): Record<string, unknown> 
   return isRecord(responseBlock) ? responseBlock : null;
 }
 
-export function readFirstShopeeItem(responseBlock: Record<string, unknown>): Record<string, unknown> | null {
+export function readFirstShopeeItem(
+  responseBlock: Record<string, unknown>,
+): Record<string, unknown> | null {
   const itemList = responseBlock['item_list'];
   if (!Array.isArray(itemList) || itemList.length === 0) {
     return null;

@@ -17,9 +17,7 @@ export function CategoryCatalogFlyout({
   categories,
 }: CategoryCatalogFlyoutProps): React.JSX.Element | null {
   const [open, setOpen] = useState(false);
-  const [activeRootSlug, setActiveRootSlug] = useState<string | null>(
-    categories[0]?.slug ?? null,
-  );
+  const [activeRootSlug, setActiveRootSlug] = useState<string | null>(categories[0]?.slug ?? null);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -113,7 +111,9 @@ export function CategoryCatalogFlyout({
       <div
         className={cn(
           'category-catalog-flyout__anchor',
-          open ? 'category-catalog-flyout__anchor--open' : 'category-catalog-flyout__anchor--closed',
+          open
+            ? 'category-catalog-flyout__anchor--open'
+            : 'category-catalog-flyout__anchor--closed',
         )}
       >
         <div className="category-catalog-flyout__panel" role="menu">

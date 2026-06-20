@@ -45,7 +45,9 @@ export async function generateMetadata({
   });
 }
 
-export default async function BuscaPage({ searchParams }: BuscaPageProps): Promise<React.JSX.Element> {
+export default async function BuscaPage({
+  searchParams,
+}: BuscaPageProps): Promise<React.JSX.Element> {
   const params = await searchParams;
   const query = params.q?.trim() || '';
   const activeType = parseSearchResultType(params.tipo);

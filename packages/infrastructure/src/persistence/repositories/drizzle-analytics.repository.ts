@@ -50,7 +50,9 @@ function toRatePercent(numerator: number, denominator: number): number | null {
   return Math.round((numerator / denominator) * 1000) / 10;
 }
 
-export class DrizzleAnalyticsRepository implements AnalyticsRepository, EngagementAnalyticsRepository {
+export class DrizzleAnalyticsRepository
+  implements AnalyticsRepository, EngagementAnalyticsRepository
+{
   constructor(private readonly db: DrizzleClient) {}
 
   getPendingEventCount(): Promise<number> {
@@ -146,11 +148,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
     }));
   }
 
-  async getClicksByPage(
-    from: Date,
-    to: Date,
-    limit: number,
-  ): Promise<PagePathClickBreakdown[]> {
+  async getClicksByPage(from: Date, to: Date, limit: number): Promise<PagePathClickBreakdown[]> {
     const rows = await this.db
       .select({
         pagePath: schema.clickEvents.pagePath,
@@ -179,14 +177,8 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
       })
       .from(schema.clickEvents)
       .where(clickDateFilter(from, to))
-      .groupBy(
-        sql`date_trunc('day', ${schema.clickEvents.occurredAt})`,
-        schema.clickEvents.origin,
-      )
-      .orderBy(
-        sql`date_trunc('day', ${schema.clickEvents.occurredAt})`,
-        schema.clickEvents.origin,
-      );
+      .groupBy(sql`date_trunc('day', ${schema.clickEvents.occurredAt})`, schema.clickEvents.origin)
+      .orderBy(sql`date_trunc('day', ${schema.clickEvents.occurredAt})`, schema.clickEvents.origin);
 
     return rows.map((row) => ({
       date: row.date,
@@ -235,11 +227,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
     }));
   }
 
-  async getTopClickedProducts(
-    from: Date,
-    to: Date,
-    limit: number,
-  ): Promise<TopClickedProduct[]> {
+  async getTopClickedProducts(from: Date, to: Date, limit: number): Promise<TopClickedProduct[]> {
     const rows = await this.db
       .select({
         productId: schema.products.id,
@@ -294,11 +282,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
           ),
         ),
       )
-      .groupBy(
-        schema.contentArticles.id,
-        schema.contentArticles.slug,
-        schema.contentArticles.title,
-      )
+      .groupBy(schema.contentArticles.id, schema.contentArticles.slug, schema.contentArticles.title)
       .orderBy(desc(count()))
       .limit(limit);
 
@@ -394,11 +378,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
           eq(schema.contentArticles.status, 'published'),
         ),
       )
-      .groupBy(
-        schema.contentArticles.id,
-        schema.contentArticles.slug,
-        schema.contentArticles.title,
-      )
+      .groupBy(schema.contentArticles.id, schema.contentArticles.slug, schema.contentArticles.title)
       .orderBy(desc(count()))
       .limit(limit);
 
@@ -436,11 +416,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
           ),
         ),
       )
-      .groupBy(
-        schema.contentArticles.id,
-        schema.contentArticles.slug,
-        schema.contentArticles.title,
-      )
+      .groupBy(schema.contentArticles.id, schema.contentArticles.slug, schema.contentArticles.title)
       .orderBy(desc(count()))
       .limit(limit);
 
@@ -477,9 +453,7 @@ export class DrizzleAnalyticsRepository implements AnalyticsRepository, Engageme
     const [oosRow] = await this.db
       .select({ oos: count() })
       .from(schema.products)
-      .where(
-        and(visibleFilter, eq(schema.products.availability, 'out_of_stock')),
-      );
+      .where(and(visibleFilter, eq(schema.products.availability, 'out_of_stock')));
 
     const totalVisibleProducts = Number(totalRow?.total ?? 0);
     const staleCount = Number(staleRow?.stale ?? 0);

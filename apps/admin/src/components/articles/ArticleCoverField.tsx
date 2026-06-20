@@ -93,8 +93,7 @@ export function ArticleCoverField({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Label htmlFor="article-cover">
-          Capa{' '}
-          <span className="font-normal text-[var(--admin-text-muted)]">(opcional)</span>
+          Capa <span className="font-normal text-[var(--admin-text-muted)]">(opcional)</span>
         </Label>
         <ArticleFieldHint text="Banner horizontal (16:9 ou 21:9) no topo da página e no bloco Bento quando não houver override no CMS." />
       </div>

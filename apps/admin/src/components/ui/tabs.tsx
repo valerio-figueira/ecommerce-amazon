@@ -44,10 +44,7 @@ export function TabsList({
   return (
     <div
       role="tablist"
-      className={cn(
-        'flex flex-wrap gap-2 border-b border-[var(--admin-gray)] pb-3',
-        className,
-      )}
+      className={cn('flex flex-wrap gap-2 border-b border-[var(--admin-gray)] pb-3', className)}
     >
       {children}
     </div>

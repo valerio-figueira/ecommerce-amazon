@@ -11,13 +11,7 @@ import { ProductFormLabelRow } from '@/components/products/ProductFormLabelRow';
 import { ProductThumbnail } from '@/components/products/ProductThumbnail';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
-import {
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { uploadAdminImageClient } from '@/lib/api/admin-media-client';
 import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
@@ -186,7 +180,9 @@ export function ProductImagesSection(): React.JSX.Element {
               ) : (
                 <div className="space-y-2 rounded-lg border border-dashed border-[var(--admin-gray)] px-4 py-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-[var(--admin-navy)]">URL externa</span>
+                    <span className="text-xs font-semibold text-[var(--admin-navy)]">
+                      URL externa
+                    </span>
                     <button
                       type="button"
                       className="text-xs text-[var(--admin-text-muted)] underline-offset-2 hover:underline"
@@ -227,11 +223,7 @@ export function ProductImagesSection(): React.JSX.Element {
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--admin-navy)] text-xs font-bold text-white">
                       {index + 1}
                     </span>
-                    <ProductThumbnail
-                      src={imageUrl}
-                      alt={`Imagem ${index + 1}`}
-                      size="xs"
-                    />
+                    <ProductThumbnail src={imageUrl} alt={`Imagem ${index + 1}`} size="xs" />
                     <span
                       className="min-w-0 flex-1 truncate text-xs text-[var(--admin-text-muted)]"
                       title={imageUrl}

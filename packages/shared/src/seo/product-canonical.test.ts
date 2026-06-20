@@ -28,11 +28,11 @@ describe('product-canonical', () => {
   });
 
   it('falls back to slug path when override is null or empty', () => {
-    expect(resolveProductCanonicalUrl('cadeira-dt3-rhino', 'https://www.exemplo.com.br', null)).toBe(
-      'https://www.exemplo.com.br/produtos/cadeira-dt3-rhino',
-    );
-    expect(resolveProductCanonicalUrl('cadeira-dt3-rhino', 'https://www.exemplo.com.br', '  ')).toBe(
-      'https://www.exemplo.com.br/produtos/cadeira-dt3-rhino',
-    );
+    expect(
+      resolveProductCanonicalUrl('cadeira-dt3-rhino', 'https://www.exemplo.com.br', null),
+    ).toBe('https://www.exemplo.com.br/produtos/cadeira-dt3-rhino');
+    expect(
+      resolveProductCanonicalUrl('cadeira-dt3-rhino', 'https://www.exemplo.com.br', '  '),
+    ).toBe('https://www.exemplo.com.br/produtos/cadeira-dt3-rhino');
   });
 });

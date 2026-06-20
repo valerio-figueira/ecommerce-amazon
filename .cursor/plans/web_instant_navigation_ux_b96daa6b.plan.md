@@ -1,6 +1,6 @@
 ---
 name: Web instant navigation UX
-overview: "Corrigir a sensação de \"app travada\" na vitrine web desbloqueando o mecanismo nativo `loading.tsx` (causa raiz: header async no layout sem Suspense) e reforçar feedback visual imediato em navegação e filtros."
+overview: 'Corrigir a sensação de "app travada" na vitrine web desbloqueando o mecanismo nativo `loading.tsx` (causa raiz: header async no layout sem Suspense) e reforçar feedback visual imediato em navegação e filtros.'
 todos:
   - id: suspense-header
     content: Envolver SiteHeaderShell em Suspense + criar HeaderSkeleton no layout raiz
@@ -140,14 +140,14 @@ Não resolve o "freeze" sozinho, mas encurta quanto tempo o skeleton fica visív
 
 Criar [`apps/web/src/lib/api/cached-fetchers.ts`](apps/web/src/lib/api/cached-fetchers.ts) com `import { cache } from 'react'` envolvendo:
 
-| Função cached | Usada em |
-|---------------|----------|
-| `getHomeLayout` | `page.tsx` (home) |
-| `getProduct` | `produtos/[slug]/page.tsx` |
-| `getCategory` | `categorias/[slug]/page.tsx` |
-| `getCollection` | `colecoes/[slug]/page.tsx` |
-| `getArticle` | `artigos/[slug]/page.tsx` |
-| `fetchInstitutionalAboutPage` | `sobre/page.tsx` |
+| Função cached                 | Usada em                     |
+| ----------------------------- | ---------------------------- |
+| `getHomeLayout`               | `page.tsx` (home)            |
+| `getProduct`                  | `produtos/[slug]/page.tsx`   |
+| `getCategory`                 | `categorias/[slug]/page.tsx` |
+| `getCollection`               | `colecoes/[slug]/page.tsx`   |
+| `getArticle`                  | `artigos/[slug]/page.tsx`    |
+| `fetchInstitutionalAboutPage` | `sobre/page.tsx`             |
 
 `generateMetadata` e `page.tsx` passam a importar do mesmo módulo — 1 round-trip API por navegação em vez de 2.
 

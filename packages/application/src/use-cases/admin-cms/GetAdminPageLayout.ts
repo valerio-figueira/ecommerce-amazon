@@ -15,9 +15,7 @@ function toBlockDto(block: PageBlock): PageBlockDto {
 export class GetAdminPageLayout {
   constructor(private readonly pageRepository: PageRepository) {}
 
-  async execute(input: {
-    slug: string;
-  }): Promise<Result<PageLayoutDto, EntityNotFoundError>> {
+  async execute(input: { slug: string }): Promise<Result<PageLayoutDto, EntityNotFoundError>> {
     const page = await this.pageRepository.findPageBySlug(input.slug);
     if (!page) {
       return err(new EntityNotFoundError('Page', input.slug));

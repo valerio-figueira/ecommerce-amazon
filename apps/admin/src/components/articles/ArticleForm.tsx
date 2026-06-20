@@ -21,10 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  createAdminArticleClient,
-  updateAdminArticleClient,
-} from '@/lib/api/articles-client';
+import { createAdminArticleClient, updateAdminArticleClient } from '@/lib/api/articles-client';
 import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
 import {
   articleStatusSchema,
@@ -98,9 +95,7 @@ export function ArticleForm({
   const [coverImageUrl, setCoverImageUrl] = useState(initialValues?.coverImageUrl ?? '');
   const [body, setBody] = useState(initialValues?.body ?? '<p></p>');
   const [type, setType] = useState<ArticleType>(initialValues?.type ?? ArticleType.GUIDE);
-  const [status, setStatus] = useState<ArticleStatus>(
-    initialValues?.status ?? ArticleStatus.DRAFT,
-  );
+  const [status, setStatus] = useState<ArticleStatus>(initialValues?.status ?? ArticleStatus.DRAFT);
   const [seoTitle, setSeoTitle] = useState(initialValues?.seoTitle ?? '');
   const [seoDescription, setSeoDescription] = useState(initialValues?.seoDescription ?? '');
   const [categoryId, setCategoryId] = useState<string | null>(initialValues?.categoryId ?? null);

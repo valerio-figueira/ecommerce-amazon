@@ -10,9 +10,7 @@ export type ComparisonJsonLdInput = {
   }>;
 };
 
-export function buildComparisonPageJsonLd(
-  input: ComparisonJsonLdInput,
-): Record<string, unknown> {
+export function buildComparisonPageJsonLd(input: ComparisonJsonLdInput): Record<string, unknown> {
   const pageUrl = `${input.siteBaseUrl}${input.canonicalPath}`;
 
   return {

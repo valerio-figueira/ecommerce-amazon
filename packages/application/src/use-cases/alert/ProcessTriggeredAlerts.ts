@@ -47,7 +47,11 @@ export class ProcessTriggeredAlerts {
       });
 
       const triggered = alert.trigger(new Date());
-      await this.alertRepository.updateStatus(triggered.id, triggered.status, triggered.triggeredAt);
+      await this.alertRepository.updateStatus(
+        triggered.id,
+        triggered.status,
+        triggered.triggeredAt,
+      );
 
       const occurredAt = new Date();
       await this.eventBus.publish(

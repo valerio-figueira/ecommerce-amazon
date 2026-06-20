@@ -2,10 +2,10 @@
 
 CRUD editorial de comparações persistidas: revisão de intro UGC, publicação com slug legível, SEO e carrossel automático por categoria na vitrine.
 
-| Referência | Documento |
-|------------|-----------|
-| Comparador web fase 1 | [comparator-web-phase1.md](./comparator-web-phase1.md) |
-| PRD Core §3.4 | [`.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md`](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) |
+| Referência            | Documento                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Comparador web fase 1 | [comparator-web-phase1.md](./comparator-web-phase1.md)                                                                  |
+| PRD Core §3.4         | [`.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md`](../.cursor/plans/prd_plataforma_afiliação_de44933f.plan.md) |
 
 ## Escopo entregue
 
@@ -37,36 +37,36 @@ Comparações curadas: operador cria em **Nova comparação** → mesmo fluxo de
 
 ## Regras de negócio
 
-| Regra | Detalhe |
-|-------|---------|
-| Publicação | Slug obrigatório, único, intro ≥150 **palavras** |
-| Indexação | `draft` → `noindex`; `published` → indexável |
-| URL canônica | `/comparar/{slug}`; token legado redireciona 301 |
-| Carrossel | Mesma categoria; fallback categoria pai; omitir se <3 itens |
-| Afiliado | `comparisonSlug` em `ascsubtag` (Amazon), `sub_id` (Shopee), `utm_campaign` (ML) |
+| Regra        | Detalhe                                                                          |
+| ------------ | -------------------------------------------------------------------------------- |
+| Publicação   | Slug obrigatório, único, intro ≥150 **palavras**                                 |
+| Indexação    | `draft` → `noindex`; `published` → indexável                                     |
+| URL canônica | `/comparar/{slug}`; token legado redireciona 301                                 |
+| Carrossel    | Mesma categoria; fallback categoria pai; omitir se <3 itens                      |
+| Afiliado     | `comparisonSlug` em `ascsubtag` (Amazon), `sub_id` (Shopee), `utm_campaign` (ML) |
 
 ## API admin
 
-| Método | Rota |
-|--------|------|
-| GET | `/admin/comparisons` |
-| GET | `/admin/comparisons/:id` |
-| POST | `/admin/comparisons` |
-| PATCH | `/admin/comparisons/:id` |
-| POST | `/admin/comparisons/:id/publish` |
-| DELETE | `/admin/comparisons/:id` |
+| Método | Rota                             |
+| ------ | -------------------------------- |
+| GET    | `/admin/comparisons`             |
+| GET    | `/admin/comparisons/:id`         |
+| POST   | `/admin/comparisons`             |
+| PATCH  | `/admin/comparisons/:id`         |
+| POST   | `/admin/comparisons/:id/publish` |
+| DELETE | `/admin/comparisons/:id`         |
 
 Schemas: `packages/shared/src/admin/comparison-schemas.ts`
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Use cases | `packages/application/src/use-cases/admin-comparison/` |
-| Público | `packages/application/src/use-cases/comparison/GetComparisonByIdentifier.ts` |
-| Repository | `DrizzleProductComparisonRepository` em `drizzle-content.repository.ts` |
-| Admin UI | `apps/admin/src/app/(dashboard)/comparacoes/` |
-| Vitrine | `apps/web/src/app/comparar/[param]/page.tsx` |
+| Camada     | Path                                                                         |
+| ---------- | ---------------------------------------------------------------------------- |
+| Use cases  | `packages/application/src/use-cases/admin-comparison/`                       |
+| Público    | `packages/application/src/use-cases/comparison/GetComparisonByIdentifier.ts` |
+| Repository | `DrizzleProductComparisonRepository` em `drizzle-content.repository.ts`      |
+| Admin UI   | `apps/admin/src/app/(dashboard)/comparacoes/`                                |
+| Vitrine    | `apps/web/src/app/comparar/[param]/page.tsx`                                 |
 
 ## Como testar
 

@@ -126,7 +126,10 @@ export function mergeOriginTrend(
       const [date, origin] = key.split(':');
       return { date: date ?? '', origin: origin ?? '', count };
     })
-    .sort((left, right) => left.date.localeCompare(right.date) || left.origin.localeCompare(right.origin));
+    .sort(
+      (left, right) =>
+        left.date.localeCompare(right.date) || left.origin.localeCompare(right.origin),
+    );
 }
 
 export function mergeClickTrend(
@@ -193,7 +196,9 @@ export function mergeTopClickedProducts(
     });
   }
 
-  return [...byProduct.values()].sort((left, right) => right.clickCount - left.clickCount).slice(0, limit);
+  return [...byProduct.values()]
+    .sort((left, right) => right.clickCount - left.clickCount)
+    .slice(0, limit);
 }
 
 export function mergeConvertingArticles(
@@ -234,7 +239,9 @@ export function mergeConvertingArticles(
     });
   }
 
-  return [...byArticle.values()].sort((left, right) => right.clickCount - left.clickCount).slice(0, limit);
+  return [...byArticle.values()]
+    .sort((left, right) => right.clickCount - left.clickCount)
+    .slice(0, limit);
 }
 
 export function mergeEditorialFunnel(

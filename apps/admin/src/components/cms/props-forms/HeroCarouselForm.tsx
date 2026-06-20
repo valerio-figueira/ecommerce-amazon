@@ -15,13 +15,7 @@ import {
 import { CmsHybridImageField } from '@/components/cms/props-forms/CmsHybridImageField';
 import { ProductPicker } from '@/components/cms/props-forms/ProductPicker';
 import { Button } from '@/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -59,7 +53,9 @@ const DEFAULT_SLIDE: HeroSlideFormValue = {
 
 function readSlideList(value: unknown): HeroSlideFormValue[] {
   if (!Array.isArray(value)) return [];
-  return value.filter((item): item is HeroSlideFormValue => typeof item === 'object' && item !== null);
+  return value.filter(
+    (item): item is HeroSlideFormValue => typeof item === 'object' && item !== null,
+  );
 }
 
 type HeroSlideCardProps = {
@@ -281,10 +277,7 @@ function HeroSlideCard({
   );
 }
 
-export function HeroCarouselForm({
-  control,
-  products,
-}: HeroCarouselFormProps): React.JSX.Element {
+export function HeroCarouselForm({ control, products }: HeroCarouselFormProps): React.JSX.Element {
   const { setValue } = useFormContext<BlockFormValues>();
   const watchedSlides = useWatch({ control, name: 'slides' });
   const slideList = readSlideList(watchedSlides);
@@ -324,13 +317,7 @@ export function HeroCarouselForm({
           })}
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="mt-3"
-          onClick={appendSlide}
-        >
+        <Button type="button" variant="outline" size="sm" className="mt-3" onClick={appendSlide}>
           <Plus className="h-4 w-4" />
           Adicionar slide
         </Button>

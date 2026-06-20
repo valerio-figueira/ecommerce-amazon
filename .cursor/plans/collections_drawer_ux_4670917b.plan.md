@@ -12,7 +12,7 @@ todos:
     content: Implementar CollectionCoverField (upload 4:3 + preview + URL colapsável)
     status: completed
   - id: refactor-form-sheet
-    content: "Refatorar CollectionFormSheet: cms-props-sheet, seções, hints, validação, UTMs auto, slug colapsável"
+    content: 'Refatorar CollectionFormSheet: cms-props-sheet, seções, hints, validação, UTMs auto, slug colapsável'
     status: completed
   - id: product-multiselect-empty
     content: Adicionar empty state em ProductMultiSelect quando busca não retorna itens
@@ -32,12 +32,12 @@ isProject: false
 
 O CRUD de coleções usa [`CollectionFormSheet.tsx`](apps/admin/src/components/collections/CollectionFormSheet.tsx) — um **Sheet lateral** (não Drawer) com formulário plano, sem hints, sem preview de capa e sem upload. Referências de qualidade já existentes no monorepo:
 
-| Referência | O que reutilizar |
-|------------|------------------|
-| [`CategoryFormSheet.tsx`](apps/admin/src/components/categories/CategoryFormSheet.tsx) | `cms-props-sheet`, `<form>`, `fieldset`/`legend`, footer fixo, slug colapsável, validação pré-submit |
-| [`ArticleFieldHint.tsx`](apps/admin/src/components/articles/ArticleFieldHint.tsx) | Tooltips via ícone `CircleHelp` + `title`/`aria-label` (padrão atual do admin — não há componente Radix Tooltip) |
-| [`ProfileAvatarPanel.tsx`](apps/admin/src/components/profile/ProfileAvatarPanel.tsx) | File picker estilizado, micro-hints, fluxo escolher → recortar → enviar |
-| [`ArticleForm.tsx`](apps/admin/src/components/articles/ArticleForm.tsx) | Preview de capa + hint de onde a imagem aparece |
+| Referência                                                                            | O que reutilizar                                                                                                 |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [`CategoryFormSheet.tsx`](apps/admin/src/components/categories/CategoryFormSheet.tsx) | `cms-props-sheet`, `<form>`, `fieldset`/`legend`, footer fixo, slug colapsável, validação pré-submit             |
+| [`ArticleFieldHint.tsx`](apps/admin/src/components/articles/ArticleFieldHint.tsx)     | Tooltips via ícone `CircleHelp` + `title`/`aria-label` (padrão atual do admin — não há componente Radix Tooltip) |
+| [`ProfileAvatarPanel.tsx`](apps/admin/src/components/profile/ProfileAvatarPanel.tsx)  | File picker estilizado, micro-hints, fluxo escolher → recortar → enviar                                          |
+| [`ArticleForm.tsx`](apps/admin/src/components/articles/ArticleForm.tsx)               | Preview de capa + hint de onde a imagem aparece                                                                  |
 
 A capa é exibida no carrossel home ([`CuratedCollectionSlide.tsx`](apps/web/src/components/blocks/CuratedCollectionSlide.tsx)) — metade esquerda do slide, `object-cover`, ~340px altura desktop. **Não** aparece na landing `/colecoes/[slug]` (só título + descrição + grid).
 
@@ -63,6 +63,7 @@ flowchart LR
 Refatorar [`CollectionFormSheet.tsx`](apps/admin/src/components/collections/CollectionFormSheet.tsx) para alinhar com [`CategoryFormSheet.tsx`](apps/admin/src/components/categories/CategoryFormSheet.tsx):
 
 **Layout**
+
 - `SheetContent` com `cms-props-sheet flex flex-col p-0 sm:max-w-lg`
 - Header com borda inferior + descrição revisada (explicar home vs landing)
 - Corpo scrollável (`flex-1 overflow-y-auto px-6 py-5`)
@@ -71,12 +72,12 @@ Refatorar [`CollectionFormSheet.tsx`](apps/admin/src/components/collections/Coll
 
 **Seções (`fieldset` + `legend`)**
 
-| Seção | Campos |
-|-------|--------|
-| **Identificação** | Título*, Descrição editorial*, Slug (oculto por padrão — link "Personalizar slug" como categorias) |
-| **Capa** | Novo `CollectionCoverField` (upload + preview + URL colapsável) |
-| **Campanha e rastreio** | Origem da campanha, UTMs (labels em pt-BR), texto do CTA |
-| **Produtos** | `ProductMultiSelect` |
+| Seção                   | Campos                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------- |
+| **Identificação**       | Título*, Descrição editorial*, Slug (oculto por padrão — link "Personalizar slug" como categorias) |
+| **Capa**                | Novo `CollectionCoverField` (upload + preview + URL colapsável)                                    |
+| **Campanha e rastreio** | Origem da campanha, UTMs (labels em pt-BR), texto do CTA                                           |
+| **Produtos**            | `ProductMultiSelect`                                                                               |
 
 **Tooltips (hints)** — criar [`CollectionFieldHint.tsx`](apps/admin/src/components/collections/CollectionFieldHint.tsx) reexportando o mesmo markup de `ArticleFieldHint` (evita acoplamento cross-módulo). Textos sugeridos:
 
@@ -90,6 +91,7 @@ Refatorar [`CollectionFormSheet.tsx`](apps/admin/src/components/collections/Coll
 - **Produtos**: "Ordem = narrativa do passo a passo na landing. Mínimo 1 produto."
 
 **Melhorias de fluxo**
+
 - Marcar campos obrigatórios com `*` (title, description, cover, ≥1 produto, ctaText — conforme [`collection-schemas.ts`](packages/shared/src/admin/collection-schemas.ts))
 - **Validação client-side** antes do fetch (mensagens em pt-BR, como [`AutoLinkFormSheet`](apps/admin/src/components/auto-links/AutoLinkFormSheet.tsx))
 - **Auto-preenchimento de UTMs** ao mudar `campaignOrigin` (somente se campos vazios):
@@ -114,13 +116,14 @@ const CAMPAIGN_UTM_SUGGESTIONS = {
 
 Generalizar o que hoje está acoplado ao avatar:
 
-| Novo arquivo | Origem | Responsabilidade |
-|--------------|--------|------------------|
-| [`apps/admin/src/lib/admin-image-crop.ts`](apps/admin/src/lib/admin-image-crop.ts) | `profile-avatar-crop.ts` | `loadImage`, `getCroppedImageBlob(src, crop, { width, height, quality })` |
-| [`apps/admin/src/components/admin/AdminImageCropDialog.tsx`](apps/admin/src/components/admin/AdminImageCropDialog.tsx) | `ProfileAvatarCropDialog` | Props: `aspect`, `cropShape`, `title`, `description`, `outputSize` |
-| [`apps/admin/src/components/admin/AdminImageFilePicker.tsx`](apps/admin/src/components/admin/AdminImageFilePicker.tsx) | markup de `ProfileAvatarPanel` | Input oculto + botão "Escolher arquivo" + nome do arquivo + micro-hint |
+| Novo arquivo                                                                                                           | Origem                         | Responsabilidade                                                          |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
+| [`apps/admin/src/lib/admin-image-crop.ts`](apps/admin/src/lib/admin-image-crop.ts)                                     | `profile-avatar-crop.ts`       | `loadImage`, `getCroppedImageBlob(src, crop, { width, height, quality })` |
+| [`apps/admin/src/components/admin/AdminImageCropDialog.tsx`](apps/admin/src/components/admin/AdminImageCropDialog.tsx) | `ProfileAvatarCropDialog`      | Props: `aspect`, `cropShape`, `title`, `description`, `outputSize`        |
+| [`apps/admin/src/components/admin/AdminImageFilePicker.tsx`](apps/admin/src/components/admin/AdminImageFilePicker.tsx) | markup de `ProfileAvatarPanel` | Input oculto + botão "Escolher arquivo" + nome do arquivo + micro-hint    |
 
 **CSS** em [`globals.css`](apps/admin/src/app/globals.css):
+
 - Renomear/generalizar classes `.admin-profile-file-picker*` → `.admin-image-file-picker*` (manter aliases temporários no perfil ou atualizar `ProfileAvatarPanel` para usar as novas classes — diff pequeno).
 
 **Refatorar perfil** (mínimo): `ProfileAvatarCropDialog` passa a delegar para `AdminImageCropDialog` com `aspect={1}`, `cropShape="round"`, `outputSize={512}`; `ProfileAvatarPanel` usa `AdminImageFilePicker`.
@@ -132,12 +135,14 @@ Generalizar o que hoje está acoplado ao avatar:
 Novo [`CollectionCoverField.tsx`](apps/admin/src/components/collections/CollectionCoverField.tsx):
 
 **Estado principal (upload)**
+
 - Preview retangular (`aspect-[4/3]`, max ~280px) quando `coverImageUrl` preenchido
 - `AdminImageFilePicker` → abre `AdminImageCropDialog` (aspect **4:3**, retangular, saída **1200×900** JPEG)
 - Ao confirmar recorte: upload imediato via API → atualiza `coverImageUrl` no form
 - Status inline ("Enviando capa…" / erro) + `useAdminToast`
 
 **Opção secundária (colapsável)**
+
 - Botão/link "Usar URL externa" expande campo `Input` (padrão [`ArticleForm`](apps/admin/src/components/articles/ArticleForm.tsx))
 - Hint: "Priorize imagens horizontais com licença adequada."
 
@@ -149,14 +154,14 @@ Novo [`CollectionCoverField.tsx`](apps/admin/src/components/collections/Collecti
 
 Endpoint genérico (reutilizável por artigos no futuro), espelhando avatar:
 
-| Camada | Arquivo |
-|--------|---------|
+| Camada    | Arquivo                                                                                                                                                    |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Validação | `packages/application/src/use-cases/admin-media/validate-admin-image.ts` — extrair de `validate-avatar-image.ts` (mesmas regras: JPG/PNG/GIF/WebP, ≤5 MiB) |
-| Use case | `packages/application/src/use-cases/admin-media/UploadAdminImage.ts` — `objectStorage.put({ key: 'admin/images/{uuid}.jpg', ... })` → `{ url }` |
-| API | `apps/api/src/adapters/http/routes/admin-media-routes.ts` — `POST /admin/media/images` (multipart, auth admin) |
-| DI | registrar em [`api-container.ts`](packages/infrastructure/src/di/api-container.ts) |
-| BFF admin | `apps/admin/src/app/api/admin/media/images/route.ts` — proxy `adminFetchMultipart` |
-| Client | `apps/admin/src/lib/api/admin-media-client.ts` — `uploadAdminImageClient(blob): Promise<string>` |
+| Use case  | `packages/application/src/use-cases/admin-media/UploadAdminImage.ts` — `objectStorage.put({ key: 'admin/images/{uuid}.jpg', ... })` → `{ url }`            |
+| API       | `apps/api/src/adapters/http/routes/admin-media-routes.ts` — `POST /admin/media/images` (multipart, auth admin)                                             |
+| DI        | registrar em [`api-container.ts`](packages/infrastructure/src/di/api-container.ts)                                                                         |
+| BFF admin | `apps/admin/src/app/api/admin/media/images/route.ts` — proxy `adminFetchMultipart`                                                                         |
+| Client    | `apps/admin/src/lib/api/admin-media-client.ts` — `uploadAdminImageClient(blob): Promise<string>`                                                           |
 
 `UploadOperatorAvatar` passa a importar `validateAdminImage` do módulo compartilhado (sem mudança de comportamento).
 
@@ -167,6 +172,7 @@ Endpoint genérico (reutilizável por artigos no futuro), espelhando avatar:
 ## 5. Documentação
 
 Atualizar [`docs/curated-collections.md`](docs/curated-collections.md):
+
 - Seção "Admin — formulário" com seções, hints, upload de capa
 - Endpoint `POST /admin/media/images`
 - Nota: capa = home/carrossel; URL externa opcional

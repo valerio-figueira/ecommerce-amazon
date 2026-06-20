@@ -37,13 +37,13 @@ flowchart LR
 
 Combina `site_settings` + status em `affiliate_accounts`:
 
-| Flag / regra | Efeito |
-|--------------|--------|
-| `features.batchCheckoutEnabled = false` | Bloqueia `POST /wishlist/checkout-batch` |
-| `features.priceAlertsEnabled = false` | Worker não dispara e-mails de alerta |
-| `features.publicIndexingEnabled = false` | `robots.ts` → `disallow: /` |
-| `seo.respectAffiliateGate = true` + conta `pending_manual_validation` | `robots.ts` → `disallow: /` |
-| Conta `pending` / `suspended` | Bloqueia `/go` e batch (regra existente) |
+| Flag / regra                                                          | Efeito                                   |
+| --------------------------------------------------------------------- | ---------------------------------------- |
+| `features.batchCheckoutEnabled = false`                               | Bloqueia `POST /wishlist/checkout-batch` |
+| `features.priceAlertsEnabled = false`                                 | Worker não dispara e-mails de alerta     |
+| `features.publicIndexingEnabled = false`                              | `robots.ts` → `disallow: /`              |
+| `seo.respectAffiliateGate = true` + conta `pending_manual_validation` | `robots.ts` → `disallow: /`              |
+| Conta `pending` / `suspended`                                         | Bloqueia `/go` e batch (regra existente) |
 
 Cache Redis: `vitrine:site-settings` (TTL 5 min), invalidado em mutações.
 
@@ -51,34 +51,34 @@ Cache Redis: `vitrine:site-settings` (TTL 5 min), invalidado em mutações.
 
 Migration `0019_operational_settings.sql`:
 
-| Tabela/coluna | Uso |
-|---------------|-----|
-| `site_settings` | Single-row JSONB (`id` fixo no seed) |
+| Tabela/coluna                         | Uso                                  |
+| ------------------------------------- | ------------------------------------ |
+| `site_settings`                       | Single-row JSONB (`id` fixo no seed) |
 | `affiliate_accounts.validation_notes` | Evidências do checklist de validação |
 
 Contrato Zod: `packages/shared/src/admin/site-settings-schemas.ts`
 
 ## API admin (JWT)
 
-| Método | Rota | Acesso |
-|--------|------|--------|
-| GET | `/admin/affiliate-accounts` | autenticado |
-| POST | `/admin/affiliate-accounts` | admin |
-| PATCH | `/admin/affiliate-accounts/:id` | admin |
-| DELETE | `/admin/affiliate-accounts/:id` | admin |
-| GET | `/admin/operators` | admin |
-| POST | `/admin/operators` | admin |
-| PATCH | `/admin/operators/:id` | admin |
-| PATCH | `/admin/profile/password` | autenticado |
-| GET | `/admin/site-settings` | autenticado |
-| PATCH | `/admin/site-settings` | admin |
-| GET | `/admin/operational-status` | autenticado |
+| Método | Rota                            | Acesso      |
+| ------ | ------------------------------- | ----------- |
+| GET    | `/admin/affiliate-accounts`     | autenticado |
+| POST   | `/admin/affiliate-accounts`     | admin       |
+| PATCH  | `/admin/affiliate-accounts/:id` | admin       |
+| DELETE | `/admin/affiliate-accounts/:id` | admin       |
+| GET    | `/admin/operators`              | admin       |
+| POST   | `/admin/operators`              | admin       |
+| PATCH  | `/admin/operators/:id`          | admin       |
+| PATCH  | `/admin/profile/password`       | autenticado |
+| GET    | `/admin/site-settings`          | autenticado |
+| PATCH  | `/admin/site-settings`          | admin       |
+| GET    | `/admin/operational-status`     | autenticado |
 
 ### API pública
 
-| Método | Rota | Uso |
-|--------|------|-----|
-| GET | `/site-settings/public` | `indexingBlocked` para `robots.ts` |
+| Método | Rota                    | Uso                                |
+| ------ | ----------------------- | ---------------------------------- |
+| GET    | `/site-settings/public` | `indexingBlocked` para `robots.ts` |
 
 Promoção para `active` exige `checklistConfirmed: true` no PATCH da conta.
 
@@ -88,7 +88,7 @@ Promoção para `active` exige `checklistConfirmed: true` no PATCH da conta.
 
 ## UI admin
 
-Rota: [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](../apps/admin/src/app/(dashboard)/configuracoes/page.tsx)
+Rota: [`apps/admin/src/app/(dashboard)/configuracoes/page.tsx`](<../apps/admin/src/app/(dashboard)/configuracoes/page.tsx>)
 
 Layout em abas (`OperationalSettingsManager`): painel intro + navegação por abas, cada aba com painéis flutuantes próprios (padrão `ProductForm`).
 
@@ -106,15 +106,15 @@ Editores (`role === editor`) veem contas e saúde em leitura; mutações e paine
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Use cases | `packages/application/src/use-cases/admin-settings/` |
-| Gate service | `packages/application/src/services/AffiliateScaleGateService.ts` |
-| Repos | `drizzle-site-settings.repository.ts`, `drizzle-affiliate-account.repository.ts` |
-| API | `apps/api/src/adapters/http/routes/admin-settings-routes.ts` |
-| Guard admin | `apps/api/src/adapters/http/require-admin-operator.ts` |
-| BFF | `apps/admin/src/app/api/admin/{affiliate-accounts,operators,site-settings,operational-status,profile/password}/` |
-| Web robots | `apps/web/src/app/robots.ts` |
+| Camada       | Path                                                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| Use cases    | `packages/application/src/use-cases/admin-settings/`                                                             |
+| Gate service | `packages/application/src/services/AffiliateScaleGateService.ts`                                                 |
+| Repos        | `drizzle-site-settings.repository.ts`, `drizzle-affiliate-account.repository.ts`                                 |
+| API          | `apps/api/src/adapters/http/routes/admin-settings-routes.ts`                                                     |
+| Guard admin  | `apps/api/src/adapters/http/require-admin-operator.ts`                                                           |
+| BFF          | `apps/admin/src/app/api/admin/{affiliate-accounts,operators,site-settings,operational-status,profile/password}/` |
+| Web robots   | `apps/web/src/app/robots.ts`                                                                                     |
 
 ## Como testar
 

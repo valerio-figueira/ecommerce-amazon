@@ -14,7 +14,9 @@ export type ValidatedOperatorSession = {
 export class ValidateOperatorSession {
   constructor(private readonly operatorRepository: OperatorRepository) {}
 
-  async execute(operatorId: string): Promise<Result<ValidatedOperatorSession, AuthenticationError>> {
+  async execute(
+    operatorId: string,
+  ): Promise<Result<ValidatedOperatorSession, AuthenticationError>> {
     const operator = await this.operatorRepository.findById(operatorId);
 
     if (!operator || operator.status !== OperatorStatus.ACTIVE) {

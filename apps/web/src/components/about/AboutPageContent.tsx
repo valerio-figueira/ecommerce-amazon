@@ -37,7 +37,11 @@ function AboutSectionBlock({
       className="scroll-mt-24 border-t border-neutral-100 pt-10 first:border-t-0 first:pt-0"
     >
       <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">{section.title}</h2>
-      <div className={isCallout ? 'mt-4 rounded-xl border border-amber-100 bg-amber-50/80 p-5' : 'mt-4'}>
+      <div
+        className={
+          isCallout ? 'mt-4 rounded-xl border border-amber-100 bg-amber-50/80 p-5' : 'mt-4'
+        }
+      >
         {section.paragraphs.map((paragraph) => (
           <SafeInstitutionalHtml
             key={paragraph.slice(0, 48)}
@@ -78,7 +82,7 @@ function TeamMemberCard({ member }: { member: PublicTeamMemberDto }): React.JSX.
       ['x', member.socialLinks?.x],
       ['telegram', member.socialLinks?.telegram],
     ] as const
-  ).filter((entry): entry is [typeof entry[0], string] => Boolean(entry[1]));
+  ).filter((entry): entry is [(typeof entry)[0], string] => Boolean(entry[1]));
 
   return (
     <article className="rounded-xl border border-neutral-100 bg-white p-5 shadow-sm">
@@ -158,7 +162,10 @@ export function AboutPageContent({
           className="mt-6 text-base leading-relaxed text-neutral-600"
           as="p"
         />
-        <nav aria-label="Sumário" className="mt-8 rounded-xl border border-neutral-100 bg-neutral-50 p-5">
+        <nav
+          aria-label="Sumário"
+          className="mt-8 rounded-xl border border-neutral-100 bg-neutral-50 p-5"
+        >
           <p className="text-sm font-medium text-neutral-900">Navegue por seção</p>
           <ol className="mt-3 space-y-2 text-sm">
             {content.sections.map((section, index) => (
@@ -209,7 +216,10 @@ export function AboutPageContent({
             )}
           </div>
           <p className="mt-6 text-sm text-neutral-500">
-            <Link href="/contato" className="underline decoration-neutral-300 underline-offset-[3px]">
+            <Link
+              href="/contato"
+              className="underline decoration-neutral-300 underline-offset-[3px]"
+            >
               Fale conosco
             </Link>
             {' · '}

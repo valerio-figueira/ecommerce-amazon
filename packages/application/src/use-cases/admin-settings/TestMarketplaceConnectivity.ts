@@ -45,9 +45,7 @@ export class TestMarketplaceConnectivity {
     );
 
     const result = await gateway.test(credentials, {
-      ...(affiliateAccount?.affiliateTag
-        ? { affiliateTag: affiliateAccount.affiliateTag }
-        : {}),
+      ...(affiliateAccount?.affiliateTag ? { affiliateTag: affiliateAccount.affiliateTag } : {}),
     });
 
     const record = await this.repository.findByMarketplace(input.marketplace);
@@ -88,10 +86,7 @@ export class TestMarketplaceConnectivity {
       throw new ValidationError('Credenciais não configuradas para este marketplace');
     }
 
-    const decrypted = this.resolver.decryptRecord(
-      input.marketplace,
-      record.credentialsEncrypted,
-    );
+    const decrypted = this.resolver.decryptRecord(input.marketplace, record.credentialsEncrypted);
 
     if (input.marketplace === Marketplace.AMAZON_BR) {
       const amazon = toAmazonStaticCredentials(decrypted);

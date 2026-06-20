@@ -19,10 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import type { SpecBlockState } from '@/lib/product-specs-form-state';
-import {
-  createEmptyPropertyRow,
-  updateBlockTitle,
-} from '@/lib/product-specs-form-state';
+import { createEmptyPropertyRow, updateBlockTitle } from '@/lib/product-specs-form-state';
 
 type ProductSpecBlockEditorProps = {
   block: SpecBlockState;
@@ -57,9 +54,7 @@ export function ProductSpecBlockEditor({
   function updateProperty(rowId: string, key: string, value: string): void {
     updateBlock({
       ...block,
-      properties: block.properties.map((row) =>
-        row.id === rowId ? { ...row, key, value } : row,
-      ),
+      properties: block.properties.map((row) => (row.id === rowId ? { ...row, key, value } : row)),
     });
   }
 
@@ -94,9 +89,7 @@ export function ProductSpecBlockEditor({
               id={`spec-block-title-${block.id}`}
               placeholder="Ex: Detalhes do Produto"
               value={block.group_title}
-              onChange={(event) =>
-                updateBlock(updateBlockTitle(block, event.target.value))
-              }
+              onChange={(event) => updateBlock(updateBlockTitle(block, event.target.value))}
               onBlur={onBlurSync}
             />
           </div>

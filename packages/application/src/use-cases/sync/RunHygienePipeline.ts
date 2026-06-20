@@ -1,4 +1,8 @@
-import { TitleHygieneService, type CacheInvalidator, type ProductRepository } from '@ecommerce-amazon/domain';
+import {
+  TitleHygieneService,
+  type CacheInvalidator,
+  type ProductRepository,
+} from '@ecommerce-amazon/domain';
 
 export class RunHygienePipeline {
   constructor(

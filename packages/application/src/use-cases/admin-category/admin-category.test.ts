@@ -11,7 +11,10 @@ describe('CreateCategory', () => {
       slugExists: vi.fn().mockResolvedValue(true),
     };
 
-    const useCase = new CreateCategory(categoryRepository as never, createMockPublicWebRevalidator());
+    const useCase = new CreateCategory(
+      categoryRepository as never,
+      createMockPublicWebRevalidator(),
+    );
 
     await expect(
       useCase.execute({

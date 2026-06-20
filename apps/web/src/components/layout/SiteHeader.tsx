@@ -29,10 +29,7 @@ export function SiteHeader({ siteName, navCategories = [] }: SiteHeaderProps): R
       <header className="sticky top-0 z-40 border-b border-neutral-200/80 bg-[var(--background)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4">
           <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-5">
-            <Link
-              href="/"
-              className="shrink-0 text-lg font-bold tracking-tight md:text-xl"
-            >
+            <Link href="/" className="shrink-0 text-lg font-bold tracking-tight md:text-xl">
               {siteName.toUpperCase()}
             </Link>
 

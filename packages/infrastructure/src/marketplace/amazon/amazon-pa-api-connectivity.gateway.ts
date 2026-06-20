@@ -5,9 +5,7 @@ import {
   type MarketplaceConnectivityResult,
 } from '@ecommerce-amazon/domain';
 
-import {
-  amazonPaApiTestConnectivity,
-} from '../amazon/amazon-pa-api.client.js';
+import { amazonPaApiTestConnectivity } from '../amazon/amazon-pa-api.client.js';
 
 export class AmazonPaApiConnectivityGateway implements MarketplaceConnectivityGateway {
   readonly marketplace = Marketplace.AMAZON_BR;

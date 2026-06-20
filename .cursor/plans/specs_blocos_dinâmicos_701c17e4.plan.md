@@ -48,13 +48,13 @@ flowchart LR
 
 ## Invariantes críticos (incorporados)
 
-| # | Risco | Solução no plano |
-|---|-------|------------------|
-| 1 | `group_id` deduplicado globalmente | `Set` local em `normalizeSpecsGroups` — escopo **apenas** do array do produto |
-| 2 | Migration SQL quebra tipos legados | `jsonb_each_text` + subquery relacional (SQL exato na Seção 2) |
-| 3 | Perda de foco no admin a cada keystroke | Estado local no `onChange`; `form.setValue` só em `onBlur`, mudanças estruturais e submit |
-| 4 | SEO/a11y do `<details>` | `<summary>` obrigatório + tabela dentro de `<div>`; conteúdo indexável mesmo fechado |
-| 5 | Blocos fantasmas na vitrine | Filtro `properties.length > 0` no presenter **e** em `ProductSpecsSections` |
+| #   | Risco                                   | Solução no plano                                                                          |
+| --- | --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | `group_id` deduplicado globalmente      | `Set` local em `normalizeSpecsGroups` — escopo **apenas** do array do produto             |
+| 2   | Migration SQL quebra tipos legados      | `jsonb_each_text` + subquery relacional (SQL exato na Seção 2)                            |
+| 3   | Perda de foco no admin a cada keystroke | Estado local no `onChange`; `form.setValue` só em `onBlur`, mudanças estruturais e submit |
+| 4   | SEO/a11y do `<details>`                 | `<summary>` obrigatório + tabela dentro de `<div>`; conteúdo indexável mesmo fechado      |
+| 5   | Blocos fantasmas na vitrine             | Filtro `properties.length > 0` no presenter **e** em `ProductSpecsSections`               |
 
 ---
 
@@ -114,6 +114,7 @@ for (const group of sanitizedGroups) {
 Exportar em [`packages/shared/src/product/index.ts`](packages/shared/src/product/index.ts).
 
 Atualizar [`product-schemas.ts`](packages/shared/src/admin/product-schemas.ts):
+
 - `specsNormalized: specsNormalizedSchema.default([])`
 - `adminProductDetailSchema` e `productPublicDetailSchema`:
   - `specGroups: specsNormalizedSchema` (nome público amigável)
@@ -123,12 +124,12 @@ Atualizar [`product-schemas.ts`](packages/shared/src/admin/product-schemas.ts):
 
 ## 2. Domain + infra + migração
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`Product.ts`](packages/domain/src/entities/Product.ts) | `specsNormalized: SpecGroup[]` |
-| [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts) | `$type<SpecGroup[]>().default([])` |
-| [`product.mapper.ts`](packages/infrastructure/src/persistence/mappers/product.mapper.ts) | Se `jsonb` legado for object → `legacyRecordToSpecGroups` |
-| Nova migration `0024_specs_normalized_groups.sql` | Converte `{}` → `[]`; object com pares → bloco único; altera default da coluna |
+| Arquivo                                                                                  | Mudança                                                                        |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`Product.ts`](packages/domain/src/entities/Product.ts)                                  | `specsNormalized: SpecGroup[]`                                                 |
+| [`schema/index.ts`](packages/infrastructure/src/persistence/drizzle/schema/index.ts)     | `$type<SpecGroup[]>().default([])`                                             |
+| [`product.mapper.ts`](packages/infrastructure/src/persistence/mappers/product.mapper.ts) | Se `jsonb` legado for object → `legacyRecordToSpecGroups`                      |
+| Nova migration `0024_specs_normalized_groups.sql`                                        | Converte `{}` → `[]`; object com pares → bloco único; altera default da coluna |
 
 SQL de migração — **usar `jsonb_each_text` para iterar chaves do legado** (não `jsonb_build_array(...)` genérico, que enfiaria o objeto inteiro numa property ou quebraria tipos):
 
@@ -198,14 +199,14 @@ Seguir o padrão já usado em [`ProductSpecsForm.tsx`](apps/admin/src/components
 
 **Regra crítica de foco — não sincronizar RHF a cada keystroke:**
 
-| Evento | Comportamento |
-|--------|---------------|
-| `onChange` em inputs de key/value | Atualiza **apenas** estado local (`useState` / reducer no bloco) — **sem** `form.setValue` |
-| `onBlur` em inputs de key/value | Dispara `syncToForm()` → `form.setValue('specsNormalized', uiStateToSpecsNormalized(blocks))` |
-| Adicionar/remover linha ou bloco | Sync imediato (mudança estrutural) |
-| Reordenar blocos (setas ↑↓) | Sync imediato |
-| Toggle `is_collapsed_default` | Sync imediato |
-| Submit do formulário (`ProductForm`) | Sync final obrigatório antes do POST/PATCH (garante último campo ainda focado) |
+| Evento                               | Comportamento                                                                                 |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `onChange` em inputs de key/value    | Atualiza **apenas** estado local (`useState` / reducer no bloco) — **sem** `form.setValue`    |
+| `onBlur` em inputs de key/value      | Dispara `syncToForm()` → `form.setValue('specsNormalized', uiStateToSpecsNormalized(blocks))` |
+| Adicionar/remover linha ou bloco     | Sync imediato (mudança estrutural)                                                            |
+| Reordenar blocos (setas ↑↓)          | Sync imediato                                                                                 |
+| Toggle `is_collapsed_default`        | Sync imediato                                                                                 |
+| Submit do formulário (`ProductForm`) | Sync final obrigatório antes do POST/PATCH (garante último campo ainda focado)                |
 
 - **Por quê:** `form.setValue` no `onChange` do elemento raiz força re-render da lista inteira de blocos e **perde o foco do cursor a cada caractere**, tornando o admin inutilizável.
 - `ProductSpecPropertyRow` recebe `value`/`onChange` do estado local do pai; expõe `onBlur` que propaga sync.
@@ -232,23 +233,26 @@ buildSuggestedBlockFromTemplate(templateKeys, existingSpecs): SpecBlockState
 
 ### Componentes
 
-| Componente | Responsabilidade |
-|------------|------------------|
+| Componente                                                                        | Responsabilidade                                                                                                                          |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | [`ProductSpecsForm.tsx`](apps/admin/src/components/products/ProductSpecsForm.tsx) | Orquestrador; lista de blocos; botão **Adicionar novo bloco**; botão **Adicionar bloco sugerido da categoria** (substitui templates flat) |
-| `ProductSpecBlockEditor.tsx` | Título do bloco, checkbox *Iniciar recolhido na vitrine*, setas reordenar, excluir bloco (`AlertDialog`), lista de properties |
-| `ProductSpecPropertyRow.tsx` | Input key + Textarea value (valores longos) + lixeira; botão **+ Adicionar atributo** no rodapé do bloco |
+| `ProductSpecBlockEditor.tsx`                                                      | Título do bloco, checkbox _Iniciar recolhido na vitrine_, setas reordenar, excluir bloco (`AlertDialog`), lista de properties             |
+| `ProductSpecPropertyRow.tsx`                                                      | Input key + Textarea value (valores longos) + lixeira; botão **+ Adicionar atributo** no rodapé do bloco                                  |
 
 **UX alinhada às regras admin** ([`11-admin-floating-panels.mdc`](.cursor/rules/11-admin-floating-panels.mdc)):
+
 - Manter `CmsFormSection title="Especificações do Produto"` dentro da aba existente em [`ProductForm.tsx`](apps/admin/src/components/products/ProductForm.tsx)
 - Cards por bloco: `cms-block-card cms-block-card--plain`
 - Confirmação de exclusão via [`alert-dialog.tsx`](apps/admin/src/components/ui/alert-dialog.tsx)
 - Checkbox `is_collapsed_default` com [`Switch`](apps/admin/src/components/ui/switch.tsx) ou checkbox nativo
 
 **Templates por categoria** ([`spec-templates.ts`](packages/shared/src/product/spec-templates.ts)):
+
 - Remover seção "Especificações sugeridas" flat
 - Se `resolveSpecTemplateForSlugChain` retornar keys e ainda não existir bloco sugerido → mostrar botão **Adicionar bloco sugerido da categoria** que cria bloco `"Especificações sugeridas"` com properties vazias (keys = labels do template), hidratando valores de blocos existentes quando key coincidir
 
 **Integração RHF:**
+
 - [`product-form-values.ts`](apps/admin/src/lib/product-form-values.ts): default `specsNormalized: []`
 - [`ProductForm.tsx`](apps/admin/src/components/products/ProductForm.tsx): default `[]`; expor callback `onBeforeSubmit` ou chamar `syncSpecsToForm()` no handler de save existente
 - Estado local (`blocks`) é a fonte de verdade durante digitação; RHF recebe snapshot normalizado em `onBlur` + eventos estruturais + submit
@@ -272,31 +276,37 @@ Substituir [`ProductSpecsTable.tsx`](apps/web/src/components/product/ProductSpec
 Estrutura HTML de referência:
 
 ```tsx
-{activeGroups.map((group) => (
-  <details
-    key={group.group_id}
-    id={group.group_id}
-    open={!group.is_collapsed_default}
-    className="group border-b border-gray-100"
-  >
-    <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-semibold text-neutral-900 [&::-webkit-details-marker]:hidden">
-      {group.group_title}
-      <span aria-hidden className="transition-transform group-open:rotate-180">▼</span>
-    </summary>
-    <div className="pb-4">
-      <table className="w-full border-collapse text-left text-sm">
-        <tbody>
-          {group.properties.map(({ key, value }) => (
-            <tr key={key} className="border-b border-gray-100 even:bg-gray-50/50 last:border-b-0">
-              <th scope="row" className="w-[40%] px-4 py-3 font-medium text-neutral-600">{key}</th>
-              <td className="px-4 py-3 text-neutral-800">{value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </details>
-))}
+{
+  activeGroups.map((group) => (
+    <details
+      key={group.group_id}
+      id={group.group_id}
+      open={!group.is_collapsed_default}
+      className="group border-b border-gray-100"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-semibold text-neutral-900 [&::-webkit-details-marker]:hidden">
+        {group.group_title}
+        <span aria-hidden className="transition-transform group-open:rotate-180">
+          ▼
+        </span>
+      </summary>
+      <div className="pb-4">
+        <table className="w-full border-collapse text-left text-sm">
+          <tbody>
+            {group.properties.map(({ key, value }) => (
+              <tr key={key} className="border-b border-gray-100 even:bg-gray-50/50 last:border-b-0">
+                <th scope="row" className="w-[40%] px-4 py-3 font-medium text-neutral-600">
+                  {key}
+                </th>
+                <td className="px-4 py-3 text-neutral-800">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  ));
+}
 ```
 
 - Manter `formatSpecKey` apenas se necessário; keys já são labels legíveis do admin
@@ -315,13 +325,13 @@ Comparador/embeds: **sem mudança** — continuam consumindo `specs` flat do pre
 
 ## 6. Testes
 
-| Área | O que testar |
-|------|--------------|
-| `spec-groups.test.ts` | normalize, flatten, legacy convert, `group_id` dedup **escopo local** (mesmo produto vs produtos distintos) |
-| `product-specs-form-state.test.ts` | round-trip UI ↔ JSON, descarte blocos vazios |
-| Admin (manual ou RTL) | digitar em input de value sem perder foco entre caracteres |
-| Use cases produto | persistência array de blocos |
-| `product-llm-prompt.test.ts` | formatação agrupada |
+| Área                               | O que testar                                                                                                |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `spec-groups.test.ts`              | normalize, flatten, legacy convert, `group_id` dedup **escopo local** (mesmo produto vs produtos distintos) |
+| `product-specs-form-state.test.ts` | round-trip UI ↔ JSON, descarte blocos vazios                                                                |
+| Admin (manual ou RTL)              | digitar em input de value sem perder foco entre caracteres                                                  |
+| Use cases produto                  | persistência array de blocos                                                                                |
+| `product-llm-prompt.test.ts`       | formatação agrupada                                                                                         |
 
 ---
 

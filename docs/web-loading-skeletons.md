@@ -70,15 +70,15 @@ sequenceDiagram
 
 ### Mapa rota → loading / Suspense
 
-| Rota | `loading.tsx` | Streaming interno |
-|------|---------------|-------------------|
-| `/` (home) | `HomePageSkeleton` | Blocos `PRODUCT_GRID` / `FEATURED_PRODUCT` com prefetch server + `initialData` no React Query |
-| `/categorias/[slug]` | Header + grid leve | `CategoryShell`, `CategorySidebar`, `CategoryProductsGrid`, `CategoryDescription` |
-| `/artigos` | Toolbar + grid | `ArticleListingToolbarSection`, `ArticleListingGridSection` |
-| `/artigos/[slug]` | Hero + corpo | `ArticleDetailMain`; auto-links em Suspense separado |
-| `/colecoes/[slug]` | `CollectionPageSkeleton` (leve) | API monolítica — sem split |
-| `/produtos/[slug]` | `ProductDetailSkeleton` (leve) | API monolítica — sem split |
-| `/sobre` | `InstitutionalPageSkeleton` | — |
+| Rota                 | `loading.tsx`                   | Streaming interno                                                                             |
+| -------------------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `/` (home)           | `HomePageSkeleton`              | Blocos `PRODUCT_GRID` / `FEATURED_PRODUCT` com prefetch server + `initialData` no React Query |
+| `/categorias/[slug]` | Header + grid leve              | `CategoryShell`, `CategorySidebar`, `CategoryProductsGrid`, `CategoryDescription`             |
+| `/artigos`           | Toolbar + grid                  | `ArticleListingToolbarSection`, `ArticleListingGridSection`                                   |
+| `/artigos/[slug]`    | Hero + corpo                    | `ArticleDetailMain`; auto-links em Suspense separado                                          |
+| `/colecoes/[slug]`   | `CollectionPageSkeleton` (leve) | API monolítica — sem split                                                                    |
+| `/produtos/[slug]`   | `ProductDetailSkeleton` (leve)  | API monolítica — sem split                                                                    |
+| `/sobre`             | `InstitutionalPageSkeleton`     | —                                                                                             |
 
 `/artigos/categoria/[slug]` é redirect server-side — sem `loading.tsx`.  
 `/contato` e `/legal` são sync — sem skeleton necessário.
@@ -89,18 +89,18 @@ Em `/artigos`, filtros e paginação usam `router.replace` na mesma rota. `Artic
 
 ## Arquivos-chave
 
-| Área | Path |
-|------|------|
-| Layout + Suspense header | `apps/web/src/app/layout.tsx` |
-| Cache árvore categorias | `apps/web/src/lib/api/categories.ts` |
-| Categoria — shell / grid / sidebar | `apps/web/src/components/category/*.tsx` |
-| Artigos — streaming | `apps/web/src/components/articles/ArticleListing*Section.tsx`, `ArticleDetailMain.tsx` |
-| Home — prefetch server | `ProductGridBlockServer.tsx`, `FeaturedProductBlockServer.tsx` |
-| Fetches deduplicados | `apps/web/src/lib/api/cached-fetchers.ts` |
-| Helpers listagem | `apps/web/src/lib/api/category-products.ts`, `product-grid.ts`, `auto-links.ts` |
-| Barra de progresso | `apps/web/src/components/navigation/NavigationPendingBar.tsx` |
-| Skeletons granulares | `CategoryHeaderSkeleton`, `CategorySidebarSkeleton`, `ArticleListingToolbarSkeleton`, `ArticleListingGridSkeleton`, `ArticleDetailHeroSkeleton` |
-| Route loading | `apps/web/src/app/**/loading.tsx` |
+| Área                               | Path                                                                                                                                            |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout + Suspense header           | `apps/web/src/app/layout.tsx`                                                                                                                   |
+| Cache árvore categorias            | `apps/web/src/lib/api/categories.ts`                                                                                                            |
+| Categoria — shell / grid / sidebar | `apps/web/src/components/category/*.tsx`                                                                                                        |
+| Artigos — streaming                | `apps/web/src/components/articles/ArticleListing*Section.tsx`, `ArticleDetailMain.tsx`                                                          |
+| Home — prefetch server             | `ProductGridBlockServer.tsx`, `FeaturedProductBlockServer.tsx`                                                                                  |
+| Fetches deduplicados               | `apps/web/src/lib/api/cached-fetchers.ts`                                                                                                       |
+| Helpers listagem                   | `apps/web/src/lib/api/category-products.ts`, `product-grid.ts`, `auto-links.ts`                                                                 |
+| Barra de progresso                 | `apps/web/src/components/navigation/NavigationPendingBar.tsx`                                                                                   |
+| Skeletons granulares               | `CategoryHeaderSkeleton`, `CategorySidebarSkeleton`, `ArticleListingToolbarSkeleton`, `ArticleListingGridSkeleton`, `ArticleDetailHeroSkeleton` |
+| Route loading                      | `apps/web/src/app/**/loading.tsx`                                                                                                               |
 
 ## Cache da home
 

@@ -7,10 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { PriceDisplay } from '@/components/product/PriceDisplay';
-import {
-  SearchTypeSwitch,
-  type SearchResultType,
-} from '@/components/search/SearchTypeSwitch';
+import { SearchTypeSwitch, type SearchResultType } from '@/components/search/SearchTypeSwitch';
 import { useSearch } from '@/components/search/SearchProvider';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import {

@@ -32,8 +32,7 @@ export function ArticleIdPicker({
     if (!query) return articles;
     return articles.filter(
       (article) =>
-        article.title.toLowerCase().includes(query) ||
-        article.slug.toLowerCase().includes(query),
+        article.title.toLowerCase().includes(query) || article.slug.toLowerCase().includes(query),
     );
   }, [articles, filter]);
 

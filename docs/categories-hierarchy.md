@@ -38,26 +38,28 @@ flowchart LR
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Schema | `packages/infrastructure/src/persistence/drizzle/schema/categories.ts` |
-| Migration | `packages/infrastructure/src/persistence/drizzle/migrations/0008_categories_hierarchy.sql` |
-| Domain | `packages/domain/src/entities/Category.ts` |
-| Repository | `packages/infrastructure/src/persistence/repositories/drizzle-category.repository.ts` |
-| Use cases | `packages/application/src/use-cases/category/`, `admin-category/` |
-| API | `apps/api/src/adapters/http/routes/index.ts`, `admin-category-routes.ts` |
-| Admin UI | `apps/admin/src/app/(dashboard)/categorias/page.tsx` |
-| Web pills | `apps/web/src/components/blocks/CategoryPillsRow.tsx` |
-| Web sidebar | `apps/web/src/components/category/CategorySidebarTree.tsx` |
-| Web header | `CategoryCatalogFlyout.tsx`, `CategoryCatalogDrawer.tsx`, `SiteHeader.tsx` |
-| Tree helpers | `packages/shared/src/category/category-tree-nav.ts`, `resolve-cascade-category-id.ts` |
+| Camada       | Path                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| Schema       | `packages/infrastructure/src/persistence/drizzle/schema/categories.ts`                     |
+| Migration    | `packages/infrastructure/src/persistence/drizzle/migrations/0008_categories_hierarchy.sql` |
+| Domain       | `packages/domain/src/entities/Category.ts`                                                 |
+| Repository   | `packages/infrastructure/src/persistence/repositories/drizzle-category.repository.ts`      |
+| Use cases    | `packages/application/src/use-cases/category/`, `admin-category/`                          |
+| API          | `apps/api/src/adapters/http/routes/index.ts`, `admin-category-routes.ts`                   |
+| Admin UI     | `apps/admin/src/app/(dashboard)/categorias/page.tsx`                                       |
+| Web pills    | `apps/web/src/components/blocks/CategoryPillsRow.tsx`                                      |
+| Web sidebar  | `apps/web/src/components/category/CategorySidebarTree.tsx`                                 |
+| Web header   | `CategoryCatalogFlyout.tsx`, `CategoryCatalogDrawer.tsx`, `SiteHeader.tsx`                 |
+| Tree helpers | `packages/shared/src/category/category-tree-nav.ts`, `resolve-cascade-category-id.ts`      |
 
 ## API (resumo)
 
 ### `GET /categories`
 
 ```typescript
-{ items: Array<{ slug, label, icon?, productCount, subcategories? }> }
+{
+  items: Array<{ slug; label; icon?; productCount; subcategories? }>;
+}
 ```
 
 ### `GET /categories/:slug`
@@ -105,13 +107,13 @@ npm run test -w @ecommerce-amazon/application
 
 ## Exposição na vitrine
 
-| Ponto | Componente | Comportamento |
-|-------|------------|---------------|
-| Home pills | `CategoryPillsRow` | 1ª fileira = raízes CMS; 2ª fileira = filhos do pai ativo |
-| Página categoria | `CategorySidebarTree` | Árvore lateral (lg+); chips horizontais em mobile |
-| Header desktop | `CategoryCatalogFlyout` | Botão Categorias → flyout 2 colunas; raízes são links clicáveis **e** expandem subcategorias no hover |
-| Header mobile | `CategoryCatalogDrawer` | Botão Categorias → drawer; raiz linkável + botão +/- para expandir filhos |
-| Produto | breadcrumb em `produtos/[slug]` | `Home > … > categoria > produto` |
+| Ponto            | Componente                      | Comportamento                                                                                         |
+| ---------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Home pills       | `CategoryPillsRow`              | 1ª fileira = raízes CMS; 2ª fileira = filhos do pai ativo                                             |
+| Página categoria | `CategorySidebarTree`           | Árvore lateral (lg+); chips horizontais em mobile                                                     |
+| Header desktop   | `CategoryCatalogFlyout`         | Botão Categorias → flyout 2 colunas; raízes são links clicáveis **e** expandem subcategorias no hover |
+| Header mobile    | `CategoryCatalogDrawer`         | Botão Categorias → drawer; raiz linkável + botão +/- para expandir filhos                             |
+| Produto          | breadcrumb em `produtos/[slug]` | `Home > … > categoria > produto`                                                                      |
 
 ## Dados legados (produtos em raiz)
 

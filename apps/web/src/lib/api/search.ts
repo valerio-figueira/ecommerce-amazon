@@ -33,9 +33,7 @@ type SearchArticlesOptions = {
   limit?: number;
 };
 
-export async function searchArticlesPreview(
-  query: string,
-): Promise<PublishedArticlesListResponse> {
+export async function searchArticlesPreview(query: string): Promise<PublishedArticlesListResponse> {
   return searchArticlesResults(query, {
     page: 1,
     limit: SEARCH_PREVIEW_LIMIT,

@@ -14,10 +14,7 @@ export async function readClientErrorMessage(
   return fallback;
 }
 
-export function readMetadataString(
-  metadata: Record<string, unknown>,
-  key: string,
-): string {
+export function readMetadataString(metadata: Record<string, unknown>, key: string): string {
   const value = metadata[key];
   return typeof value === 'string' ? value : '';
 }

@@ -1,18 +1,18 @@
 ---
 name: Product Card CRO Gold
-overview: "Elevar o ProductCard da vitrine (apps/web) ao padrão Gold de conversão para afiliados: funil interno (detalhe) + atalho transparente para marketplace, badges editoriais leves, preço stale com layout estável e tracking de cliques — Fase 1 sem backend de snapshots; Fase 2 reservada para badges históricos."
+overview: 'Elevar o ProductCard da vitrine (apps/web) ao padrão Gold de conversão para afiliados: funil interno (detalhe) + atalho transparente para marketplace, badges editoriais leves, preço stale com layout estável e tracking de cliques — Fase 1 sem backend de snapshots; Fase 2 reservada para badges históricos.'
 todos:
   - id: dto-editorial-score
     content: Expor `editorialScore` no presenter API + Zod schemas web/shared
     status: completed
   - id: price-display-stale
-    content: "Refatorar PriceDisplay: min-height, frescor via updatedAt, pill stale com ícone"
+    content: 'Refatorar PriceDisplay: min-height, frescor via updatedAt, pill stale com ícone'
     status: completed
   - id: editorial-badges-rating
     content: Criar ProductEditorialBadges + ProductRating com regras stale/fresh
     status: completed
   - id: product-card-dual-cta
-    content: "Refatorar ProductCard: Link interno, dual-CTA fresh, single-CTA stale, MarketplaceBadge"
+    content: 'Refatorar ProductCard: Link interno, dual-CTA fresh, single-CTA stale, MarketplaceBadge'
     status: completed
   - id: click-tracking-sponsored
     content: AffiliateGoLink + recordClick + rel=sponsored + blockId no grid/featured
@@ -66,14 +66,15 @@ flowchart LR
   GoFresh --> Track
 ```
 
-| Intenção | Área | Destino | Tracking |
-|----------|------|---------|----------|
-| Pesquisa / confiança | Imagem, título | `/produtos/[slug]` (mesma aba) | futuro pageview |
-| Funil editorial | CTA primário (fresh) | `/produtos/[slug]` | — |
-| Conversão rápida | CTA secundário (fresh) | `/go/[slug]` nova aba | `recordClick(..., 'listagem')` |
-| Preço stale | CTA primário único | `/go/[slug]` nova aba | `recordClick` + `rel="noopener sponsored"` |
+| Intenção             | Área                   | Destino                        | Tracking                                   |
+| -------------------- | ---------------------- | ------------------------------ | ------------------------------------------ |
+| Pesquisa / confiança | Imagem, título         | `/produtos/[slug]` (mesma aba) | futuro pageview                            |
+| Funil editorial      | CTA primário (fresh)   | `/produtos/[slug]`             | —                                          |
+| Conversão rápida     | CTA secundário (fresh) | `/go/[slug]` nova aba          | `recordClick(..., 'listagem')`             |
+| Preço stale          | CTA primário único     | `/go/[slug]` nova aba          | `recordClick` + `rel="noopener sponsored"` |
 
 **Copy conforme regras de negócio** (nunca "Comprar na…"):
+
 - Primário fresh: **"Ver análise e ofertas"**
 - Secundário fresh: **"Ver preço na {Amazon\|Shopee} ↗"** (transparente, com nome do marketplace)
 - Stale: **"Ver preço na {Amazon\|Shopee}"** como único botão sólido; link textual opcional "Ver análise" abaixo
@@ -85,29 +86,30 @@ flowchart LR
 ### 1. Estender DTO com `editorialScore` (API mínima)
 
 Arquivos:
+
 - [`apps/api/src/adapters/presenters/product.presenter.ts`](apps/api/src/adapters/presenters/product.presenter.ts) — incluir `editorialScore` em `ProductListItemDto` / `ProductDetailDto`
 - [`apps/web/src/lib/api/schemas.ts`](apps/web/src/lib/api/schemas.ts) — `editorialScore: z.number().optional()` (ou required com default 0)
 - [`packages/shared/src/cms/block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) — `ProductDeliveryItem` se usado em preview CMS
 
 **Derivação de badge editorial no front (Fase 1, sem novo serviço de domínio):**
 
-| Condição | Badge (pt-BR) |
-|----------|---------------|
-| `editorialScore >= 80` | Escolha editorial |
-| `rating >= 4.5 && reviewCount >= 50` | Top avaliado |
-| `price.strikethrough` presente e fresh | Melhor oferta *(marketplace list price — não confundir com queda histórica)* |
+| Condição                               | Badge (pt-BR)                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------------- |
+| `editorialScore >= 80`                 | Escolha editorial                                                            |
+| `rating >= 4.5 && reviewCount >= 50`   | Top avaliado                                                                 |
+| `price.strikethrough` presente e fresh | Melhor oferta _(marketplace list price — não confundir com queda histórica)_ |
 
 Regra: **nenhum badge de preço/oferta quando `price.isStale`**.
 
 ### 2. Novos/melhorados componentes em `apps/web`
 
-| Componente | Responsabilidade |
-|------------|------------------|
-| **`ProductEditorialBadges.tsx`** (novo) | Chips absolutos no canto da imagem; max 1 badge prioritário (editorial > rating > strikethrough) |
-| **`ProductRating.tsx`** (novo) | Estrelas + `"4,6 · 2.341"` usando `rating`/`reviewCount` do DTO |
-| **`PriceDisplay.tsx`** (refator) | `min-h-[48px]` fixo; sublinha de frescor quando fresh: *"Monitorado há X h"* a partir de `price.updatedAt`; stale: pill âmbar **"Consultar preço atualizado"** + ícone `RefreshCw` (substitui texto plano atual) |
-| **`ProductCard.tsx`** (refator principal) | Anatomia Gold: `MarketplaceBadge`, imagem clicável (`Link`), rating, preço, dual-CTA ou stale-single-CTA |
-| **`AffiliateGoLink.tsx`** (novo, opcional) | Encapsula `buildGoUrl`, `rel="noopener sponsored"`, `recordClick`, `blockId`/`sessionId` — reutilizar em card e featured |
+| Componente                                 | Responsabilidade                                                                                                                                                                                                 |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`ProductEditorialBadges.tsx`** (novo)    | Chips absolutos no canto da imagem; max 1 badge prioritário (editorial > rating > strikethrough)                                                                                                                 |
+| **`ProductRating.tsx`** (novo)             | Estrelas + `"4,6 · 2.341"` usando `rating`/`reviewCount` do DTO                                                                                                                                                  |
+| **`PriceDisplay.tsx`** (refator)           | `min-h-[48px]` fixo; sublinha de frescor quando fresh: _"Monitorado há X h"_ a partir de `price.updatedAt`; stale: pill âmbar **"Consultar preço atualizado"** + ícone `RefreshCw` (substitui texto plano atual) |
+| **`ProductCard.tsx`** (refator principal)  | Anatomia Gold: `MarketplaceBadge`, imagem clicável (`Link`), rating, preço, dual-CTA ou stale-single-CTA                                                                                                         |
+| **`AffiliateGoLink.tsx`** (novo, opcional) | Encapsula `buildGoUrl`, `rel="noopener sponsored"`, `recordClick`, `blockId`/`sessionId` — reutilizar em card e featured                                                                                         |
 
 Props adicionais sugeridas para `ProductCard`:
 
@@ -144,20 +146,20 @@ Quando a Fase 1 estiver validada:
 
 1. **`ProductBadgeService`** em `packages/domain` — calcular `priceDropPct7d`, `isLowestPrice30d` a partir de `PriceSnapshotRepository`; guard `!product.shouldShowPrice` e mínimo de snapshots (PRD: ≥7)
 2. **Presenter** — campo `badges: ProductBadgeDto[]` no list/detail DTO
-3. **`PriceDisplay`** — sublinha verificável: *"Baixou R$ X em Y dias"* só com snapshot confirmado
+3. **`PriceDisplay`** — sublinha verificável: _"Baixou R$ X em Y dias"_ só com snapshot confirmado
 4. **Worker** — materializar métricas no Pipeline B (opcional, performance)
 
 ---
 
 ## Arquivos principais tocados (Fase 1)
 
-| Camada | Arquivos |
-|--------|----------|
-| API | `product.presenter.ts` |
-| Web schemas | `apps/web/src/lib/api/schemas.ts` |
-| Componentes | `ProductCard.tsx`, `PriceDisplay.tsx`, novos badges/rating/go-link |
-| Blocos CMS | `ProductGridBlock.tsx`, `FeaturedProductBlock.tsx` |
-| Docs | `docs/cms-home-phase1.md` — atualizar tabela UX (badges/rating na listagem, dual-CTA) |
+| Camada      | Arquivos                                                                              |
+| ----------- | ------------------------------------------------------------------------------------- |
+| API         | `product.presenter.ts`                                                                |
+| Web schemas | `apps/web/src/lib/api/schemas.ts`                                                     |
+| Componentes | `ProductCard.tsx`, `PriceDisplay.tsx`, novos badges/rating/go-link                    |
+| Blocos CMS  | `ProductGridBlock.tsx`, `FeaturedProductBlock.tsx`                                    |
+| Docs        | `docs/cms-home-phase1.md` — atualizar tabela UX (badges/rating na listagem, dual-CTA) |
 
 ---
 
@@ -175,10 +177,10 @@ Quando a Fase 1 estiver validada:
 
 ## Riscos e adaptações vs. spec do usuário
 
-| Sugestão do usuário | Adaptação por conformidade |
-|---------------------|----------------------------|
-| "Comprar na Amazon" | Proibido — usar "Ver preço na Amazon" |
-| "Baixou R$ 40 nas últimas 24h" | Fase 2 — exige snapshots; Fase 1 só frescor ("Monitorado há X h") |
-| "Preço oscilando na Amazon" | Evitar tom alarmista — "Consultar preço atualizado" |
-| Emojis nos badges (🔥🏆) | Preferir chips textuais consistentes com ESTORE |
-| Urgência em cards stale | Proibido por [`01-business-compliance.mdc`](.cursor/rules/01-business-compliance.mdc) |
+| Sugestão do usuário            | Adaptação por conformidade                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| "Comprar na Amazon"            | Proibido — usar "Ver preço na Amazon"                                                 |
+| "Baixou R$ 40 nas últimas 24h" | Fase 2 — exige snapshots; Fase 1 só frescor ("Monitorado há X h")                     |
+| "Preço oscilando na Amazon"    | Evitar tom alarmista — "Consultar preço atualizado"                                   |
+| Emojis nos badges (🔥🏆)       | Preferir chips textuais consistentes com ESTORE                                       |
+| Urgência em cards stale        | Proibido por [`01-business-compliance.mdc`](.cursor/rules/01-business-compliance.mdc) |

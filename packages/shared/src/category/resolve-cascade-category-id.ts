@@ -47,8 +47,7 @@ export function resolveLeafCategoryId(
   levels: CategoryCascadeLevels,
   options: CategoryCascadeOption[],
 ): string | undefined {
-  const deepestId =
-    levels.level4 ?? levels.level3 ?? levels.level2 ?? levels.level1;
+  const deepestId = levels.level4 ?? levels.level3 ?? levels.level2 ?? levels.level1;
 
   if (!deepestId) {
     return undefined;
@@ -66,8 +65,7 @@ export function hasIncompleteCascadeSelection(
   levels: CategoryCascadeLevels,
   options: CategoryCascadeOption[],
 ): boolean {
-  const deepestId =
-    levels.level4 ?? levels.level3 ?? levels.level2 ?? levels.level1;
+  const deepestId = levels.level4 ?? levels.level3 ?? levels.level2 ?? levels.level1;
 
   if (!deepestId) {
     return false;

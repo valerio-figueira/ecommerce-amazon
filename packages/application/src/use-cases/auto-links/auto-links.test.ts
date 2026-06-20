@@ -23,9 +23,7 @@ const existingLink = AutoLink.create({
   isActive: true,
 });
 
-function createRepositoryMock(
-  overrides: Partial<AutoLinkRepository> = {},
-): AutoLinkRepository {
+function createRepositoryMock(overrides: Partial<AutoLinkRepository> = {}): AutoLinkRepository {
   return {
     save: vi.fn().mockResolvedValue(undefined),
     findById: vi.fn().mockResolvedValue(null),

@@ -33,18 +33,11 @@ export function InternalLinkTargetPicker({
   const [panelOpen, setPanelOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    targets,
-    loading,
-    error,
-    search,
-    setSearch,
-    requiresMinSearchLength,
-    productLimit,
-  } = useInternalLinkTargetSearch({
-    enabled: enabled && !manualMode,
-    selectedUrl: value,
-  });
+  const { targets, loading, error, search, setSearch, requiresMinSearchLength, productLimit } =
+    useInternalLinkTargetSearch({
+      enabled: enabled && !manualMode,
+      selectedUrl: value,
+    });
 
   const selectedTarget = useMemo(
     () => findInternalLinkTargetByUrl(value, targets),
@@ -120,9 +113,7 @@ export function InternalLinkTargetPicker({
             placeholder="/caminho/custom ou https://..."
             required
           />
-          <p className="auto-link-picker__hint">
-            Use caminho relativo (/) ou URL HTTPS absoluta.
-          </p>
+          <p className="auto-link-picker__hint">Use caminho relativo (/) ou URL HTTPS absoluta.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -216,9 +207,7 @@ export function InternalLinkTargetPicker({
                             onClick={() => handleSelect(target.targetUrl, target.label)}
                           >
                             <span className="min-w-0 flex-1">
-                              <span className="auto-link-picker__option-label">
-                                {target.label}
-                              </span>
+                              <span className="auto-link-picker__option-label">{target.label}</span>
                               <span className="auto-link-picker__option-meta">
                                 {target.slug}
                                 {target.meta ? ` · ${target.meta}` : ''}

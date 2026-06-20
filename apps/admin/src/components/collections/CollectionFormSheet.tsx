@@ -49,9 +49,7 @@ const CAMPAIGN_ORIGINS = [
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-function getCampaignUtmSuggestions(
-  origin: string,
-): { utmSource?: string; utmMedium?: string } {
+function getCampaignUtmSuggestions(origin: string): { utmSource?: string; utmMedium?: string } {
   switch (origin) {
     case 'pinterest':
       return { utmSource: 'pinterest', utmMedium: 'social' };
@@ -253,9 +251,14 @@ export function CollectionFormSheet({
         </SheetHeader>
 
         {loading ? (
-          <p className="px-6 py-8 text-center text-sm text-[var(--admin-text-muted)]">Carregando…</p>
+          <p className="px-6 py-8 text-center text-sm text-[var(--admin-text-muted)]">
+            Carregando…
+          </p>
         ) : (
-          <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => void handleSubmit(event)}>
+          <form
+            className="flex min-h-0 flex-1 flex-col"
+            onSubmit={(event) => void handleSubmit(event)}
+          >
             <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
               <fieldset className="m-0 min-w-0 space-y-4 border-0 p-0">
                 <legend className="text-sm font-semibold text-[var(--admin-navy)]">
@@ -281,7 +284,8 @@ export function CollectionFormSheet({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="collection-description">
-                      Descrição editorial <span className="text-[var(--admin-danger,#dc3545)]">*</span>
+                      Descrição editorial{' '}
+                      <span className="text-[var(--admin-danger,#dc3545)]">*</span>
                     </Label>
                     <CollectionFieldHint text="Texto editorial exibido no slide da home e na landing. Explique o tema da seleção." />
                   </div>
@@ -348,8 +352,9 @@ export function CollectionFormSheet({
                 </legend>
 
                 <p className="rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-subtle)] px-4 py-3 text-xs text-[var(--admin-text-muted)]">
-                  Links de afiliado usam origem <strong className="text-[var(--admin-navy)]">coleção</strong>{' '}
-                  e os parâmetros UTM na query de /go/....
+                  Links de afiliado usam origem{' '}
+                  <strong className="text-[var(--admin-navy)]">coleção</strong> e os parâmetros UTM
+                  na query de /go/....
                 </p>
 
                 <div className="space-y-2">
@@ -432,7 +437,8 @@ export function CollectionFormSheet({
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label>
-                      Produtos da coleção <span className="text-[var(--admin-danger,#dc3545)]">*</span>
+                      Produtos da coleção{' '}
+                      <span className="text-[var(--admin-danger,#dc3545)]">*</span>
                     </Label>
                     <CollectionFieldHint text="Ordem = narrativa do passo a passo na landing. Mínimo 1 produto." />
                   </div>

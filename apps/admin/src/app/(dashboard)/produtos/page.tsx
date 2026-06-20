@@ -29,10 +29,7 @@ export default async function ProdutosPage(): Promise<React.JSX.Element> {
       {error ? <AdminToastOnMount message={error} variant="error" /> : null}
       <AdminPageHeader
         title="Produtos"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Produtos' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Produtos' }]}
       />
       <AdminPageCard>
         {initialData ? <ProductListManager initialData={initialData} /> : null}

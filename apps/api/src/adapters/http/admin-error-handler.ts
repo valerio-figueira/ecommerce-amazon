@@ -1,11 +1,7 @@
 import type { FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
 
-import {
-  AuthenticationError,
-  DomainError,
-  ValidationError,
-} from '@ecommerce-amazon/domain';
+import { AuthenticationError, DomainError, ValidationError } from '@ecommerce-amazon/domain';
 
 const INFRASTRUCTURE_ERROR_CODES = new Set([
   'ECONNREFUSED',

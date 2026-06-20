@@ -35,9 +35,7 @@ export function buildCategoryBreadcrumbJsonLd(input: CategoryJsonLdInput): Recor
   };
 }
 
-export function buildCategoryCollectionJsonLd(
-  input: CategoryJsonLdInput,
-): Record<string, unknown> {
+export function buildCategoryCollectionJsonLd(input: CategoryJsonLdInput): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',

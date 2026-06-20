@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getBffErrorMessage, isUnauthorizedError, isServiceUnavailableError, resolveBffStatus } from '@/lib/api/bff-error-status';
+import {
+  getBffErrorMessage,
+  isUnauthorizedError,
+  isServiceUnavailableError,
+  resolveBffStatus,
+} from '@/lib/api/bff-error-status';
 
 import { deleteAutoLink, updateAutoLink } from '@/lib/api/auto-links';
-import {
-  autoLinkIdParamsSchema,
-  updateAutoLinkBodySchema,
-} from '@ecommerce-amazon/shared/admin';
+import { autoLinkIdParamsSchema, updateAutoLinkBodySchema } from '@ecommerce-amazon/shared/admin';
 
 type RouteContext = {
   params: Promise<{ id: string }>;

@@ -4,11 +4,11 @@
 
 Bloco CMS de grid assimétrico (Bento) com **3 slots fixos** na Home:
 
-| Slot | Tamanho (desktop) | Conteúdo | Comportamento na vitrine |
-|------|-------------------|----------|--------------------------|
-| 1 | 2×2 | Coleção curada **ou** artigo editorial | Tile hero com cover, título e link |
-| 2 | 1×1 | Produto único | Card de oferta com badge de desconto automático |
-| 3 | 1×1 | Categoria (Top 3) **ou** até 3 produtos | Mini-lista vertical com preço |
+| Slot | Tamanho (desktop) | Conteúdo                                | Comportamento na vitrine                        |
+| ---- | ----------------- | --------------------------------------- | ----------------------------------------------- |
+| 1    | 2×2               | Coleção curada **ou** artigo editorial  | Tile hero com cover, título e link              |
+| 2    | 1×1               | Produto único                           | Card de oferta com badge de desconto automático |
+| 3    | 1×1               | Categoria (Top 3) **ou** até 3 produtos | Mini-lista vertical com preço                   |
 
 **Fora do escopo desta entrega:** countdown, cupons no hub, autocomplete server-side nos pickers, rota web `/artigos/[slug]` (link já aponta para ela; página de artigo virá no hub de conteúdo).
 
@@ -57,24 +57,24 @@ flowchart LR
 
 ## API / endpoints novos
 
-| Rota | Uso |
-|------|-----|
+| Rota                  | Uso                                                                        |
+| --------------------- | -------------------------------------------------------------------------- |
 | `GET /admin/articles` | Picker de artigos publicados no admin (`{ items: [{ id, slug, title }] }`) |
 
 Hidratação usa repositórios existentes (`findById`, `ListProducts`, `findByIds`) — sem rota pública nova.
 
 ## Arquivos-chave
 
-| Camada | Path |
-|--------|------|
-| Enum | `packages/domain/src/enums/cms.ts` |
-| Schema Zod | `packages/shared/src/cms/block-schemas.ts` |
-| Migration | `packages/infrastructure/.../migrations/0010_bento_hub_mix.sql` |
-| Hidratação BFF | `packages/application/src/use-cases/page/GetPublishedPageLayout.ts` |
-| Artigos admin | `packages/application/src/use-cases/content/ListAdminArticles.ts` |
-| Web RSC | `apps/web/src/components/blocks/BentoHubMixBlock.tsx` |
-| Admin form | `apps/admin/src/components/cms/props-forms/BentoHubMixForm.tsx` |
-| Seed | `packages/infrastructure/src/persistence/drizzle/seed.ts` → `ensureBentoHubMixHomeBlock()` |
+| Camada         | Path                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| Enum           | `packages/domain/src/enums/cms.ts`                                                         |
+| Schema Zod     | `packages/shared/src/cms/block-schemas.ts`                                                 |
+| Migration      | `packages/infrastructure/.../migrations/0010_bento_hub_mix.sql`                            |
+| Hidratação BFF | `packages/application/src/use-cases/page/GetPublishedPageLayout.ts`                        |
+| Artigos admin  | `packages/application/src/use-cases/content/ListAdminArticles.ts`                          |
+| Web RSC        | `apps/web/src/components/blocks/BentoHubMixBlock.tsx`                                      |
+| Admin form     | `apps/admin/src/components/cms/props-forms/BentoHubMixForm.tsx`                            |
+| Seed           | `packages/infrastructure/src/persistence/drizzle/seed.ts` → `ensureBentoHubMixHomeBlock()` |
 
 ## Como testar
 

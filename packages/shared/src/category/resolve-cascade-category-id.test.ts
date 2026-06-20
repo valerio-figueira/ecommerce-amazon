@@ -42,17 +42,14 @@ describe('buildCascadePath', () => {
 
 describe('resolveLeafCategoryId', () => {
   it('returns leaf at level 2 when only two levels are selected', () => {
-    expect(
-      resolveLeafCategoryId({ level1: ROOT, level2: 'leaf-l2-id' }, options),
-    ).toBe('leaf-l2-id');
+    expect(resolveLeafCategoryId({ level1: ROOT, level2: 'leaf-l2-id' }, options)).toBe(
+      'leaf-l2-id',
+    );
   });
 
   it('returns leaf at level 4 when full cascade is selected', () => {
     expect(
-      resolveLeafCategoryId(
-        { level1: ROOT, level2: L2, level3: L3, level4: LEAF },
-        options,
-      ),
+      resolveLeafCategoryId({ level1: ROOT, level2: L2, level3: L3, level4: LEAF }, options),
     ).toBe(LEAF);
   });
 

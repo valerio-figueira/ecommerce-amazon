@@ -30,20 +30,20 @@ Pacote `@ecommerce-amazon/shared/analytics`:
 
 **Público (vitrine):**
 
-| Rota | Descrição |
-|------|-----------|
-| `GET /go/:slug` | Query estendida: `placement`, `pagePath`, `referrerPath`, `collectionId` |
-| `POST /events/engagement` | Fire-and-forget; body `recordEngagementEventSchema` |
+| Rota                      | Descrição                                                                |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `GET /go/:slug`           | Query estendida: `placement`, `pagePath`, `referrerPath`, `collectionId` |
+| `POST /events/engagement` | Fire-and-forget; body `recordEngagementEventSchema`                      |
 
 **Admin (JWT):**
 
-| Rota | Descrição |
-|------|-----------|
-| `GET /admin/analytics/clicks/by-placement` | Breakdown por componente |
-| `GET /admin/analytics/clicks/by-block` | Top blocos CMS (JOIN `page_blocks` + `pages`) |
-| `GET /admin/analytics/clicks/by-page` | Top rotas (`page_path`) |
-| `GET /admin/analytics/clicks/trend-by-origin` | Série diária por `origin` |
-| `GET /admin/analytics/engagement/funnel` | Funil editorial + top artigos por etapa |
+| Rota                                          | Descrição                                     |
+| --------------------------------------------- | --------------------------------------------- |
+| `GET /admin/analytics/clicks/by-placement`    | Breakdown por componente                      |
+| `GET /admin/analytics/clicks/by-block`        | Top blocos CMS (JOIN `page_blocks` + `pages`) |
+| `GET /admin/analytics/clicks/by-page`         | Top rotas (`page_path`)                       |
+| `GET /admin/analytics/clicks/trend-by-origin` | Série diária por `origin`                     |
+| `GET /admin/analytics/engagement/funnel`      | Funil editorial + top artigos por etapa       |
 
 ### Dashboard admin
 

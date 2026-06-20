@@ -18,10 +18,7 @@ export default function CuponsPage() {
     <>
       <AdminPageHeader
         title="Cupons"
-        breadcrumbs={[
-          { label: 'Painel', href: '/' },
-          { label: 'Cupons' },
-        ]}
+        breadcrumbs={[{ label: 'Painel', href: '/' }, { label: 'Cupons' }]}
       />
       <AdminPageCard transparent>
         <AdminEmptyState

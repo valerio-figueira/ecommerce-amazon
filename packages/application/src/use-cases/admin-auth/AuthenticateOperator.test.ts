@@ -57,11 +57,7 @@ describe('AuthenticateOperator', () => {
       verify: vi.fn(),
     };
 
-    const useCase = new AuthenticateOperator(
-      operatorRepository,
-      passwordHasher,
-      authTokenService,
-    );
+    const useCase = new AuthenticateOperator(operatorRepository, passwordHasher, authTokenService);
 
     const result = await useCase.execute({
       email: 'admin@vitrine.local',

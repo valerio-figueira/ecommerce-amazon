@@ -111,9 +111,7 @@ export function ArticleCarousel({
                           publishedAt: article.publishedAt,
                         }}
                         showExcerpt
-                        {...(engagementPlacement !== undefined
-                          ? { engagementPlacement }
-                          : {})}
+                        {...(engagementPlacement !== undefined ? { engagementPlacement } : {})}
                       />
                     </div>
                   </div>

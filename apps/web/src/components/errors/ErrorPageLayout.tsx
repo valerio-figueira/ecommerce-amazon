@@ -29,7 +29,9 @@ export function ErrorPageLayout({
       )}
       <h1 className="text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">{title}</h1>
       <p className="mt-4 text-base leading-relaxed text-neutral-600">{description}</p>
-      {children && <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>}
+      {children && (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>
+      )}
     </main>
   );
 }

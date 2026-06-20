@@ -65,9 +65,7 @@ export function AffiliateGoLink({
     const resolvedReferrerPath = referrerPath ?? attribution?.entryPath;
     const resolvedPagePath = pagePathProp ?? (withClientTracking ? pathname : undefined);
     const resolvedSessionId =
-      withClientTracking && sessionId !== undefined && sessionId.length > 0
-        ? sessionId
-        : undefined;
+      withClientTracking && sessionId !== undefined && sessionId.length > 0 ? sessionId : undefined;
 
     return buildGoUrl(slug, {
       ...(resolvedBlockId !== undefined ? { blockId: resolvedBlockId } : {}),
@@ -102,7 +100,8 @@ export function AffiliateGoLink({
       className={cn(
         'inline-flex w-full cursor-pointer items-center justify-center rounded-full px-4 py-2 text-center text-xs font-semibold transition-colors',
         variant === 'primary' && 'bg-[var(--primary)] text-white hover:opacity-90',
-        variant === 'outline' && 'border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50',
+        variant === 'outline' &&
+          'border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50',
         className,
       )}
     >

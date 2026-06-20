@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { bentoHubMixPropsSchema, dynamicProductGridPropsSchema, weeklyTrendsPropsSchema } from './block-schemas.js';
+import {
+  bentoHubMixPropsSchema,
+  dynamicProductGridPropsSchema,
+  weeklyTrendsPropsSchema,
+} from './block-schemas.js';
 
 describe('dynamicProductGridPropsSchema', () => {
   it('applies defaults for sortBy and limit', () => {

@@ -15,36 +15,44 @@ export async function listOperators(): Promise<OperatorSummary[]> {
 }
 
 export async function createOperator(body: CreateOperatorBody): Promise<OperatorSummary> {
-  return adminFetchParsed('/admin/operators', z.object({
-    id: z.string().uuid(),
-    email: z.string().email(),
-    name: z.string(),
-    role: z.enum(['admin', 'editor']),
-    status: z.enum(['active', 'disabled']),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-  }), {
-    method: 'POST',
-    body,
-  });
+  return adminFetchParsed(
+    '/admin/operators',
+    z.object({
+      id: z.string().uuid(),
+      email: z.string().email(),
+      name: z.string(),
+      role: z.enum(['admin', 'editor']),
+      status: z.enum(['active', 'disabled']),
+      createdAt: z.string().datetime(),
+      updatedAt: z.string().datetime(),
+    }),
+    {
+      method: 'POST',
+      body,
+    },
+  );
 }
 
 export async function updateOperatorAccess(
   id: string,
   body: UpdateOperatorAccessBody,
 ): Promise<OperatorSummary> {
-  return adminFetchParsed(`/admin/operators/${id}`, z.object({
-    id: z.string().uuid(),
-    email: z.string().email(),
-    name: z.string(),
-    role: z.enum(['admin', 'editor']),
-    status: z.enum(['active', 'disabled']),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-  }), {
-    method: 'PATCH',
-    body,
-  });
+  return adminFetchParsed(
+    `/admin/operators/${id}`,
+    z.object({
+      id: z.string().uuid(),
+      email: z.string().email(),
+      name: z.string(),
+      role: z.enum(['admin', 'editor']),
+      status: z.enum(['active', 'disabled']),
+      createdAt: z.string().datetime(),
+      updatedAt: z.string().datetime(),
+    }),
+    {
+      method: 'PATCH',
+      body,
+    },
+  );
 }
 
 export async function changeOperatorPassword(body: {

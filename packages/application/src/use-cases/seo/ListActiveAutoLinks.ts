@@ -28,9 +28,7 @@ function isActiveAutoLinkItem(value: unknown): value is ActiveAutoLinkItem {
 
 function isActiveAutoLinksCache(value: unknown): value is ActiveAutoLinksCache {
   return (
-    isRecord(value) &&
-    Array.isArray(value['items']) &&
-    value['items'].every(isActiveAutoLinkItem)
+    isRecord(value) && Array.isArray(value['items']) && value['items'].every(isActiveAutoLinkItem)
   );
 }
 

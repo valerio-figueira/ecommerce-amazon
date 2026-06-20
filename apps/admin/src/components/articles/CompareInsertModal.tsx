@@ -45,8 +45,7 @@ export function CompareInsertModal({
     if (!query) return products;
     return products.filter(
       (product) =>
-        product.title.toLowerCase().includes(query) ||
-        product.slug.toLowerCase().includes(query),
+        product.title.toLowerCase().includes(query) || product.slug.toLowerCase().includes(query),
     );
   }, [filter, products]);
 
@@ -81,8 +80,7 @@ export function CompareInsertModal({
     }
   }
 
-  const canConfirm =
-    selectedIds.length >= MIN_PRODUCTS && selectedIds.length <= MAX_PRODUCTS;
+  const canConfirm = selectedIds.length >= MIN_PRODUCTS && selectedIds.length <= MAX_PRODUCTS;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

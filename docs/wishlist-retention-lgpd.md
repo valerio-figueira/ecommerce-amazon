@@ -51,23 +51,23 @@ sequenceDiagram
 
 ## API
 
-| Método | Rota | Notas |
-|--------|------|-------|
-| `POST` | `/wishlist/checkout-batch` | Body: `{ marketplace }`; response `{ url, itemCount }` |
-| `DELETE` | `/wishlist` | Header `x-session-id`; limpa lista da sessão |
-| `DELETE` | `/price-alerts/:token` | Cancelamento LGPD; 204 |
+| Método   | Rota                       | Notas                                                  |
+| -------- | -------------------------- | ------------------------------------------------------ |
+| `POST`   | `/wishlist/checkout-batch` | Body: `{ marketplace }`; response `{ url, itemCount }` |
+| `DELETE` | `/wishlist`                | Header `x-session-id`; limpa lista da sessão           |
+| `DELETE` | `/price-alerts/:token`     | Cancelamento LGPD; 204                                 |
 
 Contrato completo: [api-rest.md](./api-rest.md).
 
 ## Arquivos-chave
 
-| Camada | Arquivos |
-|--------|----------|
-| Domain | `PriceAlert.cancel()`, `WishlistRepository.removeAllBySessionId` |
-| Application | `CancelPriceAlert`, `ClearWishlist`, `BuildBatchCheckoutRedirect` |
-| API | `apps/api/src/adapters/http/routes/index.ts` |
-| Web | `CookieConsentProvider`, `WishlistProvider`, `WishlistDrawer`, `session.ts`, `/alertas/cancelar/[token]` |
-| Shared | `packages/shared/src/legal/cookie-consent.ts` |
+| Camada      | Arquivos                                                                                                 |
+| ----------- | -------------------------------------------------------------------------------------------------------- |
+| Domain      | `PriceAlert.cancel()`, `WishlistRepository.removeAllBySessionId`                                         |
+| Application | `CancelPriceAlert`, `ClearWishlist`, `BuildBatchCheckoutRedirect`                                        |
+| API         | `apps/api/src/adapters/http/routes/index.ts`                                                             |
+| Web         | `CookieConsentProvider`, `WishlistProvider`, `WishlistDrawer`, `session.ts`, `/alertas/cancelar/[token]` |
+| Shared      | `packages/shared/src/legal/cookie-consent.ts`                                                            |
 
 ## Como testar localmente
 

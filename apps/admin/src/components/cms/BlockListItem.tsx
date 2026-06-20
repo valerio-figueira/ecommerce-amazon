@@ -50,7 +50,9 @@ export function BlockListItem({
             <TypeIcon className="h-3 w-3" aria-hidden />
             {block.type.replace(/_/g, ' ')}
           </span>
-          <p className="cms-block-title truncate">{getBlockDisplayTitle(block.type, block.props)}</p>
+          <p className="cms-block-title truncate">
+            {getBlockDisplayTitle(block.type, block.props)}
+          </p>
           <p className="cms-block-subtitle">{meta.label}</p>
         </div>
       </div>

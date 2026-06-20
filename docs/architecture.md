@@ -69,14 +69,14 @@ Ordem de build TypeScript: `domain` → `shared` → `application` → `infrastr
 
 ## Camadas e dependências
 
-| Camada | Pacote / app | Pode importar | Não pode importar |
-|--------|--------------|---------------|-------------------|
-| Domain | `packages/domain` | — | Fastify, Drizzle, BullMQ, React |
-| Application | `packages/application` | `domain`, `shared` | Fastify, Drizzle |
-| Infrastructure | `packages/infrastructure` | `domain`, `application`, `shared` | `apps/*` |
-| API adapter | `apps/api` | `application`, `infrastructure`, `shared`, `domain` | SQL direto |
-| Worker adapter | `apps/worker` | idem API | SQL direto |
-| Web | `apps/web` | `domain` (enums), `shared` (schemas CMS) | `infrastructure`, DB |
+| Camada         | Pacote / app              | Pode importar                                       | Não pode importar               |
+| -------------- | ------------------------- | --------------------------------------------------- | ------------------------------- |
+| Domain         | `packages/domain`         | —                                                   | Fastify, Drizzle, BullMQ, React |
+| Application    | `packages/application`    | `domain`, `shared`                                  | Fastify, Drizzle                |
+| Infrastructure | `packages/infrastructure` | `domain`, `application`, `shared`                   | `apps/*`                        |
+| API adapter    | `apps/api`                | `application`, `infrastructure`, `shared`, `domain` | SQL direto                      |
+| Worker adapter | `apps/worker`             | idem API                                            | SQL direto                      |
+| Web            | `apps/web`                | `domain` (enums), `shared` (schemas CMS)            | `infrastructure`, DB            |
 
 ## Fluxo por request HTTP
 
@@ -103,12 +103,12 @@ Use cases recebem ports (interfaces) do domain, nunca implementações concretas
 
 Padrão **cache-aside** nos use cases de leitura.
 
-| Recurso | Chave exemplo | TTL |
-|---------|---------------|-----|
-| Page layout | `vitrine:page:slug:{slug}` | 300s (5 min) |
-| Listagem produtos | versionada por `cache:version:product:{id}` | 5 min (ref.) |
-| Detalhe produto | idem | 10 min (ref.) |
-| Histórico preço | idem | 1h (ref.) |
+| Recurso           | Chave exemplo                               | TTL           |
+| ----------------- | ------------------------------------------- | ------------- |
+| Page layout       | `vitrine:page:slug:{slug}`                  | 300s (5 min)  |
+| Listagem produtos | versionada por `cache:version:product:{id}` | 5 min (ref.)  |
+| Detalhe produto   | idem                                        | 10 min (ref.) |
+| Histórico preço   | idem                                        | 1h (ref.)     |
 
 Após write no worker: `CacheInvalidator` incrementa version stamp — não faz scan de chaves.
 
@@ -135,12 +135,12 @@ npm run test:integration
 
 Responsabilidades transversais (sem lógica de negócio):
 
-| Módulo | Path | Uso |
-|--------|------|-----|
-| Env | `packages/shared/src/index.ts` | `loadEnv()`, `DATABASE_URL`, `REDIS_URL` |
-| CORS | `packages/shared/src/cors.ts` | `createCorsOriginDelegate()` |
-| CMS schemas | `packages/shared/src/cms/block-schemas.ts` | Props por `BlockType`, `PageLayoutDto` |
-| Result | `shared` | `ok()` / `err()` para use cases |
+| Módulo      | Path                                       | Uso                                      |
+| ----------- | ------------------------------------------ | ---------------------------------------- |
+| Env         | `packages/shared/src/index.ts`             | `loadEnv()`, `DATABASE_URL`, `REDIS_URL` |
+| CORS        | `packages/shared/src/cors.ts`              | `createCorsOriginDelegate()`             |
+| CMS schemas | `packages/shared/src/cms/block-schemas.ts` | Props por `BlockType`, `PageLayoutDto`   |
+| Result      | `shared`                                   | `ok()` / `err()` para use cases          |
 
 ## Apps web — integração API
 
@@ -150,8 +150,8 @@ Responsabilidades transversais (sem lógica de negócio):
 
 ## Próximos apps (planejados, não implementados)
 
-| App | Função |
-|-----|--------|
+| App          | Função                                    |
+| ------------ | ----------------------------------------- |
 | `apps/admin` | CMS CRUD páginas/blocos, preview, publish |
 
 Contrato admin descrito em [ui_home_vitrine.plan.md](../.cursor/plans/ui_home_vitrine.plan.md) — rotas `/admin/*` **não existem** na API atual.

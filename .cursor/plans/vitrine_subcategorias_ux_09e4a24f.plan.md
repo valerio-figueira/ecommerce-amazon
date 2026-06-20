@@ -1,6 +1,6 @@
 ---
 name: Vitrine Subcategorias UX
-overview: "Expor a hierarquia de categorias na vitrine em três frentes: pills em cascata na Home (filtro da grade), sidebar em árvore nas páginas `/categorias/[slug]`, e mega menu no header (desktop + drawer mobile). A API e o filtro por subárvore já existem — o trabalho é quase todo em `apps/web` + pequenos ajustes de schema CMS."
+overview: 'Expor a hierarquia de categorias na vitrine em três frentes: pills em cascata na Home (filtro da grade), sidebar em árvore nas páginas `/categorias/[slug]`, e mega menu no header (desktop + drawer mobile). A API e o filtro por subárvore já existem — o trabalho é quase todo em `apps/web` + pequenos ajustes de schema CMS.'
 todos:
   - id: tree-nav-helpers
     content: Criar category-tree-nav.ts com find/getChildren/getAncestors + testes unitários
@@ -12,7 +12,7 @@ todos:
     content: Criar CategorySidebarTree e layout 2 colunas em /categorias/[slug]
     status: completed
   - id: mega-menu
-    content: "Refatorar SiteHeader: CategoryMegaMenu desktop + MobileNavDrawer com árvore completa"
+    content: 'Refatorar SiteHeader: CategoryMegaMenu desktop + MobileNavDrawer com árvore completa'
     status: completed
   - id: docs-tests
     content: Atualizar docs/categories-hierarchy.md e cms-home-phase1.md; validar build web
@@ -24,12 +24,12 @@ isProject: false
 
 ## Estado atual (o que já funciona)
 
-| Ponto | Status |
-|-------|--------|
-| Breadcrumb no produto | Feito em [`apps/web/src/app/produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx) |
-| Dropdown simples no header (1 nível) | Feito em [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) via [`getCategoryNavItems`](apps/web/src/lib/api/categories.ts) |
-| Página `/categorias/[slug]` | SSR + chips horizontais de subcategorias |
-| Filtro de produtos por subárvore | `GET /products?category={slug}` já usa `getDescendantIds` em [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts) |
+| Ponto                                | Status                                                                                                                                       |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Breadcrumb no produto                | Feito em [`apps/web/src/app/produtos/[slug]/page.tsx`](apps/web/src/app/produtos/[slug]/page.tsx)                                            |
+| Dropdown simples no header (1 nível) | Feito em [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) via [`getCategoryNavItems`](apps/web/src/lib/api/categories.ts)   |
+| Página `/categorias/[slug]`          | SSR + chips horizontais de subcategorias                                                                                                     |
+| Filtro de produtos por subárvore     | `GET /products?category={slug}` já usa `getDescendantIds` em [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts) |
 
 **Gaps:** pills flat na Home, sem sidebar na listagem, header sem mega menu e **sem menu de categorias no mobile** (`hidden md:flex`).
 
@@ -71,15 +71,15 @@ Linha 2 (se pai com filhos): [Todas de Home Office] [Office Desk] [Organizadores
 
 ### Arquivos
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`packages/shared/src/cms/block-schemas.ts`](packages/shared/src/cms/block-schemas.ts) | Adicionar `mode: 'filter' \| 'link'` (default `filter`) e `showSubcategories: boolean` (default `true`) em `categoryPillsPropsSchema` |
-| **Novo** `packages/shared/src/category/category-tree-nav.ts` | Helpers puros: `findCategoryNodeBySlug`, `getDirectChildren`, `getAncestorSlugs` — reutilizados por pills, sidebar e header |
-| [`CategoryPillsRow.tsx`](apps/web/src/components/blocks/CategoryPillsRow.tsx) | Duas fileiras; derivar filhos da árvore `GET /categories` (hoje só usa labels); modo `link` renderiza `<Link href="/categorias/{slug}">` |
-| [`CategoryFilterContext.tsx`](apps/web/src/components/cms/CategoryFilterContext.tsx) | Sem mudança obrigatória — um único `categorySlug` basta; lógica de “pai ativo para UI” derivada da árvore |
-| [`ProductGridBlock.tsx`](apps/web/src/components/blocks/ProductGridBlock.tsx) | Ajuste de layout: pills em coluna (`flex-col`) quando houver segunda fileira |
-| [`CategoryPillsForm.tsx`](apps/admin/src/components/cms/props-forms/CategoryPillsForm.tsx) | Campos `mode` e `showSubcategories`; hint de que `categorySlugs` devem ser categorias **raiz** para cascata |
-| [`block-form-registry.ts`](apps/admin/src/components/cms/props-forms/block-form-registry.ts) | Defaults para blocos existentes no seed |
+| Arquivo                                                                                      | Mudança                                                                                                                                  |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`packages/shared/src/cms/block-schemas.ts`](packages/shared/src/cms/block-schemas.ts)       | Adicionar `mode: 'filter' \| 'link'` (default `filter`) e `showSubcategories: boolean` (default `true`) em `categoryPillsPropsSchema`    |
+| **Novo** `packages/shared/src/category/category-tree-nav.ts`                                 | Helpers puros: `findCategoryNodeBySlug`, `getDirectChildren`, `getAncestorSlugs` — reutilizados por pills, sidebar e header              |
+| [`CategoryPillsRow.tsx`](apps/web/src/components/blocks/CategoryPillsRow.tsx)                | Duas fileiras; derivar filhos da árvore `GET /categories` (hoje só usa labels); modo `link` renderiza `<Link href="/categorias/{slug}">` |
+| [`CategoryFilterContext.tsx`](apps/web/src/components/cms/CategoryFilterContext.tsx)         | Sem mudança obrigatória — um único `categorySlug` basta; lógica de “pai ativo para UI” derivada da árvore                                |
+| [`ProductGridBlock.tsx`](apps/web/src/components/blocks/ProductGridBlock.tsx)                | Ajuste de layout: pills em coluna (`flex-col`) quando houver segunda fileira                                                             |
+| [`CategoryPillsForm.tsx`](apps/admin/src/components/cms/props-forms/CategoryPillsForm.tsx)   | Campos `mode` e `showSubcategories`; hint de que `categorySlugs` devem ser categorias **raiz** para cascata                              |
+| [`block-form-registry.ts`](apps/admin/src/components/cms/props-forms/block-form-registry.ts) | Defaults para blocos existentes no seed                                                                                                  |
 
 ### Sem mudança de API
 
@@ -102,11 +102,11 @@ O filtro já aceita qualquer slug da árvore; não é necessário passar `catego
 
 ### Arquivos
 
-| Arquivo | Mudança |
-|---------|---------|
-| **Novo** `apps/web/src/components/category/CategorySidebarTree.tsx` | Árvore recursiva com linhas de conexão; nó atual destacado; ancestrais expandidos; links para `/categorias/{slug}` |
+| Arquivo                                                                     | Mudança                                                                                                               |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Novo** `apps/web/src/components/category/CategorySidebarTree.tsx`         | Árvore recursiva com linhas de conexão; nó atual destacado; ancestrais expandidos; links para `/categorias/{slug}`    |
 | [`categorias/[slug]/page.tsx`](apps/web/src/app/categorias/[slug]/page.tsx) | Layout `lg:grid-cols-[240px_1fr]`; buscar árvore via `fetchCategoryTree()` em paralelo ao detalhe; renderizar sidebar |
-| CSS em [`apps/web/src/app/globals.css`](apps/web/src/app/globals.css) | Estilos `.category-sidebar-tree*` (espelhar padrão visual do admin, adaptado à vitrine) |
+| CSS em [`apps/web/src/app/globals.css`](apps/web/src/app/globals.css)       | Estilos `.category-sidebar-tree*` (espelhar padrão visual do admin, adaptado à vitrine)                               |
 
 ### Decisão de UX
 
@@ -132,13 +132,13 @@ Ao hover/focus em categoria raiz (ex.: **Home Office**):
 
 ### Arquivos
 
-| Arquivo | Mudança |
-|---------|---------|
-| [`categories.ts`](apps/web/src/lib/api/categories.ts) | Substituir `getCategoryNavItems` por tipo que preserva árvore aninhada (`icon`, `subcategories` recursivo) |
-| [`SiteHeaderShell.tsx`](apps/web/src/components/layout/SiteHeaderShell.tsx) | Passar árvore completa (raízes visíveis) ao header |
-| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) | Extrair `CategoryMegaMenu` (desktop) + `MobileNavDrawer` (novo) |
-| **Novo** `apps/web/src/components/layout/CategoryMegaMenu.tsx` | Painel multi-coluna com acessibilidade (`aria-expanded`, teclado Esc) |
-| **Novo** `apps/web/src/components/layout/MobileNavDrawer.tsx` | Botão menu (`md:hidden`) + painel slide-in com acordeão de categorias (2 níveis visíveis, link “ver mais” para página da categoria) |
+| Arquivo                                                                     | Mudança                                                                                                                             |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| [`categories.ts`](apps/web/src/lib/api/categories.ts)                       | Substituir `getCategoryNavItems` por tipo que preserva árvore aninhada (`icon`, `subcategories` recursivo)                          |
+| [`SiteHeaderShell.tsx`](apps/web/src/components/layout/SiteHeaderShell.tsx) | Passar árvore completa (raízes visíveis) ao header                                                                                  |
+| [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx)           | Extrair `CategoryMegaMenu` (desktop) + `MobileNavDrawer` (novo)                                                                     |
+| **Novo** `apps/web/src/components/layout/CategoryMegaMenu.tsx`              | Painel multi-coluna com acessibilidade (`aria-expanded`, teclado Esc)                                                               |
+| **Novo** `apps/web/src/components/layout/MobileNavDrawer.tsx`               | Botão menu (`md:hidden`) + painel slide-in com acordeão de categorias (2 níveis visíveis, link “ver mais” para página da categoria) |
 
 ### Mobile (gap crítico hoje)
 
@@ -150,12 +150,12 @@ Implementação leve: drawer com CSS + `useState` (sem adicionar Radix Sheet ao 
 
 ## Fase 4 — Testes e documentação
 
-| Item | Onde |
-|------|------|
-| Testes unitários dos helpers de árvore | `packages/shared/src/category/category-tree-nav.test.ts` |
-| Atualizar doc de hierarquia | [`docs/categories-hierarchy.md`](docs/categories-hierarchy.md) — remover “mega-menu fora de escopo”, documentar os 3 pontos de exposição |
-| Atualizar doc CMS Home | [`docs/cms-home-phase1.md`](docs/cms-home-phase1.md) — props novas das pills |
-| Build/lint | `npm run build -w @ecommerce-amazon/web` |
+| Item                                   | Onde                                                                                                                                     |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Testes unitários dos helpers de árvore | `packages/shared/src/category/category-tree-nav.test.ts`                                                                                 |
+| Atualizar doc de hierarquia            | [`docs/categories-hierarchy.md`](docs/categories-hierarchy.md) — remover “mega-menu fora de escopo”, documentar os 3 pontos de exposição |
+| Atualizar doc CMS Home                 | [`docs/cms-home-phase1.md`](docs/cms-home-phase1.md) — props novas das pills                                                             |
+| Build/lint                             | `npm run build -w @ecommerce-amazon/web`                                                                                                 |
 
 ### Checklist manual
 

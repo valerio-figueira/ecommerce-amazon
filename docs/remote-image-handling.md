@@ -31,21 +31,21 @@ Quando a API está parada, imagens e fetches analíticos também devem degradar 
 
 ## Arquivos-chave
 
-| Caminho | Papel |
-|---------|-------|
-| `packages/shared/src/next-image/remote-patterns.ts` | Allowlist e matcher de URL |
-| `apps/web/next-image-config.ts` | Patterns para `next.config` (sem import de subpath no loader do Next) |
-| `apps/web/src/components/ui/RemoteImage.tsx` | Componente resiliente na vitrine |
-| `apps/admin/src/components/ui/ManagedImage.tsx` | Imagens com fallback no admin |
-| `apps/admin/src/lib/api/analytics.ts` | `loadDashboardAnalytics()` |
+| Caminho                                             | Papel                                                                 |
+| --------------------------------------------------- | --------------------------------------------------------------------- |
+| `packages/shared/src/next-image/remote-patterns.ts` | Allowlist e matcher de URL                                            |
+| `apps/web/next-image-config.ts`                     | Patterns para `next.config` (sem import de subpath no loader do Next) |
+| `apps/web/src/components/ui/RemoteImage.tsx`        | Componente resiliente na vitrine                                      |
+| `apps/admin/src/components/ui/ManagedImage.tsx`     | Imagens com fallback no admin                                         |
+| `apps/admin/src/lib/api/analytics.ts`               | `loadDashboardAnalytics()`                                            |
 
 ## Env relevantes
 
-| Variável | Uso |
-|----------|-----|
-| `NEXT_PUBLIC_API_URL` | Host da API / uploads em dev |
-| `STORAGE_PUBLIC_BASE_URL` | Base pública S3/GCS/filesystem |
-| `NEXT_ALLOWED_DEV_ORIGINS` | IPs LAN extras no dev |
+| Variável                   | Uso                            |
+| -------------------------- | ------------------------------ |
+| `NEXT_PUBLIC_API_URL`      | Host da API / uploads em dev   |
+| `STORAGE_PUBLIC_BASE_URL`  | Base pública S3/GCS/filesystem |
+| `NEXT_ALLOWED_DEV_ORIGINS` | IPs LAN extras no dev          |
 
 `apps/web` expõe `NEXT_PUBLIC_STORAGE_PUBLIC_BASE_URL` no build a partir de `STORAGE_PUBLIC_BASE_URL`.
 

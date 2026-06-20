@@ -6,7 +6,10 @@ type MarketplaceBadgeProps = {
   className?: string;
 };
 
-export function MarketplaceBadge({ marketplace, className }: MarketplaceBadgeProps): React.JSX.Element {
+export function MarketplaceBadge({
+  marketplace,
+  className,
+}: MarketplaceBadgeProps): React.JSX.Element {
   return (
     <span
       className={cn(

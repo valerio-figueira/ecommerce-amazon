@@ -48,16 +48,11 @@ export function ProductListCard({ product }: ProductListCardProps): React.JSX.El
         </p>
 
         <div className="admin-product-card__pills">
-          <span
-            className={cn('cms-status-pill', product.visible ? 'is-published' : 'is-draft')}
-          >
+          <span className={cn('cms-status-pill', product.visible ? 'is-published' : 'is-draft')}>
             {product.visible ? 'Visível' : 'Oculto'}
           </span>
           <span
-            className={cn(
-              'cms-status-pill',
-              product.price.isStale ? 'is-draft' : 'is-published',
-            )}
+            className={cn('cms-status-pill', product.price.isStale ? 'is-draft' : 'is-published')}
           >
             {product.price.isStale ? 'Preço oculto' : 'Preço ok'}
           </span>
@@ -69,9 +64,7 @@ export function ProductListCard({ product }: ProductListCardProps): React.JSX.El
           <p
             className={cn(
               'admin-product-card__price',
-              showNumericPrice
-                ? 'text-[var(--admin-navy-deep)]'
-                : 'text-[var(--admin-text-muted)]',
+              showNumericPrice ? 'text-[var(--admin-navy-deep)]' : 'text-[var(--admin-text-muted)]',
             )}
           >
             {priceLabel}

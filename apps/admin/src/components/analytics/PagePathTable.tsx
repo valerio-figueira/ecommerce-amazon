@@ -10,9 +10,7 @@ type PagePathTableProps = {
 export function PagePathTable({ items }: PagePathTableProps): React.JSX.Element {
   return (
     <AdminPageCard className="p-5">
-      <h3 className="text-sm font-semibold text-[color:var(--admin-navy)]">
-        Cliques por página
-      </h3>
+      <h3 className="text-sm font-semibold text-[color:var(--admin-navy)]">Cliques por página</h3>
       {items.length === 0 ? (
         <AdminEmptyState
           icon={FileText}

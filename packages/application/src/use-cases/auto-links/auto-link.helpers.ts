@@ -15,9 +15,6 @@ export async function assertUniqueAutoLinkKeyword(
   }
 }
 
-export function keywordsConflict(
-  currentKeyword: string,
-  nextKeyword: string,
-): boolean {
+export function keywordsConflict(currentKeyword: string, nextKeyword: string): boolean {
   return normalizeAutoLinkKeyword(currentKeyword) !== normalizeAutoLinkKeyword(nextKeyword);
 }

@@ -27,12 +27,12 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 
 Utilitário: [`packages/shared/src/seo/product-canonical.ts`](../packages/shared/src/seo/product-canonical.ts)
 
-| Camada | Comportamento |
-|--------|---------------|
-| Banco | `canonical_url` varchar(512), nullable — **sobrescrita editorial de segurança** (Editorial Override); default `NULL` no dia a dia |
-| Admin | **Sem input no formulário** — operador leigo deixa vazio; alterações avançadas via DB/Drizzle Studio |
-| Web `/produtos/[slug]` | `resolveProductCanonicalUrl`: override do banco **ou** fallback `{NEXT_PUBLIC_SITE_URL}/produtos/{slug}` |
-| JSON-LD | Campo `url` do Product segue a mesma hierarquia |
+| Camada                 | Comportamento                                                                                                                     |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Banco                  | `canonical_url` varchar(512), nullable — **sobrescrita editorial de segurança** (Editorial Override); default `NULL` no dia a dia |
+| Admin                  | **Sem input no formulário** — operador leigo deixa vazio; alterações avançadas via DB/Drizzle Studio                              |
+| Web `/produtos/[slug]` | `resolveProductCanonicalUrl`: override do banco **ou** fallback `{NEXT_PUBLIC_SITE_URL}/produtos/{slug}`                          |
+| JSON-LD                | Campo `url` do Product segue a mesma hierarquia                                                                                   |
 
 Evita punição por conteúdo duplicado quando o produto é acessado via coleções, UTMs ou rotas alternativas. A coluna permite manobras cirúrgicas de SEO (migração de URL, consolidação de slugs duplicados) sem deploy.
 
@@ -40,36 +40,36 @@ Evita punição por conteúdo duplicado quando o produto é acessado via coleç�
 
 Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/seo/product-meta.ts)
 
-| Camada | Comportamento |
-|--------|---------------|
-| Banco | nullable; default `NULL` no cadastro admin |
-| Vitrine | `resolveProductMetaTitle` / `resolveProductMetaDescription` no `generateMetadata` |
-| Padrão automático | `{titleClean} \| Análise, Prós, Contras e Ofertas` + frase padrão com nome do produto |
-| Admin | Aba **SEO Avançado** — sobrescrita opcional; vazio = automação na vitrine |
-| Contadores | Meta Title e Meta Description: `N / limite` (60 e 160 — alvo Google); `maxLength` 200 e 320 (Zod) |
-| Tooltips | Ícone ⓘ ao lado dos rótulos — textos em [`product-form-hints.ts`](../apps/admin/src/lib/product-form-hints.ts); componentes `FieldHint`, `ProductFormLabelRow` |
-| Assistente IA SEO | Botão **Gerar SEO com IA** → modal com prompt (`buildProductSeoLlmPrompt`) + colar JSON + **Aplicar no formulário** (`ProductSeoLlmPromptHelper.tsx`) |
+| Camada            | Comportamento                                                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Banco             | nullable; default `NULL` no cadastro admin                                                                                                                     |
+| Vitrine           | `resolveProductMetaTitle` / `resolveProductMetaDescription` no `generateMetadata`                                                                              |
+| Padrão automático | `{titleClean} \| Análise, Prós, Contras e Ofertas` + frase padrão com nome do produto                                                                          |
+| Admin             | Aba **SEO Avançado** — sobrescrita opcional; vazio = automação na vitrine                                                                                      |
+| Contadores        | Meta Title e Meta Description: `N / limite` (60 e 160 — alvo Google); `maxLength` 200 e 320 (Zod)                                                              |
+| Tooltips          | Ícone ⓘ ao lado dos rótulos — textos em [`product-form-hints.ts`](../apps/admin/src/lib/product-form-hints.ts); componentes `FieldHint`, `ProductFormLabelRow` |
+| Assistente IA SEO | Botão **Gerar SEO com IA** → modal com prompt (`buildProductSeoLlmPrompt`) + colar JSON + **Aplicar no formulário** (`ProductSeoLlmPromptHelper.tsx`)          |
 
 ## Apresentação e review
 
-| Campo | Admin | Backend |
-|-------|-------|---------|
-| `short_description` | Textarea pré-preenchida a partir dos prós | Se vazio no save, API gera dos prós |
-| `long_description_html` | Editor TipTap (Visual + Código HTML) + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória |
-| `specs_normalized` | Aba **Especificações** → blocos dinâmicos com pares chave/valor | JSON array de grupos (`SpecGroup[]`); alimenta ficha colapsável na vitrine e `specs` flat no comparador |
+| Campo                   | Admin                                                                               | Backend                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `short_description`     | Textarea pré-preenchida a partir dos prós                                           | Se vazio no save, API gera dos prós                                                                     |
+| `long_description_html` | Editor TipTap (Visual + Código HTML) + ícone ✨ com prompt copiável para IA externa | Sem integração automática; revisão humana obrigatória                                                   |
+| `specs_normalized`      | Aba **Especificações** → blocos dinâmicos com pares chave/valor                     | JSON array de grupos (`SpecGroup[]`); alimenta ficha colapsável na vitrine e `specs` flat no comparador |
 
 ### Editor rico — `long_description_html`
 
 Componentes: [`ProductLongDescriptionEditor.tsx`](../apps/admin/src/components/products/ProductLongDescriptionEditor.tsx), [`ProductEditorToolbar.tsx`](../apps/admin/src/components/products/ProductEditorToolbar.tsx). Primitivos compartilhados com artigos em [`apps/admin/src/components/editor/`](../apps/admin/src/components/editor/).
 
-| Recurso | Detalhe |
-|---------|---------|
-| Modos | **Visual** (TipTap) e **Código HTML** (colar saída de IA) |
-| Toolbar | H3, negrito/itálico/riscado, listas, tabela, link |
-| Fluxo IA | ✨ copiar prompt → colar na aba HTML → revisar em Visual → salvar |
-| Persistência | `string` HTML em `long_description_html` (sem migration) |
-| Limite | Contador 50.000 caracteres no form (Zod `max(50000)`) |
-| Vitrine | `prose` + `dangerouslySetInnerHTML` em `/produtos/[slug]` (inalterado) |
+| Recurso      | Detalhe                                                                |
+| ------------ | ---------------------------------------------------------------------- |
+| Modos        | **Visual** (TipTap) e **Código HTML** (colar saída de IA)              |
+| Toolbar      | H3, negrito/itálico/riscado, listas, tabela, link                      |
+| Fluxo IA     | ✨ copiar prompt → colar na aba HTML → revisar em Visual → salvar      |
+| Persistência | `string` HTML em `long_description_html` (sem migration)               |
+| Limite       | Contador 50.000 caracteres no form (Zod `max(50000)`)                  |
+| Vitrine      | `prose` + `dangerouslySetInnerHTML` em `/produtos/[slug]` (inalterado) |
 
 ## Especificações em blocos dinâmicos
 
@@ -81,24 +81,22 @@ Schema compartilhado: [`packages/shared/src/product/spec-groups.ts`](../packages
     "group_id": "detalhes_produto",
     "group_title": "Detalhes do Produto",
     "is_collapsed_default": false,
-    "properties": [
-      { "key": "Nome da marca", "value": "BELLEBOX" }
-    ]
+    "properties": [{ "key": "Nome da marca", "value": "BELLEBOX" }]
   }
 ]
 ```
 
-| Comportamento | Detalhe |
-|---------------|---------|
-| Campo no form | `specsNormalized` (react-hook-form) — array de blocos |
-| UI admin | `ProductSpecsForm` + `ProductSpecBlockEditor` + `ProductSpecPropertyRow` |
-| Blocos | Adicionar / excluir (com confirmação) / reordenar (↑↓) |
-| Atributos | Repeater chave + valor (textarea) por bloco |
-| Colapso na vitrine | Switch **Iniciar recolhido na vitrine** → `is_collapsed_default` |
-| Template por categoria | Botão **Adicionar bloco sugerido da categoria** (`spec-templates.ts`) |
-| Foco nos inputs | Estado local no `onChange`; sync RHF em `onBlur`, mudanças estruturais e submit |
-| Save | `normalizeSpecsGroups` descarta linhas/blocos vazios; deduplica `group_id` **no escopo do produto** |
-| Legado | Migration `0024_specs_normalized_groups.sql` converte `Record<string,string>` → bloco único |
+| Comportamento          | Detalhe                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| Campo no form          | `specsNormalized` (react-hook-form) — array de blocos                                               |
+| UI admin               | `ProductSpecsForm` + `ProductSpecBlockEditor` + `ProductSpecPropertyRow`                            |
+| Blocos                 | Adicionar / excluir (com confirmação) / reordenar (↑↓)                                              |
+| Atributos              | Repeater chave + valor (textarea) por bloco                                                         |
+| Colapso na vitrine     | Switch **Iniciar recolhido na vitrine** → `is_collapsed_default`                                    |
+| Template por categoria | Botão **Adicionar bloco sugerido da categoria** (`spec-templates.ts`)                               |
+| Foco nos inputs        | Estado local no `onChange`; sync RHF em `onBlur`, mudanças estruturais e submit                     |
+| Save                   | `normalizeSpecsGroups` descarta linhas/blocos vazios; deduplica `group_id` **no escopo do produto** |
+| Legado                 | Migration `0024_specs_normalized_groups.sql` converte `Record<string,string>` → bloco único         |
 
 **MVP — slugs com template sugerido:** `teclados-mecanicos`, `perifericos`, `cadeiras-ergonomicas`.
 
@@ -106,35 +104,35 @@ Componentes: `ProductSpecsForm.tsx`, `product-specs-form-state.ts`, hook `useAdm
 
 ## Visibilidade na home (`visible`)
 
-| Switch admin | Persistência | Efeito |
-|--------------|--------------|--------|
-| Ligado (default) | `visible = true` | Aparece nos blocos da home (`product_grid`, `dynamic_product_grid`, `featured_product`) |
-| Desligado | `visible = false` | Oculto da home; **sempre listado no admin**; página `/produtos/:slug` continua acessível |
+| Switch admin     | Persistência      | Efeito                                                                                   |
+| ---------------- | ----------------- | ---------------------------------------------------------------------------------------- |
+| Ligado (default) | `visible = true`  | Aparece nos blocos da home (`product_grid`, `dynamic_product_grid`, `featured_product`)  |
+| Desligado        | `visible = false` | Oculto da home; **sempre listado no admin**; página `/produtos/:slug` continua acessível |
 
 - Listagem admin (`GET /admin/products`) usa `ListAdminProducts` — **não** filtra por `visible`.
 - Vitrine pública filtra `visible` apenas nos blocos da home e em `GET /products?visibleOnly=true`.
 
 ## Listagem admin (`/produtos`)
 
-| Recurso | Detalhe |
-|---------|---------|
-| Layout | Grid alinhado à vitrine web (`ProductCard` compact): imagem 4:3, 2–4 colunas (550px / 830px) |
-| Busca | Campo com debounce 300ms; query `search` na API (título ou slug) |
-| Paginação | 12 itens/página; componente `AdminPagination` com intervalo “Mostrando X–Y de N” e números de página |
-| Card | Thumbnail 4:3, badge marketplace sobre a imagem, título `text-sm`, preço compacto, pills de status, CTA Editar |
-| Componentes | `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx` |
-| BFF | `GET /api/admin/products?page&pageSize&search` |
+| Recurso     | Detalhe                                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------------------- |
+| Layout      | Grid alinhado à vitrine web (`ProductCard` compact): imagem 4:3, 2–4 colunas (550px / 830px)                   |
+| Busca       | Campo com debounce 300ms; query `search` na API (título ou slug)                                               |
+| Paginação   | 12 itens/página; componente `AdminPagination` com intervalo “Mostrando X–Y de N” e números de página           |
+| Card        | Thumbnail 4:3, badge marketplace sobre a imagem, título `text-sm`, preço compacto, pills de status, CTA Editar |
+| Componentes | `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx`                                         |
+| BFF         | `GET /api/admin/products?page&pageSize&search`                                                                 |
 
 ## Imagens do produto
 
-| Camada | Comportamento |
-|--------|---------------|
-| Campo | `images: string[]` (URLs HTTPS) |
-| Admin | Aba **Imagens** → `ProductImagesSection` |
-| Upload | `AdminImageFilePicker` + recorte 1:1 (1000×1000) → `uploadAdminImageClient` → append na galeria |
-| URL externa | Bloco colapsável "Adicionar por URL" |
-| Ordem | ↑↓ na lista; posição 1 = capa (`imageUrl` na vitrine) |
-| BFF | `POST /api/admin/media/images` (proxy para API) |
+| Camada      | Comportamento                                                                                   |
+| ----------- | ----------------------------------------------------------------------------------------------- |
+| Campo       | `images: string[]` (URLs HTTPS)                                                                 |
+| Admin       | Aba **Imagens** → `ProductImagesSection`                                                        |
+| Upload      | `AdminImageFilePicker` + recorte 1:1 (1000×1000) → `uploadAdminImageClient` → append na galeria |
+| URL externa | Bloco colapsável "Adicionar por URL"                                                            |
+| Ordem       | ↑↓ na lista; posição 1 = capa (`imageUrl` na vitrine)                                           |
+| BFF         | `POST /api/admin/media/images` (proxy para API)                                                 |
 
 Componentes: `ProductImagesSection.tsx`, reutiliza `AdminImageFilePicker` e `AdminImageCropDialog`.
 
@@ -169,43 +167,43 @@ O operador informa título limpo, imagens, prós/contras, preço e link de afili
 
 ## Switch de preço ↔ compliance
 
-| Switch admin | Persistência | Vitrine |
-|--------------|--------------|---------|
-| Ligado | `stale_price = false`, `price_amount` preenchido | Valor numérico + "Monitorado há X h" |
-| Desligado | `stale_price = true` (mesmo com `price_amount`) | Badge "Consultar preço atualizado" |
+| Switch admin | Persistência                                     | Vitrine                              |
+| ------------ | ------------------------------------------------ | ------------------------------------ |
+| Ligado       | `stale_price = false`, `price_amount` preenchido | Valor numérico + "Monitorado há X h" |
+| Desligado    | `stale_price = true` (mesmo com `price_amount`)  | Badge "Consultar preço atualizado"   |
 
 - Snapshot inicial com `source = manual_override` quando há preço informado
 - SLA 24h continua em leitura pública via `PriceComplianceService` (preço visível expira após 24h)
 
 ## Campos do schema disponíveis no admin
 
-| Campo | Aba / seção | Observação |
-|-------|-------------|------------|
-| `editorial_score` | Link & Essenciais → Curadoria e avaliações | UI 0–10; banco 0–100; selo ≥ 8,0 |
-| `rating` | Link & Essenciais → Curadoria e avaliações | Nota marketplace 0–5; estrelas e selo "Top avaliado" |
-| `review_count` | Link & Essenciais → Curadoria e avaliações | Complementa `rating` na vitrine |
-| `tags` | Link & Essenciais → Curadoria e avaliações | Etiquetas internas (organização) |
-| `title_raw` | Link & Essenciais → Dados essenciais | Título bruto do parceiro; default = `title_clean` |
-| `availability` | Link & Essenciais → Preço e disponibilidade | Inclui opção `unknown` |
-| `canonical_url` | **Sem input** | Override avançado via DB/Drizzle Studio |
+| Campo             | Aba / seção                                 | Observação                                           |
+| ----------------- | ------------------------------------------- | ---------------------------------------------------- |
+| `editorial_score` | Link & Essenciais → Curadoria e avaliações  | UI 0–10; banco 0–100; selo ≥ 8,0                     |
+| `rating`          | Link & Essenciais → Curadoria e avaliações  | Nota marketplace 0–5; estrelas e selo "Top avaliado" |
+| `review_count`    | Link & Essenciais → Curadoria e avaliações  | Complementa `rating` na vitrine                      |
+| `tags`            | Link & Essenciais → Curadoria e avaliações  | Etiquetas internas (organização)                     |
+| `title_raw`       | Link & Essenciais → Dados essenciais        | Título bruto do parceiro; default = `title_clean`    |
+| `availability`    | Link & Essenciais → Preço e disponibilidade | Inclui opção `unknown`                               |
+| `canonical_url`   | **Sem input**                               | Override avançado via DB/Drizzle Studio              |
 
 ## Escala editorial
 
-| Camada | Escala |
-|--------|--------|
-| UI admin | 0–10 (ex.: 8,5) |
-| Banco / domínio | 0–100 (ex.: 85) |
+| Camada                               | Escala                             |
+| ------------------------------------ | ---------------------------------- |
+| UI admin                             | 0–10 (ex.: 8,5)                    |
+| Banco / domínio                      | 0–100 (ex.: 85)                    |
 | Badge "Escolha editorial" na vitrine | `editorial_score >= 80` (UI ≥ 8,0) |
 
 ## Parser de URL
 
 Módulo: [`packages/shared/src/marketplace/parse-product-url.ts`](../packages/shared/src/marketplace/parse-product-url.ts)
 
-| Marketplace | Padrão |
-|-------------|--------|
-| Amazon BR | `/dp/{ASIN}`, `/gp/product/{ASIN}` |
-| Shopee BR | `/product/{shopId}/{itemId}`, `-i.{shopId}.{itemId}` |
-| Mercado Livre | `MLB-{id}` normalizado para `MLB{id}` |
+| Marketplace   | Padrão                                               |
+| ------------- | ---------------------------------------------------- |
+| Amazon BR     | `/dp/{ASIN}`, `/gp/product/{ASIN}`                   |
+| Shopee BR     | `/product/{shopId}/{itemId}`, `-i.{shopId}.{itemId}` |
+| Mercado Livre | `MLB-{id}` normalizado para `MLB{id}`                |
 
 Revalidado no backend em `CreateProduct` (não confiar só no client).
 
@@ -217,20 +215,20 @@ Schemas Zod: [`packages/shared/src/admin/product-schemas.ts`](../packages/shared
 
 ## Arquivos-chave
 
-| Camada | Arquivo |
-|--------|---------|
-| Use case | `packages/application/src/use-cases/product/CreateProduct.ts` |
-| Rotas API | `apps/api/src/adapters/http/routes/admin-product-routes.ts` |
-| Presenter admin | `apps/api/src/adapters/presenters/product.presenter.ts` |
-| BFF admin | `apps/admin/src/app/api/admin/products/route.ts` |
-| Formulário | `apps/admin/src/components/products/ProductForm.tsx` |
-| Análise editorial | `apps/admin/src/components/products/ProductAnalysisSection.tsx` |
-| Editor rico (review) | `apps/admin/src/components/products/ProductLongDescriptionEditor.tsx` |
-| Editor compartilhado | `apps/admin/src/components/editor/` |
-| Galeria / upload | `apps/admin/src/components/products/ProductImagesSection.tsx` |
-| Specs por categoria | `apps/admin/src/components/products/ProductSpecsForm.tsx` |
-| Templates de specs | `packages/shared/src/product/spec-templates.ts` |
-| Listagem | `apps/admin/src/app/(dashboard)/produtos/page.tsx`, `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx` |
+| Camada               | Arquivo                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Use case             | `packages/application/src/use-cases/product/CreateProduct.ts`                                                              |
+| Rotas API            | `apps/api/src/adapters/http/routes/admin-product-routes.ts`                                                                |
+| Presenter admin      | `apps/api/src/adapters/presenters/product.presenter.ts`                                                                    |
+| BFF admin            | `apps/admin/src/app/api/admin/products/route.ts`                                                                           |
+| Formulário           | `apps/admin/src/components/products/ProductForm.tsx`                                                                       |
+| Análise editorial    | `apps/admin/src/components/products/ProductAnalysisSection.tsx`                                                            |
+| Editor rico (review) | `apps/admin/src/components/products/ProductLongDescriptionEditor.tsx`                                                      |
+| Editor compartilhado | `apps/admin/src/components/editor/`                                                                                        |
+| Galeria / upload     | `apps/admin/src/components/products/ProductImagesSection.tsx`                                                              |
+| Specs por categoria  | `apps/admin/src/components/products/ProductSpecsForm.tsx`                                                                  |
+| Templates de specs   | `packages/shared/src/product/spec-templates.ts`                                                                            |
+| Listagem             | `apps/admin/src/app/(dashboard)/produtos/page.tsx`, `ProductListManager.tsx`, `ProductListCard.tsx`, `AdminPagination.tsx` |
 
 ## Como testar
 

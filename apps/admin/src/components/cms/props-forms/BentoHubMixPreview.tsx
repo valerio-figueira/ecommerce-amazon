@@ -83,8 +83,7 @@ export function BentoHubMixPreview({
     BENTO_SLOT1_CONTENT_TYPE_OPTIONS.find((option) => option.value === slot1Type)?.label ??
     'Destaque';
   const slot3Label =
-    BENTO_SLOT3_CONTENT_TYPE_OPTIONS.find((option) => option.value === slot3Type)?.label ??
-    'Lista';
+    BENTO_SLOT3_CONTENT_TYPE_OPTIONS.find((option) => option.value === slot3Type)?.label ?? 'Lista';
 
   return (
     <div className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-3">

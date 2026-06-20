@@ -60,8 +60,7 @@ function collectImageRemoteBaseUrls(env: NextImageRemoteEnv): string[] {
   }
 
   const devOrigins =
-    env.NEXT_ALLOWED_DEV_ORIGINS
-      ?.split(',')
+    env.NEXT_ALLOWED_DEV_ORIGINS?.split(',')
       .map((origin) => origin.trim())
       .filter((origin) => origin.length > 0) ?? [];
 

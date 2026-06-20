@@ -35,13 +35,13 @@ O ícone em [`SiteHeader.tsx`](apps/web/src/components/layout/SiteHeader.tsx) é
 
 **O que já existe e pode ser reutilizado:**
 
-| Camada | Situação |
-|--------|----------|
-| Artigos | `GET /articles?search=` funcional; UI em [`ArticleListingToolbar.tsx`](apps/web/src/components/articles/ArticleListingToolbar.tsx) |
-| Produtos (DB) | `drizzle-product.repository.ts` já filtra por `titleClean`, `titleRaw`, `slug` via `ilike` |
-| Produtos (API pública) | `search` **não** exposto em `ListProductsQuerySchema` nem em [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts) |
-| SEO | `SearchAction` aponta para `/artigos?q=` — será atualizado para `/busca?q=` |
-| Padrões UI | Overlay/drawer custom (sem Radix/cmdk): [`WishlistDrawer`](apps/web/src/components/wishlist/WishlistDrawer.tsx), [`CategoryCatalogDrawer`](apps/web/src/components/layout/CategoryCatalogDrawer.tsx) |
+| Camada                 | Situação                                                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Artigos                | `GET /articles?search=` funcional; UI em [`ArticleListingToolbar.tsx`](apps/web/src/components/articles/ArticleListingToolbar.tsx)                                                                   |
+| Produtos (DB)          | `drizzle-product.repository.ts` já filtra por `titleClean`, `titleRaw`, `slug` via `ilike`                                                                                                           |
+| Produtos (API pública) | `search` **não** exposto em `ListProductsQuerySchema` nem em [`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts)                                                         |
+| SEO                    | `SearchAction` aponta para `/artigos?q=` — será atualizado para `/busca?q=`                                                                                                                          |
+| Padrões UI             | Overlay/drawer custom (sem Radix/cmdk): [`WishlistDrawer`](apps/web/src/components/wishlist/WishlistDrawer.tsx), [`CategoryCatalogDrawer`](apps/web/src/components/layout/CategoryCatalogDrawer.tsx) |
 
 ## Decisões (defaults — perguntas não respondidas)
 
@@ -72,7 +72,7 @@ O repositório já implementa busca; falta propagar até a rota pública.
 1. **[`ListProducts.ts`](packages/application/src/use-cases/product/ListProducts.ts)** — adicionar `search?: string` ao `execute()` e repassar a `findPublished` (espelhar [`ListAdminProducts.ts`](packages/application/src/use-cases/product/ListAdminProducts.ts))
 2. **[`schemas.ts`](apps/api/src/adapters/dtos/request/schemas.ts)** — `ListProductsQuerySchema`:
    ```ts
-   search: z.string().trim().max(100).optional()
+   search: z.string().trim().max(100).optional();
    ```
 3. **[`routes/index.ts`](apps/api/src/adapters/http/routes/index.ts)** — mapear `query.search` → `filters.search`; manter `visibleOnly: true` implícito ou explícito na busca pública
 4. **Teste** — adicionar/estender teste de integração ou unitário do use case confirmando repasse de `search` (se houver suite existente para `ListProducts`)
@@ -81,11 +81,11 @@ O repositório já implementa busca; falta propagar até a rota pública.
 
 ### Novos arquivos
 
-| Arquivo | Responsabilidade |
-|---------|------------------|
-| `apps/web/src/components/search/SearchProvider.tsx` | Contexto `isOpen`, `setOpen`, `initialQuery`; listener global `Cmd/Ctrl+K` |
-| `apps/web/src/components/search/SearchOverlay.tsx` | Modal centrado (`z-50`), overlay click + Escape, autofocus no input |
-| `apps/web/src/lib/api/search.ts` | `searchArticlesPreview(q)` e `searchProductsPreview(q)` via `apiFetchParsed` + React Query keys |
+| Arquivo                                             | Responsabilidade                                                                                |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `apps/web/src/components/search/SearchProvider.tsx` | Contexto `isOpen`, `setOpen`, `initialQuery`; listener global `Cmd/Ctrl+K`                      |
+| `apps/web/src/components/search/SearchOverlay.tsx`  | Modal centrado (`z-50`), overlay click + Escape, autofocus no input                             |
+| `apps/web/src/lib/api/search.ts`                    | `searchArticlesPreview(q)` e `searchProductsPreview(q)` via `apiFetchParsed` + React Query keys |
 
 ### Comportamento do overlay
 

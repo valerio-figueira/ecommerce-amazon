@@ -1,4 +1,7 @@
-import { buildContactPageContent, buildContactPageMetadata } from '@ecommerce-amazon/shared/contact';
+import {
+  buildContactPageContent,
+  buildContactPageMetadata,
+} from '@ecommerce-amazon/shared/contact';
 import type { Metadata } from 'next';
 
 import { ContactPageContentView } from '@/components/contact/ContactPageContent';

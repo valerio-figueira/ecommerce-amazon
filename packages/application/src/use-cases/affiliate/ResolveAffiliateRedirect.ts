@@ -38,17 +38,10 @@ export class ResolveAffiliateRedirect {
       return err(new EntityNotFoundError('Product', input.slug));
     }
 
-    const account = await this.affiliateAccountRepository.findByMarketplace(
-      product.marketplace,
-    );
+    const account = await this.affiliateAccountRepository.findByMarketplace(product.marketplace);
 
-    if (
-      account !== null &&
-      account.status === AffiliateAccountStatus.PENDING
-    ) {
-      return err(
-        new ValidationError('Affiliate account pending manual validation'),
-      );
+    if (account !== null && account.status === AffiliateAccountStatus.PENDING) {
+      return err(new ValidationError('Affiliate account pending manual validation'));
     }
 
     if (account !== null && account.status === AffiliateAccountStatus.SUSPENDED) {

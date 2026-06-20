@@ -38,9 +38,7 @@ export async function middleware(request: NextRequest) {
   const session = await verifySessionToken(token);
   if (!session) {
     if (pathname.startsWith('/api/')) {
-      return clearSessionCookie(
-        NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
-      );
+      return clearSessionCookie(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
     }
 
     const loginUrl = request.nextUrl.clone();
