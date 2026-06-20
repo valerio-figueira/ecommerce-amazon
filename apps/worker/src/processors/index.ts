@@ -82,6 +82,7 @@ export function startWorkers(container: WorkerContainer) {
     QUEUE_NAMES.EMAIL_DELIVERY,
     (job) => {
       logger.info('Email delivery job', { to: job.data.to, subject: job.data.subject });
+      return Promise.resolve();
     },
     { connection: queueConnection, concurrency: 2 },
   );
