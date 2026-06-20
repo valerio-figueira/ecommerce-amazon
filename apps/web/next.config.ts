@@ -40,17 +40,17 @@ const nextConfig: NextConfig = {
       NEXT_ALLOWED_DEV_ORIGINS: process.env['NEXT_ALLOWED_DEV_ORIGINS'],
     }),
   },
-  rewrites() {
+  async rewrites() {
     const apiUrl =
       process.env['API_INTERNAL_URL'] ??
       process.env['NEXT_PUBLIC_API_URL'] ??
       'http://localhost:3000';
-    return [
+    return Promise.resolve([
       {
         source: '/go/:slug',
         destination: `${apiUrl}/go/:slug`,
       },
-    ];
+    ]);
   },
 };
 
