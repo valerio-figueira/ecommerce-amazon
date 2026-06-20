@@ -129,7 +129,7 @@ Ordem de build TypeScript: `domain` → `shared` → `application` → `infrastr
 | CORS no browser                                      | Origin LAN vs localhost                                                          | Reiniciar API; conferir `CORS_ORIGINS`                                                                                                                                           |
 | `crypto.randomUUID`                                  | HTTP via IP (contexto não seguro)                                                | Usar localhost ou fallback em `session.ts`                                                                                                                                       |
 | ESLint `cannot be resolved` em `@ecommerce-amazon/*` | TypeScript ESLint não resolveu subpath (ex.: `shared/cms`) ou pacote sem `dist/` | Conferir `tsconfig.eslint-packages.json` e `tsconfig.eslint-next-*.json`; se persistir: `npm run build -w @ecommerce-amazon/domain && npm run build -w @ecommerce-amazon/shared` |
-| Vitest `Cannot find package '@ecommerce-amazon/...'`  | Pacotes workspace sem `dist/` (Vitest resolve via `exports` do package.json)       | `npm run test:unit` já builda o necessário; ou `npm run build` manualmente                                                                                                       |
+| Vitest `Cannot find package '@ecommerce-amazon/...'` | Pacotes workspace sem `dist/` (Vitest resolve via `exports` do package.json)     | `npm run test:unit` já builda o necessário; ou `npm run build` manualmente                                                                                                       |
 
 ## Scripts utilitários
 
