@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { BlockType } from '@ecommerce-amazon/domain';
 
+import { isRecord } from '../utils/type-guards.js';
+
 const heroSlideSchema = z.object({
   imageUrl: z.string().url(),
   title: z.string().min(1),
@@ -233,9 +235,16 @@ export const BlockPropsResolver: Record<BlockType, z.ZodType<unknown>> = {
 
 const blockPropsSchemas = BlockPropsResolver;
 
-export function parseBlockProps(type: BlockType, props: unknown): unknown {
+export function parseBlockProps(type: BlockType, props: unknown): Record<string, unknown> {
   const schema = blockPropsSchemas[type];
-  return schema.parse(props);
+  if (!schema) {
+    throw new Error(`Unknown block type: ${type}`);
+  }
+  const parsed = schema.parse(props);
+  if (!isRecord(parsed)) {
+    throw new Error('Block props must be an object');
+  }
+  return parsed;
 }
 
 export const pageBlockDtoSchema = z.object({

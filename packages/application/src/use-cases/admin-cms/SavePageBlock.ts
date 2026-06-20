@@ -51,7 +51,7 @@ export class SavePageBlock {
       existingVisibility = existing.visibility;
     }
 
-    let parsedProps: unknown;
+    let parsedProps: Record<string, unknown>;
     try {
       parsedProps = parseBlockProps(input.type, input.props);
     } catch (error) {

@@ -18,20 +18,24 @@ type Ga4TrafficCachePayload = {
 };
 
 function parseGa4TrafficCache(value: unknown): Ga4TrafficCachePayload | null {
-  if (!isRecord(value) || typeof value.totalPageViews !== 'number' || !Array.isArray(value.items)) {
+  if (
+    !isRecord(value) ||
+    typeof value['totalPageViews'] !== 'number' ||
+    !Array.isArray(value['items'])
+  ) {
     return null;
   }
 
-  const items = value.items.filter(
+  const items = value['items'].filter(
     (item): item is Ga4TrafficCachePayload['items'][number] =>
       isRecord(item) &&
-      typeof item.channel === 'string' &&
-      typeof item.pageViews === 'number' &&
-      typeof item.sharePercent === 'number',
+      typeof item['channel'] === 'string' &&
+      typeof item['pageViews'] === 'number' &&
+      typeof item['sharePercent'] === 'number',
   );
 
   return {
-    totalPageViews: value.totalPageViews,
+    totalPageViews: value['totalPageViews'],
     items,
   };
 }
