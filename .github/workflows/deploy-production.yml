@@ -185,12 +185,33 @@ jobs:
         id: meta
         run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
+      - name: Validate SSH deploy secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.VPS_SSH_HOST }}" ]; then
+            echo "::error::VPS_SSH_HOST is missing on the production environment."
+            missing=1
+          fi
+          if [ -z "${{ secrets.VPS_SSH_USER }}" ]; then
+            echo "::error::VPS_SSH_USER is missing on the production environment."
+            missing=1
+          fi
+          if [ -z "${{ secrets.VPS_SSH_PRIVATE_KEY }}" ]; then
+            echo "::error::VPS_SSH_PRIVATE_KEY is missing on the production environment."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Configure SSH secrets under Settings → Environments → production (see docs/deployment-swarm.md)."
+            exit 1
+          fi
+
       - name: Copy deploy manifests to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_SSH_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }}
           source: deploy/
           target: /opt/vitrine/
           strip_components: 0
@@ -231,6 +252,7 @@ jobs:
           host: ${{ secrets.VPS_SSH_HOST }}
           username: ${{ secrets.VPS_SSH_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }}
           envs: IMAGE_TAG,GHCR_IMAGE_PREFIX,GHCR_PULL_TOKEN,PUBLIC_BASE_URL,TLS_ENABLED,ACME_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,JWT_SECRET,JWT_EXPIRES_IN,PASSWORD_PEPPER,ENCRYPTION_KEY,REVALIDATE_SECRET,CORS_ORIGINS,SITE_NAME,COMPANY_LEGAL_NAME,CONTACT_EMAIL,SITE_TAGLINE,AMAZON_AFFILIATE_TAG,SHOPEE_AFFILIATE_ID,EMAIL_FROM,RESEND_API_KEY,ADMIN_SEED_EMAIL,ADMIN_SEED_PASSWORD,GA4_PROPERTY_ID,GA4_SERVICE_ACCOUNT_JSON,RUN_SEED
           script: |
             set -euo pipefail

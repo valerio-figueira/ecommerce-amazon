@@ -56,24 +56,68 @@ bash deploy/scripts/bootstrap-vps.sh
 
 Depois:
 
-1. Adicionar chave SSH pública do usuário `deploy` em `~deploy/.ssh/authorized_keys`
-2. Criar environment **`production`** no GitHub com os secrets abaixo
-3. Gerar PAT `read:packages` → secret `GHCR_PULL_TOKEN` (pull na VPS)
-4. Disparar workflow **Deploy Production** com `run_seed: true` no primeiro deploy (bootstrap: operador, settings, home mínima — **sem** produtos/contas afiliado demo)
+1. Gerar par de chaves **só para deploy** (na sua máquina local):
+
+```bash
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/vitrine_deploy -N ""
+```
+
+2. Instalar a chave **pública** na VPS (como root ou com sudo):
+
+```bash
+# Na VPS — substitua pelo conteúdo de vitrine_deploy.pub
+mkdir -p /home/deploy/.ssh
+chmod 700 /home/deploy/.ssh
+echo "ssh-ed25519 AAAA... github-actions-deploy" >> /home/deploy/.ssh/authorized_keys
+chmod 600 /home/deploy/.ssh/authorized_keys
+chown -R deploy:deploy /home/deploy/.ssh
+```
+
+3. Testar login manual (deve entrar **sem** pedir senha):
+
+```bash
+ssh -i ~/.ssh/vitrine_deploy deploy@SEU_IP
+```
+
+4. Criar environment **`production`** no GitHub e cadastrar os secrets abaixo (copie a chave **privada** inteira, incluindo `BEGIN`/`END`).
+
+5. Gerar PAT `read:packages` → secret `GHCR_PULL_TOKEN` (pull na VPS)
+
+6. Disparar workflow **Deploy Production** com `run_seed: true` no primeiro deploy (bootstrap: operador, settings, home mínima — **sem** produtos/contas afiliado demo)
+
+### Chave SSH no GitHub (erro comum)
+
+O step `Copy deploy manifests to VPS` falha com `can't connect without a private SSH key or password` quando **`VPS_SSH_PRIVATE_KEY` não está definido** (ou está vazio) no environment `production`.
+
+| Secret                   | Valor                                                     |
+| ------------------------ | --------------------------------------------------------- |
+| `VPS_SSH_HOST`           | IP ou hostname da VPS (ex.: `185.x.x.x`)                  |
+| `VPS_SSH_USER`           | `deploy` (usuário criado pelo bootstrap)                  |
+| `VPS_SSH_PRIVATE_KEY`    | Conteúdo completo de `~/.ssh/vitrine_deploy` (multilinha) |
+| `VPS_SSH_KEY_PASSPHRASE` | Opcional — só se a chave privada tiver senha              |
+
+Para copiar a chave privada no terminal:
+
+```bash
+cat ~/.ssh/vitrine_deploy
+```
+
+Cole **tudo** no secret (não use só a linha do meio). Secrets de repositório também funcionam, mas o job `deploy_production` usa `environment: production` — cadastre no environment para manter tudo junto.
 
 ## Secrets GitHub (environment `production`)
 
 ### Infra / deploy
 
-| Secret                | Exemplo            | Notas                                                      |
-| --------------------- | ------------------ | ---------------------------------------------------------- |
-| `VPS_SSH_HOST`        | `185.x.x.x`        | IP ou hostname SSH                                         |
-| `VPS_SSH_USER`        | `deploy`           |                                                            |
-| `VPS_SSH_PRIVATE_KEY` | PEM                | Chave privada completa                                     |
-| `PUBLIC_BASE_URL`     | `http://185.x.x.x` | **Sem** barra final; muda para `https://dominio` na fase 2 |
-| `TLS_ENABLED`         | `false`            | `true` após DNS + domínio                                  |
-| `ACME_EMAIL`          | `ops@dominio.com`  | Obrigatório se `TLS_ENABLED=true`                          |
-| `GHCR_PULL_TOKEN`     | PAT                | `read:packages` para `docker pull` na VPS                  |
+| Secret                   | Exemplo            | Notas                                                         |
+| ------------------------ | ------------------ | ------------------------------------------------------------- |
+| `VPS_SSH_HOST`           | `185.x.x.x`        | IP ou hostname SSH                                            |
+| `VPS_SSH_USER`           | `deploy`           | Usuário do bootstrap                                          |
+| `VPS_SSH_PRIVATE_KEY`    | PEM / OpenSSH      | Chave privada **completa** (multilinha) — ver bootstrap acima |
+| `VPS_SSH_KEY_PASSPHRASE` | —                  | Opcional, se a chave tiver senha                              |
+| `PUBLIC_BASE_URL`        | `http://185.x.x.x` | **Sem** barra final; muda para `https://dominio` na fase 2    |
+| `TLS_ENABLED`            | `false`            | `true` após DNS + domínio                                     |
+| `ACME_EMAIL`             | `ops@dominio.com`  | Obrigatório se `TLS_ENABLED=true`                             |
+| `GHCR_PULL_TOKEN`        | PAT                | `read:packages` para `docker pull` na VPS                     |
 
 ### URLs derivadas (automáticas em `render-env.sh`)
 
