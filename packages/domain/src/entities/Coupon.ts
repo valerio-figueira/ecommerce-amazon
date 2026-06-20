@@ -1,4 +1,5 @@
 import {
+  AffiliateAccountStatus,
   ComparisonSource,
   ComparisonStatus,
   CouponStatus,
@@ -119,7 +120,7 @@ export class AffiliateAccount {
     readonly id: string,
     readonly marketplace: Marketplace,
     readonly affiliateTag: string,
-    readonly status: string,
+    readonly status: AffiliateAccountStatus,
     readonly validatedBy?: string,
     readonly validatedAt?: Date,
     readonly validationNotes?: string,

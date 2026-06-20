@@ -34,10 +34,10 @@ function handleAdminCategoryError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export async function registerAdminCategoryRoutes(
+export function registerAdminCategoryRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
 
   app.get('/admin/categories', async (_request, reply) => {

@@ -47,7 +47,7 @@ export class GetOperationalStatus {
         pendingMarketplaces,
         accounts: accounts.map((account) => ({
           marketplace: account.marketplace,
-          status: account.status as 'pending_manual_validation' | 'active' | 'suspended',
+          status: account.status,
         })),
       },
       marketplaceCredentials: MANAGED_MARKETPLACES.map((marketplace) => {

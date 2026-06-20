@@ -44,7 +44,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
 }
 
 export class NoOpPublicWebRevalidator implements PublicWebRevalidator {
-  async revalidate(_options: PublicWebRevalidationOptions): Promise<void> {
-    return;
+  revalidate(_options: PublicWebRevalidationOptions): Promise<void> {
+    return Promise.resolve();
   }
 }

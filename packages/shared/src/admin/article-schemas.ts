@@ -167,7 +167,7 @@ export type PublicArticleCategoriesResponse = z.infer<typeof publicArticleCatego
 
 export function toIsoDateTime(
   value: Date | string | null | undefined,
-  fallback?: Date | string | null | undefined,
+  fallback?: Date | string | null,
 ): string {
   const resolved = value ?? fallback;
   if (resolved instanceof Date) {

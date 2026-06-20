@@ -17,11 +17,23 @@ const BUILTIN_REMOTE_PATTERNS: NextImageRemotePattern[] = [
   { protocol: 'https', hostname: 'images.pexels.com' },
 ];
 
+function parseRemoteProtocol(protocolWithColon: string): 'http' | 'https' | null {
+  const protocol = protocolWithColon.replace(':', '');
+  if (protocol === 'http' || protocol === 'https') {
+    return protocol;
+  }
+  return null;
+}
+
 function patternFromUrl(urlString: string): NextImageRemotePattern | null {
   try {
     const url = new URL(urlString);
+    const protocol = parseRemoteProtocol(url.protocol);
+    if (!protocol) {
+      return null;
+    }
     const pattern: NextImageRemotePattern = {
-      protocol: url.protocol.replace(':', '') as 'http' | 'https',
+      protocol,
       hostname: url.hostname,
     };
     if (url.port) {
@@ -78,7 +90,7 @@ export function collectImageRemoteBaseUrls(env: NextImageRemoteEnv): string[] {
 }
 
 export function buildNextImageRemotePatterns(
-  env: NextImageRemoteEnv = process.env as NextImageRemoteEnv,
+  env: NextImageRemoteEnv = {},
 ): NextImageRemotePattern[] {
   const fromUrls = collectImageRemoteBaseUrls(env)
     .map(patternFromUrl)

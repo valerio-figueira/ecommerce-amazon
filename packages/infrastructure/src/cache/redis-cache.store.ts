@@ -11,7 +11,7 @@ function parseJsonValue(raw: string): unknown {
 export class RedisCacheStore implements CacheStore, CacheInvalidator, PageCacheInvalidator {
   constructor(private readonly redis: Redis) {}
 
-  async get(key: string): Promise<unknown | null> {
+  async get(key: string): Promise<unknown> {
     const raw = await this.redis.get(key);
     if (!raw) return null;
     return parseJsonValue(raw);

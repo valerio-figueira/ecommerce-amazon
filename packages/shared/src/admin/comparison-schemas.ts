@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { productPublicListItemSchema } from '../admin/product-schemas.js';
-
 export const comparisonSlugSchema = z
   .string()
   .trim()

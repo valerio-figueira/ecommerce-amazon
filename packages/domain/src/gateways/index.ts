@@ -47,7 +47,7 @@ export interface EmailSender {
 }
 
 export interface CacheStore {
-  get(key: string): Promise<unknown | null>;
+  get(key: string): Promise<unknown>;
   set<T>(key: string, value: T, ttlSeconds: number): Promise<void>;
   del(key: string): Promise<void>;
   increment(key: string): Promise<number>;

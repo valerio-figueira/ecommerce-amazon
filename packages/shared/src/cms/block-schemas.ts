@@ -84,14 +84,20 @@ export const curatedCollectionPropsSchema = curatedCollectionPropsBaseSchema
       });
     }
   })
-  .transform((data) => ({
-    collectionSlugs:
+  .transform((data) => {
+    const collectionSlugs =
       data.collectionSlugs && data.collectionSlugs.length > 0
         ? data.collectionSlugs
-        : [data.collectionSlug as string],
-    autoplay: data.autoplay,
-    intervalMs: data.intervalMs,
-  }));
+        : data.collectionSlug
+          ? [data.collectionSlug]
+          : [];
+
+    return {
+      collectionSlugs,
+      autoplay: data.autoplay,
+      intervalMs: data.intervalMs,
+    };
+  });
 
 export const couponStripPropsSchema = z.object({
   marketplace: z.enum(['amazon_br', 'shopee_br', 'mercadolivre_br']).optional(),

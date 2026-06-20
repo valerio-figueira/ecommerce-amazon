@@ -10,7 +10,7 @@ async function main() {
   startWorkers(container);
   await registerSchedulers(container);
 
-  const shutdown = async () => {
+  const shutdown = () => {
     container.logger.info('Shutting down worker');
     process.exit(0);
   };

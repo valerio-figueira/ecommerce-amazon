@@ -1,7 +1,9 @@
 'use client';
 
 import { adminClientFetch } from '@/lib/api/admin-client';
+import { readClientErrorMessage } from '@/lib/api/read-client-error';
 import {
+  affiliateAccountSchema,
   affiliateAccountsListResponseSchema,
   type AffiliateAccountDto,
   type CreateAffiliateAccountBody,
@@ -26,10 +28,10 @@ export async function createAffiliateAccountClient(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao criar conta de afiliado');
+    throw new Error(await readClientErrorMessage(response, 'Falha ao criar conta de afiliado'));
   }
-  return (await response.json()) as AffiliateAccountDto;
+  const payload: unknown = await response.json();
+  return affiliateAccountSchema.parse(payload);
 }
 
 export async function updateAffiliateAccountClient(
@@ -42,10 +44,12 @@ export async function updateAffiliateAccountClient(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao atualizar conta de afiliado');
+    throw new Error(
+      await readClientErrorMessage(response, 'Falha ao atualizar conta de afiliado'),
+    );
   }
-  return (await response.json()) as AffiliateAccountDto;
+  const payload: unknown = await response.json();
+  return affiliateAccountSchema.parse(payload);
 }
 
 export async function deleteAffiliateAccountClient(id: string): Promise<void> {
@@ -53,7 +57,6 @@ export async function deleteAffiliateAccountClient(id: string): Promise<void> {
     method: 'DELETE',
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao excluir conta de afiliado');
+    throw new Error(await readClientErrorMessage(response, 'Falha ao excluir conta de afiliado'));
   }
 }

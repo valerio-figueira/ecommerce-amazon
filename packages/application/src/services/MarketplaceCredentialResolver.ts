@@ -1,17 +1,77 @@
 import {
   Marketplace,
   ValidationError,
+  parseMarketplace,
   type CacheStore,
   type CredentialCipher,
   type MarketplaceApiCredentialRepository,
   type MarketplaceCredentialResolverPort,
   type ResolvedMarketplaceCredentials,
 } from '@ecommerce-amazon/domain';
-
 import type { AmazonStaticCredentials, ShopeeStaticCredentials } from '@ecommerce-amazon/domain';
+import {
+  amazonStaticCredentialsBodySchema,
+  shopeeStaticCredentialsBodySchema,
+} from '@ecommerce-amazon/shared/admin';
+
+import {
+  normalizeAmazonStaticCredentials,
+  normalizeShopeeStaticCredentials,
+  toResolvedAmazonCredentials,
+  toResolvedShopeeCredentials,
+} from './marketplace-credentials.helpers.js';
 
 const CACHE_KEY_PREFIX = 'vitrine:marketplace-credentials:';
 const CACHE_TTL_SECONDS = 300;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function parseStoredCredentials(
+  marketplace: Marketplace,
+  plaintext: string,
+): AmazonStaticCredentials | ShopeeStaticCredentials {
+  const json: unknown = JSON.parse(plaintext);
+  if (marketplace === Marketplace.AMAZON_BR) {
+    return normalizeAmazonStaticCredentials(amazonStaticCredentialsBodySchema.parse(json));
+  }
+  if (marketplace === Marketplace.SHOPEE_BR) {
+    return normalizeShopeeStaticCredentials(shopeeStaticCredentialsBodySchema.parse(json));
+  }
+  throw new ValidationError(`Unsupported marketplace credentials: ${marketplace}`);
+}
+
+function parseCachedCredentials(value: unknown): ResolvedMarketplaceCredentials | null {
+  if (!isRecord(value) || typeof value['marketplace'] !== 'string') {
+    return null;
+  }
+
+  let marketplace: Marketplace;
+  try {
+    marketplace = parseMarketplace(value['marketplace']);
+  } catch {
+    return null;
+  }
+
+  if (marketplace === Marketplace.AMAZON_BR) {
+    const credentials = amazonStaticCredentialsBodySchema.safeParse(value);
+    if (!credentials.success) {
+      return null;
+    }
+    return toResolvedAmazonCredentials(credentials.data);
+  }
+
+  if (marketplace === Marketplace.SHOPEE_BR) {
+    const credentials = shopeeStaticCredentialsBodySchema.safeParse(value);
+    if (!credentials.success) {
+      return null;
+    }
+    return toResolvedShopeeCredentials(credentials.data);
+  }
+
+  return null;
+}
 
 export class MarketplaceCredentialResolver implements MarketplaceCredentialResolverPort {
   constructor(
@@ -36,7 +96,10 @@ export class MarketplaceCredentialResolver implements MarketplaceCredentialResol
     const cacheKey = this.cacheKey(marketplace);
     const cached = await this.cache.get(cacheKey);
     if (cached) {
-      return cached as ResolvedMarketplaceCredentials;
+      const parsedCache = parseCachedCredentials(cached);
+      if (parsedCache) {
+        return parsedCache;
+      }
     }
 
     const record = await this.repository.findByMarketplace(marketplace);
@@ -45,7 +108,7 @@ export class MarketplaceCredentialResolver implements MarketplaceCredentialResol
     }
 
     const plaintext = this.cipher.decrypt(record.credentialsEncrypted);
-    const parsed = JSON.parse(plaintext) as AmazonStaticCredentials | ShopeeStaticCredentials;
+    const parsed = parseStoredCredentials(marketplace, plaintext);
     const resolved = this.attachMarketplace(marketplace, parsed);
 
     await this.cache.set(cacheKey, resolved, CACHE_TTL_SECONDS);
@@ -59,7 +122,7 @@ export class MarketplaceCredentialResolver implements MarketplaceCredentialResol
     credentialsEncrypted: string,
   ): AmazonStaticCredentials | ShopeeStaticCredentials {
     const plaintext = this.cipher.decrypt(credentialsEncrypted);
-    return JSON.parse(plaintext) as AmazonStaticCredentials | ShopeeStaticCredentials;
+    return parseStoredCredentials(marketplace, plaintext);
   }
 
   private attachMarketplace(
@@ -67,10 +130,10 @@ export class MarketplaceCredentialResolver implements MarketplaceCredentialResol
     credentials: AmazonStaticCredentials | ShopeeStaticCredentials,
   ): ResolvedMarketplaceCredentials {
     if (marketplace === Marketplace.AMAZON_BR) {
-      return { marketplace: Marketplace.AMAZON_BR, ...(credentials as AmazonStaticCredentials) };
+      return toResolvedAmazonCredentials(amazonStaticCredentialsBodySchema.parse(credentials));
     }
     if (marketplace === Marketplace.SHOPEE_BR) {
-      return { marketplace: Marketplace.SHOPEE_BR, ...(credentials as ShopeeStaticCredentials) };
+      return toResolvedShopeeCredentials(shopeeStaticCredentialsBodySchema.parse(credentials));
     }
     throw new ValidationError(`Unsupported marketplace credentials: ${marketplace}`);
   }

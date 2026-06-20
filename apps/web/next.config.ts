@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
       NEXT_ALLOWED_DEV_ORIGINS: process.env['NEXT_ALLOWED_DEV_ORIGINS'],
     }),
   },
-  async rewrites() {
+  rewrites() {
     const apiUrl =
       process.env['API_INTERNAL_URL'] ??
       process.env['NEXT_PUBLIC_API_URL'] ??

@@ -38,7 +38,7 @@ function getClientIp(request: FastifyRequest): string {
   return request.ip;
 }
 
-export async function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
+export function registerAdminRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases, services } = container;
   const loginRateLimiter = createLoginRateLimiter();
 
@@ -128,20 +128,20 @@ export async function registerAdminRoutes(app: FastifyInstance, container: ApiCo
     }
   });
 
-  await registerAdminCmsRoutes(app, container);
-  await registerAdminCategoryRoutes(app, container);
-  await registerAdminCollectionRoutes(app, container);
-  await registerAdminComparisonRoutes(app, container);
-  await registerAdminProductRoutes(app, container);
-  await registerAdminArticleRoutes(app, container);
-  await registerAdminArticleCategoryRoutes(app, container);
-  await registerAdminContentClusterRoutes(app, container);
+  registerAdminCmsRoutes(app, container);
+  registerAdminCategoryRoutes(app, container);
+  registerAdminCollectionRoutes(app, container);
+  registerAdminComparisonRoutes(app, container);
+  registerAdminProductRoutes(app, container);
+  registerAdminArticleRoutes(app, container);
+  registerAdminArticleCategoryRoutes(app, container);
+  registerAdminContentClusterRoutes(app, container);
   registerAdminAutoLinkRoutes(app, container);
-  await registerAdminProfileRoutes(app, container);
-  await registerAdminInstitutionalRoutes(app, container);
-  await registerAdminMediaRoutes(app, container);
-  await registerAdminAnalyticsRoutes(app, container);
-  await registerAdminSettingsRoutes(app, container);
+  registerAdminProfileRoutes(app, container);
+  registerAdminInstitutionalRoutes(app, container);
+  registerAdminMediaRoutes(app, container);
+  registerAdminAnalyticsRoutes(app, container);
+  registerAdminSettingsRoutes(app, container);
 }
 
 declare module 'fastify' {

@@ -51,9 +51,9 @@ export class SavePageBlock {
       existingVisibility = existing.visibility;
     }
 
-    let parsedProps: Record<string, unknown>;
+    let parsedProps: unknown;
     try {
-      parsedProps = parseBlockProps(input.type, input.props) as Record<string, unknown>;
+      parsedProps = parseBlockProps(input.type, input.props);
     } catch (error) {
       if (error instanceof ZodError) {
         return err(new ValidationError(error.message));

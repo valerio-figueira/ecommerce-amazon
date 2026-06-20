@@ -1,7 +1,7 @@
 'use client';
 
 import { Link2, Plug, Settings, Shield, SlidersHorizontal, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type {
@@ -43,16 +43,19 @@ export function OperationalSettingsManager({
 
   const tabCount = isAdmin ? 5 : 4;
 
-  const availableTabs = useMemo(() => {
-    const tabs: SettingsTab[] = ['affiliate', 'integrations', 'preferences'];
-    if (isAdmin) tabs.push('operators');
-    tabs.push('health');
-    return tabs;
-  }, [isAdmin]);
+  function isSettingsTab(value: string): value is SettingsTab {
+  return (
+    value === 'affiliate' ||
+    value === 'integrations' ||
+    value === 'preferences' ||
+    value === 'operators' ||
+    value === 'health'
+  );
+}
 
   function handleTabChange(value: string): void {
-    if (availableTabs.includes(value as SettingsTab)) {
-      setActiveTab(value as SettingsTab);
+    if (isSettingsTab(value)) {
+      setActiveTab(value);
     }
   }
 

@@ -2,6 +2,15 @@ import { createHmac } from 'node:crypto';
 
 import type { ShopeeStaticCredentials } from '@ecommerce-amazon/domain';
 
+import {
+  readFirstShopeeItem,
+  readShopeeApiError,
+  readShopeeImageUrl,
+  readShopeePriceAmount,
+  readShopeeResponseBlock,
+  readShopeeStringField,
+} from './shopee-open-api.helpers.js';
+
 const DEFAULT_BASE_URL = 'https://partner.shopeemobile.com';
 
 export type ShopeeApiResponse = {
@@ -53,16 +62,13 @@ export async function shopeeTestConnectivity(
     };
   }
 
-  if (body && typeof body === 'object') {
-    const record = body as Record<string, unknown>;
-    const error = record['error'];
-    if (typeof error === 'string' && error.length > 0) {
-      return {
-        httpStatus: response.status,
-        ok: false,
-        message: `Shopee API error: ${error}`,
-      };
-    }
+  const apiError = readShopeeApiError(body);
+  if (apiError) {
+    return {
+      httpStatus: response.status,
+      ok: false,
+      message: `Shopee API error: ${apiError}`,
+    };
   }
 
   return {
@@ -153,20 +159,19 @@ export async function shopeeGetItemBaseInfo(
     };
   }
 
-  const record = body as Record<string, unknown>;
-  const error = record['error'];
-  if (typeof error === 'string' && error.length > 0) {
+  const apiError = readShopeeApiError(body);
+  if (apiError) {
     return {
       response: {
         httpStatus: response.status,
         ok: false,
-        message: `Shopee API error: ${error}`,
+        message: `Shopee API error: ${apiError}`,
       },
     };
   }
 
-  const responseBlock = record['response'];
-  if (!responseBlock || typeof responseBlock !== 'object') {
+  const responseBlock = readShopeeResponseBlock(body);
+  if (!responseBlock) {
     return {
       response: {
         httpStatus: response.status,
@@ -176,8 +181,8 @@ export async function shopeeGetItemBaseInfo(
     };
   }
 
-  const itemList = (responseBlock as Record<string, unknown>)['item_list'];
-  if (!Array.isArray(itemList) || itemList.length === 0) {
+  const itemRecord = readFirstShopeeItem(responseBlock);
+  if (!itemRecord) {
     return {
       response: {
         httpStatus: response.status,
@@ -187,35 +192,8 @@ export async function shopeeGetItemBaseInfo(
     };
   }
 
-  const rawItem = itemList[0];
-  if (!rawItem || typeof rawItem !== 'object') {
-    return {
-      response: {
-        httpStatus: response.status,
-        ok: true,
-        message: 'Resposta OK sem itens',
-      },
-    };
-  }
-
-  const itemRecord = rawItem as Record<string, unknown>;
-  const priceInfo = itemRecord['price_info'];
-  let priceAmount: number | undefined;
-  if (Array.isArray(priceInfo) && priceInfo[0] && typeof priceInfo[0] === 'object') {
-    const currentPrice = (priceInfo[0] as Record<string, unknown>)['current_price'];
-    if (typeof currentPrice === 'number') {
-      priceAmount = currentPrice;
-    }
-  }
-
-  const image = itemRecord['image'];
-  let imageUrl: string | undefined;
-  if (image && typeof image === 'object') {
-    const imageList = (image as Record<string, unknown>)['image_url_list'];
-    if (Array.isArray(imageList) && typeof imageList[0] === 'string') {
-      imageUrl = imageList[0];
-    }
-  }
+  const priceAmount = readShopeePriceAmount(itemRecord);
+  const imageUrl = readShopeeImageUrl(itemRecord);
 
   return {
     response: {
@@ -224,8 +202,8 @@ export async function shopeeGetItemBaseInfo(
       message: 'Conectado',
     },
     item: {
-      itemId: String(itemRecord['item_id'] ?? parsed.itemId),
-      title: String(itemRecord['item_name'] ?? `Shopee Product ${externalId}`),
+      itemId: readShopeeStringField(itemRecord['item_id'], String(parsed.itemId)),
+      title: readShopeeStringField(itemRecord['item_name'], `Shopee Product ${externalId}`),
       ...(typeof priceAmount === 'number' ? { priceAmount } : {}),
       ...(imageUrl ? { imageUrl } : {}),
     },

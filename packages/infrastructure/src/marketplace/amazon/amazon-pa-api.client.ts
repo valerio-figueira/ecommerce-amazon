@@ -2,6 +2,8 @@ import { createHash, createHmac } from 'node:crypto';
 
 import type { AmazonStaticCredentials } from '@ecommerce-amazon/domain';
 
+import { parseErrorMessage, parseGetItemsResponse } from './amazon-pa-api-parsers.js';
+
 const DEFAULT_HOST = 'webservices.amazon.com.br';
 const DEFAULT_REGION = 'us-east-1';
 const SERVICE = 'ProductAdvertisingAPI';
@@ -101,84 +103,6 @@ function signRequest(
     'x-amz-target': target,
     authorization,
   };
-}
-
-function parseGetItemsResponse(body: unknown): AmazonPaApiItemSummary[] {
-  if (!body || typeof body !== 'object') return [];
-  const record = body as Record<string, unknown>;
-  const itemsResult = record['ItemsResult'];
-  if (!itemsResult || typeof itemsResult !== 'object') return [];
-
-  const items = (itemsResult as Record<string, unknown>)['Items'];
-  if (!Array.isArray(items)) return [];
-
-  const summaries: AmazonPaApiItemSummary[] = [];
-  for (const item of items) {
-    if (!item || typeof item !== 'object') continue;
-    const itemRecord = item as Record<string, unknown>;
-    const asin = String(itemRecord['ASIN'] ?? '');
-    if (!asin) continue;
-
-    const summary: AmazonPaApiItemSummary = { asin };
-    const itemInfo = itemRecord['ItemInfo'];
-    if (itemInfo && typeof itemInfo === 'object') {
-      const titleInfo = (itemInfo as Record<string, unknown>)['Title'];
-      if (titleInfo && typeof titleInfo === 'object') {
-        const title = String((titleInfo as Record<string, unknown>)['DisplayValue'] ?? '');
-        if (title) summary.title = title;
-      }
-    }
-
-    const images = itemRecord['Images'];
-    if (images && typeof images === 'object') {
-      const primary = (images as Record<string, unknown>)['Primary'];
-      if (primary && typeof primary === 'object') {
-        const large = (primary as Record<string, unknown>)['Large'];
-        if (large && typeof large === 'object') {
-          const imageUrl = String((large as Record<string, unknown>)['URL'] ?? '');
-          if (imageUrl) summary.imageUrl = imageUrl;
-        }
-      }
-    }
-
-    const offers = itemRecord['Offers'];
-    if (offers && typeof offers === 'object') {
-      const listings = (offers as Record<string, unknown>)['Listings'];
-      if (Array.isArray(listings) && listings[0] && typeof listings[0] === 'object') {
-        const listing = listings[0] as Record<string, unknown>;
-        const availability = listing['Availability'];
-        if (availability && typeof availability === 'object') {
-          const availabilityType = (availability as Record<string, unknown>)['Type'];
-          if (typeof availabilityType === 'string') {
-            summary.availability = availabilityType;
-          }
-        }
-        const price = listing['Price'];
-        if (price && typeof price === 'object') {
-          const amount = Number((price as Record<string, unknown>)['Amount'] ?? NaN);
-          if (Number.isFinite(amount)) summary.priceAmount = amount;
-          const currency = String((price as Record<string, unknown>)['Currency'] ?? '');
-          if (currency) summary.priceCurrency = currency;
-        }
-      }
-    }
-
-    summaries.push(summary);
-  }
-
-  return summaries;
-}
-
-function parseErrorMessage(body: unknown, fallback: string): string {
-  if (!body || typeof body !== 'object') return fallback;
-  const record = body as Record<string, unknown>;
-  const errors = record['Errors'];
-  if (!Array.isArray(errors) || errors.length === 0) return fallback;
-  const first = errors[0];
-  if (!first || typeof first !== 'object') return fallback;
-  const code = String((first as Record<string, unknown>)['Code'] ?? '');
-  const message = String((first as Record<string, unknown>)['Message'] ?? fallback);
-  return code ? `${code}: ${message}` : message;
 }
 
 export async function amazonPaApiGetItems(

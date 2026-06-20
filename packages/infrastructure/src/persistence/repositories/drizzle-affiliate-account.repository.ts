@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import {
   AffiliateAccount,
   EntityNotFoundError,
+  parseAffiliateAccountStatus,
   parseMarketplace,
   type AffiliateAccountRepository,
   type CreateAffiliateAccountData,
@@ -104,7 +105,7 @@ export class DrizzleAffiliateAccountRepository implements AffiliateAccountReposi
       row.id,
       parseMarketplace(row.marketplace),
       row.affiliateTag,
-      row.status,
+      parseAffiliateAccountStatus(row.status),
       row.validatedBy ?? undefined,
       row.validatedAt ?? undefined,
       row.validationNotes ?? undefined,

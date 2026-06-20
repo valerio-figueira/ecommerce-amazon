@@ -11,7 +11,6 @@ import {
 import type { DomainEventMessage } from '@ecommerce-amazon/domain';
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
 
-import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
 import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.js';
 import { parseRedisUrl } from '../cache/redis-connection.js';
 import { ConsoleEmailSender, ResendEmailSender } from '../email/email.sender.js';

@@ -11,6 +11,7 @@ import {
   SyncJobStatus,
   SyncJobType,
   OperatorRole,
+  OperatorStatus,
 } from './index.js';
 import type { Currency } from '../value-objects/index.js';
 
@@ -25,6 +26,7 @@ const ARTICLE_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(Article
 const SYNC_JOB_TYPE_VALUES: ReadonlySet<string> = new Set(Object.values(SyncJobType));
 const SYNC_JOB_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(SyncJobStatus));
 const OPERATOR_ROLE_VALUES: ReadonlySet<string> = new Set(Object.values(OperatorRole));
+const OPERATOR_STATUS_VALUES: ReadonlySet<string> = new Set(Object.values(OperatorStatus));
 const CURRENCY_VALUES: ReadonlySet<string> = new Set(['BRL', 'USD']);
 const EMBED_VARIANT_VALUES: ReadonlySet<string> = new Set(['inline', 'highlight', 'comparison']);
 
@@ -138,6 +140,14 @@ export function parseOperatorRole(value: string): OperatorRole {
   return isOperatorRole(value) ? value : invalidEnum('operator role', value);
 }
 
+export function isOperatorStatus(value: string): value is OperatorStatus {
+  return OPERATOR_STATUS_VALUES.has(value);
+}
+
+export function parseOperatorStatus(value: string): OperatorStatus {
+  return isOperatorStatus(value) ? value : invalidEnum('operator status', value);
+}
+
 import { BlockType, BlockVisibility, PageStatus, ProductSortField } from './cms.js';
 import { ComparisonSource, ComparisonStatus } from './comparison.js';
 
@@ -196,10 +206,21 @@ export function parseComparisonSource(value: string): ComparisonSource {
   return isComparisonSource(value) ? value : invalidEnum('comparison source', value);
 }
 
-import { PageKind, TeamPublicRole } from './index.js';
+import { AffiliateAccountStatus, PageKind, TeamPublicRole } from './index.js';
 
+const AFFILIATE_ACCOUNT_STATUS_VALUES: ReadonlySet<string> = new Set(
+  Object.values(AffiliateAccountStatus),
+);
 const PAGE_KIND_VALUES: ReadonlySet<string> = new Set(Object.values(PageKind));
 const TEAM_PUBLIC_ROLE_VALUES: ReadonlySet<string> = new Set(Object.values(TeamPublicRole));
+
+export function isAffiliateAccountStatus(value: string): value is AffiliateAccountStatus {
+  return AFFILIATE_ACCOUNT_STATUS_VALUES.has(value);
+}
+
+export function parseAffiliateAccountStatus(value: string): AffiliateAccountStatus {
+  return isAffiliateAccountStatus(value) ? value : invalidEnum('affiliate account status', value);
+}
 
 export function isPageKind(value: string): value is PageKind {
   return PAGE_KIND_VALUES.has(value);

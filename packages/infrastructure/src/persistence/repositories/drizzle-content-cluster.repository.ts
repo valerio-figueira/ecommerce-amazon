@@ -3,6 +3,7 @@ import { asc, and, count, eq, ne, sql } from 'drizzle-orm';
 import {
   ArticleStatus,
   ContentCluster,
+  parseArticleStatus,
   type ContentClusterRepository,
 } from '@ecommerce-amazon/domain';
 
@@ -152,7 +153,7 @@ export class DrizzleContentClusterRepository implements ContentClusterRepository
       excerpt: row.excerpt,
       coverImageUrl: row.coverImageUrl,
       publishedAt: row.publishedAt,
-      status: row.status as ArticleStatus,
+      status: parseArticleStatus(row.status),
       isPilar: pilarArticleId === row.id,
     }));
   }

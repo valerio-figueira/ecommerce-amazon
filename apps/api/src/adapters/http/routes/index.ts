@@ -19,6 +19,7 @@ import { toProductCategorySummaryDto } from '../../presenters/category.presenter
 import { toArticlePublicDetailDto } from '../../presenters/article.presenter.js';
 import { toComparisonPublicDto } from '../../presenters/comparison.presenter.js';
 import { listArticlesByCategoryQuerySchema, listPublishedArticlesQuerySchema } from '@ecommerce-amazon/shared/admin';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 import {
   sitemapEntriesQuerySchema,
   sitemapMetaQuerySchema,
@@ -66,7 +67,7 @@ function handleError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export async function registerRoutes(app: FastifyInstance, container: ApiContainer) {
+export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases } = container;
 
   const loadProductCategory = async (categoryId: string) => {
@@ -354,21 +355,22 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
 
   app.get('/articles', async (request, reply) => {
     try {
-      const query = request.query as {
-        category?: string;
-        search?: string;
-        page?: string;
-        limit?: string;
-      };
+      const rawQuery: unknown = request.query;
+      const queryRecord = isRecord(rawQuery) ? rawQuery : {};
 
-      if (query.category && !query.search && !query.page && !query.limit) {
-        const { category } = listArticlesByCategoryQuerySchema.parse({ category: query.category });
+      if (
+        typeof queryRecord['category'] === 'string' &&
+        queryRecord['search'] === undefined &&
+        queryRecord['page'] === undefined &&
+        queryRecord['limit'] === undefined
+      ) {
+        const { category } = listArticlesByCategoryQuerySchema.parse(rawQuery);
         const result = await useCases.listPublishedArticlesByCategory.execute(category);
         if (!result) return reply.status(404).send({ error: 'Category not found' });
         return reply.send(result);
       }
 
-      const parsed = listPublishedArticlesQuerySchema.parse(query);
+      const parsed = listPublishedArticlesQuerySchema.parse(rawQuery);
       const result = await useCases.listPublishedArticles.execute({
         ...(parsed.category !== undefined ? { categorySlug: parsed.category } : {}),
         ...(parsed.search !== undefined ? { search: parsed.search } : {}),
@@ -567,7 +569,7 @@ export async function registerRoutes(app: FastifyInstance, container: ApiContain
     }
   });
 
-  await registerInstitutionalRoutes(app, container);
-  await registerPublicSiteSettingsRoute(app, container);
-  await registerAdminRoutes(app, container);
+  registerInstitutionalRoutes(app, container);
+  registerPublicSiteSettingsRoute(app, container);
+  registerAdminRoutes(app, container);
 }

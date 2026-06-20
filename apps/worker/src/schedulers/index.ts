@@ -1,5 +1,4 @@
 import { Marketplace } from '@ecommerce-amazon/domain';
-import { QUEUE_NAMES } from '@ecommerce-amazon/infrastructure';
 import type {
   MarketplaceJobData,
   WorkerContainer,

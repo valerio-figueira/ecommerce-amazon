@@ -11,6 +11,7 @@ import {
   type SyncJobLogRepository,
   Marketplace,
   SyncJobLog,
+  parseArticleStatus,
   parseComparisonSource,
   parseComparisonStatus,
   parseSyncJobStatus,
@@ -291,7 +292,7 @@ export class DrizzleContentRepository implements ContentRepository {
         slug: row.slug,
         title: row.title,
         excerpt: row.excerpt,
-        status: row.status as ArticleStatus,
+        status: parseArticleStatus(row.status),
         coverImageUrl: row.coverImageUrl,
         updatedAt: row.updatedAt,
       })),
@@ -690,7 +691,7 @@ export class DrizzleSyncJobLogRepository implements SyncJobLogRepository {
 
   async findRecent(input: { limit: number; status?: string }): Promise<SyncJobLog[]> {
     const conditions = input.status
-      ? [eq(schema.syncJobLogs.status, input.status as typeof schema.syncJobLogs.$inferSelect.status)]
+      ? [eq(schema.syncJobLogs.status, parseSyncJobStatus(input.status))]
       : [];
 
     const rows = await this.db

@@ -1,14 +1,14 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
-import { ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 
 import {
   AuthenticationError,
   DomainError,
   EntityNotFoundError,
-  OperatorRole,
-  OperatorStatus,
   ValidationError,
   parseMarketplace,
+  parseOperatorRole,
+  parseOperatorStatus,
 } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import {
@@ -39,6 +39,9 @@ import {
 
 const connectivityTestRateLimiter = createConnectivityTestRateLimiter();
 
+const uuidRouteParamsSchema = z.object({ id: z.string().uuid() });
+const marketplaceRouteParamsSchema = z.object({ marketplace: z.string() });
+
 function resolveClientIp(request: { ip: string; headers: Record<string, unknown> }): string {
   const forwarded = request.headers['x-forwarded-for'];
   if (typeof forwarded === 'string' && forwarded.length > 0) {
@@ -68,10 +71,10 @@ function handleSettingsError(error: unknown, reply: FastifyReply) {
   return handleAdminError(error, reply);
 }
 
-export async function registerAdminSettingsRoutes(
+export function registerAdminSettingsRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
 
   app.get('/admin/affiliate-accounts', async (request, reply) => {
@@ -111,7 +114,7 @@ export async function registerAdminSettingsRoutes(
         return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
       }
 
-      const params = request.params as { id: string };
+      const params = uuidRouteParamsSchema.parse(request.params);
       const body = updateAffiliateAccountBodySchema.parse(request.body);
       const result = await useCases.updateAffiliateAccount.execute({
         accountId: params.id,
@@ -133,7 +136,7 @@ export async function registerAdminSettingsRoutes(
   app.delete('/admin/affiliate-accounts/:id', async (request, reply) => {
     try {
       await requireAdminOperator(request, container);
-      const params = request.params as { id: string };
+      const params = uuidRouteParamsSchema.parse(request.params);
       const result = await useCases.deleteAffiliateAccount.execute({
         accountId: params.id,
       });
@@ -161,7 +164,7 @@ export async function registerAdminSettingsRoutes(
         name: body.name,
         email: body.email,
         password: body.password,
-        role: body.role as OperatorRole,
+        role: parseOperatorRole(body.role),
       });
       return reply.status(201).send(result);
     } catch (error) {
@@ -177,13 +180,13 @@ export async function registerAdminSettingsRoutes(
         return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
       }
 
-      const params = request.params as { id: string };
+      const params = uuidRouteParamsSchema.parse(request.params);
       const body = updateOperatorAccessBodySchema.parse(request.body);
       const result = await useCases.updateOperatorAccess.execute({
         operatorId: params.id,
         actorId,
-        ...(body.role !== undefined ? { role: body.role as OperatorRole } : {}),
-        ...(body.status !== undefined ? { status: body.status as OperatorStatus } : {}),
+        ...(body.role !== undefined ? { role: parseOperatorRole(body.role) } : {}),
+        ...(body.status !== undefined ? { status: parseOperatorStatus(body.status) } : {}),
       });
 
       return reply.send(result);
@@ -287,7 +290,7 @@ export async function registerAdminSettingsRoutes(
         return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
       }
 
-      const params = request.params as { marketplace: string };
+      const params = marketplaceRouteParamsSchema.parse(request.params);
       const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
       if (marketplace === 'mercadolivre_br') {
         return reply.status(400).send({
@@ -312,7 +315,7 @@ export async function registerAdminSettingsRoutes(
   app.delete('/admin/marketplace-credentials/:marketplace', async (request, reply) => {
     try {
       await requireAdminOperator(request, container);
-      const params = request.params as { marketplace: string };
+      const params = marketplaceRouteParamsSchema.parse(request.params);
       const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
       if (marketplace === 'mercadolivre_br') {
         return reply.status(400).send({
@@ -344,7 +347,7 @@ export async function registerAdminSettingsRoutes(
 
       connectivityTestRateLimiter.recordAttempt(clientIp);
 
-      const params = request.params as { marketplace: string };
+      const params = marketplaceRouteParamsSchema.parse(request.params);
       const marketplace = marketplaceCredentialMarketplaceSchema.parse(params.marketplace);
       if (marketplace === 'mercadolivre_br') {
         return reply.status(400).send({
@@ -373,10 +376,10 @@ export async function registerAdminSettingsRoutes(
   });
 }
 
-export async function registerPublicSiteSettingsRoute(
+export function registerPublicSiteSettingsRoute(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
 
   app.get('/site-settings/public', async (_request, reply) => {

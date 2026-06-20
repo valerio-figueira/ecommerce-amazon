@@ -16,7 +16,7 @@ export function buildProductCanonicalUrl(siteBaseUrl: string, slug: string): str
 export function resolveProductCanonicalUrl(
   slug: string,
   siteBaseUrl: string,
-  editorialOverride?: string | null | undefined,
+  editorialOverride?: string | null,
 ): string {
   const trimmed = editorialOverride?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {

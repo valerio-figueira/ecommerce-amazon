@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import type { Redis } from 'ioredis';
 
-import { ClickOrigin } from '@ecommerce-amazon/domain';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 import type {
   ClickEventPayload,
   EngagementEventPayload,
@@ -28,11 +28,11 @@ export function hashPagePath(pagePath: string): string {
 
 function isArticleAffiliateClick(event: ClickEventPayload): boolean {
   if (!event.articleId) return false;
-  return event.origin === ClickOrigin.EMBED || event.origin === ClickOrigin.COMPARISON;
+  return event.origin === 'embed' || event.origin === 'comparador';
 }
 
 function isDashboardClick(event: ClickEventPayload): boolean {
-  return event.origin !== ClickOrigin.REDIRECT_GO;
+  return event.origin !== 'redirect_go';
 }
 
 function engagementArticleKey(eventType: string, articleId: string): string {
@@ -482,7 +482,29 @@ function listDaysInRange(from: Date, to: Date): string[] {
 
 function parseClickEvent(raw: string): ClickEventPayload | null {
   try {
-    return JSON.parse(raw) as ClickEventPayload;
+    const json: unknown = JSON.parse(raw);
+    if (!isRecord(json)) {
+      return null;
+    }
+    if (typeof json['productId'] !== 'string' || typeof json['origin'] !== 'string') {
+      return null;
+    }
+    if (typeof json['occurredAt'] !== 'string') {
+      return null;
+    }
+    return {
+      productId: json['productId'],
+      origin: json['origin'],
+      ...(typeof json['marketplace'] === 'string' ? { marketplace: json['marketplace'] } : {}),
+      ...(typeof json['sessionId'] === 'string' ? { sessionId: json['sessionId'] } : {}),
+      ...(typeof json['blockId'] === 'string' ? { blockId: json['blockId'] } : {}),
+      ...(typeof json['articleId'] === 'string' ? { articleId: json['articleId'] } : {}),
+      ...(typeof json['collectionId'] === 'string' ? { collectionId: json['collectionId'] } : {}),
+      ...(typeof json['placement'] === 'string' ? { placement: json['placement'] } : {}),
+      ...(typeof json['pagePath'] === 'string' ? { pagePath: json['pagePath'] } : {}),
+      ...(typeof json['referrerPath'] === 'string' ? { referrerPath: json['referrerPath'] } : {}),
+      occurredAt: json['occurredAt'],
+    };
   } catch {
     return null;
   }
@@ -490,7 +512,28 @@ function parseClickEvent(raw: string): ClickEventPayload | null {
 
 function parseEngagementEvent(raw: string): EngagementEventPayload | null {
   try {
-    return JSON.parse(raw) as EngagementEventPayload;
+    const json: unknown = JSON.parse(raw);
+    if (!isRecord(json)) {
+      return null;
+    }
+    if (
+      typeof json['eventType'] !== 'string' ||
+      typeof json['articleId'] !== 'string' ||
+      typeof json['pagePath'] !== 'string' ||
+      typeof json['occurredAt'] !== 'string'
+    ) {
+      return null;
+    }
+    return {
+      eventType: json['eventType'],
+      articleId: json['articleId'],
+      pagePath: json['pagePath'],
+      occurredAt: json['occurredAt'],
+      ...(typeof json['placement'] === 'string' ? { placement: json['placement'] } : {}),
+      ...(typeof json['blockId'] === 'string' ? { blockId: json['blockId'] } : {}),
+      ...(typeof json['referrerPath'] === 'string' ? { referrerPath: json['referrerPath'] } : {}),
+      ...(typeof json['sessionId'] === 'string' ? { sessionId: json['sessionId'] } : {}),
+    };
   } catch {
     return null;
   }

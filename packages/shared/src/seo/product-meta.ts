@@ -13,7 +13,7 @@ export function buildProductMetaDescription(titleClean: string): string {
 /** Editorial override: DB value when set, otherwise automated template. */
 export function resolveProductMetaTitle(
   titleClean: string,
-  editorialOverride?: string | null | undefined,
+  editorialOverride?: string | null,
 ): string {
   const trimmed = editorialOverride?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {
@@ -25,7 +25,7 @@ export function resolveProductMetaTitle(
 /** Editorial override: DB value when set, otherwise automated template. */
 export function resolveProductMetaDescription(
   titleClean: string,
-  editorialOverride?: string | null | undefined,
+  editorialOverride?: string | null,
 ): string {
   const trimmed = editorialOverride?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {

@@ -56,7 +56,7 @@ async function findBlockDto(
   return layout.value.blocks.find((block) => block.id === blockId) ?? null;
 }
 
-export async function registerAdminCmsRoutes(app: FastifyInstance, container: ApiContainer) {
+export function registerAdminCmsRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases } = container;
 
   app.get('/admin/pages', async (_request, reply) => {

@@ -122,14 +122,16 @@ export function legacyRecordToSpecGroups(record: Record<string, string>): SpecGr
   ]);
 }
 
+import { isRecord } from '../utils/type-guards.js';
+
 export function parseSpecsNormalizedFromDb(value: unknown): SpecGroup[] {
   if (Array.isArray(value)) {
     const parsed = specsNormalizedSchema.safeParse(value);
     return parsed.success ? normalizeSpecsGroups(parsed.data) : [];
   }
 
-  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-    const entries = Object.entries(value as Record<string, unknown>);
+  if (isRecord(value)) {
+    const entries = Object.entries(value);
     const record: Record<string, string> = {};
 
     for (const [key, entryValue] of entries) {

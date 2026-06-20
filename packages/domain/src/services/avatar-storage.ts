@@ -1,5 +1,3 @@
-import { ADMIN_AVATAR_KEY_PREFIX } from '../gateways/object-storage.js';
-
 export const ADMIN_AVATAR_KEY_REGEX =
   /^admin-avatars\/\d{4}\/\d{2}\/avatar-\d{8}-\d{6}-[a-f0-9]{32}\.[a-z0-9]+$/;
 

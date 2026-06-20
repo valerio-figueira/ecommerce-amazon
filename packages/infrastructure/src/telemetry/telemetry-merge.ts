@@ -12,8 +12,11 @@ import type {
   PlacementClickBreakdown,
   TopClickedProduct,
 } from '@ecommerce-amazon/domain';
-import { ClickOrigin } from '@ecommerce-amazon/domain';
 import { EngagementEventType } from '@ecommerce-amazon/shared/analytics';
+
+const REDIRECT_GO_ORIGIN = 'redirect_go';
+const EMBED_ORIGIN = 'embed';
+const COMPARISON_ORIGIN = 'comparador';
 
 export function mergeOriginBreakdown(
   pgItems: OriginClickBreakdown[],
@@ -24,7 +27,7 @@ export function mergeOriginBreakdown(
     counts.set(item.origin, item.count);
   }
   for (const [origin, count] of Object.entries(pending.clicksByOrigin)) {
-    if (origin === ClickOrigin.REDIRECT_GO) continue;
+    if (origin === REDIRECT_GO_ORIGIN) continue;
     counts.set(origin, (counts.get(origin) ?? 0) + count);
   }
 
@@ -113,7 +116,7 @@ export function mergeOriginTrend(
     counts.set(`${item.date}:${item.origin}`, item.count);
   }
   for (const item of pending.clicksTrendByOrigin) {
-    if (item.origin === ClickOrigin.REDIRECT_GO) continue;
+    if (item.origin === REDIRECT_GO_ORIGIN) continue;
     const key = `${item.date}:${item.origin}`;
     counts.set(key, (counts.get(key) ?? 0) + item.count);
   }
@@ -208,12 +211,12 @@ export function mergeConvertingArticles(
     if (separatorIndex === -1) continue;
     const articleId = compositeKey.slice(0, separatorIndex);
     const origin = compositeKey.slice(separatorIndex + 1);
-    if (origin !== ClickOrigin.EMBED && origin !== ClickOrigin.COMPARISON) continue;
+    if (origin !== EMBED_ORIGIN && origin !== COMPARISON_ORIGIN) continue;
 
     const existing = byArticle.get(articleId);
     if (existing) {
       existing.clickCount += count;
-      if (origin === ClickOrigin.EMBED) {
+      if (origin === EMBED_ORIGIN) {
         existing.embedClickCount += count;
       } else {
         existing.comparadorClickCount += count;
@@ -226,8 +229,8 @@ export function mergeConvertingArticles(
       slug: '—',
       title: 'Evento pendente',
       clickCount: count,
-      embedClickCount: origin === ClickOrigin.EMBED ? count : 0,
-      comparadorClickCount: origin === ClickOrigin.COMPARISON ? count : 0,
+      embedClickCount: origin === EMBED_ORIGIN ? count : 0,
+      comparadorClickCount: origin === COMPARISON_ORIGIN ? count : 0,
     });
   }
 

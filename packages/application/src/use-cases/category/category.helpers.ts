@@ -1,7 +1,6 @@
 import {
   Category,
   ConflictError,
-  EntityNotFoundError,
   MAX_CATEGORY_DEPTH,
   ValidationError,
   type CategoryRepository,

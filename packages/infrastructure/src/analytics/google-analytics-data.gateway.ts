@@ -1,6 +1,7 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
 import type { Ga4AnalyticsGateway, Ga4TrafficReport } from '@ecommerce-amazon/domain';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 
 function formatGaDate(date: Date): string {
   return date.toISOString().slice(0, 10).replace(/-/g, '');
@@ -24,8 +25,11 @@ function readGa4Config(): Ga4GatewayConfig | null {
   }
 
   try {
-    const credentials = JSON.parse(rawCredentials) as Record<string, unknown>;
-    return { propertyId, credentials };
+    const parsed: unknown = JSON.parse(rawCredentials);
+    if (!isRecord(parsed)) {
+      return null;
+    }
+    return { propertyId, credentials: parsed };
   } catch {
     return null;
   }
@@ -121,11 +125,11 @@ export class NoOpGa4AnalyticsGateway implements Ga4AnalyticsGateway {
     return false;
   }
 
-  async getTrafficAcquisition(): Promise<Ga4TrafficReport | null> {
-    return null;
+  getTrafficAcquisition(): Promise<Ga4TrafficReport | null> {
+    return Promise.resolve(null);
   }
 
-  async getEventCountsByParam(): Promise<Record<string, number>> {
-    return {};
+  getEventCountsByParam(): Promise<Record<string, number>> {
+    return Promise.resolve({});
   }
 }

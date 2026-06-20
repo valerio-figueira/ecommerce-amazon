@@ -4,13 +4,12 @@ import { ZodError } from 'zod';
 import {
   DomainError,
   EntityNotFoundError,
+  TeamPublicRole,
   ValidationError,
+  parseTeamPublicRole,
 } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
-import {
-  updateOperatorProfileBodySchema,
-} from '@ecommerce-amazon/shared/admin';
-import { TeamPublicRole } from '@ecommerce-amazon/domain';
+import { updateOperatorProfileBodySchema } from '@ecommerce-amazon/shared/admin';
 
 function handleAdminProfileError(error: unknown, reply: FastifyReply) {
   if (error instanceof ZodError) {
@@ -28,10 +27,10 @@ function handleAdminProfileError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export async function registerAdminProfileRoutes(
+export function registerAdminProfileRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
 
   app.get('/admin/profile', async (request, reply) => {
@@ -71,7 +70,7 @@ export async function registerAdminProfileRoutes(
           : null,
         showOnTeam: body.showOnTeam ?? false,
         teamSortOrder: body.teamSortOrder ?? null,
-        publicTeamRole: (body.publicTeamRole ?? TeamPublicRole.MEMBER) as TeamPublicRole,
+        publicTeamRole: parseTeamPublicRole(body.publicTeamRole ?? TeamPublicRole.MEMBER),
       });
 
       return reply.send(result);

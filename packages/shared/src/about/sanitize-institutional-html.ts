@@ -1,14 +1,18 @@
 import DOMPurify from 'isomorphic-dompurify';
 
+import { isRecord } from '../utils/type-guards.js';
+
 const ALLOWED_TAGS = ['p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li'] as const;
 const ALLOWED_ATTR = ['href', 'title', 'target', 'rel'] as const;
 
 export function sanitizeInstitutionalHtml(raw: string): string {
-  return DOMPurify.sanitize(raw, {
-    ALLOWED_TAGS: [...ALLOWED_TAGS],
-    ALLOWED_ATTR: [...ALLOWED_ATTR],
-    ALLOW_DATA_ATTR: false,
-  });
+  return String(
+    DOMPurify.sanitize(raw, {
+      ALLOWED_TAGS: [...ALLOWED_TAGS],
+      ALLOWED_ATTR: [...ALLOWED_ATTR],
+      ALLOW_DATA_ATTR: false,
+    }),
+  );
 }
 
 export function sanitizeInstitutionalPlainText(raw: string): string {
@@ -19,28 +23,30 @@ export function sanitizeInstitutionalPlainText(raw: string): string {
   return sanitizeInstitutionalHtml(trimmed);
 }
 
-export function sanitizeAboutPageContentStrings<T extends Record<string, unknown>>(content: T): T {
-  if (typeof content !== 'object' || content === null) {
-    return content;
-  }
+function sanitizeRecord(value: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = { ...value };
 
-  const result: Record<string, unknown> = { ...content };
-
-  for (const [key, value] of Object.entries(result)) {
-    if (typeof value === 'string') {
-      result[key] = sanitizeInstitutionalPlainText(value);
-    } else if (Array.isArray(value)) {
-      result[key] = value.map((item) =>
-        typeof item === 'string'
-          ? sanitizeInstitutionalPlainText(item)
-          : typeof item === 'object' && item !== null
-            ? sanitizeAboutPageContentStrings(item as Record<string, unknown>)
-            : item,
+  for (const [key, item] of Object.entries(result)) {
+    if (typeof item === 'string') {
+      result[key] = sanitizeInstitutionalPlainText(item);
+    } else if (Array.isArray(item)) {
+      result[key] = item.map((entry: string | Record<string, unknown>) =>
+        typeof entry === 'string'
+          ? sanitizeInstitutionalPlainText(entry)
+          : isRecord(entry)
+            ? sanitizeRecord(entry)
+            : entry,
       );
-    } else if (typeof value === 'object' && value !== null) {
-      result[key] = sanitizeAboutPageContentStrings(value as Record<string, unknown>);
+    } else if (isRecord(item)) {
+      result[key] = sanitizeRecord(item);
     }
   }
 
-  return result as T;
+  return result;
+}
+
+export function sanitizeAboutPageContentRecord(
+  content: Record<string, unknown>,
+): Record<string, unknown> {
+  return isRecord(content) ? sanitizeRecord(content) : content;
 }

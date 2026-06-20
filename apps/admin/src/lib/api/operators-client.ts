@@ -1,7 +1,9 @@
 'use client';
 
 import { adminClientFetch } from '@/lib/api/admin-client';
+import { readClientErrorMessage } from '@/lib/api/read-client-error';
 import {
+  operatorSummarySchema,
   operatorsListResponseSchema,
   type CreateOperatorBody,
   type OperatorSummary,
@@ -24,10 +26,10 @@ export async function createOperatorClient(body: CreateOperatorBody): Promise<Op
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao criar operador');
+    throw new Error(await readClientErrorMessage(response, 'Falha ao criar operador'));
   }
-  return (await response.json()) as OperatorSummary;
+  const payload: unknown = await response.json();
+  return operatorSummarySchema.parse(payload);
 }
 
 export async function updateOperatorAccessClient(
@@ -40,10 +42,10 @@ export async function updateOperatorAccessClient(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao atualizar operador');
+    throw new Error(await readClientErrorMessage(response, 'Falha ao atualizar operador'));
   }
-  return (await response.json()) as OperatorSummary;
+  const payload: unknown = await response.json();
+  return operatorSummarySchema.parse(payload);
 }
 
 export async function changeOperatorPasswordClient(body: {
@@ -56,7 +58,6 @@ export async function changeOperatorPasswordClient(body: {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? 'Falha ao alterar senha');
+    throw new Error(await readClientErrorMessage(response, 'Falha ao alterar senha'));
   }
 }

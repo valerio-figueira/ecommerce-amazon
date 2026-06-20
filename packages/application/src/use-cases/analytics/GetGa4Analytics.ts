@@ -8,6 +8,46 @@ import { resolveAnalyticsDateRange } from './GetClickAnalytics.js';
 
 const GA4_CACHE_TTL_SECONDS = 30 * 60;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type Ga4TrafficCachePayload = {
+  totalPageViews: number;
+  items: { channel: string; pageViews: number; sharePercent: number }[];
+};
+
+function parseGa4TrafficCache(value: unknown): Ga4TrafficCachePayload | null {
+  if (!isRecord(value) || typeof value.totalPageViews !== 'number' || !Array.isArray(value.items)) {
+    return null;
+  }
+
+  const items = value.items.filter(
+    (item): item is Ga4TrafficCachePayload['items'][number] =>
+      isRecord(item) &&
+      typeof item.channel === 'string' &&
+      typeof item.pageViews === 'number' &&
+      typeof item.sharePercent === 'number',
+  );
+
+  return {
+    totalPageViews: value.totalPageViews,
+    items,
+  };
+}
+
+function parseGa4ViewsByOrigin(value: unknown): Record<string, number> | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const entries = Object.entries(value).filter(
+    (entry): entry is [string, number] => typeof entry[1] === 'number',
+  );
+
+  return Object.fromEntries(entries);
+}
+
 export class GetGa4TrafficAcquisition {
   constructor(
     private readonly ga4Gateway: Ga4AnalyticsGateway,
@@ -22,12 +62,13 @@ export class GetGa4TrafficAcquisition {
     const { from, to } = resolveAnalyticsDateRange(input);
     const cacheKey = `ga4:traffic:${from.toISOString()}:${to.toISOString()}`;
     const cached = await this.cache.get(cacheKey);
-    if (cached && typeof cached === 'object' && cached !== null && 'totalPageViews' in cached) {
+    const cachedPayload = parseGa4TrafficCache(cached);
+    if (cachedPayload) {
       return {
         configured: true as const,
         from: from.toISOString(),
         to: to.toISOString(),
-        ...(cached as { totalPageViews: number; items: { channel: string; pageViews: number; sharePercent: number }[] }),
+        ...cachedPayload,
       };
     }
 
@@ -85,8 +126,9 @@ export class GetCtrByOrigin {
     const cacheKey = `ga4:ctr:${from.toISOString()}:${to.toISOString()}`;
     let ga4ViewsByOrigin: Record<string, number> = {};
     const cached = await this.cache.get(cacheKey);
-    if (cached && typeof cached === 'object' && cached !== null) {
-      ga4ViewsByOrigin = cached as Record<string, number>;
+    const parsedCache = parseGa4ViewsByOrigin(cached);
+    if (parsedCache) {
+      ga4ViewsByOrigin = parsedCache;
     } else {
       ga4ViewsByOrigin = await this.ga4Gateway.getEventCountsByParam(
         'affiliate_click',
@@ -99,7 +141,7 @@ export class GetCtrByOrigin {
 
     const items = originClicks.map((row) => {
       const views = ga4ViewsByOrigin[row.origin] ?? 0;
-      const ctrPercent = views > 0 ? Math.round((row.count / views) * 1000) / 10 : null;
+      const ctrPercent = views > 0 ? Number(((row.count / views) * 100).toFixed(2)) : null;
       return {
         origin: row.origin,
         clicks: row.count,

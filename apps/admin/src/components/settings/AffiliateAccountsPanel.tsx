@@ -38,7 +38,10 @@ import {
   listAffiliateAccountsClient,
   updateAffiliateAccountClient,
 } from '@/lib/api/affiliate-accounts-client';
-import type { AffiliateAccountDto } from '@ecommerce-amazon/shared/admin';
+import type {
+  AffiliateAccountDto,
+  CreateAffiliateAccountBody,
+} from '@ecommerce-amazon/shared/admin';
 
 const MARKETPLACE_LABELS: Record<string, string> = {
   amazon_br: 'Amazon BR',
@@ -80,7 +83,7 @@ export function AffiliateAccountsPanel({
   const [checklistConfirmed, setChecklistConfirmed] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [newMarketplace, setNewMarketplace] = useState<string>('');
+  const [newMarketplace, setNewMarketplace] = useState<CreateAffiliateAccountBody['marketplace'] | ''>('');
   const [newTag, setNewTag] = useState('');
   const [creating, setCreating] = useState(false);
 
@@ -171,7 +174,7 @@ export function AffiliateAccountsPanel({
     setCreating(true);
     try {
       await createAffiliateAccountClient({
-        marketplace: newMarketplace as 'amazon_br' | 'shopee_br' | 'mercadolivre_br',
+        marketplace: newMarketplace,
         affiliateTag: newTag.trim(),
       });
       adminToast.success('Conta de afiliado criada.');

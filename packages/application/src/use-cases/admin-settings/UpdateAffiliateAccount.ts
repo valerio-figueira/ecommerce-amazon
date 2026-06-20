@@ -2,6 +2,7 @@ import {
   AffiliateAccountStatus,
   EntityNotFoundError,
   ValidationError,
+  parseAffiliateAccountStatus,
   type AffiliateAccountRepository,
 } from '@ecommerce-amazon/domain';
 
@@ -30,7 +31,10 @@ export class UpdateAffiliateAccount {
       throw new EntityNotFoundError('AffiliateAccount', input.accountId);
     }
 
-    const nextStatus = input.status ?? account.status;
+    const nextStatus =
+      input.status !== undefined
+        ? parseAffiliateAccountStatus(input.status)
+        : account.status;
 
     if (
       nextStatus === AffiliateAccountStatus.ACTIVE &&
@@ -44,7 +48,7 @@ export class UpdateAffiliateAccount {
 
     await this.affiliateAccountRepository.update(input.accountId, {
       ...(input.affiliateTag !== undefined ? { affiliateTag: input.affiliateTag } : {}),
-      ...(input.status !== undefined ? { status: input.status } : {}),
+      ...(input.status !== undefined ? { status: nextStatus } : {}),
       ...(input.validationNotes !== undefined ? { validationNotes: input.validationNotes } : {}),
       ...(nextStatus === AffiliateAccountStatus.ACTIVE
         ? {

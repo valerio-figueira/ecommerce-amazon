@@ -27,9 +27,10 @@ function resolvePublicBaseUrl(env: Env): string {
 }
 
 export function createObjectStorage(env: Env): ObjectStorage {
+  const storageDriver = env.STORAGE_DRIVER;
   const publicBaseUrl = resolvePublicBaseUrl(env);
 
-  switch (env.STORAGE_DRIVER) {
+  switch (storageDriver) {
     case 'filesystem':
       return new FilesystemObjectStorage(env.STORAGE_LOCAL_ROOT, publicBaseUrl);
 
@@ -63,7 +64,12 @@ export function createObjectStorage(env: Env): ObjectStorage {
       return new GcsObjectStorage(gcsConfig);
     }
 
-    default:
-      throw new DomainError(`Unsupported STORAGE_DRIVER: ${env.STORAGE_DRIVER}`, 'STORAGE_CONFIG');
+    default: {
+      const unknownDriver: unknown = storageDriver;
+      throw new DomainError(
+        `Unsupported STORAGE_DRIVER: ${String(unknownDriver)}`,
+        'STORAGE_CONFIG',
+      );
+    }
   }
 }

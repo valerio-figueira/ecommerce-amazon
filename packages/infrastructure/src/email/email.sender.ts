@@ -4,11 +4,12 @@ import type { Logger } from '@ecommerce-amazon/shared';
 export class ConsoleEmailSender implements EmailSender {
   constructor(private readonly logger: Logger) {}
 
-  async send(params: { to: string; subject: string; html: string }): Promise<void> {
+  send(params: { to: string; subject: string; html: string }): Promise<void> {
     this.logger.info('Email sent (console)', {
       to: params.to,
       subject: params.subject,
     });
+    return Promise.resolve();
   }
 }
 

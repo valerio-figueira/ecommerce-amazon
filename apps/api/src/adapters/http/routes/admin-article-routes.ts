@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
-import { ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 
 import {
   ConflictError,
@@ -34,15 +34,19 @@ function handleAdminArticleError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export async function registerAdminArticleRoutes(
+export function registerAdminArticleRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
+
+  const articlesListQuerySchema = z.object({
+    picker: z.literal('true').optional(),
+  });
 
   app.get('/admin/articles', async (request, reply) => {
     try {
-      const query = request.query as { picker?: string };
+      const query = articlesListQuerySchema.parse(request.query);
       if (query.picker === 'true') {
         const result = await useCases.listAdminArticles.executePublishedPicker();
         return reply.send(result);

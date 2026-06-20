@@ -35,7 +35,7 @@ export class RedisBufferedClickEventRepository implements ClickEventRepository {
     });
   }
 
-  async recordBatch(
+  recordBatch(
     _events: Array<{
       productId: string;
       origin: string;
@@ -49,7 +49,9 @@ export class RedisBufferedClickEventRepository implements ClickEventRepository {
       occurredAt: Date;
     }>,
   ): Promise<void> {
-    throw new Error('RedisBufferedClickEventRepository does not support recordBatch');
+    return Promise.reject(
+      new Error('RedisBufferedClickEventRepository does not support recordBatch'),
+    );
   }
 }
 
@@ -78,7 +80,7 @@ export class RedisBufferedEngagementEventRepository implements EngagementEventRe
     });
   }
 
-  async recordBatch(
+  recordBatch(
     _events: Array<{
       eventType: string;
       articleId: string;
@@ -90,6 +92,8 @@ export class RedisBufferedEngagementEventRepository implements EngagementEventRe
       occurredAt: Date;
     }>,
   ): Promise<void> {
-    throw new Error('RedisBufferedEngagementEventRepository does not support recordBatch');
+    return Promise.reject(
+      new Error('RedisBufferedEngagementEventRepository does not support recordBatch'),
+    );
   }
 }

@@ -2,6 +2,7 @@ import {
   Marketplace,
   EntityNotFoundError,
   ValidationError,
+  parseMarketplace,
   type MarketplaceApiCredentialRepository,
 } from '@ecommerce-amazon/domain';
 
@@ -39,7 +40,9 @@ export class DeleteMarketplaceCredentials {
 
     const status = new GetMarketplaceCredentialsStatus(this.repository);
     const listed = await status.execute();
-    const item = listed.items.find((entry) => entry.marketplace === input.marketplace);
+    const item = listed.items.find(
+      (entry) => parseMarketplace(entry.marketplace) === input.marketplace,
+    );
     if (!item) {
       throw new Error('Failed to load marketplace credentials status after delete');
     }

@@ -42,7 +42,7 @@ export async function buildServer() {
     });
   }
 
-  await registerRoutes(app, container);
+  registerRoutes(app, container);
 
   return { app, container };
 }

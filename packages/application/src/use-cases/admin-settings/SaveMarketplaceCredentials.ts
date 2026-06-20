@@ -1,6 +1,7 @@
 import {
   Marketplace,
   ValidationError,
+  parseMarketplace,
   type CredentialCipher,
   type MarketplaceApiCredentialRepository,
 } from '@ecommerce-amazon/domain';
@@ -10,6 +11,7 @@ import type {
 } from '@ecommerce-amazon/shared/admin';
 
 import type { MarketplaceCredentialResolver } from '../../services/MarketplaceCredentialResolver.js';
+import { buildPublicMetadata } from '../../services/marketplace-credentials.helpers.js';
 import { GetMarketplaceCredentialsStatus } from './GetMarketplaceCredentialsStatus.js';
 
 export type SaveMarketplaceCredentialsInput = {
@@ -17,29 +19,6 @@ export type SaveMarketplaceCredentialsInput = {
   credentials: SaveAmazonCredentialsBody | SaveShopeeCredentialsBody;
   updatedBy: string;
 };
-
-function buildPublicMetadata(
-  marketplace: Marketplace,
-  credentials: SaveAmazonCredentialsBody | SaveShopeeCredentialsBody,
-): Record<string, unknown> {
-  if (marketplace === Marketplace.AMAZON_BR) {
-    const amazon = credentials as SaveAmazonCredentialsBody;
-    return {
-      accessKeyIdPrefix: amazon.accessKeyId.slice(0, 4),
-      accessKeyIdLast4: amazon.accessKeyId.slice(-4),
-      host: amazon.host ?? 'webservices.amazon.com.br',
-      region: amazon.region ?? 'us-east-1',
-      configuredAt: new Date().toISOString(),
-    };
-  }
-
-  const shopee = credentials as SaveShopeeCredentialsBody;
-  return {
-    partnerId: shopee.partnerId,
-    partnerKeyLast4: shopee.partnerKey.slice(-4),
-    configuredAt: new Date().toISOString(),
-  };
-}
 
 export class SaveMarketplaceCredentials {
   constructor(
@@ -72,7 +51,9 @@ export class SaveMarketplaceCredentials {
 
     const status = new GetMarketplaceCredentialsStatus(this.repository);
     const listed = await status.execute();
-    const item = listed.items.find((entry) => entry.marketplace === input.marketplace);
+    const item = listed.items.find(
+      (entry) => parseMarketplace(entry.marketplace) === input.marketplace,
+    );
     if (!item) {
       throw new Error('Failed to load saved marketplace credentials status');
     }

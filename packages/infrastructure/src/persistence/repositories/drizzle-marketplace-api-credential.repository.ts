@@ -6,14 +6,17 @@ import {
   type Marketplace,
   type MarketplaceApiCredentialRecord,
   type MarketplaceApiCredentialRepository,
-  type MarketplaceCredentialAuthType,
-  type MarketplaceCredentialHealthStatus,
   type UpdateMarketplaceApiCredentialHealthData,
   type UpsertMarketplaceApiCredentialData,
 } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
+
+import {
+  parseMarketplaceCredentialAuthType,
+  parseMarketplaceCredentialHealthStatus,
+} from './marketplace-credential-parsers.js';
 
 export class DrizzleMarketplaceApiCredentialRepository implements MarketplaceApiCredentialRepository {
   constructor(private readonly db: DrizzleClient) {}
@@ -119,10 +122,10 @@ export class DrizzleMarketplaceApiCredentialRepository implements MarketplaceApi
     return {
       id: row.id,
       marketplace: parseMarketplace(row.marketplace),
-      authType: row.authType as MarketplaceCredentialAuthType,
+      authType: parseMarketplaceCredentialAuthType(row.authType),
       credentialsEncrypted: row.credentialsEncrypted,
       publicMetadata: row.publicMetadata ?? {},
-      healthStatus: row.healthStatus as MarketplaceCredentialHealthStatus,
+      healthStatus: parseMarketplaceCredentialHealthStatus(row.healthStatus),
       ...(row.healthMessage ? { healthMessage: row.healthMessage } : {}),
       ...(row.lastHealthCheckAt ? { lastHealthCheckAt: row.lastHealthCheckAt } : {}),
       ...(row.lastUsedAt ? { lastUsedAt: row.lastUsedAt } : {}),

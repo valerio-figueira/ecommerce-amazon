@@ -1,6 +1,7 @@
 import { adminMarketplaceLabel } from '@/lib/product-admin-format';
 import type { SpecGroup } from '@ecommerce-amazon/shared/product';
 import { flattenSpecGroups } from '@ecommerce-amazon/shared/product';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 
 export type ProductLlmPromptInput = {
   titleClean: string;
@@ -157,11 +158,11 @@ export function parseProductSeoLlmResponse(raw: string): ProductSeoLlmResponse {
     throw new Error('JSON inválido. Verifique se a IA retornou apenas o objeto metaTitle/metaDescription.');
   }
 
-  if (!parsed || typeof parsed !== 'object') {
+  if (!isRecord(parsed)) {
     throw new Error('Formato inesperado na resposta da IA.');
   }
 
-  const record = parsed as Record<string, unknown>;
+  const record = parsed;
   const metaTitleRaw =
     typeof record['metaTitle'] === 'string'
       ? record['metaTitle']

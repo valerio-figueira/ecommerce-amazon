@@ -17,6 +17,7 @@ import type {
   AffiliateAccountDto,
   MarketplaceCredentialStatusDto,
 } from '@ecommerce-amazon/shared/admin';
+import { readRecordString } from '@ecommerce-amazon/shared/utils/type-guards';
 
 import { MaskedSecretInput } from './MaskedSecretInput';
 
@@ -301,7 +302,7 @@ export function MarketplaceIntegrationsPanel({
                 onChange={(event) => setAmazonAccessKeyId(event.target.value)}
                 placeholder={
                   amazonMetadata?.['accessKeyIdLast4']
-                    ? `••••${String(amazonMetadata['accessKeyIdLast4'])}`
+                    ? `••••${readRecordString(amazonMetadata, 'accessKeyIdLast4')}`
                     : 'AKIA...'
                 }
                 disabled={!canManage}
@@ -397,7 +398,7 @@ export function MarketplaceIntegrationsPanel({
                 onChange={(event) => setShopeePartnerId(event.target.value)}
                 placeholder={
                   shopeeStatus?.publicMetadata?.['partnerId']
-                    ? String(shopeeStatus.publicMetadata['partnerId'])
+                    ? readRecordString(shopeeStatus.publicMetadata, 'partnerId')
                     : 'Partner ID'
                 }
                 disabled={!canManage}

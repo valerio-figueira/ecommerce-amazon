@@ -20,7 +20,7 @@ import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
 
 function parseOperatorStatus(status: string): OperatorStatus {
-  if (status === OperatorStatus.DISABLED) {
+  if (status === 'disabled') {
     return OperatorStatus.DISABLED;
   }
   return OperatorStatus.ACTIVE;

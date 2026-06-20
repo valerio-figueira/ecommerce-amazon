@@ -15,17 +15,31 @@ const INFRASTRUCTURE_ERROR_CODES = new Set([
   'EAI_AGAIN',
 ]);
 
+function readErrorCode(error: Error): string | undefined {
+  if ('code' in error && typeof error.code === 'string') {
+    return error.code;
+  }
+  return undefined;
+}
+
+function readErrorCause(error: Error): unknown {
+  if ('cause' in error) {
+    return error.cause;
+  }
+  return undefined;
+}
+
 export function isInfrastructureError(error: unknown): boolean {
   if (!(error instanceof Error)) {
     return false;
   }
 
-  const code = (error as NodeJS.ErrnoException).code;
-  if (typeof code === 'string' && INFRASTRUCTURE_ERROR_CODES.has(code)) {
+  const code = readErrorCode(error);
+  if (code !== undefined && INFRASTRUCTURE_ERROR_CODES.has(code)) {
     return true;
   }
 
-  const cause = (error as Error & { cause?: unknown }).cause;
+  const cause = readErrorCause(error);
   if (cause instanceof Error) {
     return isInfrastructureError(cause);
   }

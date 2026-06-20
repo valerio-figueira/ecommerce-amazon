@@ -1,6 +1,4 @@
 import {
-  ComparisonSource,
-  ComparisonStatus,
   MIN_CAROUSEL_ITEMS,
   type CategoryRepository,
   type Product,
@@ -78,7 +76,7 @@ export class GetComparisonByIdentifier {
     if (!categoryId) return [];
 
     const excludeProductIds = [...comparedProductIds];
-    let items = await this.productRepository.findSimilarPublishedByCategory({
+    const items = await this.productRepository.findSimilarPublishedByCategory({
       categoryId,
       excludeProductId: comparedProductIds[0] ?? '',
       excludeProductIds,

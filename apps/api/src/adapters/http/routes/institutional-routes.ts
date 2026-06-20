@@ -30,10 +30,10 @@ function parsePageStatus(status: 'draft' | 'published'): PageStatus {
   return status === 'published' ? PageStatus.PUBLISHED : PageStatus.DRAFT;
 }
 
-export async function registerInstitutionalRoutes(
+export function registerInstitutionalRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
   const brand = getBrandConfig(loadEnv());
 
@@ -60,10 +60,10 @@ export async function registerInstitutionalRoutes(
   });
 }
 
-export async function registerAdminInstitutionalRoutes(
+export function registerAdminInstitutionalRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
   const brand = getBrandConfig(loadEnv());
 

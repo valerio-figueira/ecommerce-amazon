@@ -78,7 +78,7 @@ export function startWorkers(container: WorkerContainer) {
 
   const emailWorker = new Worker<EmailDeliveryJobData>(
     QUEUE_NAMES.EMAIL_DELIVERY,
-    async (job) => {
+    (job) => {
       logger.info('Email delivery job', { to: job.data.to, subject: job.data.subject });
     },
     { connection: queueConnection, concurrency: 2 },

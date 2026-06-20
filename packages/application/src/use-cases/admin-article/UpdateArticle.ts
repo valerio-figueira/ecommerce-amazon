@@ -84,7 +84,14 @@ export class UpdateArticle {
     await this.contentRepository.saveArticle(article);
     await invalidateArticlePublicCache(this.cache, [existing.slug, article.slug]);
 
-    const clusterIds = [...new Set([existing.clusterId, article.clusterId].filter(Boolean))] as string[];
+    const clusterIds = [
+      ...new Set(
+        [existing.clusterId, article.clusterId].filter(
+          (clusterId): clusterId is string =>
+            typeof clusterId === 'string' && clusterId.length > 0,
+        ),
+      ),
+    ];
     const slugsToRevalidate = new Set<string>([String(existing.slug), String(article.slug)]);
 
     for (const clusterId of clusterIds) {

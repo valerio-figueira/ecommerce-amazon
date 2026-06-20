@@ -170,7 +170,7 @@ function buildAffiliateSection(brand: BrandConfig): LegalSection {
   };
 }
 
-function buildCookiesSection(brand: BrandConfig): LegalSection {
+function buildCookiesSection(_brand: BrandConfig): LegalSection {
   return {
     id: 'cookies',
     title: 'Política de Cookies',

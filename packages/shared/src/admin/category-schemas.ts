@@ -10,8 +10,6 @@ const optionalTrimmedString = (max: number) =>
     .optional()
     .or(z.literal('').transform(() => undefined));
 
-const optionalNullableTrimmedString = (_max: number) => z.string().optional();
-
 export const adminCategorySchema = z.object({
   id: z.string().uuid(),
   slug: categorySlugSchema,
@@ -32,15 +30,15 @@ export const adminCategorySchema = z.object({
 
 export type AdminCategory = z.infer<typeof adminCategorySchema>;
 
-export const adminCategoryTreeNodeSchema = z.lazy(() =>
+export type AdminCategoryTreeNode = AdminCategory & {
+  subcategories?: AdminCategoryTreeNode[] | undefined;
+};
+
+export const adminCategoryTreeNodeSchema: z.ZodType<AdminCategoryTreeNode> = z.lazy(() =>
   adminCategorySchema.extend({
     subcategories: z.array(adminCategoryTreeNodeSchema).optional(),
   }),
-) as z.ZodType<AdminCategoryTreeNode>;
-
-export type AdminCategoryTreeNode = z.infer<typeof adminCategorySchema> & {
-  subcategories?: AdminCategoryTreeNode[] | undefined;
-};
+);
 
 export const adminCategoriesResponseSchema = z.object({
   items: z.array(adminCategoryTreeNodeSchema),

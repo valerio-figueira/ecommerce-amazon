@@ -146,21 +146,23 @@ export class MercadoLivreFetcherStrategy implements MarketplaceFetcher {
     return item;
   }
 
-  async fetchProductsBatch(externalIds: string[]): Promise<MarketplaceFetchResult[]> {
-    return externalIds.map((externalId) => ({
-      externalId,
-      rawTitle: `Mercado Livre Product ${externalId}`,
-      price: Price.create({
-        amount: 89.9,
-        currency: 'BRL',
-        updatedAt: new Date(),
-        isStale: false,
-      }),
-      availability: ProductAvailability.IN_STOCK,
-      rating: 4.4,
-      reviewCount: 180,
-      imageUrls: [`https://via.placeholder.com/300?text=${externalId}`],
-    }));
+  fetchProductsBatch(externalIds: string[]): Promise<MarketplaceFetchResult[]> {
+    return Promise.resolve(
+      externalIds.map((externalId) => ({
+        externalId,
+        rawTitle: `Mercado Livre Product ${externalId}`,
+        price: Price.create({
+          amount: 89.9,
+          currency: 'BRL',
+          updatedAt: new Date(),
+          isStale: false,
+        }),
+        availability: ProductAvailability.IN_STOCK,
+        rating: 4.4,
+        reviewCount: 180,
+        imageUrls: [`https://via.placeholder.com/300?text=${externalId}`],
+      })),
+    );
   }
 }
 

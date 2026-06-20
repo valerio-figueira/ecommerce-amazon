@@ -21,10 +21,10 @@ function handleAdminAnalyticsError(error: unknown, reply: FastifyReply) {
   return reply.status(500).send({ error: 'Internal server error' });
 }
 
-export async function registerAdminAnalyticsRoutes(
+export function registerAdminAnalyticsRoutes(
   app: FastifyInstance,
   container: ApiContainer,
-): Promise<void> {
+): void {
   const { useCases } = container;
 
   app.get('/admin/analytics/overview', async (request, reply) => {

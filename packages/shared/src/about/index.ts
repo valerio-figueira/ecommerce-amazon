@@ -35,7 +35,7 @@ export {
 } from './about-content.schema.js';
 
 export {
-  sanitizeAboutPageContentStrings,
+  sanitizeAboutPageContentRecord,
   sanitizeInstitutionalHtml,
   sanitizeInstitutionalPlainText,
 } from './sanitize-institutional-html.js';

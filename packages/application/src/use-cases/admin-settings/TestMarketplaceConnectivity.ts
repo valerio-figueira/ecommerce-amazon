@@ -13,6 +13,10 @@ import type {
 } from '@ecommerce-amazon/shared/admin';
 
 import type { MarketplaceCredentialResolver } from '../../services/MarketplaceCredentialResolver.js';
+import {
+  toAmazonStaticCredentials,
+  toShopeeStaticCredentials,
+} from '../../services/marketplace-credentials.helpers.js';
 
 export type TestMarketplaceConnectivityInput = {
   marketplace: Marketplace;
@@ -63,7 +67,7 @@ export class TestMarketplaceConnectivity {
   ): Promise<MarketplaceStaticCredentials> {
     if (input.credentials) {
       if (input.marketplace === Marketplace.AMAZON_BR) {
-        const amazon = input.credentials as SaveAmazonCredentialsBody;
+        const amazon = toAmazonStaticCredentials(input.credentials);
         return {
           accessKeyId: amazon.accessKeyId,
           secretAccessKey: amazon.secretAccessKey,
@@ -72,7 +76,7 @@ export class TestMarketplaceConnectivity {
         };
       }
 
-      const shopee = input.credentials as SaveShopeeCredentialsBody;
+      const shopee = toShopeeStaticCredentials(input.credentials);
       return {
         partnerId: shopee.partnerId,
         partnerKey: shopee.partnerKey,
@@ -90,7 +94,7 @@ export class TestMarketplaceConnectivity {
     );
 
     if (input.marketplace === Marketplace.AMAZON_BR) {
-      const amazon = decrypted as SaveAmazonCredentialsBody;
+      const amazon = toAmazonStaticCredentials(decrypted);
       return {
         accessKeyId: amazon.accessKeyId,
         secretAccessKey: amazon.secretAccessKey,
@@ -99,7 +103,7 @@ export class TestMarketplaceConnectivity {
       };
     }
 
-    const shopee = decrypted as SaveShopeeCredentialsBody;
+    const shopee = toShopeeStaticCredentials(decrypted);
     return {
       partnerId: shopee.partnerId,
       partnerKey: shopee.partnerKey,

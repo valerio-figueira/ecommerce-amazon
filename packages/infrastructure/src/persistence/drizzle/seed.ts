@@ -14,6 +14,7 @@ import {
   PageStatus,
   ProductAvailability,
   TeamPublicRole,
+  parseBlockType,
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { buildDefaultAboutPageContent } from '@ecommerce-amazon/shared/about';
@@ -48,9 +49,7 @@ const SEED_AFFILIATE_AMAZON_ID = 'e1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_SHOPEE_ID = 'e2222222-2222-4222-8222-222222222222';
 const SEED_PAGE_HOME_ID = 'f1111111-1111-4111-8111-111111111111';
 const SEED_PAGE_SOBRE_ID = 'f2222222-2222-4222-8222-222222222222';
-const SEED_BLOCK_HERO_SPLIT_ID = 'f2111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
-const SEED_BLOCK_FEATURED_ID = 'f4111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_GRID_ID = 'f6111111-1111-4111-8111-111111111111';
@@ -661,7 +660,9 @@ async function ensureFlashDealsHomeLayout(
       .set({ sortOrder: 1, props: FLASH_DEALS_BLOCK_PROPS })
       .where(eq(schema.pageBlocks.id, SEED_BLOCK_DYNAMIC_GRID_ID));
   } else {
-    const legacyDynamic = blocks.find((row) => row.type === BlockType.DYNAMIC_PRODUCT_GRID);
+    const legacyDynamic = blocks.find(
+      (row) => parseBlockType(row.type) === BlockType.DYNAMIC_PRODUCT_GRID,
+    );
     if (legacyDynamic) {
       await db
         .update(schema.pageBlocks)
@@ -681,7 +682,7 @@ async function ensureFlashDealsHomeLayout(
   const duplicateDynamicIds = blocks
     .filter(
       (row) =>
-        row.type === BlockType.DYNAMIC_PRODUCT_GRID && row.id !== SEED_BLOCK_DYNAMIC_GRID_ID,
+        parseBlockType(row.type) === BlockType.DYNAMIC_PRODUCT_GRID && row.id !== SEED_BLOCK_DYNAMIC_GRID_ID,
     )
     .map((row) => row.id);
 
@@ -926,7 +927,7 @@ async function ensureBentoHubMixHomeBlock(
     return;
   }
 
-  const legacy = blocks.find((row) => row.type === BlockType.BENTO_HUB_MIX);
+  const legacy = blocks.find((row) => parseBlockType(row.type) === BlockType.BENTO_HUB_MIX);
   if (legacy) {
     await db
       .update(schema.pageBlocks)
@@ -1012,7 +1013,9 @@ async function ensureCuratedCollectionHomeBlock(
     return;
   }
 
-  const legacyBlock = curatedBlocks.find((row) => row.type === BlockType.CURATED_COLLECTION);
+  const legacyBlock = curatedBlocks.find(
+    (row) => parseBlockType(row.type) === BlockType.CURATED_COLLECTION,
+  );
   if (legacyBlock) {
     await db
       .update(schema.pageBlocks)

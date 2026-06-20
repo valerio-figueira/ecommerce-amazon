@@ -6,7 +6,7 @@ import {
   type AboutPageContent,
   type AboutSection,
 } from './about-content.schema.js';
-import { sanitizeAboutPageContentStrings } from './sanitize-institutional-html.js';
+import { sanitizeAboutPageContentRecord } from './sanitize-institutional-html.js';
 
 export const ABOUT_PAGE_LAST_UPDATED = '2026-06-15';
 
@@ -95,7 +95,7 @@ function mergeSections(
 }
 
 export function resolveAboutPageContent(
-  stored: unknown | null,
+  stored: unknown,
   brand: BrandConfig,
 ): AboutPageContent {
   const defaults = buildDefaultAboutPageContent(brand);
@@ -103,7 +103,12 @@ export function resolveAboutPageContent(
     return defaults;
   }
 
-  const partial = stored as Partial<AboutPageContent>;
+  const parsed = aboutPageContentSchema.partial().safeParse(stored);
+  if (!parsed.success) {
+    return defaults;
+  }
+
+  const partial = parsed.data;
   return {
     heroTitle: partial.heroTitle ?? defaults.heroTitle,
     heroIntro: partial.heroIntro ?? defaults.heroIntro,
@@ -116,7 +121,7 @@ export function resolveAboutPageContent(
 
 export function parseAboutPageContent(raw: unknown): AboutPageContent {
   const parsed = aboutPageContentSchema.parse(raw);
-  return sanitizeAboutPageContentStrings(parsed);
+  return aboutPageContentSchema.parse(sanitizeAboutPageContentRecord(parsed));
 }
 
 export function buildAboutPageMetadata(

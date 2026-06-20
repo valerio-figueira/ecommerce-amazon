@@ -1,3 +1,5 @@
+import { toNonEmptyStringTuple } from '../utils/tuple.js';
+
 export const ClickPlacement = {
   ARTICLE_EMBED: 'article.embed',
   ARTICLE_COMPARISON: 'article.comparison',
@@ -21,10 +23,7 @@ export const ClickPlacement = {
 
 export type ClickPlacementValue = (typeof ClickPlacement)[keyof typeof ClickPlacement];
 
-export const CLICK_PLACEMENT_VALUES = Object.values(ClickPlacement) as [
-  ClickPlacementValue,
-  ...ClickPlacementValue[],
-];
+export const CLICK_PLACEMENT_VALUES = toNonEmptyStringTuple(Object.values(ClickPlacement));
 
 export const EngagementEventType = {
   ARTICLE_CARD_CLICK: 'article_card_click',
@@ -34,10 +33,9 @@ export const EngagementEventType = {
 export type EngagementEventTypeValue =
   (typeof EngagementEventType)[keyof typeof EngagementEventType];
 
-export const ENGAGEMENT_EVENT_TYPE_VALUES = Object.values(EngagementEventType) as [
-  EngagementEventTypeValue,
-  ...EngagementEventTypeValue[],
-];
+export const ENGAGEMENT_EVENT_TYPE_VALUES = toNonEmptyStringTuple(
+  Object.values(EngagementEventType),
+);
 
 export const ENGAGEMENT_PLACEMENT_VALUES = [
   ClickPlacement.ARTICLE_LISTING,

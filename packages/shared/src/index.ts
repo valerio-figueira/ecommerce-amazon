@@ -127,12 +127,14 @@ export interface Logger {
 }
 
 export function createConsoleLogger(): Logger {
+  /* eslint-disable no-console -- intentional console sink for dev/worker bootstrap */
   return {
     info: (message, meta) => console.log(message, meta ?? ''),
     warn: (message, meta) => console.warn(message, meta ?? ''),
     error: (message, meta) => console.error(message, meta ?? ''),
     debug: (message, meta) => console.debug(message, meta ?? ''),
   };
+  /* eslint-enable no-console */
 }
 
 export {
