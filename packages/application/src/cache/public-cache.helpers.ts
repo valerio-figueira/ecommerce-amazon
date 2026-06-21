@@ -1,5 +1,5 @@
-import type { CacheStore } from '@ecommerce-amazon/domain';
-import { articlePublicCacheKey } from '@ecommerce-amazon/shared/cache';
+import type { CacheStore, PublicWebRevalidationOptions } from '@ecommerce-amazon/domain';
+import { articlePublicCacheKey, PUBLIC_WEB_CACHE_TAGS } from '@ecommerce-amazon/shared/cache';
 
 export async function invalidateArticlePublicCache(
   cache: CacheStore,
@@ -50,4 +50,22 @@ export function buildInstitutionalPagePublicPath(slug: string): string {
   if (slug === 'sobre') return '/sobre';
   if (slug === 'contato') return '/contato';
   return `/${slug}`;
+}
+
+export function buildCategoryRevalidationOptions(options: {
+  paths: string[];
+}): PublicWebRevalidationOptions {
+  return {
+    paths: [...new Set(options.paths)],
+    layoutPaths: ['/'],
+    tags: [PUBLIC_WEB_CACHE_TAGS.categoryNavTree],
+  };
+}
+
+export function buildInstitutionalRevalidationOptions(slug: string): PublicWebRevalidationOptions {
+  return {
+    paths: [buildInstitutionalPagePublicPath(slug)],
+    layoutPaths: ['/'],
+    tags: [PUBLIC_WEB_CACHE_TAGS.institutionalPage(slug)],
+  };
 }

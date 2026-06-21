@@ -13,6 +13,7 @@ import {
   assertCategoryDepthAllowed,
   assertUniqueCategorySlug,
 } from '../category/category.helpers.js';
+import { buildCategoryRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class CreateCategory {
   constructor(
@@ -51,10 +52,11 @@ export class CreateCategory {
     });
 
     await this.categoryRepository.save(category);
-    await this.webRevalidator.revalidate({
-      paths: [`/categorias/${category.slug}`, '/'],
-      layoutPaths: ['/'],
-    });
+    await this.webRevalidator.revalidate(
+      buildCategoryRevalidationOptions({
+        paths: [`/categorias/${category.slug}`, '/'],
+      }),
+    );
     return { id: category.id };
   }
 }

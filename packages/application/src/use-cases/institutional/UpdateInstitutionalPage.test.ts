@@ -71,7 +71,11 @@ describe('UpdateInstitutionalPage', () => {
         seoTitle: 'SEO custom',
       }),
     );
-    expect(webRevalidator.revalidate).toHaveBeenCalledWith({ paths: ['/sobre'] });
+    expect(webRevalidator.revalidate).toHaveBeenCalledWith({
+      paths: ['/sobre'],
+      layoutPaths: ['/'],
+      tags: ['public:institutional:sobre'],
+    });
   });
 
   it('sets publishedAt when publishing a draft page', async () => {

@@ -12,7 +12,7 @@ import {
 } from '@ecommerce-amazon/shared/about';
 import type { BrandConfig } from '@ecommerce-amazon/shared/config/brand';
 
-import { buildInstitutionalPagePublicPath } from '../../cache/public-cache.helpers.js';
+import { buildInstitutionalRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class GetPublishedInstitutionalPage {
   constructor(private readonly pageRepository: PageRepository) {}
@@ -97,9 +97,7 @@ export class UpdateInstitutionalPage {
       ...(publishedAt ? { publishedAt } : {}),
     });
 
-    await this.webRevalidator.revalidate({
-      paths: [buildInstitutionalPagePublicPath(input.slug)],
-    });
+    await this.webRevalidator.revalidate(buildInstitutionalRevalidationOptions(input.slug));
 
     return {
       layout: {

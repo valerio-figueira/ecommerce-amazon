@@ -12,6 +12,7 @@ import {
   assertCategoryNotDescendantOf,
   assertUniqueCategorySlug,
 } from '../category/category.helpers.js';
+import { buildCategoryRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class UpdateCategory {
   constructor(
@@ -65,10 +66,9 @@ export class UpdateCategory {
     if (category.slug !== previousSlug) {
       paths.push(`/categorias/${previousSlug}`);
     }
-    await this.webRevalidator.revalidate({
-      paths: [...new Set(paths)],
-      layoutPaths: ['/'],
-    });
+    await this.webRevalidator.revalidate(
+      buildCategoryRevalidationOptions({ paths: [...new Set(paths)] }),
+    );
   }
 }
 
@@ -95,10 +95,11 @@ export class DeleteCategory {
     }
 
     await this.categoryRepository.delete(id);
-    await this.webRevalidator.revalidate({
-      paths: [`/categorias/${category.slug}`, '/'],
-      layoutPaths: ['/'],
-    });
+    await this.webRevalidator.revalidate(
+      buildCategoryRevalidationOptions({
+        paths: [`/categorias/${category.slug}`, '/'],
+      }),
+    );
   }
 }
 
@@ -110,9 +111,6 @@ export class ReorderCategories {
 
   async execute(items: { id: string; sortOrder: number }[]): Promise<void> {
     await this.categoryRepository.reorder(items);
-    await this.webRevalidator.revalidate({
-      paths: ['/'],
-      layoutPaths: ['/'],
-    });
+    await this.webRevalidator.revalidate(buildCategoryRevalidationOptions({ paths: ['/'] }));
   }
 }

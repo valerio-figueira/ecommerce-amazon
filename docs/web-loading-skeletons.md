@@ -64,7 +64,7 @@ sequenceDiagram
 - **`page.tsx` síncrono** retorna JSX com `<Suspense fallback={...}>` por seção.
 - Fetches lentos ficam em **Server Components filhos async** (`CategoryProductsGrid`, `ArticleListingGridSection`, etc.).
 - O **root layout** envolve `SiteHeaderShell` em `<Suspense fallback={<HeaderSkeleton />}>`.
-- `getCachedCategoryNavTree()` / `getCachedCategoryTree()` usam `unstable_cache` (revalidate 600s) — header e sidebar não re-suspendem a cada clique.
+- `getCachedCategoryTree()` / `fetchCategoryNavTreeForHeader()` usam `unstable_cache` com tag `public:category-nav-tree` (invalidada no admin) — header e sidebar não re-suspendem a cada clique.
 - `NavigationPendingBar` reage ao clique em links internos antes da resposta do servidor.
 - Fetches compartilhados entre `generateMetadata` e RSC filhos usam `React.cache()` em [`cached-fetchers.ts`](apps/web/src/lib/api/cached-fetchers.ts).
 

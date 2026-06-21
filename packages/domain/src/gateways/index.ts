@@ -82,6 +82,7 @@ export interface PageCacheInvalidator {
 export type PublicWebRevalidationOptions = {
   paths?: string[];
   layoutPaths?: string[];
+  tags?: string[];
 };
 
 export interface PublicWebRevalidator {

@@ -52,12 +52,14 @@ Se `REVALIDATE_SECRET` estiver vazio, a API usa `NoOpPublicWebRevalidator` (só 
 ```json
 {
   "paths": ["/produtos/meu-produto", "/artigos"],
-  "layoutPaths": ["/artigos"]
+  "layoutPaths": ["/artigos"],
+  "tags": ["public:category-nav-tree"]
 }
 ```
 
 - `paths` → `revalidatePath(path)`
 - `layoutPaths` → `revalidatePath(path, 'layout')` (ex.: auto-links em todos os artigos)
+- `tags` → `revalidateTag(tag)` — invalida `unstable_cache` (header categorias, `/sobre`)
 
 ### Port
 
@@ -66,17 +68,18 @@ Implementação HTTP — `packages/infrastructure/src/cache/http-public-web.reva
 
 ## Mutations que disparam invalidação
 
-| Módulo                | Redis            | Web paths                               |
-| --------------------- | ---------------- | --------------------------------------- |
-| Artigos               | slug v2          | `/artigos`, `/artigos/{slug}`           |
-| Categorias editoriais | artigos linkados | listing + categoria + artigos           |
-| Produtos              | version stamp    | `/produtos/{slug}`, categorias afetadas |
-| Categorias produto    | —                | `/categorias/{slug}`, `/` + layout      |
-| Coleções              | slug + products  | `/colecoes/{slug}`, `/`                 |
-| CMS                   | page slug        | `/` ou `/paginas/{slug}`                |
-| Auto-links            | global key       | layout `/artigos`                       |
-| Worker sync/hygiene   | product version  | —                                       |
-| Worker cupons         | coupons key      | —                                       |
+| Módulo                | Redis            | Web paths                                                           |
+| --------------------- | ---------------- | ------------------------------------------------------------------- |
+| Artigos               | slug v2          | `/artigos`, `/artigos/{slug}`                                       |
+| Categorias editoriais | artigos linkados | listing + categoria + artigos                                       |
+| Produtos              | version stamp    | `/produtos/{slug}`, categorias afetadas                             |
+| Categorias produto    | —                | `/categorias/{slug}`, `/` + layout + tag `public:category-nav-tree` |
+| Institucional (Sobre) | —                | `/sobre` + layout + tag `public:institutional:sobre`                |
+| Coleções              | slug + products  | `/colecoes/{slug}`, `/`                                             |
+| CMS                   | page slug        | `/` ou `/paginas/{slug}`                                            |
+| Auto-links            | global key       | layout `/artigos`                                                   |
+| Worker sync/hygiene   | product version  | —                                                                   |
+| Worker cupons         | coupons key      | —                                                                   |
 
 ## Arquivos-chave
 
@@ -104,4 +107,3 @@ curl -X POST http://localhost:3001/api/revalidate \
 ## Próximos passos (fora do escopo)
 
 - Version stamp para listagem/detalhe produto no Redis (ainda lê DB direto)
-- `revalidateTag` com tags por entidade (menos `layoutPaths` amplos)

@@ -11,8 +11,9 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
   async revalidate(options: PublicWebRevalidationOptions): Promise<void> {
     const paths = options.paths ?? [];
     const layoutPaths = options.layoutPaths ?? [];
+    const tags = options.tags ?? [];
 
-    if (!this.secret || (paths.length === 0 && layoutPaths.length === 0)) {
+    if (!this.secret || (paths.length === 0 && layoutPaths.length === 0 && tags.length === 0)) {
       return;
     }
 
@@ -23,7 +24,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.secret}`,
         },
-        body: JSON.stringify({ paths, layoutPaths }),
+        body: JSON.stringify({ paths, layoutPaths, tags }),
       });
 
       if (!response.ok) {
@@ -32,6 +33,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
           url: this.webPublicUrl,
           paths,
           layoutPaths,
+          tags,
         });
         return;
       }
@@ -39,12 +41,14 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
       this.logger.info('Public web revalidation succeeded', {
         paths,
         layoutPaths,
+        tags,
       });
     } catch (error) {
       this.logger.warn('Public web revalidation request failed', {
         error: error instanceof Error ? error.message : String(error),
         paths,
         layoutPaths,
+        tags,
       });
     }
   }
