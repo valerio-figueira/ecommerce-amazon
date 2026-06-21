@@ -17,6 +17,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/persistence/drizzle/migrate.ts",
     "db:seed": "tsx src/persistence/drizzle/seed.ts",
+    "db:verify-operator-seed": "tsx src/persistence/drizzle/verify-operator-seed.ts",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "test": "vitest run"
   },

@@ -66,6 +66,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ou operador admin ausente (pos-migrate)      |
 | `deploy/scripts/tls-hosts.sh`             | Resolução www/apex, subdomínios api./admin., labels Traefik              |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
+| `deploy/scripts/verify-operator-seed.sh`  | Valida operador vs `ADMIN_SEED_*` + `PASSWORD_PEPPER`                    |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
 
@@ -307,7 +308,7 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 404 em `/` no smoke test                     | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine)       | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                           |
 | 404 em `/admin`                              | `ADMIN_BASE_PATH` ausente no build admin                                                     | Rebuild imagem admin com `/admin`                                                                                                                         |
-| Login admin mostra erro / nao entra          | `admin` sem `API_INTERNAL_URL`/`JWT_SECRET` no stack, ou operador nao seedado                | Redeploy com stack atualizado; na VPS: `RUN_SEED=true bash deploy/scripts/ensure-bootstrap-seed.sh`                                                       |
+| Login admin: e-mail ou senha invalidos       | Hash do operador com pepper/senha antigos, ou seed via `docker --env-file` divergente da API | Redeploy com `run_seed: true`; confira `PASSWORD_PEPPER` + `ADMIN_SEED_*` nas secrets; `bash deploy/scripts/verify-operator-seed.sh` na VPS               |
 | 404 em `/api/...`                            | StripPrefix ou API down                                                                      | `curl` interno + logs `vitrine_api`                                                                                                                       |
 | CORS no browser                              | `CORS_ORIGINS` sem origem exata                                                              | Usar `PUBLIC_BASE_URL` sem path                                                                                                                           |
 | ACME falhou / `TRAEFIK DEFAULT CERT`         | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado, alias sem DNS | Usar `traefik.https.yml` com redirect via router; DNS **apex e www**; logs `vitrine_traefik`; renovar volume `traefik_letsencrypt` se cert antigo sem SAN |

@@ -111,7 +111,9 @@ const PEXELS = {
 } as const;
 
 async function runSeed(): Promise<void> {
-  loadDotenvFromMonorepoRoot();
+  if (process.env.NODE_ENV !== 'production') {
+    loadDotenvFromMonorepoRoot();
+  }
 
   const logger = createConsoleLogger();
   const env = loadEnv();
@@ -162,7 +164,7 @@ async function runSeed(): Promise<void> {
       await ensureCuratedCollectionHomeBlock(db, logger);
     }
 
-    await seedOperator(db, logger, devSeed);
+    await seedOperator(db, logger, devSeed, env);
     await seedSiteSettings(db, logger);
     await seedAboutPage(db, now, logger);
     await seedAutoLinks(db, logger);
@@ -1083,8 +1085,8 @@ async function seedOperator(
   db: ReturnType<typeof drizzle<typeof schema>>,
   logger: ReturnType<typeof createConsoleLogger>,
   devSeed: boolean,
+  env: ReturnType<typeof loadEnv>,
 ): Promise<void> {
-  const env = loadEnv();
   const brand = getBrandConfig(env);
   const existing = await db
     .select({ id: schema.operators.id })
@@ -1094,6 +1096,11 @@ async function seedOperator(
 
   const passwordHasher = new BcryptPasswordHasher(env.PASSWORD_PEPPER);
   const passwordHash = await passwordHasher.hash(env.ADMIN_SEED_PASSWORD);
+
+  logger.info('Hashing operator seed password', {
+    email: env.ADMIN_SEED_EMAIL,
+    pepperLength: env.PASSWORD_PEPPER.length,
+  });
 
   const operatorProfile = devSeed
     ? {
@@ -1334,7 +1341,8 @@ async function seedContentClusters(
 }
 
 runSeed().catch((error: unknown) => {
+  const logger = createConsoleLogger();
   const message = error instanceof Error ? error.message : String(error);
-  console.error('Seed failed:', message);
+  logger.error('Seed failed', { message });
   process.exit(1);
 });

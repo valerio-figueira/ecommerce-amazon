@@ -56,6 +56,10 @@ operator_seed_ready() {
   [[ "${exists}" == "1" ]]
 }
 
+operator_credentials_valid() {
+  bash "${SCRIPT_DIR}/verify-operator-seed.sh"
+}
+
 echo "==> Verificando bootstrap CMS (pagina home publicada)"
 home_ready=true
 if home_cms_published; then
@@ -67,17 +71,25 @@ fi
 
 echo "==> Verificando operador admin (seed)"
 operator_ready=true
+credentials_valid=true
 if operator_seed_ready; then
   echo "    Operador admin ativo presente"
+  if operator_credentials_valid; then
+    echo "    Credenciais conferem com PASSWORD_PEPPER + ADMIN_SEED_*"
+  else
+    credentials_valid=false
+    echo "    Credenciais NAO conferem (pepper/senha desatualizados no banco)"
+  fi
 else
   operator_ready=false
+  credentials_valid=false
   echo "    Operador admin ausente ou inativo"
 fi
 
 if [[ "${RUN_SEED:-false}" == "true" ]]; then
   echo "    RUN_SEED=true — reexecutando seed (idempotente)"
   bash "${SCRIPT_DIR}/seed.sh"
-elif [[ "${home_ready}" == "true" && "${operator_ready}" == "true" ]]; then
+elif [[ "${home_ready}" == "true" && "${operator_ready}" == "true" && "${credentials_valid}" == "true" ]]; then
   exit 0
 else
   echo "    Executando bootstrap seed (operador, settings, layout home)"
@@ -92,6 +104,12 @@ fi
 if ! operator_seed_ready; then
   echo "ERRO: bootstrap seed concluido mas operador admin ainda ausente" >&2
   echo "       Confira ADMIN_SEED_EMAIL e ADMIN_SEED_PASSWORD no .env / secrets do GitHub." >&2
+  exit 1
+fi
+
+if ! operator_credentials_valid; then
+  echo "ERRO: operador existe mas senha/pepper nao conferem apos seed" >&2
+  echo "       Confira PASSWORD_PEPPER, ADMIN_SEED_EMAIL e ADMIN_SEED_PASSWORD." >&2
   exit 1
 fi
 

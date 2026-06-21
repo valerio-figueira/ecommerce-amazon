@@ -52,6 +52,8 @@ trap cleanup EXIT
 : "${JWT_SECRET:?JWT_SECRET is required}"
 : "${PASSWORD_PEPPER:?PASSWORD_PEPPER is required}"
 : "${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}"
+: "${ADMIN_SEED_EMAIL:?ADMIN_SEED_EMAIL is required for production deploy}"
+: "${ADMIN_SEED_PASSWORD:?ADMIN_SEED_PASSWORD is required for production deploy}"
 
 # Remove trailing slash — URLs derivadas são montadas de forma consistente.
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL%/}"
