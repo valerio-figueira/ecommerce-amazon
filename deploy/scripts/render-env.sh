@@ -1,15 +1,45 @@
 #!/usr/bin/env bash
 # Monta /opt/vitrine/.env a partir de variáveis exportadas (CI injeta via SSH).
 # PUBLIC_BASE_URL é o único ponto de verdade para URLs públicas.
+#
+# Mitigações de segurança:
+# - V1: urlencode em bash puro (sem argv leak via python3 -c em ps/proc).
+# - V3: mktemp em APP_DIR + umask 077 + mv atômico (sem race de permissões no .env).
+# - Cleanup: trap EXIT remove temp parcial e unset de segredos em memória do shell.
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/vitrine}"
 ENV_FILE="${APP_DIR}/.env"
+tmp_env=""
 
 # Escape value for safe `source` of the generated .env (spaces, *, cron, JSON, etc.).
 env_quote() {
   printf '%q' "$1"
 }
+
+# RFC 3986 percent-encoding — evita subprocesso com credenciais na argv (V1).
+urlencode() {
+  local raw="$1" i c
+  for ((i = 0; i < ${#raw}; i++)); do
+    c="${raw:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
+      *) printf '%%%.2X' "'$c" ;;
+    esac
+  done
+}
+
+cleanup() {
+  if [[ -n "${tmp_env}" && -f "${tmp_env}" ]]; then
+    rm -f "${tmp_env}"
+  fi
+  unset POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB DATABASE_URL \
+    JWT_SECRET PASSWORD_PEPPER ENCRYPTION_KEY REVALIDATE_SECRET \
+    RESEND_API_KEY GA4_SERVICE_ACCOUNT_JSON GHCR_PULL_TOKEN \
+    ADMIN_SEED_PASSWORD 2>/dev/null || true
+}
+
+trap cleanup EXIT
 
 : "${PUBLIC_BASE_URL:?PUBLIC_BASE_URL is required}"
 : "${POSTGRES_USER:?POSTGRES_USER is required}"
@@ -42,8 +72,8 @@ export REDIS_CACHE_DB="${REDIS_CACHE_DB:-0}"
 export REDIS_QUEUE_DB="${REDIS_QUEUE_DB:-1}"
 export REDIS_TELEMETRY_DB="${REDIS_TELEMETRY_DB:-2}"
 
-POSTGRES_USER_ENC="$(python3 -c "import urllib.parse; print(urllib.parse.quote('${POSTGRES_USER}', safe=''))")"
-POSTGRES_PASSWORD_ENC="$(python3 -c "import urllib.parse; print(urllib.parse.quote('${POSTGRES_PASSWORD}', safe=''))")"
+POSTGRES_USER_ENC="$(urlencode "${POSTGRES_USER}")"
+POSTGRES_PASSWORD_ENC="$(urlencode "${POSTGRES_PASSWORD}")"
 export DATABASE_URL="${DATABASE_URL:-postgresql://${POSTGRES_USER_ENC}:${POSTGRES_PASSWORD_ENC}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}"
 export REDIS_URL="${REDIS_URL:-redis://${REDIS_HOST}:${REDIS_PORT}}"
 
@@ -72,9 +102,21 @@ export GA4_PROPERTY_ID="${GA4_PROPERTY_ID:-}"
 export GA4_SERVICE_ACCOUNT_JSON="${GA4_SERVICE_ACCOUNT_JSON:-}"
 export ACME_EMAIL="${ACME_EMAIL:-}"
 
-mkdir -p "${APP_DIR}"
+if [[ ! -d "${APP_DIR}" ]]; then
+  mkdir -p "${APP_DIR}"
+fi
+if [[ ! -w "${APP_DIR}" ]]; then
+  echo "ERRO: ${APP_DIR} não é gravável" >&2
+  exit 1
+fi
 
-cat >"${ENV_FILE}" <<EOF
+# V3: temp no mesmo filesystem que .env — mv -f só é atômico no mesmo mount (nunca /tmp).
+tmp_env="$(mktemp "${APP_DIR}/.env.XXXXXX")"
+chmod 600 "${tmp_env}"
+
+(
+  umask 077
+  cat >"${tmp_env}" <<EOF
 # Gerado por render-env.sh — não editar manualmente no VPS.
 NODE_ENV=$(env_quote "${NODE_ENV}")
 TLS_ENABLED=$(env_quote "${TLS_ENABLED}")
@@ -124,6 +166,10 @@ GA4_PROPERTY_ID=$(env_quote "${GA4_PROPERTY_ID}")
 GA4_SERVICE_ACCOUNT_JSON=$(env_quote "${GA4_SERVICE_ACCOUNT_JSON}")
 ACME_EMAIL=$(env_quote "${ACME_EMAIL}")
 EOF
+)
 
+mv -f "${tmp_env}" "${ENV_FILE}"
+tmp_env=""
 chmod 600 "${ENV_FILE}"
+
 echo "Wrote ${ENV_FILE}"

@@ -32,18 +32,18 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 
 ## Arquivos do repositório
 
-| Caminho                                   | Função                                                                            |
-| ----------------------------------------- | --------------------------------------------------------------------------------- |
-| `docker/Dockerfile.*`                     | Imagens multi-stage (api, worker, web, admin, migrate)                            |
-| `deploy/docker-stack.yml`                 | Stack Swarm (template `envsubst`)                                                 |
-| `deploy/traefik/traefik.http.yml`         | Traefik HTTP-only (fase IP)                                                       |
-| `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                                               |
-| `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS                                                                |
-| `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env` (valores escapados com `printf %q` para `source` seguro) |
-| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests                                       |
-| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                                     |
-| `.github/workflows/ci.yml`                | PR: lint + testes                                                                 |
-| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                                     |
+| Caminho                                   | Função                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------ |
+| `docker/Dockerfile.*`                     | Imagens multi-stage (api, worker, web, admin, migrate)                   |
+| `deploy/docker-stack.yml`                 | Stack Swarm (template `envsubst`)                                        |
+| `deploy/traefik/traefik.http.yml`         | Traefik HTTP-only (fase IP)                                              |
+| `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                                      |
+| `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS (Docker, UFW/DOCKER-USER, daemon.json)                |
+| `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env` (urlencode bash, mktemp atômico, permissão 600) |
+| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests                              |
+| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
+| `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
+| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
 
 ## Bootstrap do VPS (uma vez)
 
@@ -190,6 +190,67 @@ Diretórios na VPS:
 5. Validar: `https://seudominio.com/api/health/ready`, `https://seudominio.com/admin/login`
 
 Paths **não mudam** — só scheme e host.
+
+## Segurança operacional (bootstrap + render-env)
+
+Hardening aplicado nos scripts de deploy para mitigar vazamento de segredos e bypass de firewall pelo Docker.
+
+### O que foi mitigado
+
+| Risco                                                                 | Script             | Mitigação                                                       |
+| --------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------- |
+| Credenciais visíveis em `ps`/`/proc/*/cmdline` via `python3 -c '...'` | `render-env.sh`    | `urlencode()` em bash puro (sem subprocesso com argv)           |
+| Race condition: `.env` criado com umask default antes de `chmod 600`  | `render-env.sh`    | `mktemp` em `${APP_DIR}` + `umask 077` + `mv -f` atômico        |
+| UFW `deny incoming` contornado por portas publicadas no Docker        | `bootstrap-vps.sh` | Cadeia `DOCKER-USER` → `ufw-user-forward` (só 80/443 liberados) |
+| Temp parcial em falha do render                                       | `render-env.sh`    | `trap EXIT` remove `.env.XXXXXX` e faz `unset` de segredos      |
+
+### Invariantes de rede
+
+- **Apenas Traefik** no [`deploy/docker-stack.yml`](../deploy/docker-stack.yml) deve ter bloco `ports:` (80 e, com TLS, 443 em `mode: host`).
+- **Postgres e Redis** permanecem só na overlay `vitrine_net` — nunca adicionar `published:` nesses serviços.
+- Single-node: `ufw default deny incoming` + 22/80/443 é suficiente (overlay Swarm usa `lo` internamente).
+- **Multi-node futuro:** abrir também `2377/tcp`, `7946/tcp+udp`, `4789/udp` entre nós do cluster.
+
+### Ordem UFW no bootstrap
+
+1. `ufw --force reset`
+2. `DEFAULT_FORWARD_POLICY="ACCEPT"` em `/etc/default/ufw`
+3. Injetar bloco `# BEGIN vitrine-docker` em `/etc/ufw/after.rules` (**após** o reset)
+4. Regras INPUT (SSH, 80) → `ufw enable` → `ufw reload`
+
+### Como validar na VPS
+
+```bash
+# Permissão do .env (após deploy)
+stat -c '%a %n' /opt/vitrine/.env   # esperado: 600
+
+# UFW ativo
+ufw status verbose                   # 22, 80 allowed
+
+# Cadeia DOCKER-USER presente
+iptables -L DOCKER-USER -n -v
+
+# Postgres/Redis não escutam na interface pública
+ss -tlnp | grep -E ':5432|:6379' || echo "OK — sem listeners públicos"
+```
+
+Durante `render-env.sh`, não deve haver processo `python3` com credenciais na linha de comando.
+
+### Re-bootstrap ou VPS já provisionada
+
+Se a VPS foi criada **antes** deste hardening, aplique manualmente (como root):
+
+```bash
+# Copiar scripts atualizados ou clonar repo, depois:
+bash deploy/scripts/bootstrap-vps.sh
+```
+
+O bootstrap é idempotente para `daemon.json`, bloco UFW e usuário `deploy`. **Atenção:** `ufw --force reset` remove regras INPUT customizadas — documente regras extras antes de reexecutar.
+
+Alternativa mínima sem reexecutar bootstrap completo:
+
+1. Criar `/etc/docker/daemon.json` conforme [`deploy/scripts/bootstrap-vps.sh`](../deploy/scripts/bootstrap-vps.sh) → `systemctl restart docker`
+2. Injetar bloco `vitrine-docker` em `/etc/ufw/after.rules` → `ufw reload`
 
 ## Troubleshooting
 
