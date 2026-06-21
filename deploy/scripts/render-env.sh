@@ -28,6 +28,15 @@ trim_trailing_ws() {
   printf '%s' "${value%"${value##*[![:space:]]}"}"
 }
 
+# GitHub secrets pasted with accidental line breaks break Bearer auth and YAML.
+normalize_single_line_secret() {
+  local value="$1"
+  value="$(trim_trailing_ws "$value")"
+  value="${value//$'\r'/}"
+  value="${value//$'\n'/}"
+  printf '%s' "$value"
+}
+
 # RFC 3986 percent-encoding — evita subprocesso com credenciais na argv (V1).
 urlencode() {
   local raw="$1" i c
@@ -62,10 +71,12 @@ trap cleanup EXIT
 : "${ADMIN_SEED_EMAIL:?ADMIN_SEED_EMAIL is required for production deploy}"
 : "${ADMIN_SEED_PASSWORD:?ADMIN_SEED_PASSWORD is required for production deploy}"
 
-PASSWORD_PEPPER="$(trim_trailing_ws "${PASSWORD_PEPPER}")"
-JWT_SECRET="$(trim_trailing_ws "${JWT_SECRET}")"
+PASSWORD_PEPPER="$(normalize_single_line_secret "${PASSWORD_PEPPER}")"
+JWT_SECRET="$(normalize_single_line_secret "${JWT_SECRET}")"
+ENCRYPTION_KEY="$(normalize_single_line_secret "${ENCRYPTION_KEY}")"
+REVALIDATE_SECRET="$(normalize_single_line_secret "${REVALIDATE_SECRET:-}")"
 ADMIN_SEED_EMAIL="$(trim_trailing_ws "${ADMIN_SEED_EMAIL}")"
-ADMIN_SEED_PASSWORD="$(trim_trailing_ws "${ADMIN_SEED_PASSWORD}")"
+ADMIN_SEED_PASSWORD="$(normalize_single_line_secret "${ADMIN_SEED_PASSWORD}")"
 
 # Remove trailing slash — URLs derivadas são montadas de forma consistente.
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL%/}"
@@ -104,6 +115,7 @@ if alt_origin="$(derive_alt_public_origin "${PUBLIC_BASE_URL}")"; then
 fi
 export API_INTERNAL_URL="${API_INTERNAL_URL:-http://api:3000}"
 export WEB_INTERNAL_URL="${WEB_INTERNAL_URL:-http://web:3001}"
+export WEB_INTERNAL_URL="${WEB_INTERNAL_URL%/}"
 export DEPLOY_ROUTING_MODE="${DEPLOY_ROUTING_MODE}"
 
 # Docker Swarm service hostnames (overlay network).
@@ -131,7 +143,6 @@ export TELEMETRY_FLUSH_CRON="${TELEMETRY_FLUSH_CRON:-*/5 * * * *}"
 export TELEMETRY_BUFFER_MAX_LEN="${TELEMETRY_BUFFER_MAX_LEN:-100000}"
 
 export JWT_EXPIRES_IN="${JWT_EXPIRES_IN:-8h}"
-export REVALIDATE_SECRET="${REVALIDATE_SECRET:-}"
 export SITE_NAME="${SITE_NAME:-Vitrine}"
 export COMPANY_LEGAL_NAME="${COMPANY_LEGAL_NAME:-Vitrine Ltda}"
 export CONTACT_EMAIL="${CONTACT_EMAIL:-contato@vitrine.com.br}"

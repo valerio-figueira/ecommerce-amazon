@@ -5,7 +5,10 @@ import {
   type AuthTokenService,
   type OperatorRepository,
   type OperatorSocialLinks,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
+
+import { buildAboutTeamRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 function mapOperatorProfile(
   operator: Awaited<ReturnType<OperatorRepository['findById']>>,
@@ -53,6 +56,7 @@ export class UpdateOperatorProfile {
     private readonly operatorRepository: OperatorRepository,
     private readonly authTokenService: AuthTokenService,
     private readonly isManagedAvatarUrl: (url: string) => boolean,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: UpdateOperatorProfileInput): Promise<UpdateOperatorProfileResult> {
@@ -92,6 +96,8 @@ export class UpdateOperatorProfile {
       email: operator.email,
       name: operator.name,
     });
+
+    await this.webRevalidator.revalidate(buildAboutTeamRevalidationOptions());
 
     return {
       operator: mapOperatorProfile(operator, this.isManagedAvatarUrl),

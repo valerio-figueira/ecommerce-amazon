@@ -69,3 +69,12 @@ export function buildInstitutionalRevalidationOptions(slug: string): PublicWebRe
     tags: [PUBLIC_WEB_CACHE_TAGS.institutionalPage(slug)],
   };
 }
+
+/** `/sobre` team grid (`GET /team`) — profile bio, avatar, showOnTeam. */
+export function buildAboutTeamRevalidationOptions(): PublicWebRevalidationOptions {
+  return {
+    paths: ['/sobre'],
+    layoutPaths: ['/'],
+    tags: [PUBLIC_WEB_CACHE_TAGS.publicTeamMembers],
+  };
+}

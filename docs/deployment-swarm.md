@@ -164,20 +164,20 @@ O servico **`admin`** no stack recebe em runtime `API_INTERNAL_URL`, `JWT_SECRET
 
 ### App / segurança
 
-| Secret                                                                 | Notas                                                                               |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                     |
-| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev; **web** e **api** precisam do mesmo `REVALIDATE_SECRET` |
-| `WEB_INTERNAL_URL`                                                     | `http://web:3001` no Swarm — API chama revalidate na overlay (não via Traefik)      |
-| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                     |
-| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                     |
-| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                     |
-| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico      |
-| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                            |
-| `STORAGE_DRIVER`                                                       | `filesystem` (default) ou `s3` — ver secao Object storage abaixo                    |
-| `AWS_S3_BUCKET`, `AWS_S3_REGION`                                       | Obrigatorios quando `STORAGE_DRIVER=s3`                                             |
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`                           | Credenciais IAM com `s3:PutObject` / `s3:DeleteObject` no bucket                    |
-| `STORAGE_PUBLIC_BASE_URL` (opcional com S3)                            | URL publica dos uploads; default `https://{bucket}.s3.{region}.amazonaws.com`       |
+| Secret                                                                 | Notas                                                                                                                                 |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                                                                       |
+| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev; **web** e **api** precisam do mesmo `REVALIDATE_SECRET` — **uma linha só**, sem quebra ao colar no GitHub |
+| `WEB_INTERNAL_URL`                                                     | `http://web:3001` no Swarm — API chama revalidate na overlay (não via Traefik)                                                        |
+| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                                                                       |
+| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                                                                       |
+| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                                                                       |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico                                                        |
+| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                                                                              |
+| `STORAGE_DRIVER`                                                       | `filesystem` (default) ou `s3` — ver secao Object storage abaixo                                                                      |
+| `AWS_S3_BUCKET`, `AWS_S3_REGION`                                       | Obrigatorios quando `STORAGE_DRIVER=s3`                                                                                               |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`                           | Credenciais IAM com `s3:PutObject` / `s3:DeleteObject` no bucket                                                                      |
+| `STORAGE_PUBLIC_BASE_URL` (opcional com S3)                            | URL publica dos uploads; default `https://{bucket}.s3.{region}.amazonaws.com`                                                         |
 
 ## Pipeline GitHub Actions
 
@@ -203,6 +203,9 @@ docker service logs -f vitrine_worker
 
 # Status
 docker stack services vitrine
+
+# Smoke revalidate (API → web overlay, mesmo fluxo do admin save)
+bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh
 
 # Rollback de um serviço
 docker service rollback vitrine_api
@@ -332,6 +335,8 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | Migrate falhou                               | Postgres não pronto                                                                          | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
 | Home sem CMS publicado                       | `GET /pages/home` → 404                                                                      | Web exibe `EmptySiteFallback` na `/` (200); rodar bootstrap seed ou publicar no admin                                                                     |
 | API indisponível / 5xx na home               | Erro real de infra                                                                           | HTTP 500 — investigar logs `vitrine_api` / rede overlay                                                                                                   |
+| `Public web revalidation request failed`     | Rede overlay API→web ou `WEB_INTERNAL_URL` errado                                            | `bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh`; conferir `WEB_INTERNAL_URL=http://web:3001`                                                       |
+| `Public web revalidation failed` status 401  | `REVALIDATE_SECRET` diferente entre `api` e `web`, ou secret com quebra de linha             | Regenerar secret (uma linha); redeploy; `render-env.sh` normaliza `\n` em secrets                                                                         |
 | `SITE_NAME` errado no banco (`Desk\ Setup`)  | Seed anterior com escape bash no secret                                                      | Corrigir secret `SITE_NAME=Desk Setup`; rodar seed (secao abaixo)                                                                                         |
 
 ## Object storage (S3)

@@ -17,8 +17,10 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
       return;
     }
 
+    const revalidateUrl = `${this.webPublicUrl.replace(/\/+$/, '')}/api/revalidate`;
+
     try {
-      const response = await fetch(`${this.webPublicUrl}/api/revalidate`, {
+      const response = await fetch(revalidateUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +32,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
       if (!response.ok) {
         this.logger.warn('Public web revalidation failed', {
           status: response.status,
-          url: this.webPublicUrl,
+          url: revalidateUrl,
           paths,
           layoutPaths,
           tags,
@@ -39,6 +41,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
       }
 
       this.logger.info('Public web revalidation succeeded', {
+        url: revalidateUrl,
         paths,
         layoutPaths,
         tags,
@@ -46,6 +49,7 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
     } catch (error) {
       this.logger.warn('Public web revalidation request failed', {
         error: error instanceof Error ? error.message : String(error),
+        url: revalidateUrl,
         paths,
         layoutPaths,
         tags,

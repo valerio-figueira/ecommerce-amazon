@@ -75,6 +75,7 @@ Implementação HTTP — `packages/infrastructure/src/cache/http-public-web.reva
 | Produtos              | version stamp    | `/produtos/{slug}`, categorias afetadas                             |
 | Categorias produto    | —                | `/categorias/{slug}`, `/` + layout + tag `public:category-nav-tree` |
 | Institucional (Sobre) | —                | `/sobre` + layout + tag `public:institutional:sobre`                |
+| Perfil operador       | —                | `/sobre` + tag `public:team-members` (bio, avatar, equipe)          |
 | Coleções              | slug + products  | `/colecoes/{slug}`, `/`                                             |
 | CMS                   | page slug        | `/` ou `/paginas/{slug}`                                            |
 | Auto-links            | global key       | layout `/artigos`                                                   |

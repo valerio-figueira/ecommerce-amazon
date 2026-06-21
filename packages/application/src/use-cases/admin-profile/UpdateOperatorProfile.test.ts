@@ -8,6 +8,7 @@ import {
   ValidationError,
 } from '@ecommerce-amazon/domain';
 
+import { createMockPublicWebRevalidator } from '../../test/mock-factories.js';
 import { UpdateOperatorProfile } from './UpdateOperatorProfile.js';
 
 function createTestOperator(
@@ -58,8 +59,14 @@ describe('UpdateOperatorProfile', () => {
       sign: vi.fn().mockResolvedValue('new-jwt'),
       verify: vi.fn(),
     };
+    const webRevalidator = createMockPublicWebRevalidator();
 
-    const useCase = new UpdateOperatorProfile(operatorRepository, authTokenService, () => false);
+    const useCase = new UpdateOperatorProfile(
+      operatorRepository,
+      authTokenService,
+      () => false,
+      webRevalidator,
+    );
 
     const result = await useCase.execute({
       operatorId: 'op-1',
@@ -76,6 +83,11 @@ describe('UpdateOperatorProfile', () => {
     expect(result.operator.name).toBe('Novo Nome');
     expect(result.operator.bio).toBe('Nova bio');
     expect(result.operator.showOnTeam).toBe(true);
+    expect(webRevalidator.revalidate).toHaveBeenCalledWith({
+      paths: ['/sobre'],
+      layoutPaths: ['/'],
+      tags: ['public:team-members'],
+    });
   });
 
   it('rejects empty name', async () => {
@@ -86,6 +98,7 @@ describe('UpdateOperatorProfile', () => {
       },
       { sign: vi.fn(), verify: vi.fn() },
       () => false,
+      createMockPublicWebRevalidator(),
     );
 
     await expect(

@@ -2,8 +2,10 @@ import {
   EntityNotFoundError,
   type ObjectStorage,
   type OperatorRepository,
+  type PublicWebRevalidator,
 } from '@ecommerce-amazon/domain';
 
+import { buildAboutTeamRevalidationOptions } from '../../cache/public-cache.helpers.js';
 import { buildAvatarObjectKey } from './build-avatar-object-key.js';
 import { mimeToAvatarExtension, validateAvatarImage } from './validate-avatar-image.js';
 
@@ -22,6 +24,7 @@ export class UploadOperatorAvatar {
   constructor(
     private readonly operatorRepository: OperatorRepository,
     private readonly objectStorage: ObjectStorage,
+    private readonly webRevalidator: PublicWebRevalidator,
   ) {}
 
   async execute(input: UploadOperatorAvatarInput): Promise<UploadOperatorAvatarResult> {
@@ -48,6 +51,8 @@ export class UploadOperatorAvatar {
     }
 
     await this.operatorRepository.updateAvatarUrl(operator.id, stored.publicUrl);
+
+    await this.webRevalidator.revalidate(buildAboutTeamRevalidationOptions());
 
     return {
       avatarUrl: stored.publicUrl,

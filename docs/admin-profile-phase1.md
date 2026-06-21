@@ -28,7 +28,8 @@ flowchart LR
 2. Texto (nome, bio) salva via `PATCH /admin/profile`; a API devolve JWT novo e o BFF atualiza o cookie.
 3. Foto é fluxo separado: recorte client-side (`react-easy-crop`, 512×512 JPEG) → `POST /admin/profile/avatar` (multipart).
 4. Remoção: `DELETE /admin/profile/avatar` apaga objeto gerenciado e zera `avatar_url`.
-5. URLs externas (ex.: seed Pexels) não são apagadas pelo storage — só URLs gerenciadas pelo driver ativo.
+5. Alterações de perfil/avatar revalidam a vitrine (`/sobre` + tag `public:team-members`) quando o operador aparece na seção equipe (`show_on_team`).
+6. URLs externas (ex.: seed Pexels) não são apagadas pelo storage — só URLs gerenciadas pelo driver ativo.
 
 ## Storage plugável
 

@@ -35,6 +35,21 @@ const getCachedInstitutionalAboutPage = unstable_cache(
   },
 );
 
+async function loadPublicTeamMembers(): Promise<PublicTeamMemberDto[]> {
+  const response = await apiFetchParsed('/team', publicTeamResponseSchema, {
+    next: {
+      revalidate: 86400,
+      tags: [PUBLIC_WEB_CACHE_TAGS.publicTeamMembers],
+    },
+  });
+  return response.members;
+}
+
+const getCachedPublicTeamMembers = unstable_cache(loadPublicTeamMembers, ['public-team-members'], {
+  revalidate: 86400,
+  tags: [PUBLIC_WEB_CACHE_TAGS.publicTeamMembers],
+});
+
 export async function fetchInstitutionalAboutPage(): Promise<AboutPageContent> {
   const brand = getServerBrandConfig();
 
@@ -47,10 +62,7 @@ export async function fetchInstitutionalAboutPage(): Promise<AboutPageContent> {
 
 export async function fetchPublicTeamMembers(): Promise<PublicTeamMemberDto[]> {
   try {
-    const response = await apiFetchParsed('/team', publicTeamResponseSchema, {
-      next: { revalidate: 86400 },
-    });
-    return response.members;
+    return await getCachedPublicTeamMembers();
   } catch {
     return [];
   }
