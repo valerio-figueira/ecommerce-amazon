@@ -218,6 +218,8 @@ Hardening aplicado nos scripts de deploy para mitigar vazamento de segredos e by
 3. Injetar bloco `# BEGIN vitrine-docker` em `/etc/ufw/after.rules` (**após** o reset)
 4. Regras INPUT (SSH, 80) → `ufw enable` → `ufw reload`
 
+**Nota:** comentários dentro de `/etc/ufw/*.rules` devem ser **ASCII puro** (sem acentos). O backend Python do UFW falha com `UnicodeEncodeError` se houver caracteres como `í`, `ã`, etc.
+
 ### Como validar na VPS
 
 ```bash
@@ -254,14 +256,15 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma           | Causa provável                           | Ação                                               |
-| ----------------- | ---------------------------------------- | -------------------------------------------------- |
-| 404 em `/admin`   | `ADMIN_BASE_PATH` ausente no build admin | Rebuild imagem admin com `/admin`                  |
-| 404 em `/api/...` | StripPrefix ou API down                  | `curl` interno + logs `vitrine_api`                |
-| CORS no browser   | `CORS_ORIGINS` sem origem exata          | Usar `PUBLIC_BASE_URL` sem path                    |
-| ACME falhou       | DNS não propagado ou :80 bloqueado       | Checar `ufw`, DNS, logs Traefik                    |
-| OOM 4 GB          | Limites de memória                       | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`     |
-| Migrate falhou    | Postgres não pronto                      | `wait-postgres.sh`; ver rede `vitrine_vitrine_net` |
+| Sintoma                  | Causa provável                                    | Ação                                                                       |
+| ------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| 404 em `/admin`          | `ADMIN_BASE_PATH` ausente no build admin          | Rebuild imagem admin com `/admin`                                          |
+| 404 em `/api/...`        | StripPrefix ou API down                           | `curl` interno + logs `vitrine_api`                                        |
+| CORS no browser          | `CORS_ORIGINS` sem origem exata                   | Usar `PUBLIC_BASE_URL` sem path                                            |
+| ACME falhou              | DNS não propagado ou :80 bloqueado                | Checar `ufw`, DNS, logs Traefik                                            |
+| UFW `UnicodeEncodeError` | Comentários com acentos em `/etc/ufw/after.rules` | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
+| OOM 4 GB                 | Limites de memória                                | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
+| Migrate falhou           | Postgres não pronto                               | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
 
 ## Escala futura
 

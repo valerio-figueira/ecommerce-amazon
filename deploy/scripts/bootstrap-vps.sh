@@ -7,8 +7,6 @@
 # - daemon.json antes de swarm init; Traefik permanece único ponto de entrada público.
 # - Invariante: apenas traefik no stack deve ter bloco ports: (Postgres/Redis só overlay).
 set -euo pipefail
-export LANG=C.UTF-8
-export LC_ALL=C.UTF-8
 
 DEPLOY_USER="${DEPLOY_USER:-deploy}"
 APP_DIR="/opt/vitrine"
@@ -39,11 +37,12 @@ inject_ufw_docker_block() {
     sed -i "/${UFW_DOCKER_BEGIN}/,/${UFW_DOCKER_END}/d" "${UFW_AFTER_RULES}"
   fi
 
+  # UFW backend writes rule files with ASCII only — no accented chars in this heredoc.
   cat >>"${UFW_AFTER_RULES}" <<'EOF'
 
 # BEGIN vitrine-docker
-# Mitiga bypass UFW por portas publicadas via Docker (FORWARD/DOCKER-USER).
-# Apenas Traefik (80/443 host-mode) deve ser acessível externamente.
+# Mitigates UFW bypass for Docker-published ports (FORWARD/DOCKER-USER chain).
+# Only Traefik (80/443 host-mode) should be reachable from the internet.
 *filter
 :ufw-user-forward - [0:0]
 :DOCKER-USER - [0:0]
@@ -61,6 +60,10 @@ configure_ufw_docker_integration() {
   echo "==> Configurando UFW + integração Docker (DOCKER-USER)"
 
   # Reset limpa regras INPUT; after.rules customizado é reinjetado em seguida.
+  # UFW Python backend requires ASCII (LANG=C) when reading/writing rule files.
+  export LANG=C
+  export LC_ALL=C
+
   ufw --force reset
 
   if grep -q '^DEFAULT_FORWARD_POLICY=' /etc/default/ufw; then
