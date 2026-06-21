@@ -75,6 +75,10 @@ bash "${SCRIPT_DIR}/wait-postgres.sh"
 echo "==> Migrations"
 bash "${SCRIPT_DIR}/migrate.sh"
 
+echo "==> Bootstrap CMS / seed (se necessario)"
+export RUN_SEED="${RUN_SEED:-false}"
+bash "${SCRIPT_DIR}/ensure-bootstrap-seed.sh"
+
 echo "==> Aguardando apps no stack (cold start Next.js)"
 bash "${SCRIPT_DIR}/wait-service-http.sh" web / 3001
 bash "${SCRIPT_DIR}/wait-service-http.sh" admin /admin/login 3002

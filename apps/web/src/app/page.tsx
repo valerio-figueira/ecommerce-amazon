@@ -1,6 +1,7 @@
 import { buildPageCanonical } from '@ecommerce-amazon/shared/seo';
 
 import { PageRenderer } from '@/components/cms/PageRenderer';
+import { HomePreparingFallback } from '@/components/cms/HomePreparingFallback';
 import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
 import { getHomeLayout } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
@@ -33,17 +34,7 @@ export default async function HomePage(): Promise<React.JSX.Element> {
   const layout = await getHomeLayout();
 
   if (!layout) {
-    const brand = getServerBrandConfig();
-
-    return (
-      <main className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <SiteJsonLd />
-        <h1 className="text-2xl font-bold">{brand.name}</h1>
-        <p className="mt-2 text-neutral-600">
-          Layout não encontrado. Execute <code>npm run db:setup</code>.
-        </p>
-      </main>
-    );
+    return <HomePreparingFallback />;
   }
 
   return (

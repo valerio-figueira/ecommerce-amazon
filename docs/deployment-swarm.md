@@ -44,6 +44,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/wait-postgres.sh`         | Aguarda Postgres saudável antes de migrate                               |
 | `deploy/scripts/wait-service-http.sh`     | Aguarda web/admin HTTP no container (cold start Next.js)                 |
 | `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
+| `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ausente (pos-migrate)                        |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
@@ -86,7 +87,7 @@ ssh -i ~/.ssh/vitrine_deploy deploy@SEU_IP
 
 5. Gerar PAT `read:packages` → secret `GHCR_PULL_TOKEN` (pull na VPS)
 
-6. Disparar workflow **Deploy Production** com `run_seed: true` no primeiro deploy (bootstrap: operador, settings, home mínima — **sem** produtos/contas afiliado demo)
+6. Disparar workflow **Deploy Production** — o primeiro deploy executa **bootstrap seed automaticamente** se a home CMS ainda nao existir (operador via `ADMIN_SEED_*`, layout home minimo). Opcional: `run_seed: true` no dispatch forca re-seed idempotente.
 
 ### Chave SSH no GitHub (erro comum)
 

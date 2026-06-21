@@ -265,13 +265,10 @@ jobs:
             fi
 
             export APP_DIR
+            export RUN_SEED
             bash "${DEPLOY_DIR}/scripts/render-env.sh"
             export IMAGE_TAG GHCR_IMAGE_PREFIX
             bash "${DEPLOY_DIR}/scripts/deploy.sh"
-
-            if [ "${RUN_SEED}" = "true" ]; then
-              bash "${DEPLOY_DIR}/scripts/seed.sh"
-            fi
 
       - name: Rollback hint on failure
         if: failure()
