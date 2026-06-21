@@ -208,6 +208,7 @@ services:
     image: "${GHCR_IMAGE_PREFIX}/vitrine-web:${IMAGE_TAG}"
     environment:
       NODE_ENV: production
+      HOSTNAME: '0.0.0.0'
       WEB_PORT: '3001'
       PORT: '3001'
     networks:
@@ -239,6 +240,7 @@ services:
     image: "${GHCR_IMAGE_PREFIX}/vitrine-admin:${IMAGE_TAG}"
     environment:
       NODE_ENV: production
+      HOSTNAME: '0.0.0.0'
       ADMIN_PORT: '3002'
       PORT: '3002'
     networks:

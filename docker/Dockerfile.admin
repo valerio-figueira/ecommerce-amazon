@@ -39,7 +39,9 @@ RUN find . -name 'tsconfig.tsbuildinfo' -delete && npm run build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
 ENV ADMIN_PORT=3002
+ENV PORT=3002
 
 COPY --from=build /app/apps/admin/.next/standalone ./
 COPY --from=build /app/apps/admin/.next/static ./apps/admin/.next/static
@@ -47,7 +49,7 @@ COPY --from=build /app/apps/admin/.next/static ./apps/admin/.next/static
 WORKDIR /app/apps/admin
 EXPOSE 3002
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3002/admin/login >/dev/null 2>&1 || wget -qO- http://127.0.0.1:3002/login >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=8s --start-period=60s --retries=3 \
+  CMD node -e "require('http').get('http://127.0.0.1:3002/admin/login',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))"
 
 CMD ["node", "server.js"]
