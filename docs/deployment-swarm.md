@@ -260,19 +260,19 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma                             | Causa provável                                                                         | Ação                                                                       |
-| ----------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 404 em `/` no smoke test            | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine) | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`            |
-| 404 em `/admin`                     | `ADMIN_BASE_PATH` ausente no build admin                                               | Rebuild imagem admin com `/admin`                                          |
-| 404 em `/api/...`                   | StripPrefix ou API down                                                                | `curl` interno + logs `vitrine_api`                                        |
-| CORS no browser                     | `CORS_ORIGINS` sem origem exata                                                        | Usar `PUBLIC_BASE_URL` sem path                                            |
-| ACME falhou                         | DNS não propagado ou :80 bloqueado                                                     | Checar `ufw`, DNS, logs Traefik                                            |
-| UFW `UnicodeEncodeError`            | Comentários com acentos em `/etc/ufw/after.rules`                                      | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
-| `yaml: could not find expected ':'` | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                               | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                       |
-| `yaml: line 14: did not find expected key` | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`          | Atualizar `deploy/scripts/deploy.sh` e redeploy                            |
-| `not a swarm manager`               | `docker swarm init` nunca rodou (bootstrap interrompido)                               | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`    |
-| OOM 4 GB                            | Limites de memória                                                                     | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
-| Migrate falhou                      | Postgres não pronto                                                                    | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
+| Sintoma                                    | Causa provável                                                                         | Ação                                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 404 em `/` no smoke test                   | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine) | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`            |
+| 404 em `/admin`                            | `ADMIN_BASE_PATH` ausente no build admin                                               | Rebuild imagem admin com `/admin`                                          |
+| 404 em `/api/...`                          | StripPrefix ou API down                                                                | `curl` interno + logs `vitrine_api`                                        |
+| CORS no browser                            | `CORS_ORIGINS` sem origem exata                                                        | Usar `PUBLIC_BASE_URL` sem path                                            |
+| ACME falhou                                | DNS não propagado ou :80 bloqueado                                                     | Checar `ufw`, DNS, logs Traefik                                            |
+| UFW `UnicodeEncodeError`                   | Comentários com acentos em `/etc/ufw/after.rules`                                      | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
+| `yaml: could not find expected ':'`        | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                               | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                       |
+| `yaml: line 14: did not find expected key` | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`              | Atualizar `deploy/scripts/deploy.sh` e redeploy                            |
+| `not a swarm manager`                      | `docker swarm init` nunca rodou (bootstrap interrompido)                               | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`    |
+| OOM 4 GB                                   | Limites de memória                                                                     | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
+| Migrate falhou                             | Postgres não pronto                                                                    | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
 
 ## Escala futura
 
