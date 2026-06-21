@@ -20,15 +20,28 @@ trim_trailing_ws() {
   printf '%s' "${value%"${value##*[![:space:]]}"}"
 }
 
+json_escape_string() {
+  local value="$1" escaped="" char
+  local i
+  for ((i = 0; i < ${#value}; i++)); do
+    char="${value:i:1}"
+    case "$char" in
+      '"') escaped+='\"' ;;
+      \\) escaped+='\\' ;;
+      $'\n') escaped+='\n' ;;
+      $'\r') escaped+='\r' ;;
+      $'\t') escaped+='\t' ;;
+      *) escaped+="$char" ;;
+    esac
+  done
+  printf '%s' "$escaped"
+}
+
 ADMIN_SEED_EMAIL="$(trim_trailing_ws "${ADMIN_SEED_EMAIL}")"
 ADMIN_SEED_PASSWORD="$(trim_trailing_ws "${ADMIN_SEED_PASSWORD}")"
 
 echo "==> Smoke test login API (http://api:3000/admin/auth/login)"
-login_payload="$(ADMIN_SEED_EMAIL="${ADMIN_SEED_EMAIL}" ADMIN_SEED_PASSWORD="${ADMIN_SEED_PASSWORD}" node -e '
-const email = process.env.ADMIN_SEED_EMAIL ?? "";
-const password = process.env.ADMIN_SEED_PASSWORD ?? "";
-process.stdout.write(JSON.stringify({ email, password }));
-')"
+login_payload="{\"email\":\"$(json_escape_string "${ADMIN_SEED_EMAIL}")\",\"password\":\"$(json_escape_string "${ADMIN_SEED_PASSWORD}")\"}"
 
 http_code="$(
   docker run --rm \
