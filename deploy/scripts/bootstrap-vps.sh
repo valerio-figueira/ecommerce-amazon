@@ -7,6 +7,8 @@
 # - daemon.json antes de swarm init; Traefik permanece único ponto de entrada público.
 # - Invariante: apenas traefik no stack deve ter bloco ports: (Postgres/Redis só overlay).
 set -euo pipefail
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
 
 DEPLOY_USER="${DEPLOY_USER:-deploy}"
 APP_DIR="/opt/vitrine"
