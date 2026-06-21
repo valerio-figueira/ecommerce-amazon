@@ -19,6 +19,7 @@ import {
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { buildDefaultAboutPageContent } from '@ecommerce-amazon/shared/about';
 import { DEFAULT_SITE_SETTINGS } from '@ecommerce-amazon/shared/admin';
+import { heroCarouselPropsSchema } from '@ecommerce-amazon/shared/cms';
 import {
   formatWebHomeTitle,
   formatWebPageTitle,
@@ -171,6 +172,8 @@ async function runSeed(): Promise<void> {
 
     if (devSeed) {
       await seedContentClusters(db, now, logger);
+    } else {
+      await refreshProductionBrandContent(db, now, logger);
     }
   } finally {
     await sql.end();
@@ -1131,6 +1134,7 @@ async function seedOperator(
       .set({
         email: env.ADMIN_SEED_EMAIL.toLowerCase(),
         passwordHash,
+        name: `Administrador ${brand.name}`,
         role: 'admin',
         ...operatorProfile,
         updatedAt: new Date(),
@@ -1338,6 +1342,77 @@ async function seedContentClusters(
     );
 
   logger.info('Content cluster seed inserted', { slug: 'especial-cadeira-ergonomica' });
+}
+
+async function refreshProductionBrandContent(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const brand = getBrandConfig(loadEnv());
+
+  const homeRows = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'home'))
+    .limit(1);
+
+  if (homeRows.length > 0) {
+    const homeId = homeRows[0]!.id;
+
+    await db
+      .update(schema.pages)
+      .set({
+        title: brand.name,
+        seoTitle: `${formatWebHomeTitle(brand)} de produtos`,
+        updatedAt: now,
+      })
+      .where(eq(schema.pages.id, homeId));
+
+    const heroBlocks = await db
+      .select({ id: schema.pageBlocks.id, props: schema.pageBlocks.props })
+      .from(schema.pageBlocks)
+      .where(
+        and(
+          eq(schema.pageBlocks.pageId, homeId),
+          eq(schema.pageBlocks.type, BlockType.HERO_CAROUSEL),
+        ),
+      );
+
+    for (const block of heroBlocks) {
+      const parsedProps = heroCarouselPropsSchema.safeParse(block.props);
+      if (!parsedProps.success || parsedProps.data.slides.length === 0) {
+        continue;
+      }
+
+      const slides = [...parsedProps.data.slides];
+      const firstSlide = slides[0];
+      if (!firstSlide) {
+        continue;
+      }
+
+      slides[0] = {
+        ...firstSlide,
+        imageUrl: `https://placehold.co/1200x800?text=${encodeURIComponent(brand.name)}`,
+        title: brand.name,
+        subtitle: brand.tagline,
+      };
+
+      await db
+        .update(schema.pageBlocks)
+        .set({ props: { ...parsedProps.data, slides } })
+        .where(eq(schema.pageBlocks.id, block.id));
+    }
+
+    logger.info('Home page brand content refreshed', { siteName: brand.name });
+  }
+
+  await db
+    .update(schema.operators)
+    .set({ name: `Administrador ${brand.name}`, updatedAt: now })
+    .where(eq(schema.operators.id, SEED_OPERATOR_ID));
+
+  logger.info('Production brand content refreshed from env', { siteName: brand.name });
 }
 
 runSeed().catch((error: unknown) => {

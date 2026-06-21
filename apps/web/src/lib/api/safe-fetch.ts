@@ -9,6 +9,11 @@ function isBuildPhaseApiUnavailable(error: unknown): boolean {
   return error instanceof TypeError && error.message === 'fetch failed';
 }
 
+function isMissingResource(error: unknown): boolean {
+  return isNotFoundError(error) || isBuildPhaseApiUnavailable(error);
+}
+
+/** 404 (or build-time API down) → null; caller uses notFound() or empty-state view. */
 export async function fetchOrNotFound<TOutput>(
   path: string,
   schema: z.ZodType<TOutput, z.ZodTypeDef, unknown>,
@@ -17,18 +22,22 @@ export async function fetchOrNotFound<TOutput>(
   try {
     return await apiFetchParsed(path, schema, init);
   } catch (error) {
-    if (isNotFoundError(error) || isBuildPhaseApiUnavailable(error)) {
+    if (isMissingResource(error)) {
       return null;
     }
     throw error;
   }
 }
 
+/**
+ * CMS page layout: null only when the page was never published (API 404).
+ * Server/network/schema errors propagate as 500.
+ */
 export async function fetchPageLayoutOrNull(slug: string): Promise<unknown> {
   try {
     return await fetchPageLayout(slug);
   } catch (error) {
-    if (isNotFoundError(error) || isBuildPhaseApiUnavailable(error)) {
+    if (isMissingResource(error)) {
       return null;
     }
     throw error;

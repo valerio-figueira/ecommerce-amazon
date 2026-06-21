@@ -153,7 +153,8 @@ A partir de `PUBLIC_BASE_URL` (ex.: `https://www.seudominio.com.br`):
 | `API_PUBLIC_URL` / `NEXT_PUBLIC_API_URL`  | `https://api.seudominio.com.br`           | `{PUBLIC_BASE_URL}/api`         |
 | `ADMIN_PUBLIC_URL`                        | `https://admin.seudominio.com.br`         | `{PUBLIC_BASE_URL}/admin`       |
 | `WEB_PUBLIC_URL` / `NEXT_PUBLIC_SITE_URL` | `{PUBLIC_BASE_URL}`                       | idem                            |
-| `STORAGE_PUBLIC_BASE_URL`                 | `{API_PUBLIC_URL}/uploads`                | `{PUBLIC_BASE_URL}/api/uploads` |
+| `STORAGE_PUBLIC_BASE_URL`                 | `{API_PUBLIC_URL}/uploads` (filesystem)   | `{PUBLIC_BASE_URL}/api/uploads` |
+| `STORAGE_DRIVER`                          | `filesystem` (default) ou `s3`            | idem                            |
 | `CORS_ORIGINS`                            | vitrine + admin (+ apex/www se aplicável) | `{PUBLIC_BASE_URL}`             |
 | `DEPLOY_ROUTING_MODE`                     | `subdomain`                               | `path`                          |
 
@@ -173,6 +174,10 @@ O servico **`admin`** no stack recebe em runtime `API_INTERNAL_URL`, `JWT_SECRET
 | `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                     |
 | `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico      |
 | `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                            |
+| `STORAGE_DRIVER`                                                       | `filesystem` (default) ou `s3` — ver secao Object storage abaixo                    |
+| `AWS_S3_BUCKET`, `AWS_S3_REGION`                                       | Obrigatorios quando `STORAGE_DRIVER=s3`                                             |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`                           | Credenciais IAM com `s3:PutObject` / `s3:DeleteObject` no bucket                    |
+| `STORAGE_PUBLIC_BASE_URL` (opcional com S3)                            | URL publica dos uploads; default `https://{bucket}.s3.{region}.amazonaws.com`       |
 
 ## Pipeline GitHub Actions
 
@@ -325,6 +330,46 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | `not a swarm manager`                        | `docker swarm init` nunca rodou (bootstrap interrompido)                                     | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                   |
 | OOM 4 GB                                     | Limites de memória                                                                           | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                            |
 | Migrate falhou                               | Postgres não pronto                                                                          | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
+| Home sem CMS publicado                       | `GET /pages/home` → 404                                                                      | Web exibe `EmptySiteFallback` na `/` (200); rodar bootstrap seed ou publicar no admin                                                                     |
+| API indisponível / 5xx na home               | Erro real de infra                                                                           | HTTP 500 — investigar logs `vitrine_api` / rede overlay                                                                                                   |
+| `SITE_NAME` errado no banco (`Desk\ Setup`)  | Seed anterior com escape bash no secret                                                      | Corrigir secret `SITE_NAME=Desk Setup`; rodar seed (secao abaixo)                                                                                         |
+
+## Object storage (S3)
+
+Uploads de avatar e demais arquivos gerenciados pela API usam `STORAGE_DRIVER` (`filesystem` | `s3` | `gcs`). No Swarm, o driver afeta os serviços **`api`** e **`worker`** (volume `uploads_data` só é usado com `filesystem`).
+
+### Ativar S3 em produção
+
+1. Criar bucket S3 (região ex.: `sa-east-1`) com policy de leitura pública nos objetos de upload **ou** CloudFront na frente.
+2. Criar usuário IAM com permissão mínima (`s3:PutObject`, `s3:DeleteObject`, `s3:GetObject` no prefixo de uploads).
+3. No GitHub → **Settings → Environments → production**, adicionar secrets:
+   - `STORAGE_DRIVER` = `s3`
+   - `AWS_S3_BUCKET`, `AWS_S3_REGION`
+   - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+   - (opcional) `STORAGE_PUBLIC_BASE_URL` = URL CloudFront ou bucket público
+4. Redeploy via **Deploy Production** — o workflow repassa os secrets para `render-env.sh`, que grava `/opt/vitrine/.env` e o stack injeta as variáveis nos containers.
+
+**Não basta** colocar chaves só no secret sem redeploy: o `.env` da VPS e o stack YAML são regenerados a cada deploy. Valores vazios mantêm `filesystem` + `{API_PUBLIC_URL}/uploads`.
+
+Detalhes de drivers locais: [admin-profile-phase1.md](./admin-profile-phase1.md).
+
+## Re-seed e correção de brand no banco
+
+O bootstrap seed de produção (`SEED_FORCE=true`) é idempotente: não duplica produtos demo, mas **atualiza** conteúdo editorial derivado de `SITE_NAME` / `SITE_TAGLINE`:
+
+- Home CMS (`pages.slug=home`): título, `seoTitle`, slide do hero
+- Página Sobre (`institutionalContent`)
+- Operador seed: nome e senha (`ADMIN_SEED_*`)
+
+Na VPS (após corrigir `SITE_NAME` no secret GitHub e redeploy do `.env`):
+
+```bash
+bash /opt/vitrine/deploy/scripts/seed.sh
+```
+
+Ou via GitHub Actions: workflow **Deploy Production** → `run_seed: true`.
+
+Confirme que `SITE_NAME` no secret é `Desk Setup` **sem** barra invertida — o seed usa `getBrandConfig()` que normaliza escapes bash.
 
 ## Escala futura
 

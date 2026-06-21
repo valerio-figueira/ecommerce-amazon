@@ -49,6 +49,10 @@ flowchart LR
 4. `PageRenderer` renderiza blocos top-level; filhos referenciados por `hero_split` são compostos internamente.
 5. Blocos de produto buscam catálogo vivo (preço, stale, affiliate URL).
 
+### Fallback sem conteúdo CMS
+
+Quando `GET /pages/home` retorna **404** (página CMS ainda não publicada/cadastrada), a Home renderiza `EmptySiteFallback` — mensagem amigável na rota `/` (HTTP 200), não confundida com 404 de recurso inexistente. Erros **5xx**, falha de rede ou payload inválido **propagam** como erro real (500). Demais rotas (`/produtos/...`, `/artigos/...`) continuam usando `fetchOrNotFound` → `notFound()` (HTTP 404) quando a API retorna 404.
+
 ## Modelo de dados
 
 ### Entidades domain

@@ -26,6 +26,8 @@ export_stack_yaml_secrets() {
   export API_INTERNAL_URL_YAML
   export JWT_EXPIRES_IN_YAML
   export STORAGE_PUBLIC_BASE_URL_YAML
+  export AWS_ACCESS_KEY_ID_YAML
+  export AWS_SECRET_ACCESS_KEY_YAML
   export WEB_PUBLIC_URL_YAML
   export WEB_INTERNAL_URL_YAML
   export SITE_NAME_YAML
@@ -49,6 +51,8 @@ export_stack_yaml_secrets() {
   GA4_SERVICE_ACCOUNT_JSON_YAML="$(yaml_double_quote "${GA4_SERVICE_ACCOUNT_JSON:-}")"
   CORS_ORIGINS_YAML="$(yaml_double_quote "${CORS_ORIGINS}")"
   STORAGE_PUBLIC_BASE_URL_YAML="$(yaml_double_quote "${STORAGE_PUBLIC_BASE_URL}")"
+  AWS_ACCESS_KEY_ID_YAML="$(yaml_double_quote "${AWS_ACCESS_KEY_ID:-}")"
+  AWS_SECRET_ACCESS_KEY_YAML="$(yaml_double_quote "${AWS_SECRET_ACCESS_KEY:-}")"
   WEB_PUBLIC_URL_YAML="$(yaml_double_quote "${WEB_PUBLIC_URL}")"
   WEB_INTERNAL_URL_YAML="$(yaml_double_quote "${WEB_INTERNAL_URL}")"
   SITE_NAME_YAML="$(yaml_double_quote "${SITE_NAME}")"

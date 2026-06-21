@@ -24,7 +24,7 @@ import {
 
 export const getHomeLayout = cache(async (): Promise<PageLayoutDeliveryDto | null> => {
   const data = await fetchPageLayoutOrNull('home');
-  if (!data) {
+  if (data === null) {
     return null;
   }
   return pageLayoutDeliverySchema.parse(data);
