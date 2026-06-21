@@ -10,6 +10,9 @@ GHCR_IMAGE_PREFIX="${GHCR_IMAGE_PREFIX:?GHCR_IMAGE_PREFIX is required}"
 NETWORK="${STACK_NAME}_vitrine_net"
 MIGRATE_IMAGE="${GHCR_IMAGE_PREFIX}/vitrine-migrate:${IMAGE_TAG}"
 
+# shellcheck source=deploy/scripts/docker-env-passthrough.sh
+source "${SCRIPT_DIR}/docker-env-passthrough.sh"
+
 # shellcheck source=/dev/null
 set -a
 source "${APP_DIR}/.env"
@@ -19,13 +22,15 @@ set +a
 : "${ADMIN_SEED_EMAIL:?ADMIN_SEED_EMAIL is required for operator seed}"
 : "${ADMIN_SEED_PASSWORD:?ADMIN_SEED_PASSWORD is required for operator seed}"
 
+docker_env_args=()
+collect_docker_env_passthrough_args "${APP_DIR}/.env" docker_env_args
+
 echo "==> Rodando bootstrap seed (produção, sem mocks de catálogo)"
 docker pull "${MIGRATE_IMAGE}"
 
-# -e repassa segredos apos source bash: docker --env-file nao interpreta %q do render-env.
 docker run --rm \
   --network "${NETWORK}" \
-  --env-file "${APP_DIR}/.env" \
+  "${docker_env_args[@]}" \
   -e POSTGRES_HOST=postgres \
   -e REDIS_HOST=redis \
   -e NODE_ENV=production \

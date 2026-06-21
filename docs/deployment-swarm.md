@@ -65,7 +65,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
 | `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ou operador admin ausente (pos-migrate)      |
 | `deploy/scripts/tls-hosts.sh`             | Resolução www/apex, subdomínios api./admin., labels Traefik              |
-| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
+| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot (`docker-env-passthrough.sh` repassa env após `source`)    |
 | `deploy/scripts/verify-operator-seed.sh`  | Valida operador vs `ADMIN_SEED_*` + `PASSWORD_PEPPER`                    |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
@@ -245,15 +245,16 @@ Hardening aplicado nos scripts de deploy para mitigar vazamento de segredos e by
 
 ### O que foi mitigado
 
-| Risco                                                                 | Script             | Mitigação                                                                          |
-| --------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------- |
-| Credenciais visíveis em `ps`/`/proc/*/cmdline` via `python3 -c '...'` | `render-env.sh`    | `urlencode()` em bash puro (sem subprocesso com argv)                              |
-| Race condition: `.env` criado com umask default antes de `chmod 600`  | `render-env.sh`    | `mktemp` em `${APP_DIR}` + `umask 077` + `mv -f` atômico                           |
-| UFW `deny incoming` contornado por portas publicadas no Docker        | `bootstrap-vps.sh` | Cadeia `DOCKER-USER` → `ufw-user-forward` (só 80/443 liberados)                    |
-| Temp parcial em falha do render                                       | `render-env.sh`    | `trap EXIT` remove `.env.XXXXXX` e faz `unset` de segredos                         |
-| `SITE_NAME` com barra invertida na UI (`Desk\ Setup`)                 | `render-env.sh`    | `env_quote` usa aspas duplas (compatível com Docker `--env-file`), não `printf %q` |
+| Risco                                                                 | Script             | Mitigação                                                                           |
+| --------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| Credenciais visíveis em `ps`/`/proc/*/cmdline` via `python3 -c '...'` | `render-env.sh`    | `urlencode()` em bash puro (sem subprocesso com argv)                               |
+| Race condition: `.env` criado com umask default antes de `chmod 600`  | `render-env.sh`    | `mktemp` em `${APP_DIR}` + `umask 077` + `mv -f` atômico                            |
+| UFW `deny incoming` contornado por portas publicadas no Docker        | `bootstrap-vps.sh` | Cadeia `DOCKER-USER` → `ufw-user-forward` (só 80/443 liberados)                     |
+| Temp parcial em falha do render                                       | `render-env.sh`    | `trap EXIT` remove `.env.XXXXXX` e faz `unset` de segredos                          |
+| `SITE_NAME` com barra invertida na UI (`Desk\ Setup`)                 | `brand.ts` + stack | `unescapeShellEnvValue`; `SITE_NAME` em runtime no serviço `web`                    |
+| Migrate/seed com `NODE_ENV` = `"production"` (aspas literais)         | `migrate.sh` etc.  | `-e KEY` após `source` do `.env` via `docker-env-passthrough.sh` (não `--env-file`) |
 
-**Nota:** valores legíveis com espaço (`SITE_NAME`, `SITE_TAGLINE`, etc.) no `.env` gerado ficam entre aspas duplas (`SITE_NAME="Desk Setup"`). O formato antigo `printf %q` (`Desk\ Setup`) era interpretado literalmente pelo Docker e podia vazar para o build/secrets.
+**Nota:** o `.env` em `/opt/vitrine` usa `printf %q` para `source` bash seguro. Jobs one-shot (`migrate`, `seed`, `verify-operator-seed`) repassam variáveis com `docker run -e KEY` após o `source` — o `--env-file` do Docker não interpreta `%q` nem remove aspas duplas.
 
 ### Invariantes de rede
 

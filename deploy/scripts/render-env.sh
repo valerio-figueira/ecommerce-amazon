@@ -16,14 +16,11 @@ APP_DIR="${APP_DIR:-/opt/vitrine}"
 ENV_FILE="${APP_DIR}/.env"
 tmp_env=""
 
-# Escape for bash `source` and Docker --env-file (double-quoted scalars; not printf %q).
+# Escape value for safe `source` of the generated .env (spaces, *, cron, JSON, etc.).
+# Docker --env-file does not interpret bash escapes; one-shot containers use
+# docker-env-passthrough.sh (`-e KEY` after source) instead of --env-file.
 env_quote() {
-  local value="$1"
-  value="${value//\\/\\\\}"
-  value="${value//\"/\\\"}"
-  value="${value//\$/\\$}"
-  value="${value//\`/\\\`}"
-  printf '"%s"' "${value}"
+  printf '%q' "$1"
 }
 
 trim_trailing_ws() {
