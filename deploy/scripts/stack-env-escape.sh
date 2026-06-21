@@ -25,6 +25,15 @@ export_stack_yaml_secrets() {
   export CORS_ORIGINS_YAML
   export API_INTERNAL_URL_YAML
   export JWT_EXPIRES_IN_YAML
+  export STORAGE_PUBLIC_BASE_URL_YAML
+  export WEB_PUBLIC_URL_YAML
+  export SITE_NAME_YAML
+  export COMPANY_LEGAL_NAME_YAML
+  export CONTACT_EMAIL_YAML
+  export SITE_TAGLINE_YAML
+  export AMAZON_AFFILIATE_TAG_YAML
+  export SHOPEE_AFFILIATE_ID_YAML
+  export EMAIL_FROM_YAML
 
   PASSWORD_PEPPER_YAML="$(yaml_double_quote "${PASSWORD_PEPPER}")"
   JWT_SECRET_YAML="$(yaml_double_quote "${JWT_SECRET}")"

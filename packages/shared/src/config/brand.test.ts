@@ -40,6 +40,22 @@ describe('brand config', () => {
     expect(brand.name).toBe('Marca Client');
   });
 
+  it('unescapes bash-quoted env values (Desk\\ Setup → Desk Setup)', () => {
+    const brand = createBrandConfig({
+      SITE_NAME: 'Desk\\ Setup',
+    });
+
+    expect(brand.name).toBe('Desk Setup');
+  });
+
+  it('unescapes bash-quoted NEXT_PUBLIC_SITE_NAME', () => {
+    const brand = createBrandConfig({
+      NEXT_PUBLIC_SITE_NAME: 'Desk\\ Setup',
+    });
+
+    expect(brand.name).toBe('Desk Setup');
+  });
+
   it('getClientBrandConfig ignores server-only SITE_NAME for hydration-safe client bundles', () => {
     const brand = getClientBrandConfig({
       SITE_NAME: 'Marca Server',

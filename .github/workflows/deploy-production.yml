@@ -188,7 +188,7 @@ jobs:
             NEXT_PUBLIC_SITE_URL=${{ secrets.PUBLIC_BASE_URL }}
             WEB_PUBLIC_URL=${{ secrets.PUBLIC_BASE_URL }}
             API_INTERNAL_URL=http://api:3000
-            SITE_NAME=${{ secrets.SITE_NAME }}
+            SITE_NAME=${{ toJSON(secrets.SITE_NAME != '' && secrets.SITE_NAME || 'Vitrine') }}
             STORAGE_PUBLIC_BASE_URL=${{ steps.public_urls.outputs.storage_public_base_url }}
             ADMIN_BASE_PATH=${{ steps.public_urls.outputs.admin_base_path }}
             ADMIN_HEALTH_PATH=${{ steps.public_urls.outputs.admin_health_path }}

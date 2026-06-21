@@ -245,12 +245,15 @@ Hardening aplicado nos scripts de deploy para mitigar vazamento de segredos e by
 
 ### O que foi mitigado
 
-| Risco                                                                 | Script             | Mitigação                                                       |
-| --------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------- |
-| Credenciais visíveis em `ps`/`/proc/*/cmdline` via `python3 -c '...'` | `render-env.sh`    | `urlencode()` em bash puro (sem subprocesso com argv)           |
-| Race condition: `.env` criado com umask default antes de `chmod 600`  | `render-env.sh`    | `mktemp` em `${APP_DIR}` + `umask 077` + `mv -f` atômico        |
-| UFW `deny incoming` contornado por portas publicadas no Docker        | `bootstrap-vps.sh` | Cadeia `DOCKER-USER` → `ufw-user-forward` (só 80/443 liberados) |
-| Temp parcial em falha do render                                       | `render-env.sh`    | `trap EXIT` remove `.env.XXXXXX` e faz `unset` de segredos      |
+| Risco                                                                 | Script             | Mitigação                                                                          |
+| --------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| Credenciais visíveis em `ps`/`/proc/*/cmdline` via `python3 -c '...'` | `render-env.sh`    | `urlencode()` em bash puro (sem subprocesso com argv)                              |
+| Race condition: `.env` criado com umask default antes de `chmod 600`  | `render-env.sh`    | `mktemp` em `${APP_DIR}` + `umask 077` + `mv -f` atômico                           |
+| UFW `deny incoming` contornado por portas publicadas no Docker        | `bootstrap-vps.sh` | Cadeia `DOCKER-USER` → `ufw-user-forward` (só 80/443 liberados)                    |
+| Temp parcial em falha do render                                       | `render-env.sh`    | `trap EXIT` remove `.env.XXXXXX` e faz `unset` de segredos                         |
+| `SITE_NAME` com barra invertida na UI (`Desk\ Setup`)                 | `render-env.sh`    | `env_quote` usa aspas duplas (compatível com Docker `--env-file`), não `printf %q` |
+
+**Nota:** valores legíveis com espaço (`SITE_NAME`, `SITE_TAGLINE`, etc.) no `.env` gerado ficam entre aspas duplas (`SITE_NAME="Desk Setup"`). O formato antigo `printf %q` (`Desk\ Setup`) era interpretado literalmente pelo Docker e podia vazar para o build/secrets.
 
 ### Invariantes de rede
 

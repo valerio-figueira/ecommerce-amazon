@@ -38,8 +38,24 @@ export type BrandEnvSource = {
   SITE_SOCIAL_TELEGRAM?: string | undefined;
 };
 
+/** Undo bash `printf %q` or copy-paste of escaped .env values (e.g. `Desk\ Setup`). */
+export function unescapeShellEnvValue(value: string): string {
+  return value.replace(/\\([\\'"$` \n\r\t])/g, '$1');
+}
+
+function resolveBrandText(value: string | undefined, fallback: string): string {
+  if (value === undefined) {
+    return fallback;
+  }
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return fallback;
+  }
+  return unescapeShellEnvValue(trimmed);
+}
+
 function resolveSiteName(source: BrandEnvSource): string {
-  return source.SITE_NAME ?? source.NEXT_PUBLIC_SITE_NAME ?? BRAND_DEFAULTS.name;
+  return resolveBrandText(source.SITE_NAME ?? source.NEXT_PUBLIC_SITE_NAME, BRAND_DEFAULTS.name);
 }
 
 function nonEmptyEnvValue(value: string | undefined): string | undefined {
@@ -65,9 +81,9 @@ export function createBrandConfig(source: BrandEnvSource = process.env): BrandCo
 
   return {
     name,
-    legalName: source.COMPANY_LEGAL_NAME ?? BRAND_DEFAULTS.legalName,
-    contactEmail: source.CONTACT_EMAIL ?? BRAND_DEFAULTS.contactEmail,
-    tagline: source.SITE_TAGLINE ?? BRAND_DEFAULTS.tagline,
+    legalName: resolveBrandText(source.COMPANY_LEGAL_NAME, BRAND_DEFAULTS.legalName),
+    contactEmail: resolveBrandText(source.CONTACT_EMAIL, BRAND_DEFAULTS.contactEmail),
+    tagline: resolveBrandText(source.SITE_TAGLINE, BRAND_DEFAULTS.tagline),
     url: resolveSiteUrl(source),
     socials: {
       instagram: source.SITE_SOCIAL_INSTAGRAM ?? BRAND_DEFAULTS.socials.instagram,

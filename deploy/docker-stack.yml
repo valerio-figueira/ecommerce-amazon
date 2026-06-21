@@ -205,6 +205,11 @@ services:
       HOSTNAME: '0.0.0.0'
       WEB_PORT: '3001'
       PORT: '3001'
+      WEB_PUBLIC_URL: ${WEB_PUBLIC_URL_YAML}
+      SITE_NAME: ${SITE_NAME_YAML}
+      COMPANY_LEGAL_NAME: ${COMPANY_LEGAL_NAME_YAML}
+      CONTACT_EMAIL: ${CONTACT_EMAIL_YAML}
+      SITE_TAGLINE: ${SITE_TAGLINE_YAML}
     networks:
       - vitrine_net
     deploy:
