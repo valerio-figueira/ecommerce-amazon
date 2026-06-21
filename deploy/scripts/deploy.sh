@@ -75,22 +75,18 @@ bash "${SCRIPT_DIR}/wait-postgres.sh"
 echo "==> Migrations"
 bash "${SCRIPT_DIR}/migrate.sh"
 
+echo "==> Aguardando apps no stack (cold start Next.js)"
+bash "${SCRIPT_DIR}/wait-service-http.sh" web / 3001
+bash "${SCRIPT_DIR}/wait-service-http.sh" admin /admin/login 3002
+
 echo "==> Smoke tests em ${PUBLIC_BASE_URL}"
-curl -fsS "${PUBLIC_BASE_URL}/api/health/ready" >/dev/null
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/api/health/ready" 200
 echo "    /api/health/ready OK"
 
-WEB_CODE="$(curl -fsS -o /dev/null -w '%{http_code}' "${PUBLIC_BASE_URL}/")"
-if [[ "${WEB_CODE}" != "200" && "${WEB_CODE}" != "304" ]]; then
-  echo "ERRO: vitrine retornou HTTP ${WEB_CODE}" >&2
-  exit 1
-fi
-echo "    / OK (HTTP ${WEB_CODE})"
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/" "200,304"
+echo "    / OK"
 
-ADMIN_CODE="$(curl -fsS -o /dev/null -w '%{http_code}' "${PUBLIC_BASE_URL}/admin/login")"
-if [[ "${ADMIN_CODE}" != "200" && "${ADMIN_CODE}" != "304" ]]; then
-  echo "ERRO: admin retornou HTTP ${ADMIN_CODE}" >&2
-  exit 1
-fi
-echo "    /admin/login OK (HTTP ${ADMIN_CODE})"
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/admin/login" "200,304"
+echo "    /admin/login OK"
 
 echo "==> Deploy concluído com sucesso"

@@ -40,7 +40,10 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                                      |
 | `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS (Docker, UFW/DOCKER-USER, daemon.json)                |
 | `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env` (urlencode bash, mktemp atômico, permissão 600) |
-| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests                              |
+| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → wait apps → smoke tests                  |
+| `deploy/scripts/wait-postgres.sh`         | Aguarda Postgres saudável antes de migrate                               |
+| `deploy/scripts/wait-service-http.sh`     | Aguarda web/admin HTTP no container (cold start Next.js)                 |
+| `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
@@ -256,17 +259,18 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma                             | Causa provável                                           | Ação                                                                       |
-| ----------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 404 em `/admin`                     | `ADMIN_BASE_PATH` ausente no build admin                 | Rebuild imagem admin com `/admin`                                          |
-| 404 em `/api/...`                   | StripPrefix ou API down                                  | `curl` interno + logs `vitrine_api`                                        |
-| CORS no browser                     | `CORS_ORIGINS` sem origem exata                          | Usar `PUBLIC_BASE_URL` sem path                                            |
-| ACME falhou                         | DNS não propagado ou :80 bloqueado                       | Checar `ufw`, DNS, logs Traefik                                            |
-| UFW `UnicodeEncodeError`            | Comentários com acentos em `/etc/ufw/after.rules`        | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
-| `yaml: could not find expected ':'` | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                       |
-| `not a swarm manager`               | `docker swarm init` nunca rodou (bootstrap interrompido) | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`    |
-| OOM 4 GB                            | Limites de memória                                       | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
-| Migrate falhou                      | Postgres não pronto                                      | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
+| Sintoma                             | Causa provável                                           | Ação                                                                                      |
+| ----------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 404 em `/` no smoke test            | Web ainda em cold start ou Traefik sem rota              | Logs `vitrine_web`; deploy agora espera ate 3 min (`wait-service-http` + `wait-http-url`) |
+| 404 em `/admin`                     | `ADMIN_BASE_PATH` ausente no build admin                 | Rebuild imagem admin com `/admin`                                                         |
+| 404 em `/api/...`                   | StripPrefix ou API down                                  | `curl` interno + logs `vitrine_api`                                                       |
+| CORS no browser                     | `CORS_ORIGINS` sem origem exata                          | Usar `PUBLIC_BASE_URL` sem path                                                           |
+| ACME falhou                         | DNS não propagado ou :80 bloqueado                       | Checar `ufw`, DNS, logs Traefik                                                           |
+| UFW `UnicodeEncodeError`            | Comentários com acentos em `/etc/ufw/after.rules`        | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                |
+| `yaml: could not find expected ':'` | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                      |
+| `not a swarm manager`               | `docker swarm init` nunca rodou (bootstrap interrompido) | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                   |
+| OOM 4 GB                            | Limites de memória                                       | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                            |
+| Migrate falhou                      | Postgres não pronto                                      | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                        |
 
 ## Escala futura
 
