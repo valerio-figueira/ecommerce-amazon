@@ -42,19 +42,22 @@ echo "==> Selecionando config Traefik (TLS_ENABLED=${TLS_ENABLED})"
 mkdir -p "${APP_DIR}/traefik"
 if [[ "${TLS_ENABLED}" == "true" ]]; then
   : "${ACME_EMAIL:?ACME_EMAIL is required when TLS_ENABLED=true}"
+  PUBLIC_HOST="${PUBLIC_BASE_URL#*://}"
+  PUBLIC_HOST="${PUBLIC_HOST%%/*}"
   export TRAEFIK_ENTRYPOINT=websecure
-  export TRAEFIK_API_TLS_LABELS=$'- traefik.http.routers.vitrine-api.tls=true\n        - traefik.http.routers.vitrine-api.tls.certresolver=letsencrypt'
-  export TRAEFIK_WEB_TLS_LABELS=$'- traefik.http.routers.vitrine-web.tls=true\n        - traefik.http.routers.vitrine-web.tls.certresolver=letsencrypt'
-  export TRAEFIK_ADMIN_TLS_LABELS=$'- traefik.http.routers.vitrine-admin.tls=true\n        - traefik.http.routers.vitrine-admin.tls.certresolver=letsencrypt'
+  export TRAEFIK_API_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-api.tls=true\n        - traefik.http.routers.vitrine-api.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-api.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
+  export TRAEFIK_WEB_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-web.tls=true\n        - traefik.http.routers.vitrine-web.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-web.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
+  export TRAEFIK_ADMIN_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-admin.tls=true\n        - traefik.http.routers.vitrine-admin.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-admin.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
   export TRAEFIK_HTTPS_PORT_BLOCK=$'- target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
-  envsubst <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
+  export ACME_EMAIL
+  envsubst '${ACME_EMAIL} ${TRAEFIK_DOCKER_NETWORK}' <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
 else
   export TRAEFIK_ENTRYPOINT=web
   export TRAEFIK_API_TLS_LABELS=""
   export TRAEFIK_WEB_TLS_LABELS=""
   export TRAEFIK_ADMIN_TLS_LABELS=""
   export TRAEFIK_HTTPS_PORT_BLOCK=""
-  envsubst <"${REPO_DEPLOY_DIR}/traefik/traefik.http.yml" >"${APP_DIR}/traefik/traefik.yml"
+  envsubst '${TRAEFIK_DOCKER_NETWORK}' <"${REPO_DEPLOY_DIR}/traefik/traefik.http.yml" >"${APP_DIR}/traefik/traefik.yml"
 fi
 
 echo "==> Renderizando stack Swarm"

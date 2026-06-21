@@ -10,7 +10,7 @@ SLEEP_SECONDS="${SLEEP_SECONDS:-5}"
 
 echo "==> Aguardando ${URL} (aceito: ${ACCEPT_CODES})"
 for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
-  HTTP_CODE="$(curl -s -o /dev/null -w '%{http_code}' "${URL}" || true)"
+  HTTP_CODE="$(curl -sS --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "${URL}" || true)"
   if [[ ",${ACCEPT_CODES}," == *",${HTTP_CODE},"* ]]; then
     echo "    OK HTTP ${HTTP_CODE} (tentativa ${attempt})"
     exit 0
@@ -20,4 +20,8 @@ for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
 done
 
 echo "ERRO: ${URL} nao retornou ${ACCEPT_CODES} a tempo (ultimo: ${HTTP_CODE:-000})" >&2
+if [[ "${HTTP_CODE:-000}" == "000" ]]; then
+  echo "    Dica: HTTP 000 = conexao recusada, timeout ou falha SSL." >&2
+  echo "    Se o browser mostra TRAEFIK DEFAULT CERT, ACME nao emitiu — checar :80 aberto e redirect global removido." >&2
+fi
 exit 1

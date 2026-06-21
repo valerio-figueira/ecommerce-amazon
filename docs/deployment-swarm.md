@@ -193,6 +193,17 @@ Diretórios na VPS:
 4. Redeploy (push ou workflow_dispatch) — rebuild web/admin + Traefik HTTPS
 5. Validar: `https://seudominio.com/api/health/ready`, `https://seudominio.com/admin/login`
 
+**ACME:** o desafio HTTP do Let's Encrypt precisa responder em `http://dominio/.well-known/acme-challenge/` na porta **80**. O `traefik.https.yml` **não** usa redirect global no entrypoint `:80` (isso quebraria o challenge e o browser veria `TRAEFIK DEFAULT CERT`). Redirect HTTP→HTTPS é feito via router de baixa prioridade.
+
+Se um deploy anterior falhou na emissão, limpar o volume e redeploy:
+
+```bash
+docker service scale vitrine_traefik=0
+docker volume rm vitrine_traefik_letsencrypt   # nome pode variar: docker volume ls | grep letsencrypt
+docker service scale vitrine_traefik=1
+bash /opt/vitrine/deploy/scripts/deploy.sh   # ou redeploy via GitHub Actions
+```
+
 Paths **não mudam** — só scheme e host.
 
 ## Segurança operacional (bootstrap + render-env)
@@ -260,19 +271,20 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma                                    | Causa provável                                                                         | Ação                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 404 em `/` no smoke test                   | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine) | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`            |
-| 404 em `/admin`                            | `ADMIN_BASE_PATH` ausente no build admin                                               | Rebuild imagem admin com `/admin`                                          |
-| 404 em `/api/...`                          | StripPrefix ou API down                                                                | `curl` interno + logs `vitrine_api`                                        |
-| CORS no browser                            | `CORS_ORIGINS` sem origem exata                                                        | Usar `PUBLIC_BASE_URL` sem path                                            |
-| ACME falhou                                | DNS não propagado ou :80 bloqueado                                                     | Checar `ufw`, DNS, logs Traefik                                            |
-| UFW `UnicodeEncodeError`                   | Comentários com acentos em `/etc/ufw/after.rules`                                      | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
-| `yaml: could not find expected ':'`        | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                               | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                       |
-| `yaml: line 14: did not find expected key` | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`              | Atualizar `deploy/scripts/deploy.sh` e redeploy                            |
-| `not a swarm manager`                      | `docker swarm init` nunca rodou (bootstrap interrompido)                               | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`    |
-| OOM 4 GB                                   | Limites de memória                                                                     | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
-| Migrate falhou                             | Postgres não pronto                                                                    | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
+| Sintoma                                    | Causa provável                                                                         | Ação                                                                                                                                                        |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 404 em `/` no smoke test                   | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine) | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                             |
+| 404 em `/admin`                            | `ADMIN_BASE_PATH` ausente no build admin                                               | Rebuild imagem admin com `/admin`                                                                                                                           |
+| 404 em `/api/...`                          | StripPrefix ou API down                                                                | `curl` interno + logs `vitrine_api`                                                                                                                         |
+| CORS no browser                            | `CORS_ORIGINS` sem origem exata                                                        | Usar `PUBLIC_BASE_URL` sem path                                                                                                                             |
+| ACME falhou / `TRAEFIK DEFAULT CERT`       | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado          | Usar `traefik.https.yml` com redirect via router (nao entrypoint); `ufw`, DNS; logs `vitrine_traefik`; se `acme.json` corrompido, remover volume e redeploy |
+| Smoke test `HTTP 000` com HTTPS            | `curl` rejeita cert self-signed do Traefik (ACME ainda nao emitiu)                     | Corrigir ACME primeiro; apos LE valido, smoke passa sem `-k`                                                                                                |
+| UFW `UnicodeEncodeError`                   | Comentários com acentos em `/etc/ufw/after.rules`                                      | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                                                                                  |
+| `yaml: could not find expected ':'`        | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                               | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                                                                                        |
+| `yaml: line 14: did not find expected key` | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`              | Atualizar `deploy/scripts/deploy.sh` e redeploy                                                                                                             |
+| `not a swarm manager`                      | `docker swarm init` nunca rodou (bootstrap interrompido)                               | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                     |
+| OOM 4 GB                                   | Limites de memória                                                                     | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                              |
+| Migrate falhou                             | Postgres não pronto                                                                    | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                          |
 
 ## Escala futura
 
