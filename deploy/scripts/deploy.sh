@@ -23,6 +23,9 @@ export TRAEFIK_DOCKER_NETWORK
 export GHCR_IMAGE_PREFIX
 export IMAGE_TAG
 
+# shellcheck source=deploy/scripts/tls-hosts.sh
+source "${SCRIPT_DIR}/tls-hosts.sh"
+
 ensure_swarm_manager() {
   local state control
   state="$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null || echo inactive)"
@@ -44,13 +47,25 @@ if [[ "${TLS_ENABLED}" == "true" ]]; then
   : "${ACME_EMAIL:?ACME_EMAIL is required when TLS_ENABLED=true}"
   PUBLIC_HOST="${PUBLIC_BASE_URL#*://}"
   PUBLIC_HOST="${PUBLIC_HOST%%/*}"
+  resolve_tls_hosts_from_public_host "${PUBLIC_HOST}"
   export TRAEFIK_ENTRYPOINT=websecure
-  export TRAEFIK_API_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-api.tls=true\n        - traefik.http.routers.vitrine-api.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-api.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
-  export TRAEFIK_WEB_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-web.tls=true\n        - traefik.http.routers.vitrine-web.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-web.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
-  export TRAEFIK_ADMIN_TLS_LABELS="$(printf -- '- traefik.http.routers.vitrine-admin.tls=true\n        - traefik.http.routers.vitrine-admin.tls.certresolver=letsencrypt\n        - traefik.http.routers.vitrine-admin.tls.domains[0].main=%s' "${PUBLIC_HOST}")"
+  export TRAEFIK_API_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-api "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
+  export TRAEFIK_WEB_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-web "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
+  export TRAEFIK_ADMIN_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-admin "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
   export TRAEFIK_HTTPS_PORT_BLOCK=$'- target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
+  export TRAEFIK_TLS_MAIN="${TLS_CANONICAL_HOST}"
+  export TRAEFIK_TLS_SAN="${TLS_SAN_HOST}"
+  export TRAEFIK_CANONICAL_HOST="${TLS_CANONICAL_HOST}"
+  export TRAEFIK_REDIRECT_FROM_HOST="${TLS_REDIRECT_FROM_HOST}"
+  export TRAEFIK_REDIRECT_FROM_HOST_REGEX="$(escape_domain_regex "${TLS_REDIRECT_FROM_HOST}")"
   export ACME_EMAIL
-  envsubst '${ACME_EMAIL} ${TRAEFIK_DOCKER_NETWORK}' <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
+  if [[ "${TLS_SAN_HOST}" != "${TLS_CANONICAL_HOST}" ]]; then
+    echo "    TLS: main=${TLS_CANONICAL_HOST} sans=${TLS_SAN_HOST} (redirect alias → canonico)"
+  else
+    echo "    TLS: main=${TLS_CANONICAL_HOST}"
+  fi
+  envsubst '${ACME_EMAIL} ${TRAEFIK_DOCKER_NETWORK} ${TRAEFIK_TLS_MAIN} ${TRAEFIK_TLS_SAN} ${TRAEFIK_REDIRECT_FROM_HOST} ${TRAEFIK_REDIRECT_FROM_HOST_REGEX} ${TRAEFIK_CANONICAL_HOST}' \
+    <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
 else
   export TRAEFIK_ENTRYPOINT=web
   export TRAEFIK_API_TLS_LABELS=""

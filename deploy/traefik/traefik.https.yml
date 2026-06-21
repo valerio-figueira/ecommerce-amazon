@@ -4,6 +4,10 @@
 # ACME HTTP challenge usa entrypoint web (:80) — NÃO usar redirect global no entrypoint
 # (quebra o challenge e Traefik serve TRAEFIK DEFAULT CERT).
 # Redirect HTTP->HTTPS via router de baixa prioridade; LE tem precedência interna.
+#
+# Variáveis (envsubst): ACME_EMAIL, TRAEFIK_DOCKER_NETWORK, TRAEFIK_TLS_MAIN,
+# TRAEFIK_TLS_SAN, TRAEFIK_REDIRECT_FROM_HOST, TRAEFIK_REDIRECT_FROM_HOST_REGEX,
+# TRAEFIK_CANONICAL_HOST
 
 api:
   dashboard: false
@@ -40,10 +44,41 @@ http:
       service: noop@internal
       priority: 1
 
+    # Alias (apex ou www) → host canônico de PUBLIC_BASE_URL (SEO + certificado único).
+    alias-to-canonical-http:
+      rule: Host(`${TRAEFIK_REDIRECT_FROM_HOST}`)
+      entryPoints:
+        - web
+      middlewares:
+        - alias-to-canonical-redirect
+      service: noop@internal
+      priority: 100
+
+    alias-to-canonical-https:
+      rule: Host(`${TRAEFIK_REDIRECT_FROM_HOST}`)
+      entryPoints:
+        - websecure
+      middlewares:
+        - alias-to-canonical-redirect
+      service: noop@internal
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: ${TRAEFIK_TLS_MAIN}
+            sans:
+              - ${TRAEFIK_TLS_SAN}
+
   middlewares:
     redirect-to-https:
       redirectScheme:
         scheme: https
+        permanent: true
+
+    alias-to-canonical-redirect:
+      redirectRegex:
+        regex: ^https?://${TRAEFIK_REDIRECT_FROM_HOST_REGEX}(.*)
+        replacement: https://${TRAEFIK_CANONICAL_HOST}${1}
         permanent: true
 
 log:

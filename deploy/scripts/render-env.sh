@@ -8,6 +8,10 @@
 # - Cleanup: trap EXIT remove temp parcial e unset de segredos em memória do shell.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=deploy/scripts/tls-hosts.sh
+source "${SCRIPT_DIR}/tls-hosts.sh"
+
 APP_DIR="${APP_DIR:-/opt/vitrine}"
 ENV_FILE="${APP_DIR}/.env"
 tmp_env=""
@@ -61,6 +65,11 @@ export NEXT_PUBLIC_SITE_URL="${PUBLIC_BASE_URL}"
 export WEB_PUBLIC_URL="${PUBLIC_BASE_URL}"
 export STORAGE_PUBLIC_BASE_URL="${PUBLIC_BASE_URL}/api/uploads"
 export CORS_ORIGINS="${CORS_ORIGINS:-${PUBLIC_BASE_URL}}"
+if alt_origin="$(derive_alt_public_origin "${PUBLIC_BASE_URL}")"; then
+  if [[ ",${CORS_ORIGINS}," != *",${alt_origin},"* ]]; then
+    export CORS_ORIGINS="${CORS_ORIGINS},${alt_origin}"
+  fi
+fi
 export API_INTERNAL_URL="${API_INTERNAL_URL:-http://api:3000}"
 
 # Docker Swarm service hostnames (overlay network).
