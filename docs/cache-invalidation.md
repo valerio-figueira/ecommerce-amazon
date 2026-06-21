@@ -37,10 +37,11 @@ Helper: `@ecommerce-amazon/shared/cache` — `articlePublicCacheKey`, `COUPONS_A
 ```bash
 REVALIDATE_SECRET=dev-revalidate-secret-change-in-production
 WEB_PUBLIC_URL=http://localhost:3001   # default: http://localhost:${WEB_PORT}
+# Swarm: API usa WEB_INTERNAL_URL=http://web:3001 para POST /api/revalidate (overlay)
 ```
 
-- **API/worker**: leem `REVALIDATE_SECRET` e `WEB_PUBLIC_URL` via `loadEnv()`
-- **apps/web**: precisa do mesmo `REVALIDATE_SECRET` (root `.env` ou `apps/web/.env.local`)
+- **API**: lê `REVALIDATE_SECRET`, `WEB_INTERNAL_URL` (preferido) ou `WEB_PUBLIC_URL`
+- **apps/web**: precisa do **mesmo** `REVALIDATE_SECRET` (root `.env` via `next.config.ts` ou env no Swarm)
 
 Se `REVALIDATE_SECRET` estiver vazio, a API usa `NoOpPublicWebRevalidator` (só Redis).
 

@@ -19,7 +19,7 @@ export async function ArticleListingToolbarSection({
   const activeCategory = params.categoria?.trim() || null;
   const activeSearch = params.q?.trim() || '';
 
-  const categoriesResponse = await fetchPublicArticleCategories();
+  const categoriesResponse = await fetchPublicArticleCategories().catch(() => ({ items: [] }));
 
   return (
     <Suspense fallback={null}>
@@ -42,7 +42,7 @@ export async function ArticleListingHeader({
     return null;
   }
 
-  const categoriesResponse = await fetchPublicArticleCategories();
+  const categoriesResponse = await fetchPublicArticleCategories().catch(() => ({ items: [] }));
   const activeCategoryLabel =
     categoriesResponse.items.find((item) => item.slug === activeCategory)?.name ?? activeCategory;
 

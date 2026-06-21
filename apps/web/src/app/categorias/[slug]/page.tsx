@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 import {
@@ -57,13 +58,20 @@ export async function generateMetadata({
   });
 }
 
-export default function CategoryPage({
+export default async function CategoryPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
-}): React.JSX.Element {
+}): Promise<React.JSX.Element> {
+  const { slug } = await params;
+  const category = await getCategory(slug);
+
+  if (!category) {
+    notFound();
+  }
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">

@@ -82,7 +82,14 @@ export function CategoryCatalogFlyout({
   }
 
   if (categories.length === 0) {
-    return null;
+    return (
+      <div className="category-catalog-flyout relative hidden md:block">
+        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400">
+          <LayoutGrid className="size-4" aria-hidden />
+          Categorias
+        </span>
+      </div>
+    );
   }
 
   return (

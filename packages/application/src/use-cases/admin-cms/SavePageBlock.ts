@@ -14,7 +14,7 @@ import { err, ok, type Result } from '@ecommerce-amazon/shared';
 import { parseBlockProps } from '@ecommerce-amazon/shared/cms';
 import { ZodError } from 'zod';
 
-import { buildCmsPagePublicPath } from '../../cache/public-cache.helpers.js';
+import { buildCmsPageRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class SavePageBlock {
   constructor(
@@ -80,9 +80,7 @@ export class SavePageBlock {
     }
 
     await this.pageCacheInvalidator.invalidateBySlug(page.layout.slug);
-    await this.webRevalidator.revalidate({
-      paths: [buildCmsPagePublicPath(page.layout.slug)],
-    });
+    await this.webRevalidator.revalidate(buildCmsPageRevalidationOptions(page.layout.slug));
 
     return ok({ blockId });
   }

@@ -7,11 +7,9 @@ import { AdminLayoutProvider } from '@/components/admin/AdminLayoutContext';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import type { AdminSession } from '@/lib/auth/session';
 import type { AdminBreadcrumb } from '@/lib/navigation';
-import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
 const SIDEBAR_STORAGE_KEY = 'vitrine-admin-sidebar-collapsed';
-const brand = getClientBrandConfig();
 
 export function AdminShellLayout({
   session,
@@ -19,6 +17,7 @@ export function AdminShellLayout({
   isManagedAvatar,
   initialTitle,
   initialBreadcrumbs = [],
+  siteName,
   children,
 }: {
   session: AdminSession;
@@ -26,6 +25,7 @@ export function AdminShellLayout({
   isManagedAvatar?: boolean;
   initialTitle: string;
   initialBreadcrumbs?: AdminBreadcrumb[];
+  siteName: string;
   children: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -52,6 +52,7 @@ export function AdminShellLayout({
     <AdminLayoutProvider initialTitle={initialTitle} initialBreadcrumbs={initialBreadcrumbs}>
       <div className={cn('admin-app-container', hydrated && collapsed && 'admin-sidebar-narrow')}>
         <AdminSidebar
+          siteName={siteName}
           collapsed={collapsed}
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
@@ -69,7 +70,7 @@ export function AdminShellLayout({
 
         <footer className="admin-app-footer">
           <small>
-            © {new Date().getFullYear()} {brand.name} — Painel CMS interno
+            © {new Date().getFullYear()} {siteName} — Painel CMS interno
           </small>
         </footer>
 

@@ -1,3 +1,4 @@
+export { loadDotenvFromMonorepoRoot } from './persistence/drizzle/load-env.js';
 export { buildApiContainer } from './di/api-container.js';
 export { buildWorkerContainer } from './di/worker-container.js';
 export type { ApiContainer } from './di/api-container.js';

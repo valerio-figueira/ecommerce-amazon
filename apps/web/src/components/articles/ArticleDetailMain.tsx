@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
+import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 import {
   buildArticleJsonLd,
   buildNotFoundMetadata,
@@ -20,7 +20,8 @@ import { getArticle } from '@/lib/api/cached-fetchers';
 import { getServerBrandConfig, getSiteBaseUrl } from '@/lib/site-url';
 
 type ArticleDetailMainProps = {
-  params: Promise<{ slug: string }>;
+  article: ArticlePublicDetail;
+  slug: string;
 };
 
 async function ArticleBodySection({
@@ -39,13 +40,7 @@ async function ArticleBodySection({
   );
 }
 
-export async function ArticleDetailMain({
-  params,
-}: ArticleDetailMainProps): Promise<React.JSX.Element> {
-  const { slug } = await params;
-  const article = await getArticle(slug);
-  if (!article) notFound();
-
+export function ArticleDetailMain({ article, slug }: ArticleDetailMainProps): React.JSX.Element {
   const brand = getServerBrandConfig();
   const siteBaseUrl = getSiteBaseUrl();
   const jsonLd = buildArticleJsonLd({

@@ -7,6 +7,23 @@ import type { NextConfig } from 'next';
 const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 loadDotenv({ path: path.join(monorepoRoot, '.env') });
 
+/** Keep in sync with @ecommerce-amazon/shared/config/brand — next.config cannot import workspace packages. */
+function normalizeBrandEnvValue(value: string | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+  const unquoted =
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+      ? trimmed.slice(1, -1)
+      : trimmed;
+  return unquoted.replace(/\\([\\'"$` \n\r\t])/g, '$1');
+}
+
 const devOrigins =
   process.env['NEXT_ALLOWED_DEV_ORIGINS']
     ?.split(',')
@@ -14,7 +31,9 @@ const devOrigins =
     .filter((origin) => origin.length > 0) ?? [];
 
 const siteName =
-  process.env['SITE_NAME']?.trim() || process.env['NEXT_PUBLIC_SITE_NAME']?.trim() || 'Vitrine';
+  normalizeBrandEnvValue(process.env['SITE_NAME']) ??
+  normalizeBrandEnvValue(process.env['NEXT_PUBLIC_SITE_NAME']) ??
+  'Vitrine';
 const siteUrl =
   process.env['WEB_PUBLIC_URL']?.trim() ||
   process.env['NEXT_PUBLIC_SITE_URL']?.trim() ||

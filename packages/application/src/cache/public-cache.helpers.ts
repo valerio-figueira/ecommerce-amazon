@@ -35,6 +35,17 @@ export function buildCmsPagePublicPath(slug: string): string {
   return slug === 'home' ? '/' : `/paginas/${slug}`;
 }
 
+export function buildCmsPageRevalidationOptions(slug: string): {
+  paths: string[];
+  layoutPaths?: string[];
+} {
+  const publicPath = buildCmsPagePublicPath(slug);
+  if (slug === 'home') {
+    return { paths: [publicPath], layoutPaths: ['/'] };
+  }
+  return { paths: [publicPath] };
+}
+
 export function buildInstitutionalPagePublicPath(slug: string): string {
   if (slug === 'sobre') return '/sobre';
   if (slug === 'contato') return '/contato';

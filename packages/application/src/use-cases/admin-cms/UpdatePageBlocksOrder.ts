@@ -7,7 +7,7 @@ import {
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
 
-import { buildCmsPagePublicPath } from '../../cache/public-cache.helpers.js';
+import { buildCmsPageRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class UpdatePageBlocksOrder {
   constructor(
@@ -68,9 +68,7 @@ export class UpdatePageBlocksOrder {
     }
 
     await this.pageCacheInvalidator.invalidateBySlug(page.layout.slug);
-    await this.webRevalidator.revalidate({
-      paths: [buildCmsPagePublicPath(page.layout.slug)],
-    });
+    await this.webRevalidator.revalidate(buildCmsPageRevalidationOptions(page.layout.slug));
 
     return ok({ updated: orders.length });
   }

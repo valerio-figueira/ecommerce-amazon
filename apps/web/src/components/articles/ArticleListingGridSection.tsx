@@ -7,6 +7,7 @@ import { ArticleListingPagination } from '@/components/articles/ArticleListingPa
 import { fetchPublishedArticles } from '@/lib/api/articles';
 
 const PAGE_SIZE = 12;
+const EMPTY_LISTING = { items: [], total: 0, page: 1, limit: PAGE_SIZE };
 
 type ArticleListingGridSectionProps = {
   searchParams: Promise<{
@@ -29,7 +30,7 @@ export async function ArticleListingGridSection({
     limit: PAGE_SIZE,
     ...(activeCategory ? { category: activeCategory } : {}),
     ...(activeSearch ? { search: activeSearch } : {}),
-  });
+  }).catch(() => EMPTY_LISTING);
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.limit));
 

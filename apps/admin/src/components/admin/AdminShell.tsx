@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { AdminShellLayout } from '@/components/admin/AdminShellLayout';
 import type { AdminSession } from '@/lib/auth/session';
+import { getServerBrandConfig } from '@/lib/brand';
 import type { AdminBreadcrumb } from '@/lib/navigation';
 
 export function AdminShell({
@@ -19,6 +20,8 @@ export function AdminShell({
   initialBreadcrumbs?: AdminBreadcrumb[];
   children: ReactNode;
 }) {
+  const brand = getServerBrandConfig();
+
   return (
     <AdminShellLayout
       session={session}
@@ -26,6 +29,7 @@ export function AdminShell({
       isManagedAvatar={isManagedAvatar ?? false}
       initialTitle={initialTitle}
       initialBreadcrumbs={initialBreadcrumbs}
+      siteName={brand.name}
     >
       {children}
     </AdminShellLayout>

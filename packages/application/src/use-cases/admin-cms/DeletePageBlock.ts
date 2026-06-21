@@ -6,7 +6,7 @@ import {
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
 
-import { buildCmsPagePublicPath } from '../../cache/public-cache.helpers.js';
+import { buildCmsPageRevalidationOptions } from '../../cache/public-cache.helpers.js';
 
 export class DeletePageBlock {
   constructor(
@@ -25,9 +25,7 @@ export class DeletePageBlock {
 
     const { pageSlug } = await this.pageRepository.deleteBlock(input.blockId);
     await this.pageCacheInvalidator.invalidateBySlug(pageSlug);
-    await this.webRevalidator.revalidate({
-      paths: [buildCmsPagePublicPath(pageSlug)],
-    });
+    await this.webRevalidator.revalidate(buildCmsPageRevalidationOptions(pageSlug));
 
     return ok({ deleted: true });
   }

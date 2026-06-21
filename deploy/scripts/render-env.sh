@@ -93,6 +93,7 @@ if alt_origin="$(derive_alt_public_origin "${PUBLIC_BASE_URL}")"; then
   fi
 fi
 export API_INTERNAL_URL="${API_INTERNAL_URL:-http://api:3000}"
+export WEB_INTERNAL_URL="${WEB_INTERNAL_URL:-http://web:3001}"
 export DEPLOY_ROUTING_MODE="${DEPLOY_ROUTING_MODE}"
 
 # Docker Swarm service hostnames (overlay network).
@@ -161,6 +162,7 @@ DEPLOY_ROUTING_MODE=$(env_quote "${DEPLOY_ROUTING_MODE}")
 NEXT_PUBLIC_API_URL=$(env_quote "${NEXT_PUBLIC_API_URL}")
 NEXT_PUBLIC_SITE_URL=$(env_quote "${NEXT_PUBLIC_SITE_URL}")
 WEB_PUBLIC_URL=$(env_quote "${WEB_PUBLIC_URL}")
+WEB_INTERNAL_URL=$(env_quote "${WEB_INTERNAL_URL}")
 API_INTERNAL_URL=$(env_quote "${API_INTERNAL_URL}")
 STORAGE_PUBLIC_BASE_URL=$(env_quote "${STORAGE_PUBLIC_BASE_URL}")
 CORS_ORIGINS=$(env_quote "${CORS_ORIGINS}")

@@ -5,12 +5,10 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft, X } from 'lucide-react';
 
 import { ADMIN_NAV_ITEMS } from '@/lib/navigation';
-import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
-const brand = getClientBrandConfig();
-
 type AdminSidebarProps = {
+  siteName: string;
   collapsed: boolean;
   mobileOpen: boolean;
   onMobileClose: () => void;
@@ -18,6 +16,7 @@ type AdminSidebarProps = {
 };
 
 export function AdminSidebar({
+  siteName,
   collapsed,
   mobileOpen,
   onMobileClose,
@@ -45,7 +44,7 @@ export function AdminSidebar({
               {!collapsed && (
                 <div className="side-brand-text min-w-0">
                   <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">
-                    {brand.name}
+                    {siteName}
                   </p>
                   <p className="truncate text-xs text-[color:var(--admin-text-muted)]">
                     Painel CMS

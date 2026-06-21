@@ -15,7 +15,6 @@ import {
 import { ArtigosPageTitle } from '@/components/articles/ArtigosPageTitle';
 import { ArticleListingGridSkeleton } from '@/components/loading/ArticleListingGridSkeleton';
 import { ArticleListingToolbarSkeleton } from '@/components/loading/ArticleListingToolbarSkeleton';
-import { LoadingAnnouncer } from '@/components/loading/LoadingAnnouncer';
 import { getServerBrandConfig } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -55,9 +54,7 @@ export async function generateMetadata({
 
 export default function ArtigosPage({ searchParams }: ArtigosPageProps): React.JSX.Element {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10" aria-busy="true">
-      <LoadingAnnouncer />
-
+    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
       <Suspense fallback={null}>
         <ArticleListingHeader searchParams={searchParams} />
       </Suspense>

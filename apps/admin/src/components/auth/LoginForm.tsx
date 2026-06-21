@@ -9,12 +9,13 @@ import {
   LOGIN_RATE_LIMIT_ERROR,
   LOGIN_UNAVAILABLE_ERROR,
 } from '@/lib/auth/login-errors';
-import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
-const brand = getClientBrandConfig();
+type LoginFormProps = {
+  siteName: string;
+};
 
-export function LoginForm() {
+export function LoginForm({ siteName }: LoginFormProps) {
   const searchParams = useSearchParams();
   const adminToast = useAdminToast();
   const [email, setEmail] = useState('');
@@ -58,11 +59,11 @@ export function LoginForm() {
         <div className="admin-login-box w-full max-w-[24rem] rounded-[15px] border border-[color:rgba(24,42,90,0.12)] bg-[color:var(--admin-surface)] p-9 shadow-[0_0.35rem_1.25rem_var(--admin-shadow),0_1.25rem_2.5rem_rgba(24,42,90,0.07)]">
           <div className="admin-login-head mb-6 flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
-              {brand.name.charAt(0).toUpperCase()}
+              {siteName.charAt(0).toUpperCase()}
             </div>
             <div>
               <h1 className="main-title text-xl font-bold text-[color:var(--admin-navy)]">
-                {brand.name}
+                {siteName}
               </h1>
               <p className="subtitle text-sm text-[color:var(--admin-text-muted)]">Painel CMS</p>
             </div>

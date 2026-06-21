@@ -163,15 +163,16 @@ O servico **`admin`** no stack recebe em runtime `API_INTERNAL_URL`, `JWT_SECRET
 
 ### App / segurança
 
-| Secret                                                                 | Notas                                                                          |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                |
-| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev                                                     |
-| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                |
-| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                |
-| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                |
-| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico |
-| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                       |
+| Secret                                                                 | Notas                                                                               |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                     |
+| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev; **web** e **api** precisam do mesmo `REVALIDATE_SECRET` |
+| `WEB_INTERNAL_URL`                                                     | `http://web:3001` no Swarm — API chama revalidate na overlay (não via Traefik)      |
+| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                     |
+| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                     |
+| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                     |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico      |
+| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                            |
 
 ## Pipeline GitHub Actions
 

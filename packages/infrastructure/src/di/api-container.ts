@@ -176,8 +176,9 @@ export function buildApiContainer(env = loadEnv()) {
     },
   );
   const cache = new RedisCacheStore(cacheRedis);
+  const webRevalidatorBaseUrl = env.WEB_INTERNAL_URL ?? env.WEB_PUBLIC_URL;
   const webRevalidator = env.REVALIDATE_SECRET
-    ? new HttpPublicWebRevalidator(env.WEB_PUBLIC_URL, env.REVALIDATE_SECRET, logger)
+    ? new HttpPublicWebRevalidator(webRevalidatorBaseUrl, env.REVALIDATE_SECRET, logger)
     : new NoOpPublicWebRevalidator();
 
   const productRepository = new DrizzleProductRepository(db);

@@ -56,6 +56,14 @@ describe('brand config', () => {
     expect(brand.name).toBe('Desk Setup');
   });
 
+  it('strips wrapping double quotes from SITE_NAME', () => {
+    const brand = createBrandConfig({
+      SITE_NAME: '"Desk Setup"',
+    });
+
+    expect(brand.name).toBe('Desk Setup');
+  });
+
   it('getClientBrandConfig ignores server-only SITE_NAME for hydration-safe client bundles', () => {
     const brand = getClientBrandConfig({
       SITE_NAME: 'Marca Server',

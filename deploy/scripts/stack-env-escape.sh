@@ -27,6 +27,7 @@ export_stack_yaml_secrets() {
   export JWT_EXPIRES_IN_YAML
   export STORAGE_PUBLIC_BASE_URL_YAML
   export WEB_PUBLIC_URL_YAML
+  export WEB_INTERNAL_URL_YAML
   export SITE_NAME_YAML
   export COMPANY_LEGAL_NAME_YAML
   export CONTACT_EMAIL_YAML
@@ -49,6 +50,7 @@ export_stack_yaml_secrets() {
   CORS_ORIGINS_YAML="$(yaml_double_quote "${CORS_ORIGINS}")"
   STORAGE_PUBLIC_BASE_URL_YAML="$(yaml_double_quote "${STORAGE_PUBLIC_BASE_URL}")"
   WEB_PUBLIC_URL_YAML="$(yaml_double_quote "${WEB_PUBLIC_URL}")"
+  WEB_INTERNAL_URL_YAML="$(yaml_double_quote "${WEB_INTERNAL_URL}")"
   SITE_NAME_YAML="$(yaml_double_quote "${SITE_NAME}")"
   COMPANY_LEGAL_NAME_YAML="$(yaml_double_quote "${COMPANY_LEGAL_NAME}")"
   CONTACT_EMAIL_YAML="$(yaml_double_quote "${CONTACT_EMAIL}")"

@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 import {
@@ -5,7 +6,7 @@ import {
   generateArticleDetailMetadata,
 } from '@/components/articles/ArticleDetailMain';
 import { ArticleDetailHeroSkeleton } from '@/components/loading/ArticleDetailHeroSkeleton';
-import { LoadingAnnouncer } from '@/components/loading/LoadingAnnouncer';
+import { getArticle } from '@/lib/api/cached-fetchers';
 
 export const revalidate = 300;
 
@@ -17,16 +18,22 @@ export async function generateMetadata({
   return generateArticleDetailMetadata(params);
 }
 
-export default function ArtigoPage({
+export default async function ArtigoPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}): React.JSX.Element {
+}): Promise<React.JSX.Element> {
+  const { slug } = await params;
+  const article = await getArticle(slug);
+
+  if (!article) {
+    notFound();
+  }
+
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 md:px-6" aria-busy="true">
-      <LoadingAnnouncer />
+    <main className="mx-auto max-w-3xl px-4 py-10 md:px-6">
       <Suspense fallback={<ArticleDetailHeroSkeleton />}>
-        <ArticleDetailMain params={params} />
+        <ArticleDetailMain article={article} slug={slug} />
       </Suspense>
     </main>
   );

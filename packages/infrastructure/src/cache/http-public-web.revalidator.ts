@@ -29,10 +29,17 @@ export class HttpPublicWebRevalidator implements PublicWebRevalidator {
       if (!response.ok) {
         this.logger.warn('Public web revalidation failed', {
           status: response.status,
+          url: this.webPublicUrl,
           paths,
           layoutPaths,
         });
+        return;
       }
+
+      this.logger.info('Public web revalidation succeeded', {
+        paths,
+        layoutPaths,
+      });
     } catch (error) {
       this.logger.warn('Public web revalidation request failed', {
         error: error instanceof Error ? error.message : String(error),

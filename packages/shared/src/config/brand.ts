@@ -43,15 +43,30 @@ export function unescapeShellEnvValue(value: string): string {
   return value.replace(/\\([\\'"$` \n\r\t])/g, '$1');
 }
 
-function resolveBrandText(value: string | undefined, fallback: string): string {
+function stripWrappingQuotes(value: string): string {
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
+/** Normalize env / build-arg brand strings (quotes, bash escapes, whitespace). */
+export function normalizeBrandEnvValue(value: string | undefined): string | undefined {
   if (value === undefined) {
-    return fallback;
+    return undefined;
   }
   const trimmed = value.trim();
   if (trimmed.length === 0) {
-    return fallback;
+    return undefined;
   }
-  return unescapeShellEnvValue(trimmed);
+  return unescapeShellEnvValue(stripWrappingQuotes(trimmed));
+}
+
+function resolveBrandText(value: string | undefined, fallback: string): string {
+  return normalizeBrandEnvValue(value) ?? fallback;
 }
 
 function resolveSiteName(source: BrandEnvSource): string {
@@ -99,7 +114,7 @@ export function getBrandConfig(source: BrandEnvSource = process.env): BrandConfi
 /** Env keys safe for Next.js Client Components (SSR + browser must match). */
 export function createClientBrandEnvSource(env: BrandEnvSource = process.env): BrandEnvSource {
   return {
-    NEXT_PUBLIC_SITE_NAME: env.NEXT_PUBLIC_SITE_NAME,
+    NEXT_PUBLIC_SITE_NAME: normalizeBrandEnvValue(env.NEXT_PUBLIC_SITE_NAME),
     NEXT_PUBLIC_SITE_URL: env.NEXT_PUBLIC_SITE_URL,
   };
 }

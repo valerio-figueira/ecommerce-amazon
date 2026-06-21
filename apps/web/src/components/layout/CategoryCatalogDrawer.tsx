@@ -41,7 +41,17 @@ export function CategoryCatalogDrawer({
   }, [open]);
 
   if (categories.length === 0) {
-    return null;
+    return (
+      <button
+        type="button"
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 md:hidden"
+        disabled
+        aria-disabled="true"
+      >
+        <Menu className="size-4" aria-hidden />
+        Categorias
+      </button>
+    );
   }
 
   const drawerContent =
