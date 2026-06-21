@@ -1,4 +1,4 @@
-# Docker Swarm stack — vitrine MVP (path routing: /, /api, /admin).
+# Docker Swarm stack — vitrine MVP (subdomínios api./admin. ou paths /api, /admin em fase IP).
 # Renderizado por deploy/scripts/deploy.sh via envsubst antes de `docker stack deploy`.
 #
 # Variáveis ${...} entre aspas duplas — envsubst produz YAML válido (URLs, DATABASE_URL, cron).
@@ -136,13 +136,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
-        # /api/* → StripPrefix /api → Fastify na raiz interna.
-        - traefik.http.routers.vitrine-api.rule=PathPrefix(`/api`)
-        - traefik.http.routers.vitrine-api.entrypoints=${TRAEFIK_ENTRYPOINT}
-        - traefik.http.routers.vitrine-api.priority=30
-        - traefik.http.middlewares.vitrine-api-strip.stripprefix.prefixes=/api
-        - traefik.http.routers.vitrine-api.middlewares=vitrine-api-strip
-        - traefik.http.services.vitrine-api.loadbalancer.server.port=3000
+        ${TRAEFIK_API_ROUTER_LABELS}
         ${TRAEFIK_API_TLS_LABELS}
       update_config:
         parallelism: 1
@@ -218,11 +212,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
-        # Catch-all / — prioridade menor que /api e /admin.
-        - traefik.http.routers.vitrine-web.rule=PathPrefix(`/`)
-        - traefik.http.routers.vitrine-web.entrypoints=${TRAEFIK_ENTRYPOINT}
-        - traefik.http.routers.vitrine-web.priority=10
-        - traefik.http.services.vitrine-web.loadbalancer.server.port=3001
+        ${TRAEFIK_WEB_ROUTER_LABELS}
         ${TRAEFIK_WEB_TLS_LABELS}
       update_config:
         parallelism: 1
@@ -253,11 +243,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK}
-        # Next.js basePath=/admin — sem StripPrefix no Traefik.
-        - traefik.http.routers.vitrine-admin.rule=PathPrefix(`/admin`)
-        - traefik.http.routers.vitrine-admin.entrypoints=${TRAEFIK_ENTRYPOINT}
-        - traefik.http.routers.vitrine-admin.priority=20
-        - traefik.http.services.vitrine-admin.loadbalancer.server.port=3002
+        ${TRAEFIK_ADMIN_ROUTER_LABELS}
         ${TRAEFIK_ADMIN_TLS_LABELS}
       update_config:
         parallelism: 1

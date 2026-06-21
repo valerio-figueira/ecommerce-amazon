@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Admin CMS (Next.js standalone) — served at /admin via Traefik + basePath.
+# Admin CMS (Next.js standalone) — produção em admin.{dominio} (sem basePath) ou /admin em fase IP.
 #
 FROM node:20-alpine AS deps
 WORKDIR /app
@@ -22,7 +22,8 @@ ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
 ARG WEB_PUBLIC_URL
 ARG SITE_NAME
-ARG ADMIN_BASE_PATH=/admin
+ARG ADMIN_BASE_PATH=
+ARG ADMIN_HEALTH_PATH=/login
 
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
@@ -42,6 +43,8 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV ADMIN_PORT=3002
 ENV PORT=3002
+ARG ADMIN_HEALTH_PATH=/login
+ENV ADMIN_HEALTH_PATH=${ADMIN_HEALTH_PATH}
 
 COPY --from=build /app/apps/admin/.next/standalone ./
 COPY --from=build /app/apps/admin/.next/static ./apps/admin/.next/static
@@ -50,6 +53,6 @@ WORKDIR /app/apps/admin
 EXPOSE 3002
 
 HEALTHCHECK --interval=30s --timeout=8s --start-period=60s --retries=3 \
-  CMD node -e "require('http').get('http://127.0.0.1:3002/admin/login',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))"
+  CMD node -e "require('http').get('http://127.0.0.1:3002'+(process.env.ADMIN_HEALTH_PATH||'/login'),r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))"
 
 CMD ["node", "server.js"]

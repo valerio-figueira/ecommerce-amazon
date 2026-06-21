@@ -5,28 +5,47 @@ Produção MVP em VPS único (Debian 12) com **Docker Swarm**, roteamento por ca
 ## Por quê
 
 - Validar o MVP em um VPS (2 vCPU / 4 GB) sem depender de PaaS
-- Mesmos paths em fase IP e fase domínio: `/`, `/api/*`, `/admin/*`
+- **Subdomínios** em produção com domínio: vitrine, `api.` e `admin.`; fase IP mantém paths `/api` e `/admin`
 - Imagens no GHCR; secrets injetados via GitHub; deploy por SSH
 
 Plano de referência: [`.cursor/plans/docker_swarm_mvp_deploy_193167d2.plan.md`](../.cursor/plans/docker_swarm_mvp_deploy_193167d2.plan.md)
 
 ## Arquitetura
 
+### Produção com domínio (`DEPLOY_ROUTING_MODE=subdomain`)
+
+`PUBLIC_BASE_URL` = vitrine canônica (ex.: `https://www.seudominio.com.br`). URLs derivadas em `render-env.sh`:
+
+| Serviço | URL pública                       |
+| ------- | --------------------------------- |
+| Vitrine | `PUBLIC_BASE_URL`                 |
+| API     | `https://api.seudominio.com.br`   |
+| Admin   | `https://admin.seudominio.com.br` |
+
 ```
-Visitante → Traefik :80 (ou :443 com TLS)
-              ├─ /           → web:3001
-              ├─ /api/*      → api:3000  (StripPrefix /api)
-              └─ /admin/*    → admin:3002 (Next basePath /admin)
+Visitante → Traefik :80 / :443
+              ├─ Host www.seudominio.com.br (+ apex redirect) → web:3001
+              ├─ Host api.seudominio.com.br                    → api:3000
+              └─ Host admin.seudominio.com.br                  → admin:3002 (sem basePath)
 
 api/worker → postgres, redis (rede overlay interna)
 ```
 
+### Fase IP (`DEPLOY_ROUTING_MODE=path`)
+
+```
+Visitante → Traefik :80
+              ├─ /           → web:3001
+              ├─ /api/*      → api:3000  (StripPrefix /api)
+              └─ /admin/*    → admin:3002 (Next basePath /admin)
+```
+
 ### Fases de exposição
 
-| Fase     | `TLS_ENABLED` | `PUBLIC_BASE_URL`        | Acesso                |
-| -------- | ------------- | ------------------------ | --------------------- |
-| IP (MVP) | `false`       | `http://SEU_IP`          | HTTP porta 80         |
-| Domínio  | `true`        | `https://seudominio.com` | HTTPS (Let's Encrypt) |
+| Fase     | `TLS_ENABLED` | `PUBLIC_BASE_URL`               | Acesso                                |
+| -------- | ------------- | ------------------------------- | ------------------------------------- |
+| IP (MVP) | `false`       | `http://SEU_IP`                 | HTTP porta 80                         |
+| Domínio  | `true`        | `https://www.seudominio.com.br` | HTTPS + subdomínios `api.` / `admin.` |
 
 Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando para a VPS.
 
@@ -45,6 +64,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/wait-service-http.sh`     | Aguarda web/admin HTTP no container (cold start Next.js)                 |
 | `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
 | `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ou operador admin ausente (pos-migrate)      |
+| `deploy/scripts/tls-hosts.sh`             | Resolução www/apex, subdomínios api./admin., labels Traefik              |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
@@ -125,12 +145,16 @@ Cole **tudo** no secret (não use só a linha do meio). Secrets de repositório 
 
 ### URLs derivadas (automáticas em `render-env.sh`)
 
-A partir de `PUBLIC_BASE_URL`:
+A partir de `PUBLIC_BASE_URL` (ex.: `https://www.seudominio.com.br`):
 
-- `NEXT_PUBLIC_API_URL` = `{PUBLIC_BASE_URL}/api`
-- `WEB_PUBLIC_URL` / `NEXT_PUBLIC_SITE_URL` = `{PUBLIC_BASE_URL}`
-- `STORAGE_PUBLIC_BASE_URL` = `{PUBLIC_BASE_URL}/api/uploads`
-- `CORS_ORIGINS` = `{PUBLIC_BASE_URL}` (ou override manual)
+| Variável                                  | Domínio (subdomain)                       | Fase IP                         |
+| ----------------------------------------- | ----------------------------------------- | ------------------------------- |
+| `API_PUBLIC_URL` / `NEXT_PUBLIC_API_URL`  | `https://api.seudominio.com.br`           | `{PUBLIC_BASE_URL}/api`         |
+| `ADMIN_PUBLIC_URL`                        | `https://admin.seudominio.com.br`         | `{PUBLIC_BASE_URL}/admin`       |
+| `WEB_PUBLIC_URL` / `NEXT_PUBLIC_SITE_URL` | `{PUBLIC_BASE_URL}`                       | idem                            |
+| `STORAGE_PUBLIC_BASE_URL`                 | `{API_PUBLIC_URL}/uploads`                | `{PUBLIC_BASE_URL}/api/uploads` |
+| `CORS_ORIGINS`                            | vitrine + admin (+ apex/www se aplicável) | `{PUBLIC_BASE_URL}`             |
+| `DEPLOY_ROUTING_MODE`                     | `subdomain`                               | `path`                          |
 
 Interno (Swarm): `API_INTERNAL_URL=http://api:3000`, `POSTGRES_HOST=postgres`, `REDIS_HOST=redis`
 
@@ -189,14 +213,17 @@ Diretórios na VPS:
 
 ## Migrar IP → domínio + HTTPS
 
-1. DNS `A` do host canônico **e** do alias (apex ↔ www) → IP da VPS  
-   Ex.: `PUBLIC_BASE_URL=https://www.seudominio.com.br` exige também `seudominio.com.br` → mesmo IP.
+1. DNS `A` → IP da VPS: **www**, **@** (apex), **api**, **admin**  
+   Ex.: `PUBLIC_BASE_URL=https://www.seudominio.com.br` exige `api.seudominio.com.br` e `admin.seudominio.com.br`.
 2. Atualizar secrets: `PUBLIC_BASE_URL=https://www.seudominio.com.br`, `TLS_ENABLED=true`, `ACME_EMAIL=...`
 3. `ufw allow 443/tcp` na VPS
-4. Redeploy (push ou workflow_dispatch) — rebuild web/admin + Traefik HTTPS
-5. Validar: `https://www.seudominio.com.br/api/health/ready`, `https://seudominio.com.br/` (redirect ou mesmo cert)
+4. Redeploy (push ou workflow_dispatch) — **rebuild obrigatório** de `web` e `admin` (URLs baked no build)
+5. Validar:
+   - `https://www.seudominio.com.br/`
+   - `https://api.seudominio.com.br/health/ready`
+   - `https://admin.seudominio.com.br/login`
 
-**www + apex:** o deploy inclui o alias (apex ou `www.`) como SAN no certificado Let's Encrypt e redireciona o alias para o host de `PUBLIC_BASE_URL`. Sem registro DNS do alias, o ACME falha para esse nome e o browser verá `TRAEFIK DEFAULT CERT` no alias.
+**www + apex + api + admin:** o deploy inclui todos no certificado Let's Encrypt (SAN) e redireciona apex → host de `PUBLIC_BASE_URL`. Sem registro DNS de **api** ou **admin**, o ACME falha e o browser verá `TRAEFIK DEFAULT CERT` nesses hosts.
 
 **ACME:** o desafio HTTP do Let's Encrypt precisa responder em `http://dominio/.well-known/acme-challenge/` na porta **80**. O `traefik.https.yml` **não** usa redirect global no entrypoint `:80` (isso quebraria o challenge e o browser veria `TRAEFIK DEFAULT CERT`). Redirect HTTP→HTTPS é feito via router de baixa prioridade.
 
@@ -276,22 +303,22 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma                                    | Causa provável                                                                               | Ação                                                                                                                                                      |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 404 em `/` no smoke test                   | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine)       | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                           |
-| 404 em `/admin`                            | `ADMIN_BASE_PATH` ausente no build admin                                                     | Rebuild imagem admin com `/admin`                                                                                                                         |
-| Login admin mostra erro / nao entra        | `admin` sem `API_INTERNAL_URL`/`JWT_SECRET` no stack, ou operador nao seedado                | Redeploy com stack atualizado; na VPS: `RUN_SEED=true bash deploy/scripts/ensure-bootstrap-seed.sh`                                                       |
-| 404 em `/api/...`                          | StripPrefix ou API down                                                                      | `curl` interno + logs `vitrine_api`                                                                                                                       |
-| CORS no browser                            | `CORS_ORIGINS` sem origem exata                                                              | Usar `PUBLIC_BASE_URL` sem path                                                                                                                           |
-| ACME falhou / `TRAEFIK DEFAULT CERT`       | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado, alias sem DNS | Usar `traefik.https.yml` com redirect via router; DNS **apex e www**; logs `vitrine_traefik`; renovar volume `traefik_letsencrypt` se cert antigo sem SAN |
-| `www` OK mas apex com cert default         | Certificado LE emitido só para host de `PUBLIC_BASE_URL` (ex. só `www`)                      | Registro `A` do apex; redeploy (SAN + redirect automaticos); limpar `traefik_letsencrypt` se necessario                                                   |
-| Smoke test `HTTP 000` com HTTPS            | `curl` rejeita cert self-signed do Traefik (ACME ainda nao emitiu)                           | Corrigir ACME primeiro; apos LE valido, smoke passa sem `-k`                                                                                              |
-| UFW `UnicodeEncodeError`                   | Comentários com acentos em `/etc/ufw/after.rules`                                            | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                                                                                |
-| `yaml: could not find expected ':'`        | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                                     | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                                                                                      |
-| `yaml: line 14: did not find expected key` | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`                    | Atualizar `deploy/scripts/deploy.sh` e redeploy                                                                                                           |
-| `not a swarm manager`                      | `docker swarm init` nunca rodou (bootstrap interrompido)                                     | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                   |
-| OOM 4 GB                                   | Limites de memória                                                                           | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                            |
-| Migrate falhou                             | Postgres não pronto                                                                          | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
+| Sintoma                                      | Causa provável                                                                               | Ação                                                                                                                                                      |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 404 em `/` no smoke test                     | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine)       | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                           |
+| 404 em `/admin`                              | `ADMIN_BASE_PATH` ausente no build admin                                                     | Rebuild imagem admin com `/admin`                                                                                                                         |
+| Login admin mostra erro / nao entra          | `admin` sem `API_INTERNAL_URL`/`JWT_SECRET` no stack, ou operador nao seedado                | Redeploy com stack atualizado; na VPS: `RUN_SEED=true bash deploy/scripts/ensure-bootstrap-seed.sh`                                                       |
+| 404 em `/api/...`                            | StripPrefix ou API down                                                                      | `curl` interno + logs `vitrine_api`                                                                                                                       |
+| CORS no browser                              | `CORS_ORIGINS` sem origem exata                                                              | Usar `PUBLIC_BASE_URL` sem path                                                                                                                           |
+| ACME falhou / `TRAEFIK DEFAULT CERT`         | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado, alias sem DNS | Usar `traefik.https.yml` com redirect via router; DNS **apex e www**; logs `vitrine_traefik`; renovar volume `traefik_letsencrypt` se cert antigo sem SAN |
+| `www` OK mas apex/api/admin com cert default | Certificado LE antigo sem SAN ou DNS ausente em subdomínios                                  | Registros `A` para apex, `api`, `admin`; limpar `traefik_letsencrypt` e redeploy                                                                          |
+| Smoke test `HTTP 000` com HTTPS              | `curl` rejeita cert self-signed do Traefik (ACME ainda nao emitiu)                           | Corrigir ACME primeiro; apos LE valido, smoke passa sem `-k`                                                                                              |
+| UFW `UnicodeEncodeError`                     | Comentários com acentos em `/etc/ufw/after.rules`                                            | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                                                                                |
+| `yaml: could not find expected ':'`          | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                                     | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                                                                                      |
+| `yaml: line 14: did not find expected key`   | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`                    | Atualizar `deploy/scripts/deploy.sh` e redeploy                                                                                                           |
+| `not a swarm manager`                        | `docker swarm init` nunca rodou (bootstrap interrompido)                                     | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                   |
+| OOM 4 GB                                     | Limites de memória                                                                           | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                            |
+| Migrate falhou                               | Postgres não pronto                                                                          | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
 
 ## Escala futura
 

@@ -59,18 +59,27 @@ PUBLIC_BASE_URL="${PUBLIC_BASE_URL%/}"
 export NODE_ENV="${NODE_ENV:-production}"
 export TLS_ENABLED="${TLS_ENABLED:-false}"
 
-# URLs públicas derivadas (path routing: /api, /admin).
-export NEXT_PUBLIC_API_URL="${PUBLIC_BASE_URL}/api"
+# URLs públicas derivadas a partir de PUBLIC_BASE_URL (subdomínios api./admin. em produção com domínio).
+resolve_public_hosts_from_base_url "${PUBLIC_BASE_URL}"
+export API_PUBLIC_URL
+export ADMIN_PUBLIC_URL
+export NEXT_PUBLIC_API_URL="${API_PUBLIC_URL}"
 export NEXT_PUBLIC_SITE_URL="${PUBLIC_BASE_URL}"
 export WEB_PUBLIC_URL="${PUBLIC_BASE_URL}"
-export STORAGE_PUBLIC_BASE_URL="${PUBLIC_BASE_URL}/api/uploads"
-export CORS_ORIGINS="${CORS_ORIGINS:-${PUBLIC_BASE_URL}}"
+export STORAGE_PUBLIC_BASE_URL="${API_PUBLIC_URL}/uploads"
+
+if [[ "${DEPLOY_ROUTING_MODE}" == "subdomain" ]]; then
+  export CORS_ORIGINS="${CORS_ORIGINS:-${PUBLIC_BASE_URL},${ADMIN_PUBLIC_URL}}"
+else
+  export CORS_ORIGINS="${CORS_ORIGINS:-${PUBLIC_BASE_URL}}"
+fi
 if alt_origin="$(derive_alt_public_origin "${PUBLIC_BASE_URL}")"; then
   if [[ ",${CORS_ORIGINS}," != *",${alt_origin},"* ]]; then
     export CORS_ORIGINS="${CORS_ORIGINS},${alt_origin}"
   fi
 fi
 export API_INTERNAL_URL="${API_INTERNAL_URL:-http://api:3000}"
+export DEPLOY_ROUTING_MODE="${DEPLOY_ROUTING_MODE}"
 
 # Docker Swarm service hostnames (overlay network).
 export POSTGRES_HOST="${POSTGRES_HOST:-postgres}"
@@ -132,6 +141,9 @@ chmod 600 "${tmp_env}"
 NODE_ENV=$(env_quote "${NODE_ENV}")
 TLS_ENABLED=$(env_quote "${TLS_ENABLED}")
 PUBLIC_BASE_URL=$(env_quote "${PUBLIC_BASE_URL}")
+API_PUBLIC_URL=$(env_quote "${API_PUBLIC_URL}")
+ADMIN_PUBLIC_URL=$(env_quote "${ADMIN_PUBLIC_URL}")
+DEPLOY_ROUTING_MODE=$(env_quote "${DEPLOY_ROUTING_MODE}")
 NEXT_PUBLIC_API_URL=$(env_quote "${NEXT_PUBLIC_API_URL}")
 NEXT_PUBLIC_SITE_URL=$(env_quote "${NEXT_PUBLIC_SITE_URL}")
 WEB_PUBLIC_URL=$(env_quote "${WEB_PUBLIC_URL}")

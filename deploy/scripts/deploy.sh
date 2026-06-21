@@ -43,28 +43,27 @@ ensure_swarm_manager
 
 echo "==> Selecionando config Traefik (TLS_ENABLED=${TLS_ENABLED})"
 mkdir -p "${APP_DIR}/traefik"
+
+resolve_public_hosts_from_base_url "${PUBLIC_BASE_URL}"
+resolve_tls_hosts_from_public_host "${WEB_CANONICAL_HOST}"
+build_tls_sans_csv "${WEB_CANONICAL_HOST}"
+
 if [[ "${TLS_ENABLED}" == "true" ]]; then
   : "${ACME_EMAIL:?ACME_EMAIL is required when TLS_ENABLED=true}"
-  PUBLIC_HOST="${PUBLIC_BASE_URL#*://}"
-  PUBLIC_HOST="${PUBLIC_HOST%%/*}"
-  resolve_tls_hosts_from_public_host "${PUBLIC_HOST}"
   export TRAEFIK_ENTRYPOINT=websecure
-  export TRAEFIK_API_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-api "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
-  export TRAEFIK_WEB_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-web "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
-  export TRAEFIK_ADMIN_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-admin "${TLS_CANONICAL_HOST}" "${TLS_SAN_HOST}")"
+  export TRAEFIK_API_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-api "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
+  export TRAEFIK_WEB_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-web "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
+  export TRAEFIK_ADMIN_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-admin "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
   export TRAEFIK_HTTPS_PORT_BLOCK=$'- target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
-  export TRAEFIK_TLS_MAIN="${TLS_CANONICAL_HOST}"
-  export TRAEFIK_TLS_SAN="${TLS_SAN_HOST}"
-  export TRAEFIK_CANONICAL_HOST="${TLS_CANONICAL_HOST}"
+  export TRAEFIK_TLS_MAIN="${WEB_CANONICAL_HOST}"
+  export TRAEFIK_CANONICAL_HOST="${WEB_CANONICAL_HOST}"
   export TRAEFIK_REDIRECT_FROM_HOST="${TLS_REDIRECT_FROM_HOST}"
   export TRAEFIK_REDIRECT_FROM_HOST_REGEX="$(escape_domain_regex "${TLS_REDIRECT_FROM_HOST}")"
+  build_traefik_tls_sans_yaml "${TLS_SANS_CSV}"
+  export TRAEFIK_TLS_SANS_YAML
   export ACME_EMAIL
-  if [[ "${TLS_SAN_HOST}" != "${TLS_CANONICAL_HOST}" ]]; then
-    echo "    TLS: main=${TLS_CANONICAL_HOST} sans=${TLS_SAN_HOST} (redirect alias → canonico)"
-  else
-    echo "    TLS: main=${TLS_CANONICAL_HOST}"
-  fi
-  envsubst '${ACME_EMAIL} ${TRAEFIK_DOCKER_NETWORK} ${TRAEFIK_TLS_MAIN} ${TRAEFIK_TLS_SAN} ${TRAEFIK_REDIRECT_FROM_HOST} ${TRAEFIK_REDIRECT_FROM_HOST_REGEX} ${TRAEFIK_CANONICAL_HOST}' \
+  echo "    TLS: main=${WEB_CANONICAL_HOST} sans=${TLS_SANS_CSV:-<none>}"
+  envsubst '${ACME_EMAIL} ${TRAEFIK_DOCKER_NETWORK} ${TRAEFIK_TLS_MAIN} ${TRAEFIK_TLS_SANS_YAML} ${TRAEFIK_REDIRECT_FROM_HOST} ${TRAEFIK_REDIRECT_FROM_HOST_REGEX} ${TRAEFIK_CANONICAL_HOST}' \
     <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
 else
   export TRAEFIK_ENTRYPOINT=web
@@ -74,6 +73,11 @@ else
   export TRAEFIK_HTTPS_PORT_BLOCK=""
   envsubst '${TRAEFIK_DOCKER_NETWORK}' <"${REPO_DEPLOY_DIR}/traefik/traefik.http.yml" >"${APP_DIR}/traefik/traefik.yml"
 fi
+
+export TRAEFIK_API_ROUTER_LABELS="$(build_traefik_api_router_labels "${TRAEFIK_ENTRYPOINT}")"
+export TRAEFIK_WEB_ROUTER_LABELS="$(build_traefik_web_router_labels "${TRAEFIK_ENTRYPOINT}")"
+export TRAEFIK_ADMIN_ROUTER_LABELS="$(build_traefik_admin_router_labels "${TRAEFIK_ENTRYPOINT}")"
+echo "    Routing (${DEPLOY_ROUTING_MODE}): web=${PUBLIC_BASE_URL} api=${API_PUBLIC_URL} admin=${ADMIN_PUBLIC_URL}"
 
 echo "==> Renderizando stack Swarm"
 mkdir -p "${APP_DIR}/stack"
@@ -98,17 +102,21 @@ export RUN_SEED="${RUN_SEED:-false}"
 bash "${SCRIPT_DIR}/ensure-bootstrap-seed.sh"
 
 echo "==> Aguardando apps no stack (cold start Next.js)"
+ADMIN_PROBE_PATH="/login"
+if [[ "${DEPLOY_ROUTING_MODE}" == "path" ]]; then
+  ADMIN_PROBE_PATH="/admin/login"
+fi
 bash "${SCRIPT_DIR}/wait-service-http.sh" web / 3001
-bash "${SCRIPT_DIR}/wait-service-http.sh" admin /admin/login 3002
+bash "${SCRIPT_DIR}/wait-service-http.sh" admin "${ADMIN_PROBE_PATH}" 3002
 
-echo "==> Smoke tests em ${PUBLIC_BASE_URL}"
-bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/api/health/ready" 200
-echo "    /api/health/ready OK"
+echo "==> Smoke tests (web=${PUBLIC_BASE_URL}, api=${API_PUBLIC_URL}, admin=${ADMIN_PUBLIC_URL})"
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${API_PUBLIC_URL}/health/ready" 200
+echo "    API /health/ready OK"
 
 bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/" "200,304"
-echo "    / OK"
+echo "    Web / OK"
 
-bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/admin/login" "200,304"
-echo "    /admin/login OK"
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${ADMIN_PUBLIC_URL}/login" "200,304"
+echo "    Admin /login OK"
 
 echo "==> Deploy concluído com sucesso"

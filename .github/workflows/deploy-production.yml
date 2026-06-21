@@ -137,6 +137,25 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Resolve production URLs
+        id: public_urls
+        run: |
+          # shellcheck disable=SC1091
+          source deploy/scripts/tls-hosts.sh
+          resolve_public_hosts_from_base_url "${{ secrets.PUBLIC_BASE_URL }}"
+          if [[ "${ADMIN_BASE_PATH}" == "/admin" ]]; then
+            admin_health_path="/admin/login"
+          else
+            admin_health_path="/login"
+          fi
+          {
+            echo "api_url=${API_PUBLIC_URL}"
+            echo "admin_url=${ADMIN_PUBLIC_URL}"
+            echo "admin_base_path=${ADMIN_BASE_PATH}"
+            echo "admin_health_path=${admin_health_path}"
+            echo "storage_public_base_url=${API_PUBLIC_URL}/uploads"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Validate build-time secrets
         if: matrix.app == 'web' || matrix.app == 'admin'
         run: |
@@ -165,13 +184,14 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
           build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.PUBLIC_BASE_URL }}/api
+            NEXT_PUBLIC_API_URL=${{ steps.public_urls.outputs.api_url }}
             NEXT_PUBLIC_SITE_URL=${{ secrets.PUBLIC_BASE_URL }}
             WEB_PUBLIC_URL=${{ secrets.PUBLIC_BASE_URL }}
             API_INTERNAL_URL=http://api:3000
             SITE_NAME=${{ secrets.SITE_NAME }}
-            STORAGE_PUBLIC_BASE_URL=${{ secrets.PUBLIC_BASE_URL }}/api/uploads
-            ADMIN_BASE_PATH=/admin
+            STORAGE_PUBLIC_BASE_URL=${{ steps.public_urls.outputs.storage_public_base_url }}
+            ADMIN_BASE_PATH=${{ steps.public_urls.outputs.admin_base_path }}
+            ADMIN_HEALTH_PATH=${{ steps.public_urls.outputs.admin_health_path }}
 
   deploy_production:
     needs: build_and_push

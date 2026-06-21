@@ -20,7 +20,7 @@ const siteUrl =
   process.env['NEXT_PUBLIC_SITE_URL']?.trim() ||
   `http://localhost:${process.env['WEB_PORT'] ?? '3001'}`;
 
-// Production Swarm serves admin at /admin via Traefik; leave unset for local dev (localhost:3002).
+// Production Swarm serves admin at admin.{dominio} (sem basePath); fase IP usa /admin via ADMIN_BASE_PATH.
 const adminBasePath = process.env['ADMIN_BASE_PATH']?.trim() ?? '';
 
 const nextConfig: NextConfig = {

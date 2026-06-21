@@ -6,7 +6,7 @@
 # Redirect HTTP->HTTPS via router de baixa prioridade; LE tem precedência interna.
 #
 # Variáveis (envsubst): ACME_EMAIL, TRAEFIK_DOCKER_NETWORK, TRAEFIK_TLS_MAIN,
-# TRAEFIK_TLS_SAN, TRAEFIK_REDIRECT_FROM_HOST, TRAEFIK_REDIRECT_FROM_HOST_REGEX,
+# TRAEFIK_TLS_SANS_YAML, TRAEFIK_REDIRECT_FROM_HOST, TRAEFIK_REDIRECT_FROM_HOST_REGEX,
 # TRAEFIK_CANONICAL_HOST
 
 api:
@@ -44,7 +44,7 @@ http:
       service: noop@internal
       priority: 1
 
-    # Alias (apex ou www) → host canônico de PUBLIC_BASE_URL (SEO + certificado único).
+    # Alias vitrine (apex ou www) → host canônico de PUBLIC_BASE_URL.
     alias-to-canonical-http:
       rule: Host(`${TRAEFIK_REDIRECT_FROM_HOST}`)
       entryPoints:
@@ -67,8 +67,7 @@ http:
         domains:
           - main: ${TRAEFIK_TLS_MAIN}
             sans:
-              - ${TRAEFIK_TLS_SAN}
-
+${TRAEFIK_TLS_SANS_YAML}
   middlewares:
     redirect-to-https:
       redirectScheme:
