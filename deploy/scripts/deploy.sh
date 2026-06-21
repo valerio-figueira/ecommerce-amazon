@@ -46,7 +46,7 @@ if [[ "${TLS_ENABLED}" == "true" ]]; then
   export TRAEFIK_API_TLS_LABELS=$'- traefik.http.routers.vitrine-api.tls=true\n        - traefik.http.routers.vitrine-api.tls.certresolver=letsencrypt'
   export TRAEFIK_WEB_TLS_LABELS=$'- traefik.http.routers.vitrine-web.tls=true\n        - traefik.http.routers.vitrine-web.tls.certresolver=letsencrypt'
   export TRAEFIK_ADMIN_TLS_LABELS=$'- traefik.http.routers.vitrine-admin.tls=true\n        - traefik.http.routers.vitrine-admin.tls.certresolver=letsencrypt'
-  export TRAEFIK_HTTPS_PORT_BLOCK=$'      - target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
+  export TRAEFIK_HTTPS_PORT_BLOCK=$'- target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
   envsubst <"${REPO_DEPLOY_DIR}/traefik/traefik.https.yml" >"${APP_DIR}/traefik/traefik.yml"
 else
   export TRAEFIK_ENTRYPOINT=web
