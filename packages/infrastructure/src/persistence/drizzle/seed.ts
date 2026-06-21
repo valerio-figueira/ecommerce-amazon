@@ -111,7 +111,7 @@ const PEXELS = {
 } as const;
 
 async function runSeed(): Promise<void> {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env['NODE_ENV'] !== 'production') {
     loadDotenvFromMonorepoRoot();
   }
 
