@@ -3,6 +3,11 @@ import { z } from 'zod';
 
 import { getSessionCookieMaxAge } from '@/lib/auth/jwt-expiry';
 import { ADMIN_SESSION_COOKIE, getApiUrl } from '@/lib/auth/constants';
+import {
+  GENERIC_LOGIN_ERROR,
+  LOGIN_RATE_LIMIT_ERROR,
+  LOGIN_UNAVAILABLE_ERROR,
+} from '@/lib/auth/login-errors';
 import { SESSION_COOKIE_OPTIONS } from '@/lib/auth/session-guard';
 
 const LoginBodySchema = z.object({
@@ -12,10 +17,6 @@ const LoginBodySchema = z.object({
 
 const LoginResponseSchema = z.object({
   token: z.string().min(1),
-});
-
-const LoginErrorSchema = z.object({
-  error: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -36,39 +37,25 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     });
   } catch {
-    return NextResponse.json(
-      { error: 'Serviço indisponível. Tente novamente em instantes.' },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: LOGIN_UNAVAILABLE_ERROR }, { status: 503 });
   }
 
   const rawPayload: unknown = await response.json().catch(() => null);
 
   if (response.status === 429) {
-    const errorPayload = LoginErrorSchema.safeParse(rawPayload);
-    return NextResponse.json(
-      {
-        error: errorPayload.success
-          ? errorPayload.data.error
-          : 'Muitas tentativas de login. Tente novamente mais tarde.',
-      },
-      { status: 429 },
-    );
+    return NextResponse.json({ error: LOGIN_RATE_LIMIT_ERROR }, { status: 429 });
   }
 
   if (response.status === 503) {
-    return NextResponse.json(
-      { error: 'Serviço indisponível. Tente novamente em instantes.' },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: LOGIN_UNAVAILABLE_ERROR }, { status: 503 });
   }
 
   if (!response.ok) {
-    const errorPayload = LoginErrorSchema.safeParse(rawPayload);
-    return NextResponse.json(
-      { error: errorPayload.success ? errorPayload.data.error : 'E-mail ou senha inválidos' },
-      { status: response.status === 401 ? 401 : 400 },
-    );
+    console.error('Admin login upstream failed', {
+      status: response.status,
+      apiUrl: getApiUrl(),
+    });
+    return NextResponse.json({ error: GENERIC_LOGIN_ERROR }, { status: 401 });
   }
 
   const payload = LoginResponseSchema.safeParse(rawPayload);

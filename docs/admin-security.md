@@ -15,15 +15,15 @@ Plano de referência: [`.cursor/plans/admin_security_hardening_c382d2c0.plan.md`
 
 ## Modelo de ameaças (resumo)
 
-| Ameaça                    | Mitigação                                                |
-| ------------------------- | -------------------------------------------------------- |
-| XSS roubando token        | Cookie `httpOnly` + `SameSite=Lax`                       |
-| Sessão sem backend        | Layout confirma `GET /admin/auth/session` antes do shell |
-| JWT após desativação      | Endpoint valida `operators.status === active`            |
-| Brute force no login      | Rate limit 429 + mensagem uniforme de credenciais        |
-| Vazamento de hashes no DB | bcrypt + **pepper** (`PASSWORD_PEPPER`)                  |
-| Enumeração de e-mail      | Mesma mensagem para usuário inexistente/senha errada     |
-| Shell exposto com API off | Redirect para `/servico-indisponivel` (sem sidebar)      |
+| Ameaça                    | Mitigação                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| XSS roubando token        | Cookie `httpOnly` + `SameSite=Lax`                                                    |
+| Sessão sem backend        | Layout confirma `GET /admin/auth/session` antes do shell                              |
+| JWT após desativação      | Endpoint valida `operators.status === active`                                         |
+| Brute force no login      | Rate limit 429 + mensagem uniforme de credenciais                                     |
+| Vazamento de hashes no DB | bcrypt + **pepper** (`PASSWORD_PEPPER`)                                               |
+| Enumeração de e-mail      | Mesma mensagem para usuário inexistente/senha errada; BFF não repassa detalhes da API |
+| Shell exposto com API off | Redirect para `/servico-indisponivel` (sem sidebar)                                   |
 
 ## Fluxo fail-closed
 

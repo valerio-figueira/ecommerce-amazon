@@ -4,6 +4,11 @@ import { useSearchParams } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
 import { useAdminToast } from '@/components/ui/admin-toast';
+import {
+  GENERIC_LOGIN_ERROR,
+  LOGIN_RATE_LIMIT_ERROR,
+  LOGIN_UNAVAILABLE_ERROR,
+} from '@/lib/auth/login-errors';
 import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
@@ -28,25 +33,11 @@ export function LoginForm() {
       });
 
       if (!response.ok) {
-        let errorMessage = 'E-mail ou senha inválidos';
+        let errorMessage = GENERIC_LOGIN_ERROR;
         if (response.status === 503) {
-          errorMessage = 'Serviço indisponível. Tente novamente em instantes.';
+          errorMessage = LOGIN_UNAVAILABLE_ERROR;
         } else if (response.status === 429) {
-          errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
-        } else {
-          try {
-            const body: unknown = await response.json();
-            if (
-              typeof body === 'object' &&
-              body !== null &&
-              'error' in body &&
-              typeof body.error === 'string'
-            ) {
-              errorMessage = body.error;
-            }
-          } catch {
-            // keep default message
-          }
+          errorMessage = LOGIN_RATE_LIMIT_ERROR;
         }
         adminToast.error(errorMessage);
         return;

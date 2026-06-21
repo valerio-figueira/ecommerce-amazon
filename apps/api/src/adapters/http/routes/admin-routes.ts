@@ -58,7 +58,10 @@ export function registerAdminRoutes(app: FastifyInstance, container: ApiContaine
 
       if (!result.ok) {
         loginRateLimiter.recordFailure(clientIp);
-        return reply.status(401).send({ error: result.error.message, code: result.error.code });
+        return reply.status(401).send({
+          error: 'E-mail ou senha inválidos',
+          code: 'AUTHENTICATION_FAILED',
+        });
       }
 
       loginRateLimiter.reset(clientIp);

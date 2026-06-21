@@ -1122,6 +1122,7 @@ async function seedOperator(
     await db
       .update(schema.operators)
       .set({
+        email: env.ADMIN_SEED_EMAIL.toLowerCase(),
         passwordHash,
         role: 'admin',
         ...operatorProfile,

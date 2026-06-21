@@ -44,7 +44,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/wait-postgres.sh`         | Aguarda Postgres saudável antes de migrate                               |
 | `deploy/scripts/wait-service-http.sh`     | Aguarda web/admin HTTP no container (cold start Next.js)                 |
 | `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
-| `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ausente (pos-migrate)                        |
+| `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ou operador admin ausente (pos-migrate)      |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                            |
 | `.github/workflows/ci.yml`                | PR: lint + testes                                                        |
 | `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                            |
@@ -134,17 +134,19 @@ A partir de `PUBLIC_BASE_URL`:
 
 Interno (Swarm): `API_INTERNAL_URL=http://api:3000`, `POSTGRES_HOST=postgres`, `REDIS_HOST=redis`
 
+O servico **`admin`** no stack recebe em runtime `API_INTERNAL_URL`, `JWT_SECRET` e `JWT_EXPIRES_IN` (BFF de login e validacao de sessao na rede overlay — sem hairpin pela URL publica).
+
 ### App / segurança
 
-| Secret                                                                 | Notas                                                                                         |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                               |
-| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev                                                                    |
-| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                               |
-| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                               |
-| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                               |
-| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Só primeiro deploy com seed (cria operador admin; configure contas afiliado no painel depois) |
-| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                                      |
+| Secret                                                                 | Notas                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                    |                                                                                |
+| `JWT_SECRET`, `PASSWORD_PEPPER`, `ENCRYPTION_KEY`, `REVALIDATE_SECRET` | Rotacionar defaults de dev                                                     |
+| `SITE_NAME`, `COMPANY_LEGAL_NAME`, `CONTACT_EMAIL`, `SITE_TAGLINE`     |                                                                                |
+| `AMAZON_AFFILIATE_TAG`, `SHOPEE_AFFILIATE_ID`                          |                                                                                |
+| `EMAIL_FROM`, `RESEND_API_KEY`                                         |                                                                                |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`                              | Cria/atualiza operador no bootstrap seed; obrigatorios se usar seed automatico |
+| `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`                          | Opcional                                                                       |
 
 ## Pipeline GitHub Actions
 
@@ -275,6 +277,7 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | ------------------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 404 em `/` no smoke test                   | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine) | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                             |
 | 404 em `/admin`                            | `ADMIN_BASE_PATH` ausente no build admin                                               | Rebuild imagem admin com `/admin`                                                                                                                           |
+| Login admin mostra erro / nao entra        | `admin` sem `API_INTERNAL_URL`/`JWT_SECRET` no stack, ou operador nao seedado          | Redeploy com stack atualizado; na VPS: `RUN_SEED=true bash deploy/scripts/ensure-bootstrap-seed.sh`                                                         |
 | 404 em `/api/...`                          | StripPrefix ou API down                                                                | `curl` interno + logs `vitrine_api`                                                                                                                         |
 | CORS no browser                            | `CORS_ORIGINS` sem origem exata                                                        | Usar `PUBLIC_BASE_URL` sem path                                                                                                                             |
 | ACME falhou / `TRAEFIK DEFAULT CERT`       | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado          | Usar `traefik.https.yml` com redirect via router (nao entrypoint); `ufw`, DNS; logs `vitrine_traefik`; se `acme.json` corrompido, remover volume e redeploy |

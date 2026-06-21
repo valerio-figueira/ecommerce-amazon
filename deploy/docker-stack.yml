@@ -243,6 +243,9 @@ services:
       HOSTNAME: '0.0.0.0'
       ADMIN_PORT: '3002'
       PORT: '3002'
+      API_INTERNAL_URL: "${API_INTERNAL_URL}"
+      JWT_SECRET: "${JWT_SECRET}"
+      JWT_EXPIRES_IN: "${JWT_EXPIRES_IN}"
     networks:
       - vitrine_net
     deploy:
