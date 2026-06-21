@@ -32,18 +32,18 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 
 ## Arquivos do repositório
 
-| Caminho                                   | Função                                                 |
-| ----------------------------------------- | ------------------------------------------------------ |
-| `docker/Dockerfile.*`                     | Imagens multi-stage (api, worker, web, admin, migrate) |
-| `deploy/docker-stack.yml`                 | Stack Swarm (template `envsubst`)                      |
-| `deploy/traefik/traefik.http.yml`         | Traefik HTTP-only (fase IP)                            |
-| `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                    |
-| `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS                                     |
-| `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env`                               |
-| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests            |
-| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                          |
-| `.github/workflows/ci.yml`                | PR: lint + testes                                      |
-| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                          |
+| Caminho                                   | Função                                                                            |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| `docker/Dockerfile.*`                     | Imagens multi-stage (api, worker, web, admin, migrate)                            |
+| `deploy/docker-stack.yml`                 | Stack Swarm (template `envsubst`)                                                 |
+| `deploy/traefik/traefik.http.yml`         | Traefik HTTP-only (fase IP)                                                       |
+| `deploy/traefik/traefik.https.yml`        | Traefik HTTPS + ACME (fase domínio)                                               |
+| `deploy/scripts/bootstrap-vps.sh`         | Setup único do VPS                                                                |
+| `deploy/scripts/render-env.sh`            | Gera `/opt/vitrine/.env` (valores escapados com `printf %q` para `source` seguro) |
+| `deploy/scripts/deploy.sh`                | Pull → stack deploy → migrate → smoke tests                                       |
+| `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot                                                                     |
+| `.github/workflows/ci.yml`                | PR: lint + testes                                                                 |
+| `.github/workflows/deploy-production.yml` | main: build GHCR + deploy SSH                                                     |
 
 ## Bootstrap do VPS (uma vez)
 
@@ -177,7 +177,7 @@ docker exec $(docker ps -q -f name=vitrine_postgres) \
 
 Diretórios na VPS:
 
-- `/opt/vitrine/.env` — env gerado (600)
+- `/opt/vitrine/.env` — env gerado (600); valores entre aspas/escape bash — secrets podem conter espaços, `*`, cron, JSON
 - `/opt/vitrine/traefik/traefik.yml` — config ativa
 - `/opt/vitrine/stack/docker-stack.rendered.yml` — stack renderizado
 
