@@ -23,6 +23,21 @@ export TRAEFIK_DOCKER_NETWORK
 export GHCR_IMAGE_PREFIX
 export IMAGE_TAG
 
+ensure_swarm_manager() {
+  local state control
+  state="$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null || echo inactive)"
+  control="$(docker info --format '{{.Swarm.ControlAvailable}}' 2>/dev/null || echo false)"
+  if [[ "${state}" != "active" || "${control}" != "true" ]]; then
+    echo "ERRO: Docker Swarm nao esta ativo neste no (state=${state}, manager=${control})." >&2
+    echo "       Na VPS como root: docker swarm init" >&2
+    echo "       Ou: bash ${REPO_DEPLOY_DIR}/scripts/bootstrap-vps.sh" >&2
+    exit 1
+  fi
+}
+
+echo "==> Verificando Docker Swarm"
+ensure_swarm_manager
+
 echo "==> Selecionando config Traefik (TLS_ENABLED=${TLS_ENABLED})"
 mkdir -p "${APP_DIR}/traefik"
 if [[ "${TLS_ENABLED}" == "true" ]]; then

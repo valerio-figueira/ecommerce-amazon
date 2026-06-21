@@ -102,6 +102,17 @@ assert_stack_no_internal_ports() {
   fi
 }
 
+ensure_swarm_init() {
+  echo "==> Inicializando Docker Swarm (single-node)"
+  local state
+  state="$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null || echo inactive)"
+  if [[ "${state}" != "active" ]]; then
+    docker swarm init
+  else
+    echo "    Swarm ja ativo"
+  fi
+}
+
 echo "==> Instalando dependências do sistema"
 apt-get update
 apt-get install -y ca-certificates curl gnupg ufw gettext-base wget
@@ -134,14 +145,11 @@ mkdir -p "${APP_DIR}/traefik" "${APP_DIR}/stack"
 chmod 750 "${APP_DIR}"
 chown -R "${DEPLOY_USER}:${DEPLOY_USER}" "${APP_DIR}"
 
+ensure_swarm_init
+
 configure_ufw_docker_integration
 
 assert_stack_no_internal_ports
-
-echo "==> Inicializando Docker Swarm (single-node)"
-if ! docker info --format '{{.Swarm.LocalNodeState}}' | grep -q active; then
-  docker swarm init
-fi
 
 echo "==> Bootstrap concluído"
 echo "    Próximos passos:"

@@ -264,6 +264,7 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | ACME falhou                         | DNS não propagado ou :80 bloqueado                       | Checar `ufw`, DNS, logs Traefik                                            |
 | UFW `UnicodeEncodeError`            | Comentários com acentos em `/etc/ufw/after.rules`        | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`) |
 | `yaml: could not find expected ':'` | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                       |
+| `not a swarm manager`               | `docker swarm init` nunca rodou (bootstrap interrompido) | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`    |
 | OOM 4 GB                            | Limites de memória                                       | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                             |
 | Migrate falhou                      | Postgres não pronto                                      | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                         |
 
