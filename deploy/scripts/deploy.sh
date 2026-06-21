@@ -81,6 +81,9 @@ echo "    Routing (${DEPLOY_ROUTING_MODE}): web=${PUBLIC_BASE_URL} api=${API_PUB
 
 echo "==> Renderizando stack Swarm"
 mkdir -p "${APP_DIR}/stack"
+# shellcheck source=deploy/scripts/stack-env-escape.sh
+source "${SCRIPT_DIR}/stack-env-escape.sh"
+export_stack_yaml_secrets
 envsubst <"${STACK_TEMPLATE}" >"${RENDERED_STACK}"
 
 echo "==> Pull das imagens da aplicação"
@@ -100,6 +103,10 @@ bash "${SCRIPT_DIR}/migrate.sh"
 echo "==> Bootstrap CMS / seed (se necessario)"
 export RUN_SEED="${RUN_SEED:-false}"
 bash "${SCRIPT_DIR}/ensure-bootstrap-seed.sh"
+
+echo "==> Aguardando API e smoke test de login"
+bash "${SCRIPT_DIR}/wait-service-http.sh" api /health/ready 3000
+bash "${SCRIPT_DIR}/smoke-api-login.sh"
 
 echo "==> Aguardando apps no stack (cold start Next.js)"
 ADMIN_PROBE_PATH="/login"

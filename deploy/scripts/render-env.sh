@@ -21,6 +21,11 @@ env_quote() {
   printf '%q' "$1"
 }
 
+trim_trailing_ws() {
+  local value="$1"
+  printf '%s' "${value%"${value##*[![:space:]]}"}"
+}
+
 # RFC 3986 percent-encoding — evita subprocesso com credenciais na argv (V1).
 urlencode() {
   local raw="$1" i c
@@ -54,6 +59,11 @@ trap cleanup EXIT
 : "${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}"
 : "${ADMIN_SEED_EMAIL:?ADMIN_SEED_EMAIL is required for production deploy}"
 : "${ADMIN_SEED_PASSWORD:?ADMIN_SEED_PASSWORD is required for production deploy}"
+
+PASSWORD_PEPPER="$(trim_trailing_ws "${PASSWORD_PEPPER}")"
+JWT_SECRET="$(trim_trailing_ws "${JWT_SECRET}")"
+ADMIN_SEED_EMAIL="$(trim_trailing_ws "${ADMIN_SEED_EMAIL}")"
+ADMIN_SEED_PASSWORD="$(trim_trailing_ws "${ADMIN_SEED_PASSWORD}")"
 
 # Remove trailing slash — URLs derivadas são montadas de forma consistente.
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL%/}"
