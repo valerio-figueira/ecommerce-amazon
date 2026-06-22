@@ -1,21 +1,18 @@
 import { z } from 'zod';
 
 import { apiFetchParsed, fetchPageLayout, isNotFoundError } from './client';
+import { isTransientFetchFailure } from './network-errors';
 
 function isBuildPhaseApiUnavailable(error: unknown): boolean {
   if (process.env['NEXT_PHASE'] !== 'phase-production-build') {
     return false;
   }
-  return error instanceof TypeError && error.message === 'fetch failed';
-}
-
-function isRuntimeNetworkFailure(error: unknown): boolean {
-  return error instanceof TypeError && error.message === 'fetch failed';
+  return isTransientFetchFailure(error);
 }
 
 function isMissingResource(error: unknown): boolean {
   return (
-    isNotFoundError(error) || isBuildPhaseApiUnavailable(error) || isRuntimeNetworkFailure(error)
+    isNotFoundError(error) || isBuildPhaseApiUnavailable(error) || isTransientFetchFailure(error)
   );
 }
 

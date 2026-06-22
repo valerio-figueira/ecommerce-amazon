@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { resolveApiBaseUrl } from '@/lib/api/resolve-api-base-url';
 import { getServerBrandConfig } from '@/lib/site-url';
 
 type CancelAlertPageProps = {
@@ -7,8 +8,7 @@ type CancelAlertPageProps = {
 };
 
 async function cancelPriceAlert(token: string): Promise<'success' | 'invalid'> {
-  const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
-  const response = await fetch(`${apiUrl}/price-alerts/${encodeURIComponent(token)}`, {
+  const response = await fetch(`${resolveApiBaseUrl()}/price-alerts/${encodeURIComponent(token)}`, {
     method: 'DELETE',
     cache: 'no-store',
   });

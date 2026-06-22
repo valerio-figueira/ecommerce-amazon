@@ -2,16 +2,12 @@ import type { MetadataRoute } from 'next';
 
 import { publicSiteSettingsResponseSchema } from '@ecommerce-amazon/shared/admin';
 
+import { resolveApiBaseUrl } from '@/lib/api/resolve-api-base-url';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 async function isIndexingBlocked(): Promise<boolean> {
-  const apiUrl =
-    process.env['API_INTERNAL_URL'] ??
-    process.env['NEXT_PUBLIC_API_URL'] ??
-    'http://localhost:3000';
-
   try {
-    const response = await fetch(`${apiUrl}/site-settings/public`, {
+    const response = await fetch(`${resolveApiBaseUrl()}/site-settings/public`, {
       next: { revalidate: 300 },
     });
 

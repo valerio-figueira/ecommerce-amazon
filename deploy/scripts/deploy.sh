@@ -118,8 +118,11 @@ ADMIN_PROBE_PATH="/login"
 if [[ "${DEPLOY_ROUTING_MODE}" == "path" ]]; then
   ADMIN_PROBE_PATH="/admin/login"
 fi
-bash "${SCRIPT_DIR}/wait-service-http.sh" web / 3001
+bash "${SCRIPT_DIR}/wait-service-http.sh" web /api/health 3001
 bash "${SCRIPT_DIR}/wait-service-http.sh" admin "${ADMIN_PROBE_PATH}" 3002
+
+echo "==> Smoke: web container → API overlay + SSR home"
+bash "${SCRIPT_DIR}/smoke-web-internal-api.sh"
 
 echo "==> Smoke tests (web=${PUBLIC_BASE_URL}, api=${API_PUBLIC_URL}, admin=${ADMIN_PUBLIC_URL})"
 bash "${SCRIPT_DIR}/wait-http-url.sh" "${API_PUBLIC_URL}/health/ready" 200

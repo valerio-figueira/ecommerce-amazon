@@ -163,7 +163,14 @@ Interno (Swarm): `API_INTERNAL_URL=http://api:3000`, `POSTGRES_HOST=postgres`, `
 
 O servico **`admin`** no stack recebe em runtime `API_INTERNAL_URL`, `JWT_SECRET` e `JWT_EXPIRES_IN` (BFF de login e validacao de sessao na rede overlay — sem hairpin pela URL publica).
 
-O servico **`web`** tambem recebe `API_INTERNAL_URL` em runtime: o SSR da vitrine chama a API pela overlay (`http://api:3000`), nao pela URL publica (`api.seudominio.com.br`), evitando hairpin/NAT no VPS. O healthcheck do `web` usa `GET /api/health` (nao depende do CMS/API estar acessivel pela URL publica).
+O servico **`web`** tambem recebe `API_INTERNAL_URL` em runtime (`http://api:3000`). O SSR da vitrine **nunca** deve chamar `api.seudominio.com.br` de dentro do container — hairpin/NAT no VPS causa `UND_ERR_CONNECT_TIMEOUT`, HTTP 500 na home, healthcheck falhando e task `web` em shutdown (Traefik responde `404 page not found` em texto puro).
+
+Camadas de protecao no codigo:
+
+1. `resolveApiBaseUrl()` — no servidor em producao usa overlay (`http://api:3000`), mesmo se `API_INTERNAL_URL` faltar no env.
+2. `GET /api/health` — healthcheck do Swarm nao depende do CMS nem da API publica.
+3. `getHomeLayout()` e `fetchPageLayoutOrNull()` — falhas de rede viram fallback (home vazia), nao 500.
+4. `deploy/scripts/smoke-web-internal-api.sh` — apos deploy, valida overlay + SSR `/` dentro do container.
 
 ### App / segurança
 
@@ -346,7 +353,7 @@ Alternativa mínima sem reexecutar bootstrap completo:
 | OOM 4 GB (geral)                                            | Soma dos limites de memória no VPS 4 GB                                                                                       | Reduzir `TELEMETRY_BUFFER_MAX_LEN` ou limites de `worker`/`api`                                                                                           |
 | Migrate falhou                                              | Postgres não pronto                                                                                                           | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
 | Home sem CMS publicado                                      | `GET /pages/home` → 404                                                                                                       | Web exibe `EmptySiteFallback` na `/` (200); rodar bootstrap seed ou publicar no admin                                                                     |
-| API indisponível / 5xx na home ou `/?_rsc=`                 | SSR do `web` chamava `NEXT_PUBLIC_API_URL` (hairpin no VPS) em vez de `API_INTERNAL_URL`                                      | Garantir `API_INTERNAL_URL` no serviço `web` do stack; redeploy imagem com `resolveApiBaseUrl()`; logs `vitrine_web`                                      |
+| API indisponível / 5xx na home ou `/?_rsc=`                 | SSR do `web` chamava `NEXT_PUBLIC_API_URL` (hairpin → `UND_ERR_CONNECT_TIMEOUT`) → healthcheck falhava → task shutdown        | Redeploy com `resolveApiBaseUrl()` + `API_INTERNAL_URL` no `web`; `smoke-web-internal-api.sh`; logs nao devem citar `api.*:443`                           |
 | API indisponível / 5xx na home (legado)                     | Erro real de infra na overlay                                                                                                 | HTTP 500 — investigar logs `vitrine_api` / rede overlay                                                                                                   |
 | `Public web revalidation request failed` + `fetch failed`   | Serviço `web` indisponível na overlay (`ECONNREFUSED`, OOM exit 137, restart) — **não** é secret errado (isso seria HTTP 401) | `docker service ps vitrine_web`; logs `vitrine_web`; `smoke-revalidate.sh`; API faz retry automático (4 tentativas)                                       |
 | `Public web revalidation request failed`                    | Rede overlay API→web ou `WEB_INTERNAL_URL` errado                                                                             | `bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh`; conferir `WEB_INTERNAL_URL=http://web:3001`                                                       |

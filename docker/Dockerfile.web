@@ -45,6 +45,7 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV WEB_PORT=3001
 ENV PORT=3001
+ENV API_INTERNAL_URL=http://api:3000
 
 # Standalone output mirrors the monorepo directory layout under apps/web.
 COPY --from=build /app/apps/web/.next/standalone ./

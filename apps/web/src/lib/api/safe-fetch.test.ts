@@ -41,6 +41,16 @@ describe('fetchOrNotFound', () => {
     await expect(fetchOrNotFound('/products/x', schema)).resolves.toBeNull();
   });
 
+  it('returns null on connect timeout at runtime', async () => {
+    const error = new TypeError('fetch failed');
+    error.cause = Object.assign(new Error('Connect Timeout Error'), {
+      code: 'UND_ERR_CONNECT_TIMEOUT',
+    });
+    vi.mocked(apiFetchParsed).mockRejectedValue(error);
+
+    await expect(fetchOrNotFound('/products/x', schema)).resolves.toBeNull();
+  });
+
   it('returns null on network failure during production build', async () => {
     process.env['NEXT_PHASE'] = 'phase-production-build';
     vi.mocked(apiFetchParsed).mockRejectedValue(new TypeError('fetch failed'));
