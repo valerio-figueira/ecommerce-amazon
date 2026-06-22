@@ -91,7 +91,7 @@ export function ProductCard({
           <div className="relative w-28 shrink-0 self-start sm:w-40">
             <Link
               href={detailHref}
-              className="relative block aspect-square w-full overflow-hidden rounded-xl bg-[var(--muted)]"
+              className="relative block aspect-square w-full overflow-hidden rounded-xl bg-white"
             >
               {product.imageUrl && (
                 <RemoteImage
@@ -169,7 +169,7 @@ export function ProductCard({
         <Link
           href={detailHref}
           className={cn(
-            'relative block overflow-hidden bg-[var(--muted)]',
+            'relative block overflow-hidden bg-white',
             isCompact ? 'aspect-[4/3]' : 'aspect-square',
           )}
         >
