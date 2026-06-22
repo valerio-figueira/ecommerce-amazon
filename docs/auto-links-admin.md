@@ -1,6 +1,6 @@
 # Auto-Links — CRUD Admin + Parser SEO
 
-Gestão de keywords para interlinkagem automática em artigos editoriais. A injeção ocorre **em runtime** na vitrine — o HTML do artigo no banco permanece intacto.
+Gestão de keywords para interlinkagem automática em **artigos editoriais** e na **descrição longa de produtos**. A injeção ocorre **em runtime** na vitrine — o HTML no banco permanece intacto.
 
 Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](../.cursor/plans/auto-links_admin_api_41238b7c.plan.md), UI: [`.cursor/plans/auto-links_admin_ui_b60bf533.plan.md`](../.cursor/plans/auto-links_admin_ui_b60bf533.plan.md).
 
@@ -40,16 +40,21 @@ flowchart LR
   Admin["POST/PATCH/DELETE /admin/auto-links"] --> UC["Use Cases"]
   UC --> DB["auto_links"]
   UC --> CacheDel["cache.del vitrine:seo:auto-links"]
-  Web["/artigos/slug"] --> PublicAPI["GET /seo/auto-links"]
+  WebArticles["/artigos/slug"] --> PublicAPI["GET /seo/auto-links"]
+  WebProducts["/produtos/slug"] --> PublicAPI
   PublicAPI --> CacheGet["Redis 1h"]
   PublicAPI --> DB
-  Web --> Parser["injectInternalLinks"]
-  Parser --> Render["ArticleBody prose"]
+  WebArticles --> Parser["injectInternalLinks"]
+  WebProducts --> Parser
+  Parser --> RenderArticles["ArticleBody prose"]
+  Parser --> RenderProducts["ProductLongDescription prose"]
 ```
 
-1. Operador cadastra keywords via API admin (sem alterar HTML dos artigos).
+1. Operador cadastra keywords via API admin (sem alterar HTML dos artigos ou produtos).
 2. `GET /seo/auto-links` retorna regras ativas ordenadas por prioridade.
-3. Na vitrine, `ArticleBody` chama `injectInternalLinks(body, autoLinks)` antes de parsear shortcodes.
+3. Na vitrine:
+   - **Artigos:** `ArticleBody` aplica auto-links no `body` antes de parsear shortcodes.
+   - **Produtos:** `ProductLongDescription` aplica auto-links em `longDescriptionHtml`.
 4. Mutações admin invalidam cache para refletir na próxima leitura pública.
 
 ### Regras do parser
@@ -81,7 +86,9 @@ flowchart LR
 | Picker helpers   | `apps/admin/src/lib/internal-link-targets.ts`                                          |
 | Picker loader    | `apps/admin/src/lib/api/internal-link-targets-client.ts`                               |
 | Search use case  | `packages/application/src/use-cases/auto-links/SearchInternalLinkTargets.ts`           |
-| Vitrine          | `apps/web/src/components/articles/ArticleBody.tsx`                                     |
+| Helper web       | `apps/web/src/lib/seo/apply-auto-links.ts`                                             |
+| Vitrine artigos  | `apps/web/src/components/articles/ArticleBody.tsx`                                     |
+| Vitrine produtos | `apps/web/src/components/product/ProductLongDescription.tsx`                           |
 
 ## API
 
@@ -131,6 +138,7 @@ curl http://localhost:3000/seo/auto-links | jq
 
 # Vitrine
 open http://localhost:3001/artigos/guia-cadeira-ergonomica
+open http://localhost:3001/produtos/<slug-com-longDescriptionHtml>
 
 # UI admin
 open http://localhost:3002/auto-links

@@ -14,11 +14,13 @@ import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductDetailAnalysis } from '@/components/product/ProductDetailAnalysis';
 import { ProductImageGallery } from '@/components/product/ProductImageGallery';
+import { ProductLongDescription } from '@/components/product/ProductLongDescription';
 import { ProductRating } from '@/components/product/ProductRating';
 import { ProductSimilarCarousel } from '@/components/product/ProductSimilarCarousel';
 import { ProductSpecsSections } from '@/components/product/ProductSpecsSections';
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
 import { getProduct } from '@/lib/api/cached-fetchers';
+import { getAutoLinks } from '@/lib/api/auto-links';
 import { type ProductListItemDto } from '@/lib/api/schemas';
 import { marketplaceWithPreposition } from '@/lib/format';
 import { getSiteBaseUrl } from '@/lib/site-url';
@@ -61,7 +63,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }): Promise<React.JSX.Element> {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const [product, autoLinks] = await Promise.all([getProduct(slug), getAutoLinks()]);
   if (!product) {
     notFound();
   }
@@ -117,12 +119,9 @@ export default async function ProductPage({
       </div>
       <ProductDetailAnalysis pros={product.pros} cons={product.cons} />
       <ProductSpecsSections specGroups={product.specGroups} />
-      {product.longDescriptionHtml && (
-        <section
-          className="prose prose-neutral mt-8 max-w-none"
-          dangerouslySetInnerHTML={{ __html: product.longDescriptionHtml }}
-        />
-      )}
+      {product.longDescriptionHtml ? (
+        <ProductLongDescription html={product.longDescriptionHtml} autoLinks={autoLinks.items} />
+      ) : null}
       <ProductSimilarCarousel
         products={similarProducts}
         categorySlug={product.category?.slug}

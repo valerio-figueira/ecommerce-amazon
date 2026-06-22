@@ -1,10 +1,11 @@
 import { RemoteImage } from '@/components/ui/RemoteImage';
 
-import { injectInternalLinks } from '@ecommerce-amazon/shared/seo';
 import { parseArticleShortcodes } from '@ecommerce-amazon/shared/content';
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 import type { AutoLinksResponse } from '@ecommerce-amazon/shared/admin';
 import type { ProductDetailDto } from '@/lib/api/schemas';
+
+import { applyAutoLinksToHtml } from '@/lib/seo/apply-auto-links';
 
 import { ArticleProductEmbed } from './ArticleProductEmbed';
 import { ComparisonTable } from './ComparisonTable';
@@ -20,15 +21,7 @@ export function ArticleBody({
   autoLinks,
   embeddedProducts,
 }: ArticleBodyProps): React.JSX.Element {
-  const linkedHtml = injectInternalLinks(
-    article.body,
-    autoLinks.map((item) => ({
-      keyword: item.keyword,
-      targetUrl: item.targetUrl,
-      maxMatches: item.maxMatches,
-      ...(item.priority !== undefined ? { priority: item.priority } : {}),
-    })),
-  );
+  const linkedHtml = applyAutoLinksToHtml(article.body, autoLinks);
   const segments = parseArticleShortcodes(linkedHtml);
 
   return (

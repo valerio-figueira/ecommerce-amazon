@@ -7,7 +7,7 @@ Evolução da rota `/produtos/[slug]` para layout rico de análise editorial e r
 - **Hero:** galeria multi-imagem com miniaturas selecionáveis, rating, preço (incl. alerta stale), disclaimer afiliado e CTA com tracking `origin=detalhe`
 - **Análise do Especialista:** grid de prós e contras completos (sem truncamento dos cards)
 - **Ficha técnica:** blocos colapsáveis (`<details>`/`<summary>`) a partir de `specGroups` (`specs_normalized` no banco); comparador continua usando `specs` flat derivado
-- **Descrição longa:** bloco HTML editorial existente
+- **Descrição longa:** bloco HTML editorial com auto-linking dinâmico (`GET /seo/auto-links` + `injectInternalLinks`)
 - **Carrossel de similares:** produtos visíveis da mesma `category_id`, ordenados por preço ASC, excluindo o produto atual (até 12 itens)
 
 ## Fora de escopo (fase seguinte)
@@ -23,8 +23,12 @@ flowchart LR
   API["GET /products/:slug"]
   UC["GetProductWithEmbeds"]
   Page["apps/web/produtos/[slug]/page.tsx"]
+  AutoLinks["GET /seo/auto-links"]
+  LongDesc[ProductLongDescription]
   Carousel[ProductSimilarCarousel]
   DB --> UC --> API --> Page
+  AutoLinks --> LongDesc
+  Page --> LongDesc
   Page --> Carousel
 ```
 
@@ -49,6 +53,8 @@ Produtos sem categoria retornam `similarProducts: []` e a seção não renderiza
 | [`apps/web/src/components/product/ProductImageGallery.tsx`](../apps/web/src/components/product/ProductImageGallery.tsx)                              | Galeria client-side com thumbs              |
 | [`apps/web/src/components/product/ProductDetailAnalysis.tsx`](../apps/web/src/components/product/ProductDetailAnalysis.tsx)                          | Seção prós/contras                          |
 | [`apps/web/src/components/product/ProductSpecsSections.tsx`](../apps/web/src/components/product/ProductSpecsSections.tsx)                            | Ficha técnica colapsável por bloco          |
+| [`apps/web/src/components/product/ProductLongDescription.tsx`](../apps/web/src/components/product/ProductLongDescription.tsx)                        | Descrição longa com auto-links              |
+| [`apps/web/src/lib/seo/apply-auto-links.ts`](../apps/web/src/lib/seo/apply-auto-links.ts)                                                            | Helper compartilhado com artigos            |
 | [`packages/shared/src/product/spec-groups.ts`](../packages/shared/src/product/spec-groups.ts)                                                        | Schema, normalização e flatten de specs     |
 
 ## Ordem das seções na página
