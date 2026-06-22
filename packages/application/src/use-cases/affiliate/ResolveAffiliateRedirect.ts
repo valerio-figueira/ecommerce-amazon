@@ -1,9 +1,11 @@
 import {
   AffiliateAccountStatus,
   EntityNotFoundError,
+  Marketplace,
   ValidationError,
   type AffiliateAccountRepository,
   type AffiliateLinkBuilder,
+  type AffiliateTrackingParams,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
@@ -48,21 +50,30 @@ export class ResolveAffiliateRedirect {
       return err(new ValidationError('Affiliate account suspended'));
     }
 
+    const tracking: AffiliateTrackingParams = {
+      ...(input.blockId !== undefined ? { blockId: input.blockId } : {}),
+      ...(input.sessionId !== undefined ? { sessionId: input.sessionId } : {}),
+      ...(input.origin !== undefined ? { origin: input.origin } : {}),
+      ...(input.comparisonSlug !== undefined ? { comparisonSlug: input.comparisonSlug } : {}),
+      ...(input.utmSource !== undefined ? { utmSource: input.utmSource } : {}),
+      ...(input.utmMedium !== undefined ? { utmMedium: input.utmMedium } : {}),
+      ...(input.utmCampaign !== undefined ? { utmCampaign: input.utmCampaign } : {}),
+    };
+
     const affiliateTag = account?.affiliateTag;
-    const targetUrl = this.affiliateLinkBuilder.buildWithTracking(
-      product.marketplace,
-      product.externalId,
-      {
-        ...(input.blockId !== undefined ? { blockId: input.blockId } : {}),
-        ...(input.sessionId !== undefined ? { sessionId: input.sessionId } : {}),
-        ...(input.origin !== undefined ? { origin: input.origin } : {}),
-        ...(input.comparisonSlug !== undefined ? { comparisonSlug: input.comparisonSlug } : {}),
-        ...(input.utmSource !== undefined ? { utmSource: input.utmSource } : {}),
-        ...(input.utmMedium !== undefined ? { utmMedium: input.utmMedium } : {}),
-        ...(input.utmCampaign !== undefined ? { utmCampaign: input.utmCampaign } : {}),
-      },
-      affiliateTag,
-    );
+    const targetUrl =
+      product.marketplace === Marketplace.MERCADOLIVRE_BR
+        ? this.affiliateLinkBuilder.appendTrackingToStoredUrl(
+            product.affiliateLink.url,
+            product.marketplace,
+            tracking,
+          )
+        : this.affiliateLinkBuilder.buildWithTracking(
+            product.marketplace,
+            product.externalId,
+            tracking,
+            affiliateTag,
+          );
 
     return ok({
       productId: product.id,

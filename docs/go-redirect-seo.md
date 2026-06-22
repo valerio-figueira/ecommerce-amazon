@@ -32,7 +32,9 @@ Mascaramento de links afiliados, rich snippets Schema.org e motor de links inter
 2. Next.js faz rewrite para a API
 3. `ResolveAffiliateRedirect` valida produto + conta afiliado
 4. `RecordClickEvent` com origem `redirect_go`
-5. Resposta **307** para Amazon/Shopee com subIDs (`ascsubtag`, UTM)
+5. Resposta **307**:
+   - **Amazon/Shopee:** URL reconstruída via `AffiliateLinkBuilder.buildWithTracking` (tag da conta + subIDs)
+   - **Mercado Livre:** URL persistida em `products.affiliate_deep_link` (ex.: `meli.la/...`) com UTMs de telemetria via `appendTrackingToStoredUrl` — o link gerado no portal de afiliados **não** é substituído por `produto.mercadolivre.com.br/{externalId}`
 
 Falha (produto inexistente, conta pending): **307** para `/`.
 
@@ -112,4 +114,6 @@ Ver também [seo-technical-phase1.md](./seo-technical-phase1.md) para `robots.tx
 | ---------------------------------------------- | --------------------------------------------------------- |
 | `API_INTERNAL_URL`                             | Rewrite `/go` no Next.js (default: `NEXT_PUBLIC_API_URL`) |
 | `NEXT_PUBLIC_SITE_URL`                         | URLs absolutas no JSON-LD                                 |
-| `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` | Fallback quando conta DB ausente                          |
+| `AMAZON_AFFILIATE_TAG` / `SHOPEE_AFFILIATE_ID` | Fallback quando conta DB ausente (Amazon/Shopee)          |
+
+**Mercado Livre:** o operador cola o link `meli.la` (ou URL social) no cadastro do produto; o redirect `/go` usa esse valor persistido. Tag ML via env/DI ainda não aplicável (Fase 3 OAuth).

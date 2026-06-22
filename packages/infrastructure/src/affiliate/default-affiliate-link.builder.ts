@@ -68,6 +68,42 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
     return url.toString();
   }
 
+  appendTrackingToStoredUrl(
+    affiliateUrl: string,
+    marketplace: Marketplace,
+    tracking: AffiliateTrackingParams,
+  ): string {
+    const url = new URL(affiliateUrl);
+
+    if (marketplace === Marketplace.MERCADOLIVRE_BR) {
+      if (tracking.origin) {
+        url.searchParams.set('utm_source', tracking.origin);
+      }
+      if (tracking.comparisonSlug) {
+        url.searchParams.set('utm_campaign', tracking.comparisonSlug.slice(0, 50));
+      }
+    } else if (marketplace === Marketplace.AMAZON_BR) {
+      const subTag = this.composeSubTag(tracking);
+      if (subTag) {
+        url.searchParams.set('ascsubtag', subTag);
+      }
+    } else if (marketplace === Marketplace.SHOPEE_BR) {
+      if (tracking.origin) {
+        url.searchParams.set('utm_source', tracking.origin);
+      }
+      const subId = tracking.comparisonSlug ?? tracking.blockId;
+      if (subId) {
+        url.searchParams.set('sub_id', subId.slice(0, 50));
+      }
+      if (tracking.sessionId) {
+        url.searchParams.set('utm_content', tracking.sessionId);
+      }
+    }
+
+    this.applyUtmParams(url, tracking);
+    return url.toString();
+  }
+
   private applyUtmParams(url: URL, tracking: AffiliateTrackingParams): void {
     if (tracking.utmSource) {
       url.searchParams.set('utm_source', tracking.utmSource);

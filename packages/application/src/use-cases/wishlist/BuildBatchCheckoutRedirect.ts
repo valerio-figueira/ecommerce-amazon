@@ -1,9 +1,9 @@
 import {
   AffiliateAccountStatus,
+  Marketplace,
   ValidationError,
   type AffiliateAccountRepository,
   type AffiliateLinkBuilder,
-  type Marketplace,
   type ProductRepository,
   type WishlistRepository,
 } from '@ecommerce-amazon/domain';
@@ -42,6 +42,12 @@ export class BuildBatchCheckoutRedirect {
     }
 
     const products = await this.productRepository.findByIds(filtered.map((i) => i.productId));
+
+    if (input.marketplace === Marketplace.MERCADOLIVRE_BR) {
+      const url = products.map((product) => product.affiliateLink.url).join('|');
+      return { url, itemCount: products.length };
+    }
+
     const externalIds = products.map((p) => p.externalId);
     const url = this.linkBuilder.buildBatchCheckout(input.marketplace, externalIds);
     return { url, itemCount: externalIds.length };

@@ -3,7 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   AffiliateAccount,
   AffiliateAccountStatus,
+  AffiliateLink,
   Marketplace,
+  Price,
+  Product,
+  ProductAvailability,
   ValidationError,
   WishlistItem,
   type AffiliateAccountRepository,
@@ -44,6 +48,7 @@ describe('BuildBatchCheckoutRedirect', () => {
       build: vi.fn(),
       buildWithTracking: vi.fn(),
       buildBatchCheckout: vi.fn().mockReturnValue('https://amazon.com.br/cart'),
+      appendTrackingToStoredUrl: vi.fn(),
     };
 
     const affiliateAccountRepository: AffiliateAccountRepository = {
@@ -98,6 +103,7 @@ describe('BuildBatchCheckoutRedirect', () => {
       build: vi.fn(),
       buildWithTracking: vi.fn(),
       buildBatchCheckout: vi.fn(),
+      appendTrackingToStoredUrl: vi.fn(),
     } as AffiliateLinkBuilder;
 
     const affiliateAccountRepository: AffiliateAccountRepository = {
@@ -147,6 +153,7 @@ describe('BuildBatchCheckoutRedirect', () => {
       build: vi.fn(),
       buildWithTracking: vi.fn(),
       buildBatchCheckout: vi.fn(),
+      appendTrackingToStoredUrl: vi.fn(),
     } as AffiliateLinkBuilder;
 
     const affiliateAccountRepository: AffiliateAccountRepository = {
@@ -171,5 +178,83 @@ describe('BuildBatchCheckoutRedirect', () => {
     );
 
     await expect(useCase.execute({ sessionId, marketplace })).rejects.toThrow(ValidationError);
+  });
+
+  it('joins stored Mercado Livre affiliate links for batch checkout', async () => {
+    const mlMarketplace = Marketplace.MERCADOLIVRE_BR;
+    const mlWishlistItem = WishlistItem.create({
+      id: 'w2222222-2222-4222-8222-222222222222',
+      sessionId,
+      productId: 'a2222222-2222-4222-8222-222222222222',
+      marketplace: mlMarketplace,
+      sortOrder: 0,
+      addedAt: new Date(),
+    });
+
+    const mlProduct = Product.create({
+      id: 'a2222222-2222-4222-8222-222222222222',
+      marketplace: mlMarketplace,
+      externalId: '32X9UH-YP4P',
+      slug: 'monitor-gamer',
+      titleClean: 'Monitor Gamer',
+      titleRaw: 'Monitor Gamer Raw',
+      price: Price.create({ amount: 898, currency: 'BRL', updatedAt: new Date() }),
+      affiliateLink: AffiliateLink.create('https://meli.la/32y878h', 'mercadolivre_br'),
+      images: [],
+      specsNormalized: [],
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      tags: [],
+      createdAt: new Date(),
+    });
+
+    const wishlistRepository: WishlistRepository = {
+      findBySessionId: vi.fn().mockResolvedValue([mlWishlistItem]),
+      add: vi.fn(),
+      remove: vi.fn(),
+      removeAllBySessionId: vi.fn(),
+      countBySessionAndMarketplace: vi.fn(),
+    };
+
+    const productRepository: ProductRepository = {
+      findByIds: vi.fn().mockResolvedValue([mlProduct]),
+    } as unknown as ProductRepository;
+
+    const buildBatchCheckout = vi.fn();
+    const linkBuilder: AffiliateLinkBuilder = {
+      build: vi.fn(),
+      buildWithTracking: vi.fn(),
+      buildBatchCheckout,
+      appendTrackingToStoredUrl: vi.fn(),
+    };
+
+    const affiliateAccountRepository: AffiliateAccountRepository = {
+      findByMarketplace: vi.fn().mockResolvedValue(null),
+      findAll: vi.fn(),
+      findById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    const gateService = {
+      isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
+    };
+
+    const useCase = new BuildBatchCheckoutRedirect(
+      wishlistRepository,
+      productRepository,
+      linkBuilder,
+      affiliateAccountRepository,
+      gateService,
+    );
+
+    const result = await useCase.execute({ sessionId, marketplace: mlMarketplace });
+
+    expect(result).toEqual({
+      url: 'https://meli.la/32y878h',
+      itemCount: 1,
+    });
+    expect(buildBatchCheckout).not.toHaveBeenCalled();
   });
 });

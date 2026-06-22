@@ -55,6 +55,7 @@ describe('ResolveAffiliateRedirect', () => {
       build: vi.fn(),
       buildBatchCheckout: vi.fn(),
       buildWithTracking: vi.fn().mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21'),
+      appendTrackingToStoredUrl: vi.fn(),
     };
 
     const gateService = {
@@ -117,6 +118,7 @@ describe('ResolveAffiliateRedirect', () => {
         build: vi.fn(),
         buildBatchCheckout: vi.fn(),
         buildWithTracking: vi.fn(),
+        appendTrackingToStoredUrl: vi.fn(),
       },
       gateService,
     );
@@ -136,7 +138,12 @@ describe('ResolveAffiliateRedirect', () => {
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(null) }),
       { findByMarketplace: vi.fn() },
-      { build: vi.fn(), buildBatchCheckout: vi.fn(), buildWithTracking: vi.fn() },
+      {
+        build: vi.fn(),
+        buildBatchCheckout: vi.fn(),
+        buildWithTracking: vi.fn(),
+        appendTrackingToStoredUrl: vi.fn(),
+      },
       gateService,
     );
 
@@ -182,7 +189,12 @@ describe('ResolveAffiliateRedirect', () => {
             ),
           ),
       },
-      { build: vi.fn(), buildBatchCheckout: vi.fn(), buildWithTracking },
+      {
+        build: vi.fn(),
+        buildBatchCheckout: vi.fn(),
+        buildWithTracking,
+        appendTrackingToStoredUrl: vi.fn(),
+      },
       { isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true) },
     );
 
@@ -197,5 +209,65 @@ describe('ResolveAffiliateRedirect', () => {
       expect.objectContaining({ comparisonSlug: 'cadeira-a-vs-cadeira-b' }),
       'vitrine-21',
     );
+  });
+
+  it('uses stored affiliate link for Mercado Livre instead of rebuilding product URL', async () => {
+    const product = Product.create({
+      id: 'a3333333-3333-4333-8333-333333333333',
+      marketplace: Marketplace.MERCADOLIVRE_BR,
+      externalId: '32X9UH-YP4P',
+      slug: 'monitor-gamer-aoc-agon-g42-27',
+      titleClean: 'Monitor Gamer',
+      titleRaw: 'Monitor Gamer Raw',
+      price: Price.create({ amount: 898, currency: 'BRL', updatedAt: new Date() }),
+      affiliateLink: AffiliateLink.create('https://meli.la/32y878h', 'mercadolivre_br'),
+      images: [],
+      specsNormalized: [],
+      editorialScore: 80,
+      availability: ProductAvailability.IN_STOCK,
+      tags: [],
+      createdAt: new Date(),
+    });
+
+    const appendTrackingToStoredUrl = vi
+      .fn()
+      .mockReturnValue('https://meli.la/32y878h?utm_source=listagem');
+    const buildWithTracking = vi.fn();
+
+    const useCase = new ResolveAffiliateRedirect(
+      createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
+      {
+        findByMarketplace: vi
+          .fn()
+          .mockResolvedValue(
+            new AffiliateAccount(
+              'e3333333-3333-4333-8333-333333333333',
+              Marketplace.MERCADOLIVRE_BR,
+              '',
+              AffiliateAccountStatus.ACTIVE,
+            ),
+          ),
+      },
+      {
+        build: vi.fn(),
+        buildBatchCheckout: vi.fn(),
+        buildWithTracking,
+        appendTrackingToStoredUrl,
+      },
+      { isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true) },
+    );
+
+    const result = await useCase.execute({ slug: product.slug, origin: 'listagem' });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.targetUrl).toBe('https://meli.la/32y878h?utm_source=listagem');
+    }
+    expect(appendTrackingToStoredUrl).toHaveBeenCalledWith(
+      'https://meli.la/32y878h',
+      Marketplace.MERCADOLIVRE_BR,
+      expect.objectContaining({ origin: 'listagem' }),
+    );
+    expect(buildWithTracking).not.toHaveBeenCalled();
   });
 });
