@@ -77,6 +77,10 @@ const nextConfig: NextConfig = {
         source: '/go/:slug',
         destination: `${apiUrl}/go/:slug`,
       },
+      {
+        source: '/uploads/:path*',
+        destination: `${apiUrl}/uploads/:path*`,
+      },
     ]);
   },
 };

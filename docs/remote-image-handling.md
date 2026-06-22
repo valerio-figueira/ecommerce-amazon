@@ -66,4 +66,15 @@ npm run build -w @ecommerce-amazon/admin
 ## Próximos passos (não implementados)
 
 - Placeholder visual unificado (silhueta) em `RemoteImage`/`ManagedImage` quando `fallback` não for passado.
-- Rewrites na vitrine para servir `/uploads/*` via proxy interno (menos dependência de host absoluto em produção).
+
+## Proxy `/uploads` em produção (Swarm)
+
+URLs públicas de avatar usam `https://api.{dominio}/uploads/...`. O otimizador `/_next/image` do Next.js busca a imagem no **servidor**; sair pela URL pública da API (hairpin/NAT na VPS) causa timeout 504.
+
+**Mitigação:** `RemoteImage` reescreve uploads gerenciados para `/uploads/...` (mesma origem da vitrine). `next.config.ts` faz proxy interno:
+
+```text
+/uploads/:path* → http://api:3000/uploads/:path*  (API_INTERNAL_URL no build)
+```
+
+Após deploy de `web`, `/_next/image?url=...` passa a buscar `https://www.{dominio}/uploads/...` via overlay, sem hairpin.

@@ -11,3 +11,8 @@ export const WEB_IMAGE_REMOTE_PATTERNS = buildNextImageRemotePatterns({
   API_INTERNAL_URL: process.env['API_INTERNAL_URL'],
   NEXT_ALLOWED_DEV_ORIGINS: process.env['NEXT_ALLOWED_DEV_ORIGINS'],
 });
+
+export const WEB_UPLOAD_IMAGE_ENV = {
+  storagePublicBaseUrl,
+  apiPublicUrl: process.env['NEXT_PUBLIC_API_URL'],
+};

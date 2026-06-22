@@ -128,6 +128,10 @@ export function isNextImageRemoteUrl(
   src: string,
   patterns: NextImageRemotePattern[] = buildNextImageRemotePatterns(),
 ): boolean {
+  if (src.startsWith('/uploads/')) {
+    return true;
+  }
+
   try {
     const url = new URL(src);
     return patterns.some((pattern) => remotePatternMatchesUrl(pattern, url));
