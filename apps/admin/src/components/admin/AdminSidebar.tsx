@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft, X } from 'lucide-react';
 
+import { AdminBrandMark } from '@/components/admin/AdminBrandMark';
 import { ADMIN_NAV_ITEMS } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 
@@ -38,9 +39,7 @@ export function AdminSidebar({
                 collapsed && 'justify-center',
               )}
             >
-              <div className="side-brand-logo flex size-11 shrink-0 items-center justify-center rounded-lg bg-[color:var(--admin-navy)] text-sm font-bold text-white">
-                V
-              </div>
+              <AdminBrandMark siteName={siteName} className="side-brand-logo" />
               {!collapsed && (
                 <div className="side-brand-text min-w-0">
                   <p className="truncate text-sm font-semibold text-[color:var(--admin-navy)]">
