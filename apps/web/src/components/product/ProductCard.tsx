@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 import { ProductCompareToggle } from '@/components/comparison/ProductCompareToggle';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
-import { MarketplaceBadge } from '@/components/product/MarketplaceBadge';
 import { PriceDisplay } from '@/components/product/PriceDisplay';
 import { ProductCardActions } from '@/components/product/ProductCardActions';
 import type { AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
@@ -104,10 +103,6 @@ export function ProductCard({
                 />
               )}
               <ProductEditorialBadges product={product} />
-              <MarketplaceBadge
-                marketplace={product.marketplace}
-                className="absolute bottom-1 left-1 z-10 rounded-md bg-white/95 px-1.5 py-0.5 text-[10px] font-semibold shadow-sm backdrop-blur-sm sm:bottom-1.5 sm:left-1.5 sm:px-2 sm:text-xs"
-              />
             </Link>
             <button
               type="button"
@@ -194,10 +189,6 @@ export function ProductCard({
           ) : (
             <ProductEditorialBadges product={product} />
           )}
-          <MarketplaceBadge
-            marketplace={product.marketplace}
-            className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-white/95 px-2 py-0.5 text-xs font-semibold shadow-sm backdrop-blur-sm"
-          />
         </Link>
         <button
           type="button"

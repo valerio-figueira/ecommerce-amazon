@@ -11,6 +11,7 @@ Plano relacionado: [cms_forms_fase_1](../.cursor/plans/cms_forms_fase_1_30663f90
 - Cards **pequenos** (1 coluna) e **grandes** (2 colunas) configuráveis
 - Ação ao clicar: nenhuma, filtrar categoria na página ou abrir link
 - Formulário admin com cards repetíveis (colapsáveis por padrão)
+- Upload de imagem com recorte horizontal **4:3** (1200×900 px) via preset `bentoTile` em `CmsHybridImageField`
 
 ## Schema (Zod)
 

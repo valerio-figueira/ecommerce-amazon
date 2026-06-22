@@ -44,7 +44,7 @@ export const PRODUCT_FORM_HINTS = {
   specsSuggestedBlock:
     'Cria um bloco pré-preenchido com atributos sugeridos pela categoria. Você pode editar títulos e valores livremente.',
   images:
-    'A primeira imagem é a capa na vitrine e listagens. Prefira upload quadrado 1:1 (1000×1000 px) ou URLs HTTPS externas com licença adequada.',
+    'A primeira imagem é a capa na vitrine e listagens. Prefira upload horizontal 4:3 (1200×900 px) ou URLs HTTPS externas com licença adequada.',
   metaTitle:
     'Sobrescreve o título automático da página. Ideal ≤ 60 caracteres visíveis no Google; vazio usa o título gerado pelo sistema.',
   metaDescription:

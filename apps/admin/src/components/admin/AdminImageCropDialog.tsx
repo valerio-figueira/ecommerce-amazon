@@ -66,13 +66,13 @@ export function AdminImageCropDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="admin-image-crop-wrap relative h-72 overflow-hidden rounded-lg bg-[color:var(--admin-bg)]">
+        <div className="admin-image-crop-wrap relative h-80 overflow-hidden rounded-lg bg-[color:var(--admin-bg)] sm:h-96">
           {imageSrc ? (
             <Cropper
               image={imageSrc}
@@ -99,7 +99,7 @@ export function AdminImageCropDialog({
             id="admin-image-crop-zoom"
             type="range"
             min={1}
-            max={3}
+            max={4}
             step={0.05}
             value={zoom}
             onChange={(event) => setZoom(Number(event.target.value))}

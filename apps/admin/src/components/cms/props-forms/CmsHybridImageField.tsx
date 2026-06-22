@@ -38,16 +38,16 @@ export const CMS_IMAGE_PRESETS = {
     cropDescription: 'Ajuste o enquadramento 2:1. A imagem final terá 1200×600 px.',
   },
   bentoTile: {
-    aspect: 1,
-    outputWidth: 800,
-    outputHeight: 800,
-    previewClassName: 'aspect-square',
+    aspect: 4 / 3,
+    outputWidth: 1200,
+    outputHeight: 900,
+    previewClassName: 'aspect-[4/3]',
     hintLines: [
       'JPG, PNG, GIF ou WebP. Máximo 5 MiB.',
-      'Recorte quadrado 1:1 (800×800 px) para cards da grade.',
+      'Recorte horizontal 4:3 (1200×900 px) para cards da grade.',
     ],
     cropTitle: 'Recortar imagem do card',
-    cropDescription: 'Ajuste o enquadramento quadrado. A imagem final terá 800×800 px.',
+    cropDescription: 'Ajuste o enquadramento 4:3. A imagem final terá 1200×900 px.',
   },
   coverWide: {
     aspect: 16 / 9,

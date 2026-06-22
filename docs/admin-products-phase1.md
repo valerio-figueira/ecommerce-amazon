@@ -11,7 +11,7 @@ Plano de referência: gestão híbrida manual + link de afiliado (prompt de prod
 - Parser de URL de afiliado (Amazon, Shopee, Mercado Livre) → `marketplace` + `externalId`
 - Switch **Exibir valor numérico na vitrine?** mapeado ao SLA de preço (`stale_price`)
 - Formulário em **5 abas** (Link & Essenciais · Análise Editorial · Especificações · **Imagens** · SEO Avançado)
-- Aba **Imagens** (após Especificações): upload gerenciado (`POST /admin/media/images`) com recorte 1:1 + galeria ordenada + URL externa opcional
+- Aba **Imagens** (após Especificações): upload gerenciado (`POST /admin/media/images`) com recorte 4:3 + galeria ordenada + URL externa opcional
 - Especificações dinâmicas por categoria (`specs_normalized`) na aba **Especificações**
 - `short_description` híbrida: gerada dos prós na API + textarea editável no admin
 - `long_description_html`: editor rico TipTap (modo Visual + aba Código HTML) na aba Análise Editorial
@@ -125,14 +125,14 @@ Componentes: `ProductSpecsForm.tsx`, `product-specs-form-state.ts`, hook `useAdm
 
 ## Imagens do produto
 
-| Camada      | Comportamento                                                                                   |
-| ----------- | ----------------------------------------------------------------------------------------------- |
-| Campo       | `images: string[]` (URLs HTTPS)                                                                 |
-| Admin       | Aba **Imagens** → `ProductImagesSection`                                                        |
-| Upload      | `AdminImageFilePicker` + recorte 1:1 (1000×1000) → `uploadAdminImageClient` → append na galeria |
-| URL externa | Bloco colapsável "Adicionar por URL"                                                            |
-| Ordem       | ↑↓ na lista; posição 1 = capa (`imageUrl` na vitrine)                                           |
-| BFF         | `POST /api/admin/media/images` (proxy para API)                                                 |
+| Camada      | Comportamento                                                                                  |
+| ----------- | ---------------------------------------------------------------------------------------------- |
+| Campo       | `images: string[]` (URLs HTTPS)                                                                |
+| Admin       | Aba **Imagens** → `ProductImagesSection`                                                       |
+| Upload      | `AdminImageFilePicker` + recorte 4:3 (1200×900) → `uploadAdminImageClient` → append na galeria |
+| URL externa | Bloco colapsável "Adicionar por URL"                                                           |
+| Ordem       | ↑↓ na lista; posição 1 = capa (`imageUrl` na vitrine)                                          |
+| BFF         | `POST /api/admin/media/images` (proxy para API)                                                |
 
 Componentes: `ProductImagesSection.tsx`, reutiliza `AdminImageFilePicker` e `AdminImageCropDialog`.
 

@@ -17,8 +17,9 @@ import { uploadAdminImageClient } from '@/lib/api/admin-media-client';
 import { PRODUCT_FORM_HINTS } from '@/lib/product-form-hints';
 import type { ProductFormValues } from '@/lib/product-form-values';
 
-const IMAGE_ASPECT = 1;
-const IMAGE_OUTPUT_SIZE = 1000;
+const IMAGE_ASPECT = 4 / 3;
+const IMAGE_OUTPUT_WIDTH = 1200;
+const IMAGE_OUTPUT_HEIGHT = 900;
 
 export function ProductImagesSection(): React.JSX.Element {
   const form = useFormContext<ProductFormValues>();
@@ -137,7 +138,7 @@ export function ProductImagesSection(): React.JSX.Element {
               <FormLabel>Imagens do produto</FormLabel>
             </ProductFormLabelRow>
             <FormDescription>
-              Envie arquivos com recorte quadrado ou cole URLs HTTPS do marketplace ou CDN.
+              Envie arquivos com recorte horizontal ou cole URLs HTTPS do marketplace ou CDN.
             </FormDescription>
 
             <div className="space-y-4 rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-bg)] p-4">
@@ -147,7 +148,7 @@ export function ProductImagesSection(): React.JSX.Element {
                 disabled={uploading}
                 hintLines={[
                   'JPG, PNG, GIF ou WebP. Máximo 5 MiB.',
-                  'Recorte quadrado 1:1 (1000×1000 px) para a galeria do produto.',
+                  'Recorte horizontal 4:3 (1200×900 px) para a galeria do produto.',
                 ]}
               />
 
@@ -277,11 +278,11 @@ export function ProductImagesSection(): React.JSX.Element {
         onOpenChange={setCropOpen}
         onConfirm={handleCropConfirm}
         title="Recortar imagem do produto"
-        description="Ajuste o enquadramento quadrado. A imagem final terá 1000×1000 px."
+        description="Ajuste o enquadramento 4:3. A imagem final terá 1200×900 px."
         aspect={IMAGE_ASPECT}
         cropShape="rect"
-        outputWidth={IMAGE_OUTPUT_SIZE}
-        outputHeight={IMAGE_OUTPUT_SIZE}
+        outputWidth={IMAGE_OUTPUT_WIDTH}
+        outputHeight={IMAGE_OUTPUT_HEIGHT}
       />
     </CmsFormSection>
   );
