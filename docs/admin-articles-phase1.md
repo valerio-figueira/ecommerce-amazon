@@ -36,6 +36,7 @@ flowchart LR
 - **Modo Visual:** TipTap WYSIWYG com chips de embed e comando `/produto` (somente neste modo).
 - **Modo Código HTML:** textarea monoespaçada com HTML e shortcodes `[[product:slug]]`; toolbar desabilitada.
 - **SEO na sidebar:** contadores dinâmicos `N / 60` (título) e `N / 160` (descrição), com aviso quando excede o limite visível no Google.
+- **Prompt IA (✨):** modal com prompt para LLM externa; a resposta JSON (`title`, `excerpt`, `seoTitle`, `seoDescription`, `coverImageUrl`, `body`) é parseada por `parseArticleEditorialLlmResponse` e aplicada no formulário — mesmo padrão do SEO de produtos (`ProductSeoLlmPromptHelper`).
 - **Sincronização:** ao alternar abas, Visual → `serializeArticleBody(getHTML())`; HTML → Visual usa `preprocessBodyForEditor` + `setContent`.
 - Contrato de persistência em `ProductEmbedExtension.ts` (`serializeArticleBody` / `preprocessBodyForEditor`).
 

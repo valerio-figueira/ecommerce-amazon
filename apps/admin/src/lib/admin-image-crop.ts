@@ -6,6 +6,32 @@ export type CropOutputOptions = {
   quality?: number;
 };
 
+const MIN_ZOOM_FLOOR = 0.05;
+const DEFAULT_MAX_ZOOM = 8;
+
+/**
+ * Minimum zoom so the full uploaded image can fit inside the crop frame.
+ * react-easy-crop defaults to 1 (cover), which truncates tall/wide product photos.
+ */
+export function computeMinZoomToFitMedia(
+  cropAspect: number,
+  mediaWidth: number,
+  mediaHeight: number,
+): number {
+  if (mediaWidth <= 0 || mediaHeight <= 0 || cropAspect <= 0) {
+    return 1;
+  }
+
+  const mediaAspect = mediaWidth / mediaHeight;
+  const fitZoom = mediaAspect > cropAspect ? cropAspect / mediaAspect : mediaAspect / cropAspect;
+
+  return Math.min(1, Math.max(MIN_ZOOM_FLOOR, fitZoom));
+}
+
+export function computeMaxZoomForCrop(minZoom: number): number {
+  return Math.max(DEFAULT_MAX_ZOOM, minZoom > 0 ? 1 / minZoom : DEFAULT_MAX_ZOOM);
+}
+
 export async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();

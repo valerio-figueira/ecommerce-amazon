@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Cropper, { type Area } from 'react-easy-crop';
 
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { getCroppedImageBlob } from '@/lib/admin-image-crop';
+import {
+  computeMaxZoomForCrop,
+  computeMinZoomToFitMedia,
+  getCroppedImageBlob,
+} from '@/lib/admin-image-crop';
 
 type AdminImageCropDialogProps = {
   open: boolean;
@@ -41,12 +45,38 @@ export function AdminImageCropDialog({
 }: AdminImageCropDialogProps): React.JSX.Element {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [minZoom, setMinZoom] = useState(1);
+  const [maxZoom, setMaxZoom] = useState(8);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [applying, setApplying] = useState(false);
+
+  useEffect(() => {
+    if (!open || !imageSrc) {
+      return;
+    }
+
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setMinZoom(1);
+    setMaxZoom(8);
+    setCroppedAreaPixels(null);
+  }, [open, imageSrc]);
 
   const onCropComplete = useCallback((_area: Area, pixels: Area) => {
     setCroppedAreaPixels(pixels);
   }, []);
+
+  const onMediaLoaded = useCallback(
+    (mediaSize: { width: number; height: number }) => {
+      const nextMinZoom = computeMinZoomToFitMedia(aspect, mediaSize.width, mediaSize.height);
+      const nextMaxZoom = computeMaxZoomForCrop(nextMinZoom);
+      setMinZoom(nextMinZoom);
+      setMaxZoom(nextMaxZoom);
+      setZoom(nextMinZoom);
+      setCrop({ x: 0, y: 0 });
+    },
+    [aspect],
+  );
 
   async function handleApply(): Promise<void> {
     if (!imageSrc || !croppedAreaPixels) return;
@@ -80,10 +110,15 @@ export function AdminImageCropDialog({
               zoom={zoom}
               aspect={aspect}
               cropShape={cropShape}
+              objectFit="contain"
+              minZoom={minZoom}
+              maxZoom={maxZoom}
+              restrictPosition={false}
               showGrid={cropShape === 'rect'}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
+              onMediaLoaded={onMediaLoaded}
             />
           ) : null}
         </div>
@@ -98,13 +133,16 @@ export function AdminImageCropDialog({
           <input
             id="admin-image-crop-zoom"
             type="range"
-            min={1}
-            max={4}
-            step={0.05}
+            min={minZoom}
+            max={maxZoom}
+            step={0.01}
             value={zoom}
             onChange={(event) => setZoom(Number(event.target.value))}
             className="w-full accent-[color:var(--admin-primary)]"
           />
+          <p className="text-xs text-[color:var(--admin-text-muted)]">
+            Afaste ao máximo para incluir a foto inteira; aproxime para destacar detalhes.
+          </p>
         </div>
 
         <DialogFooter>

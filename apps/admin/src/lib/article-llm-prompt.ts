@@ -1,4 +1,5 @@
 import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
+import { isRecord } from '@ecommerce-amazon/shared/utils/type-guards';
 
 export type ArticleLlmPromptInput = {
   title: string;
@@ -11,6 +12,21 @@ export type ArticleLlmPromptInput = {
   seoTitle: string;
   seoDescription: string;
 };
+
+export type ArticleEditorialLlmResponse = {
+  title: string;
+  excerpt: string;
+  seoTitle: string;
+  seoDescription: string;
+  coverImageUrl: string;
+  body: string;
+};
+
+const ARTICLE_TITLE_MAX = 150;
+const ARTICLE_EXCERPT_MAX = 500;
+const ARTICLE_SEO_TITLE_MAX = 200;
+const ARTICLE_SEO_DESCRIPTION_MAX = 500;
+const ARTICLE_COVER_URL_MAX = 500;
 
 const ARTICLE_TYPE_LABELS: Record<ArticleType, string> = {
   [ArticleType.GUIDE]: 'Guia editorial',
@@ -107,4 +123,67 @@ Gere **somente** um bloco JSON válido (sem markdown, sem \`\`\` fences) com exa
 - Conteúdo original: pelo menos 1 insight editorial que não seja cópia de marketplace.
 - Não cite APIs externas; preços e cards vêm do catálogo local em runtime.
 - Responda **somente** com o JSON final, sem explicações antes ou depois.`;
+}
+
+export function parseArticleEditorialLlmResponse(raw: string): ArticleEditorialLlmResponse {
+  const trimmed = raw.trim();
+  const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error('JSON não encontrado na resposta. Cole o objeto retornado pela IA.');
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw new Error(
+      'JSON inválido. Verifique se a IA retornou title, excerpt, seoTitle, seoDescription, coverImageUrl e body.',
+    );
+  }
+
+  if (!isRecord(parsed)) {
+    throw new Error('Formato inesperado na resposta da IA.');
+  }
+
+  const record = parsed;
+  const title = typeof record['title'] === 'string' ? record['title'].trim() : '';
+  const excerpt = typeof record['excerpt'] === 'string' ? record['excerpt'].trim() : '';
+  const seoTitleRaw =
+    typeof record['seoTitle'] === 'string'
+      ? record['seoTitle']
+      : typeof record['metaTitle'] === 'string'
+        ? record['metaTitle']
+        : '';
+  const seoDescriptionRaw =
+    typeof record['seoDescription'] === 'string'
+      ? record['seoDescription']
+      : typeof record['metaDescription'] === 'string'
+        ? record['metaDescription']
+        : '';
+  const coverImageUrl =
+    typeof record['coverImageUrl'] === 'string' ? record['coverImageUrl'].trim() : '';
+  const body = typeof record['body'] === 'string' ? record['body'].trim() : '';
+
+  if (!title) {
+    throw new Error('O JSON deve conter title não vazio.');
+  }
+  if (!body) {
+    throw new Error('O JSON deve conter body (HTML editorial) não vazio.');
+  }
+  if (coverImageUrl.length > 0) {
+    try {
+      new URL(coverImageUrl);
+    } catch {
+      throw new Error('coverImageUrl deve ser uma URL https válida ou string vazia.');
+    }
+  }
+
+  return {
+    title: title.slice(0, ARTICLE_TITLE_MAX),
+    excerpt: excerpt.slice(0, ARTICLE_EXCERPT_MAX),
+    seoTitle: seoTitleRaw.trim().slice(0, ARTICLE_SEO_TITLE_MAX),
+    seoDescription: seoDescriptionRaw.trim().slice(0, ARTICLE_SEO_DESCRIPTION_MAX),
+    coverImageUrl: coverImageUrl.slice(0, ARTICLE_COVER_URL_MAX),
+    body,
+  };
 }

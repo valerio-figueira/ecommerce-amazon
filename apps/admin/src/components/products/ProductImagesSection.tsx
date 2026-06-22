@@ -148,7 +148,7 @@ export function ProductImagesSection(): React.JSX.Element {
                 disabled={uploading}
                 hintLines={[
                   'JPG, PNG, GIF ou WebP. Máximo 5 MiB.',
-                  'Recorte horizontal 4:3 (1200×900 px) para a galeria do produto.',
+                  'Recorte horizontal 4:3 (1200×900 px). Afaste o zoom se a foto for cortada.',
                 ]}
               />
 
@@ -278,7 +278,7 @@ export function ProductImagesSection(): React.JSX.Element {
         onOpenChange={setCropOpen}
         onConfirm={handleCropConfirm}
         title="Recortar imagem do produto"
-        description="Ajuste o enquadramento 4:3. A imagem final terá 1200×900 px."
+        description="Ajuste o enquadramento 4:3. Afaste o zoom para incluir a imagem inteira quando necessário."
         aspect={IMAGE_ASPECT}
         cropShape="rect"
         outputWidth={IMAGE_OUTPUT_WIDTH}

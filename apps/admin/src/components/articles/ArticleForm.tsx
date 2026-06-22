@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createAdminArticleClient, updateAdminArticleClient } from '@/lib/api/articles-client';
+import type { ArticleEditorialLlmResponse } from '@/lib/article-llm-prompt';
 import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
 import {
   articleStatusSchema,
@@ -107,6 +108,20 @@ export function ArticleForm({
     if (!slugTouched.current) {
       setSlug(slugifyTitle(value));
     }
+  }
+
+  function handleLlmApply(parsed: ArticleEditorialLlmResponse): void {
+    setTitle(parsed.title);
+    if (!slugTouched.current) {
+      setSlug(slugifyTitle(parsed.title));
+    }
+    setExcerpt(parsed.excerpt);
+    setSeoTitle(parsed.seoTitle);
+    setSeoDescription(parsed.seoDescription);
+    if (parsed.coverImageUrl.length > 0) {
+      setCoverImageUrl(parsed.coverImageUrl);
+    }
+    setBody(parsed.body);
   }
 
   async function handleSave(): Promise<void> {
@@ -230,6 +245,7 @@ export function ArticleForm({
                   status={status}
                   seoTitle={seoTitle}
                   seoDescription={seoDescription}
+                  onApply={handleLlmApply}
                 />
               </div>
               <ArticleEditor value={body} onChange={setBody} />
