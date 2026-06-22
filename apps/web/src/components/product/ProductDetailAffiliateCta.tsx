@@ -3,7 +3,7 @@
 import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
-import { marketplaceLabel } from '@/lib/format';
+import { affiliatePriceCtaLabel } from '@/lib/format';
 
 type ProductDetailAffiliateCtaProps = {
   productId: string;
@@ -28,7 +28,7 @@ export function ProductDetailAffiliateCta({
       variant="primary"
       className="px-6 py-3 text-sm md:w-auto"
     >
-      Ver preço na {marketplaceLabel(marketplace)}
+      {affiliatePriceCtaLabel(marketplace)}
     </AffiliateGoLink>
   );
 }

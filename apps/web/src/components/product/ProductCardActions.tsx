@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AffiliateGoLink, type AffiliateClickOrigin } from '@/components/product/AffiliateGoLink';
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
-import { marketplaceLabel } from '@/lib/format';
+import { affiliatePriceCtaLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type ProductCardActionsProps = {
@@ -39,7 +39,7 @@ export function ProductCardActions({
   editorial = false,
 }: ProductCardActionsProps): React.JSX.Element {
   const isStale = product.price.isStale || product.price.amount === null;
-  const marketplace = marketplaceLabel(product.marketplace);
+  const priceCtaLabel = affiliatePriceCtaLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
   const editorialStackGap =
     'flex shrink-0 flex-col items-stretch justify-center gap-2 self-center sm:gap-2.5';
@@ -74,7 +74,7 @@ export function ProductCardActions({
           variant="primary"
           className={cn(widthClass, primaryButtonClass)}
         >
-          Ver preço na {marketplace}
+          {priceCtaLabel}
         </AffiliateGoLink>
         <Link
           href={detailHref}
@@ -114,7 +114,7 @@ export function ProductCardActions({
         variant="outline"
         className={cn(widthClass, buttonClass)}
       >
-        Ver preço na {marketplace} ↗
+        {priceCtaLabel} ↗
       </AffiliateGoLink>
     </div>
   );

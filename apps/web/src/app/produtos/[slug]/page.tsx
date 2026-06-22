@@ -20,7 +20,7 @@ import { ProductSpecsSections } from '@/components/product/ProductSpecsSections'
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd';
 import { getProduct } from '@/lib/api/cached-fetchers';
 import { type ProductListItemDto } from '@/lib/api/schemas';
-import { marketplaceLabel } from '@/lib/format';
+import { marketplaceWithPreposition } from '@/lib/format';
 import { getSiteBaseUrl } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -104,8 +104,9 @@ export default async function ProductPage({
             <p className="text-neutral-600">{product.shortDescription}</p>
           )}
           <p className="rounded-lg bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
-            Curadoria independente: comparamos ofertas na {marketplaceLabel(product.marketplace)} e
-            redirecionamos você para a loja parceira. Não vendemos nem entregamos produtos.
+            Curadoria independente: comparamos ofertas{' '}
+            {marketplaceWithPreposition(product.marketplace)} e redirecionamos você para a loja
+            parceira. Não vendemos nem entregamos produtos.
           </p>
           <ProductDetailAffiliateCta
             productId={product.id}

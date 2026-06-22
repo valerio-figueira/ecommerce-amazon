@@ -9,7 +9,11 @@ import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { Button } from '@/components/ui/button';
 import { ClickPlacement } from '@ecommerce-amazon/shared/analytics';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
-import { marketplaceLabel } from '@/lib/format';
+import {
+  marketplaceLabel,
+  marketplaceWithDefiniteArticle,
+  marketplaceWithPreposition,
+} from '@/lib/format';
 import { ApiError } from '@/lib/api/client';
 
 function openBatchCheckoutUrls(marketplace: string, url: string): void {
@@ -22,7 +26,7 @@ function openBatchCheckoutUrls(marketplace: string, url: string): void {
   if (urls.length === 0) return;
 
   window.alert(
-    `Abriremos ${urls.length} abas na ${marketplaceLabel(marketplace)} — uma por produto. Compras finalizadas lá.`,
+    `Abriremos ${urls.length} abas ${marketplaceWithPreposition(marketplace)} — uma por produto. Compras finalizadas lá.`,
   );
 
   urls.forEach((entry, index) => {
@@ -169,11 +173,11 @@ export function WishlistDrawer(): React.JSX.Element | null {
                   >
                     {checkoutLoading === marketplace
                       ? 'Preparando checkout…'
-                      : `Finalizar na ${marketplaceLabel(marketplace)} (${group.length} itens)`}
+                      : `Finalizar ${marketplaceWithPreposition(marketplace)} (${group.length} itens)`}
                   </Button>
                   <p className="text-xs text-neutral-500">
-                    Abriremos a {marketplaceLabel(marketplace)} com seus itens. Compras finalizadas
-                    lá.
+                    Abriremos {marketplaceWithDefiniteArticle(marketplace)} com seus itens. Compras
+                    finalizadas lá.
                   </p>
                 </div>
               </div>

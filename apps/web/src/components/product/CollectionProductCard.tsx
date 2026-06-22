@@ -6,7 +6,7 @@ import { AffiliateGoLink } from '@/components/product/AffiliateGoLink';
 import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import type { ClickPlacementValue } from '@ecommerce-amazon/shared/analytics';
 import type { ProductListItemDto } from '@/lib/api/types';
-import { marketplaceLabel } from '@/lib/format';
+import { marketplaceWithPreposition } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type CollectionProductCardProps = {
@@ -27,7 +27,7 @@ export function CollectionProductCard({
   className,
 }: CollectionProductCardProps): React.JSX.Element {
   const { sessionId } = useWishlist();
-  const marketplace = marketplaceLabel(product.marketplace);
+  const marketplacePhrase = marketplaceWithPreposition(product.marketplace);
 
   return (
     <article
@@ -70,7 +70,7 @@ export function CollectionProductCard({
             className="w-fit rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-neutral-900 shadow-sm transition-all duration-300 group-hover:scale-[1.03] group-hover:bg-neutral-50 group-hover:shadow-md"
             {...(utmDefaults !== undefined ? { utmDefaults } : {})}
           >
-            Ver na {marketplace}
+            Ver {marketplacePhrase}
           </AffiliateGoLink>
         </div>
       </div>

@@ -18,7 +18,7 @@ import { useWishlist } from '@/components/wishlist/WishlistProvider';
 import { computeDiscountPercent } from '@/lib/discount';
 import { mapDeliveryProductToListItem } from '@/lib/cms/map-delivery-product';
 import { setAttribution } from '@/lib/attribution/context';
-import { marketplaceLabel } from '@/lib/format';
+import { affiliatePriceCtaLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type BentoHubMixGridProps = {
@@ -98,7 +98,7 @@ function BentoOfferSlot({
   );
   const showDiscountBadge = discountPercent !== null && !listItem.price.isStale;
   const detailHref = `/produtos/${product.slug}`;
-  const marketplace = marketplaceLabel(product.marketplace);
+  const priceCtaLabel = affiliatePriceCtaLabel(product.marketplace);
 
   return (
     <article
@@ -143,7 +143,7 @@ function BentoOfferSlot({
           placement={ClickPlacement.CMS_BENTO_OFFER}
           className="mt-3 text-xs"
         >
-          Ver preço na {marketplace}
+          {priceCtaLabel}
         </AffiliateGoLink>
       </div>
     </article>
