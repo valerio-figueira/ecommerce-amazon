@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  BROWSER_API_PROXY_PREFIX,
   SWARM_API_OVERLAY_URL,
   resolveApiBaseUrl,
   resolveProductionServerApiBaseUrl,
@@ -72,11 +73,11 @@ describe('resolveApiBaseUrl', () => {
     expect(resolveApiBaseUrl()).toBe(SWARM_API_OVERLAY_URL);
   });
 
-  it('uses NEXT_PUBLIC_API_URL in the browser', () => {
+  it('uses same-origin BFF proxy in the browser', () => {
     globalThis.window = {} as Window & typeof globalThis;
     vi.stubEnv('API_INTERNAL_URL', 'http://api:3000');
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://api.example.com');
 
-    expect(resolveApiBaseUrl()).toBe('https://api.example.com');
+    expect(resolveApiBaseUrl()).toBe(BROWSER_API_PROXY_PREFIX);
   });
 });

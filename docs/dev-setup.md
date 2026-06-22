@@ -107,6 +107,8 @@ A API valida `Origin` via [`createCorsOriginDelegate`](../packages/shared/src/co
 - **Produção:** lista em `CORS_ORIGINS`
 - **Development:** aceita também `localhost`, `127.0.0.1` e IPs LAN (`192.168.x.x`) nas portas 3000/3001/3002
 
+No browser, `apps/web` chama a API via **mesma origem** (`/public-api/*` → rewrite para `:3000` ou overlay `api:3000`), evitando CORS em blocos client-side (ex.: grade de produtos na home).
+
 Se acessar o web por IP de rede, reinicie a API após alterar `.env`.
 
 ## Build e testes

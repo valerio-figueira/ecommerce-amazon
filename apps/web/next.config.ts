@@ -58,6 +58,7 @@ const nextConfig: NextConfig = {
   },
   allowedDevOrigins: ['localhost', '127.0.0.1', ...devOrigins],
   env: {
+    NEXT_PUBLIC_API_URL: apiPublicUrl,
     NEXT_PUBLIC_STORAGE_PUBLIC_BASE_URL: storagePublicBaseUrl,
     NEXT_PUBLIC_SITE_NAME: siteName,
     NEXT_PUBLIC_SITE_URL: siteUrl,
@@ -80,6 +81,10 @@ const nextConfig: NextConfig = {
       {
         source: '/uploads/:path*',
         destination: `${apiUrl}/uploads/:path*`,
+      },
+      {
+        source: '/public-api/:path*',
+        destination: `${apiUrl}/:path*`,
       },
     ]);
   },

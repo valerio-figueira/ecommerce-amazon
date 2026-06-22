@@ -1,5 +1,8 @@
 const DEFAULT_API_URL = 'http://localhost:3000';
 
+/** Same-origin prefix — Next.js rewrites to the API (see apps/web/next.config.ts). */
+export const BROWSER_API_PROXY_PREFIX = '/public-api';
+
 /** Swarm overlay hostname — must match `API_INTERNAL_URL` in deploy/docker-stack.yml. */
 export const SWARM_API_OVERLAY_URL = 'http://api:3000';
 
@@ -47,11 +50,11 @@ export function resolveProductionServerApiBaseUrl(publicUrl: string | undefined)
 }
 
 /**
- * Browser calls the public API host; SSR in Docker uses the overlay (api:3000).
+ * Browser calls the vitrine origin (`/public-api/*` rewrite); SSR in Docker uses the overlay.
  */
 export function resolveApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
-    return nonEmptyEnv('NEXT_PUBLIC_API_URL') ?? DEFAULT_API_URL;
+    return BROWSER_API_PROXY_PREFIX;
   }
 
   return resolveProductionServerApiBaseUrl(nonEmptyEnv('NEXT_PUBLIC_API_URL'));
