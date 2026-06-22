@@ -103,18 +103,44 @@ export function registerAdminInstitutionalRoutes(
         return reply.status(404).send({ error: 'Institutional page not found' });
       }
 
-      const body = parseUpdateInstitutionalPageBody(slug, request.body);
-      const content = parseInstitutionalPageContent(slug, body.content);
-
-      const result = await useCases.updateInstitutionalPage.execute({
-        slug,
-        content,
-        ...(body.seoTitle !== undefined ? { seoTitle: body.seoTitle } : {}),
-        ...(body.seoDescription !== undefined ? { seoDescription: body.seoDescription } : {}),
-        ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
-      });
-
-      return reply.send(parseAdminInstitutionalPageResponse(slug, result));
+      switch (slug) {
+        case 'sobre': {
+          const body = parseUpdateInstitutionalPageBody('sobre', request.body);
+          const content = parseInstitutionalPageContent('sobre', body.content);
+          const result = await useCases.updateInstitutionalPage.execute({
+            slug: 'sobre',
+            content,
+            ...(body.seoTitle !== undefined ? { seoTitle: body.seoTitle } : {}),
+            ...(body.seoDescription !== undefined ? { seoDescription: body.seoDescription } : {}),
+            ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
+          });
+          return reply.send(parseAdminInstitutionalPageResponse('sobre', result));
+        }
+        case 'contato': {
+          const body = parseUpdateInstitutionalPageBody('contato', request.body);
+          const content = parseInstitutionalPageContent('contato', body.content);
+          const result = await useCases.updateInstitutionalPage.execute({
+            slug: 'contato',
+            content,
+            ...(body.seoTitle !== undefined ? { seoTitle: body.seoTitle } : {}),
+            ...(body.seoDescription !== undefined ? { seoDescription: body.seoDescription } : {}),
+            ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
+          });
+          return reply.send(parseAdminInstitutionalPageResponse('contato', result));
+        }
+        case 'legal': {
+          const body = parseUpdateInstitutionalPageBody('legal', request.body);
+          const content = parseInstitutionalPageContent('legal', body.content);
+          const result = await useCases.updateInstitutionalPage.execute({
+            slug: 'legal',
+            content,
+            ...(body.seoTitle !== undefined ? { seoTitle: body.seoTitle } : {}),
+            ...(body.seoDescription !== undefined ? { seoDescription: body.seoDescription } : {}),
+            ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
+          });
+          return reply.send(parseAdminInstitutionalPageResponse('legal', result));
+        }
+      }
     } catch (error) {
       return handleInstitutionalError(error, reply);
     }
