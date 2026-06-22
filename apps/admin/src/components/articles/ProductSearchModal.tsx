@@ -19,6 +19,8 @@ type ProductSearchModalProps = {
   onOpenChange: (open: boolean) => void;
   products: ProductPickerOption[];
   onSelect: (product: ProductPickerOption) => void;
+  title?: string;
+  description?: string;
 };
 
 function marketplaceLabel(marketplace: string): string {
@@ -33,6 +35,8 @@ export function ProductSearchModal({
   onOpenChange,
   products,
   onSelect,
+  title = 'Inserir produto no artigo',
+  description = 'Busque no catálogo local e insira um card de afiliado no conteúdo.',
 }: ProductSearchModalProps): React.JSX.Element {
   const [filter, setFilter] = useState('');
   const [selectedId, setSelectedId] = useState('');
@@ -59,10 +63,8 @@ export function ProductSearchModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Inserir produto no artigo</DialogTitle>
-          <DialogDescription>
-            Busque no catálogo local e insira um card de afiliado no conteúdo.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <Input

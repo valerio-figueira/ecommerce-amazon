@@ -191,7 +191,7 @@ export const productPublicCategorySummarySchema = z.object({
   ),
 });
 
-export const productPublicDetailSchema = productPublicListItemSchema.extend({
+const productPublicDetailCoreSchema = productPublicListItemSchema.extend({
   titleRaw: z.string(),
   externalId: z.string(),
   availability: z.string(),
@@ -207,6 +207,10 @@ export const productPublicDetailSchema = productPublicListItemSchema.extend({
   canonicalUrl: z.string().optional(),
   category: productPublicCategorySummarySchema.optional(),
   similarProducts: z.array(productPublicListItemSchema).optional(),
+});
+
+export const productPublicDetailSchema = productPublicDetailCoreSchema.extend({
+  embeddedProducts: z.record(z.string(), productPublicDetailCoreSchema.nullable()).optional(),
 });
 
 export type ProductPublicDetail = z.output<typeof productPublicDetailSchema>;

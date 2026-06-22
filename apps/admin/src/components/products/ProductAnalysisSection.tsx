@@ -135,7 +135,9 @@ export function ProductAnalysisSection(): React.JSX.Element {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <FormDescription>
                 Review estruturado com editor visual ou aba <strong>Código HTML</strong> para colar
-                saída da IA (✨). Tags suportadas: h3, p, strong, table, ul, li e links.
+                saída da IA (✨). Insira cards via <code className="text-xs">/produto</code>, botão{' '}
+                <strong>Produto</strong> ou shortcode{' '}
+                <code className="text-xs">[[product:slug]]</code>.
               </FormDescription>
               <p className={`text-xs tabular-nums ${charCountClass}`} aria-live="polite">
                 {charCount.toLocaleString('pt-BR')} / {LONG_DESCRIPTION_MAX.toLocaleString('pt-BR')}

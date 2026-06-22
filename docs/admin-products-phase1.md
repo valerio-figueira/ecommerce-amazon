@@ -62,14 +62,15 @@ Utilitário: [`packages/shared/src/seo/product-meta.ts`](../packages/shared/src/
 
 Componentes: [`ProductLongDescriptionEditor.tsx`](../apps/admin/src/components/products/ProductLongDescriptionEditor.tsx), [`ProductEditorToolbar.tsx`](../apps/admin/src/components/products/ProductEditorToolbar.tsx). Primitivos compartilhados com artigos em [`apps/admin/src/components/editor/`](../apps/admin/src/components/editor/).
 
-| Recurso      | Detalhe                                                                                                                 |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Modos        | **Visual** (TipTap) e **Código HTML** (colar saída de IA)                                                               |
-| Toolbar      | H3, negrito/itálico/riscado, listas, tabela, link                                                                       |
-| Fluxo IA     | ✨ copiar prompt → colar na aba HTML → revisar em Visual → salvar                                                       |
-| Persistência | `string` HTML em `long_description_html` (sem migration)                                                                |
-| Limite       | Contador 50.000 caracteres no form (Zod `max(50000)`)                                                                   |
-| Vitrine      | `ProductLongDescription` em `/produtos/[slug]` aplica auto-links em `longDescriptionHtml` (HTML no banco permanece cru) |
+| Recurso      | Detalhe                                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Modos        | **Visual** (TipTap) e **Código HTML** (colar saída de IA)                                                              |
+| Toolbar      | H3, negrito/itálico/riscado, listas, tabela, link, **Produto** (`/produto` ou botão na toolbar)                        |
+| Embeds       | Shortcode `[[product:slug]]` no HTML; chips no modo Visual; modal de busca no catálogo local (mesmo fluxo dos artigos) |
+| Fluxo IA     | ✨ copiar prompt → colar na aba HTML → revisar em Visual → salvar                                                      |
+| Persistência | `string` HTML em `long_description_html` (sem migration)                                                               |
+| Limite       | Contador 50.000 caracteres no form (Zod `max(50000)`)                                                                  |
+| Vitrine      | `ProductLongDescription` em `/produtos/[slug]` resolve shortcodes e aplica auto-links em `longDescriptionHtml`         |
 
 ## Especificações em blocos dinâmicos
 

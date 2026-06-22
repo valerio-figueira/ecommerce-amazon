@@ -3,10 +3,12 @@ import {
   type Product,
   type ProductRepository,
 } from '@ecommerce-amazon/domain';
+import { extractAllEmbedSlugsFromBody } from '@ecommerce-amazon/shared/content';
 
 export type ProductWithEmbedsResult = {
   product: Product;
   similarProducts: Product[];
+  embeddedProducts: Record<string, Product | null>;
 };
 
 export class GetProductWithEmbeds {
@@ -38,6 +40,25 @@ export class GetProductWithEmbeds {
       }
     }
 
-    return { product, similarProducts };
+    const embedSlugs = product.longDescriptionHtml
+      ? extractAllEmbedSlugsFromBody(product.longDescriptionHtml).filter(
+          (embedSlug) => embedSlug !== product.slug,
+        )
+      : [];
+    const embeddedProductResults = await Promise.all(
+      embedSlugs.map(async (embedSlug) => {
+        const embedded = await this.productRepository.findBySlug(embedSlug);
+        if (!embedded) {
+          return [embedSlug, null] as const;
+        }
+        if (this.compliance.isStale(embedded.price.updatedAt)) {
+          embedded.markPriceStale();
+        }
+        return [embedSlug, embedded] as const;
+      }),
+    );
+    const embeddedProducts = Object.fromEntries(embeddedProductResults);
+
+    return { product, similarProducts, embeddedProducts };
   }
 }

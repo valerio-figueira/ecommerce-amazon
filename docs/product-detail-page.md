@@ -43,19 +43,20 @@ Produtos sem categoria retornam `similarProducts: []` e a seção não renderiza
 
 ## Arquivos-chave
 
-| Arquivo                                                                                                                                              | Função                                      |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx)                                                          | Server Component da rota                    |
-| [`apps/web/src/components/product/ProductSimilarCarousel.tsx`](../apps/web/src/components/product/ProductSimilarCarousel.tsx)                        | Carrossel snap-x nativo                     |
-| [`packages/application/src/use-cases/product/GetProductWithEmbeds.ts`](../packages/application/src/use-cases/product/GetProductWithEmbeds.ts)        | Orquestra produto + similares               |
-| [`packages/infrastructure/.../drizzle-product.repository.ts`](../packages/infrastructure/src/persistence/repositories/drizzle-product.repository.ts) | `findSimilarPublishedByCategory`            |
-| [`packages/shared/src/admin/product-schemas.ts`](../packages/shared/src/admin/product-schemas.ts)                                                    | `productPublicDetailSchema.similarProducts` |
-| [`apps/web/src/components/product/ProductImageGallery.tsx`](../apps/web/src/components/product/ProductImageGallery.tsx)                              | Galeria client-side com thumbs              |
-| [`apps/web/src/components/product/ProductDetailAnalysis.tsx`](../apps/web/src/components/product/ProductDetailAnalysis.tsx)                          | Seção prós/contras                          |
-| [`apps/web/src/components/product/ProductSpecsSections.tsx`](../apps/web/src/components/product/ProductSpecsSections.tsx)                            | Ficha técnica colapsável por bloco          |
-| [`apps/web/src/components/product/ProductLongDescription.tsx`](../apps/web/src/components/product/ProductLongDescription.tsx)                        | Descrição longa com auto-links              |
-| [`apps/web/src/lib/seo/apply-auto-links.ts`](../apps/web/src/lib/seo/apply-auto-links.ts)                                                            | Helper compartilhado com artigos            |
-| [`packages/shared/src/product/spec-groups.ts`](../packages/shared/src/product/spec-groups.ts)                                                        | Schema, normalização e flatten de specs     |
+| Arquivo                                                                                                                                              | Função                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| [`apps/web/src/app/produtos/[slug]/page.tsx`](../apps/web/src/app/produtos/[slug]/page.tsx)                                                          | Server Component da rota                                  |
+| [`apps/web/src/components/product/ProductSimilarCarousel.tsx`](../apps/web/src/components/product/ProductSimilarCarousel.tsx)                        | Carrossel snap-x nativo                                   |
+| [`packages/application/src/use-cases/product/GetProductWithEmbeds.ts`](../packages/application/src/use-cases/product/GetProductWithEmbeds.ts)        | Orquestra produto + similares                             |
+| [`packages/infrastructure/.../drizzle-product.repository.ts`](../packages/infrastructure/src/persistence/repositories/drizzle-product.repository.ts) | `findSimilarPublishedByCategory`                          |
+| [`packages/shared/src/admin/product-schemas.ts`](../packages/shared/src/admin/product-schemas.ts)                                                    | `productPublicDetailSchema.similarProducts`               |
+| [`apps/web/src/components/product/ProductImageGallery.tsx`](../apps/web/src/components/product/ProductImageGallery.tsx)                              | Galeria client-side com thumbs                            |
+| [`apps/web/src/components/product/ProductDetailAnalysis.tsx`](../apps/web/src/components/product/ProductDetailAnalysis.tsx)                          | Seção prós/contras                                        |
+| [`apps/web/src/components/product/ProductSpecsSections.tsx`](../apps/web/src/components/product/ProductSpecsSections.tsx)                            | Ficha técnica colapsável por bloco                        |
+| [`apps/web/src/components/product/ProductLongDescription.tsx`](../apps/web/src/components/product/ProductLongDescription.tsx)                        | Descrição longa com auto-links e cards `[[product:slug]]` |
+| [`apps/web/src/components/product/ProductDetailEmbed.tsx`](../apps/web/src/components/product/ProductDetailEmbed.tsx)                                | Card editorial de produto embedado na review              |
+| [`apps/web/src/lib/seo/apply-auto-links.ts`](../apps/web/src/lib/seo/apply-auto-links.ts)                                                            | Helper compartilhado com artigos                          |
+| [`packages/shared/src/product/spec-groups.ts`](../packages/shared/src/product/spec-groups.ts)                                                        | Schema, normalização e flatten de specs                   |
 
 ## Ordem das seções na página
 

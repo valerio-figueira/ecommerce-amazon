@@ -237,6 +237,7 @@ Gere uma **análise editorial completa em HTML puro** (sem markdown, sem \`\`\` 
 
 ### Regras de conformidade (obrigatório)
 - Tags permitidas: h3, p, strong, table, thead, tbody, tr, th, td, ul, li.
+- **Embeds de produto relacionado:** onde fizer sentido comercial, insira o shortcode exato [[product:slug-do-produto]] em linha própria (ex.: <p>[[product:mouse-logitech-mx-master]]</p>). Use slugs em kebab-case plausíveis; não inclua o slug do produto principal da página.
 - Proibido: countdown falso, "X pessoas comprando", estoque inventado, preço fictício, cupom não verificado.
 - CTA transparente se mencionar compra: "Ver preço na ${marketplace}" — nunca "Comprar agora" genérico.
 - Não inclua links <a> no HTML (a vitrine cuida do CTA de afiliado).

@@ -8,21 +8,28 @@ import {
   Link2,
   List,
   ListOrdered,
+  Package,
   Strikethrough,
   Table2,
 } from 'lucide-react';
 
-import { ToolbarButton, ToolbarSeparator } from '@/components/editor/toolbar-primitives';
+import {
+  ToolbarButton,
+  ToolbarSeparator,
+  ToolbarTextButton,
+} from '@/components/editor/toolbar-primitives';
 import { useEditorToolbarState } from '@/components/editor/useEditorToolbarState';
 import { cn } from '@/lib/utils';
 
 type ProductEditorToolbarProps = {
   editor: Editor | null;
+  onInsertProduct?: () => void;
   formatDisabled?: boolean;
 };
 
 export function ProductEditorToolbar({
   editor,
+  onInsertProduct,
   formatDisabled = false,
 }: ProductEditorToolbarProps): React.JSX.Element {
   useEditorToolbarState(editor);
@@ -127,6 +134,20 @@ export function ProductEditorToolbar({
       >
         <Link2 className="h-4 w-4" />
       </ToolbarButton>
+
+      {onInsertProduct ? (
+        <>
+          <ToolbarSeparator />
+          <ToolbarTextButton
+            title="Inserir produto (/produto)"
+            disabled={formatDisabled || !editor}
+            onClick={onInsertProduct}
+          >
+            <Package className="h-4 w-4" />
+            <span className="hidden sm:inline">Produto</span>
+          </ToolbarTextButton>
+        </>
+      ) : null}
     </div>
   );
 }

@@ -53,6 +53,7 @@ export type ProductDetailDto = ProductListItemDto & {
   metaDescription?: string | undefined;
   canonicalUrl?: string | undefined;
   similarProducts: ProductListItemDto[];
+  embeddedProducts?: Record<string, ProductDetailDto | null> | undefined;
 };
 
 export type AdminProductListItemDto = {
@@ -218,11 +219,18 @@ export function toProductDetailDto(
 export function toProductDetailWithEmbedsDto(
   product: Product,
   similarProducts: Product[],
+  embeddedProducts: Record<string, Product | null> = {},
   options: PublicPricePresentationOptions = {},
 ): ProductDetailDto {
   return {
     ...toProductDetailDto(product, options),
     similarProducts: similarProducts.map((similar) => toProductListItemDto(similar, null, options)),
+    embeddedProducts: Object.fromEntries(
+      Object.entries(embeddedProducts).map(([slug, embedded]) => [
+        slug,
+        embedded ? toProductDetailDto(embedded, options) : null,
+      ]),
+    ),
   };
 }
 

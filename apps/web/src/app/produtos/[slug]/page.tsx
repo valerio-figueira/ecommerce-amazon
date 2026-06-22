@@ -124,6 +124,7 @@ export default async function ProductPage({
           html={product.longDescriptionHtml}
           autoLinks={autoLinks.items}
           productSlug={product.slug}
+          embeddedProducts={product.embeddedProducts}
         />
       ) : null}
       <ProductSimilarCarousel

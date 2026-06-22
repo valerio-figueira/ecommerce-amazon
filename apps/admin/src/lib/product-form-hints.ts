@@ -38,7 +38,7 @@ export const PRODUCT_FORM_HINTS = {
   shortDescription:
     'Texto curto para cards e introdução. Se vazio ao salvar, a API monta automaticamente a partir dos prós.',
   longDescription:
-    'Review completo em HTML. Use o editor visual ou cole saída da IA na aba Código HTML — tags: h3, p, strong, table, ul, li, links.',
+    'Review completo em HTML. Use o editor visual, digite /produto ou o botão Produto para cards de afiliado ([[product:slug]]), ou cole saída da IA na aba Código HTML.',
   specsBlocks:
     'Organize a ficha técnica em blocos colapsáveis (ex.: Detalhes, Medidas). Cada bloco agrupa pares chave/valor exibidos na vitrine.',
   specsSuggestedBlock:

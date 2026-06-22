@@ -273,6 +273,7 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
       const dto = toProductDetailWithEmbedsDto(
         result.product,
         result.similarProducts,
+        result.embeddedProducts,
         priceOptions,
       );
       if (result.product.categoryId) {

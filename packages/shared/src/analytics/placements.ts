@@ -13,6 +13,7 @@ export const ClickPlacement = {
   CMS_CURATED_COLLECTION: 'cms.curated_collection',
   CMS_WEEKLY_TRENDS: 'cms.weekly_trends',
   PRODUCT_DETAIL_CTA: 'product.detail_cta',
+  PRODUCT_DETAIL_EMBED: 'product.detail_embed',
   PRODUCT_SIMILAR: 'product.similar',
   CATEGORY_LISTING: 'category.listing',
   COLLECTION_PAGE: 'collection.page',

@@ -108,4 +108,37 @@ describe('GetProductWithEmbeds', () => {
     expect(result?.similarProducts).toEqual([similarA, similarB]);
     expect(result?.similarProducts.some((item) => item.id === product.id)).toBe(false);
   });
+
+  it('loads embedded products referenced in longDescriptionHtml', async () => {
+    const product = createProduct({
+      id: 'a1111111-1111-4111-8111-111111111111',
+      slug: 'cadeira-atual',
+      categoryId,
+    });
+    product.longDescriptionHtml =
+      '<p>Veja também [[product:mouse-logitech]] e [[product:teclado-mecanico]]</p>';
+    const mouse = createProduct({
+      id: 'b2222222-2222-4222-8222-222222222222',
+      slug: 'mouse-logitech',
+      categoryId,
+    });
+
+    const productRepository = createMockProductRepository({
+      findBySlug: vi.fn(async (slug: string) => {
+        if (slug === product.slug) return product;
+        if (slug === 'mouse-logitech') return mouse;
+        return null;
+      }),
+      findSimilarPublishedByCategory: vi.fn().mockResolvedValue([]),
+    });
+
+    const useCase = new GetProductWithEmbeds(productRepository);
+    const result = await useCase.execute(product.slug);
+
+    expect(result?.embeddedProducts).toEqual({
+      'mouse-logitech': mouse,
+      'teclado-mecanico': null,
+    });
+    expect(result?.embeddedProducts['cadeira-atual']).toBeUndefined();
+  });
 });
