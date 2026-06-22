@@ -34,7 +34,7 @@ Blocos da home seed com edição visual leigo-friendly (sem alterar schemas Zod 
 
 **Componentes compartilhados:** `ProductPicker`, `CategoryMultiSelect`, `PresetChipPicker`, `CmsHybridImageField` (upload + URL externa, como artigos/coleções), `block-form-registry.ts` (schemas editáveis, normalização e sanitização antes do parse Zod).
 
-**Clientes de leitura:** `listCategoriesClient()` (`GET /categories`), `listProductsClient()` (`GET /products?pageSize=50`).
+**Clientes de leitura:** `listCategoriesClient()` (proxy `GET /api/admin/categories` → BFF, evita CORS em produção), `listProductsClient()` (`GET /api/admin/products?pageSize=50`).
 
 Tipos **fase 2** (`HERO_SPLIT`, `CURATED_COLLECTION`, `COUPON_STRIP`) exibem mensagem “Edição amigável em breve” — sem dump JSON.
 

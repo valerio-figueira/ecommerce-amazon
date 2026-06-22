@@ -5,34 +5,12 @@ import { BlockType } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 import {
-  publicCategoryTreeNodeSchema,
-  type PublicCategoryTreeNode,
-} from '@ecommerce-amazon/shared/category/category-schemas';
-import { adminCollectionsResponseSchema } from '@ecommerce-amazon/shared/admin';
+  adminCategoriesResponseSchema,
+  adminCollectionsResponseSchema,
+} from '@ecommerce-amazon/shared/admin';
 
+import { flattenCategoryTreeForSlugPicker } from '@/lib/api/categories-utils';
 import type { AdminBlockInput, UpdateAdminBlockInput } from '@/lib/api/cms-pages';
-
-const categoriesResponseSchema = z.object({
-  items: z.array(publicCategoryTreeNodeSchema),
-});
-
-function flattenPublicCategories(
-  items: PublicCategoryTreeNode[],
-  prefix = '',
-): Array<{ slug: string; label: string }> {
-  return items.flatMap((item) => {
-    const label = prefix ? `${prefix} → ${item.label}` : item.label;
-    const current = { slug: item.slug, label };
-    const children = item.subcategories ? flattenPublicCategories(item.subcategories, label) : [];
-    return [current, ...children];
-  });
-}
-
-function parseCategoriesPayload(payload: unknown): Array<{ slug: string; label: string }> {
-  const parsed = categoriesResponseSchema.safeParse(payload);
-  if (!parsed.success) return [];
-  return flattenPublicCategories(parsed.data.items);
-}
 
 const productListItemSchema = z.object({
   id: z.string(),
@@ -144,11 +122,12 @@ export async function reorderPageBlocksClient(
 }
 
 export async function listCategoriesClient(): Promise<Array<{ slug: string; label: string }>> {
-  const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
-  const response = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
+  const response = await adminClientFetch('/api/admin/categories', { cache: 'no-store' });
   if (!response.ok) return [];
   const payload: unknown = await response.json();
-  return parseCategoriesPayload(payload);
+  const parsed = adminCategoriesResponseSchema.safeParse(payload);
+  if (!parsed.success) return [];
+  return flattenCategoryTreeForSlugPicker(parsed.data.items);
 }
 
 export async function listProductsClient(

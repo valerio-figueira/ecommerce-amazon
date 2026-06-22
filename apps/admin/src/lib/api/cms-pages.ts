@@ -5,12 +5,9 @@ import { BlockType, PageKind, PageStatus } from '@ecommerce-amazon/domain';
 import { pageBlockDtoSchema, pageLayoutDtoSchema } from '@ecommerce-amazon/shared/cms';
 import type { PageBlockDto, PageLayoutDto } from '@ecommerce-amazon/shared/cms';
 
-import {
-  publicCategoryTreeNodeSchema,
-  type PublicCategoryTreeNode,
-} from '@ecommerce-amazon/shared/category/category-schemas';
-
 import { adminFetchParsed } from './admin-fetch';
+import { listAdminCategories } from './categories';
+import { flattenCategoryTreeForSlugPicker } from './categories-utils';
 
 const adminPageSummarySchema = z.object({
   id: z.string().uuid(),
@@ -21,22 +18,6 @@ const adminPageSummarySchema = z.object({
 });
 
 const adminPagesSchema = z.array(adminPageSummarySchema);
-
-const categoriesResponseSchema = z.object({
-  items: z.array(publicCategoryTreeNodeSchema),
-});
-
-function flattenPublicCategories(
-  items: PublicCategoryTreeNode[],
-  prefix = '',
-): Array<{ slug: string; label: string }> {
-  return items.flatMap((item) => {
-    const label = prefix ? `${prefix} → ${item.label}` : item.label;
-    const current = { slug: item.slug, label };
-    const children = item.subcategories ? flattenPublicCategories(item.subcategories, label) : [];
-    return [current, ...children];
-  });
-}
 
 export type AdminBlockInput = {
   type: BlockType;
@@ -99,16 +80,6 @@ export async function reorderPageBlocks(
 }
 
 export async function listCategories(): Promise<Array<{ slug: string; label: string }>> {
-  const apiUrl =
-    process.env['NEXT_PUBLIC_API_URL'] ??
-    process.env['API_INTERNAL_URL'] ??
-    'http://localhost:3000';
-  const response = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
-  if (!response.ok) {
-    return [];
-  }
-  const payload: unknown = await response.json();
-  const parsed = categoriesResponseSchema.safeParse(payload);
-  if (!parsed.success) return [];
-  return flattenPublicCategories(parsed.data.items);
+  const items = await listAdminCategories();
+  return flattenCategoryTreeForSlugPicker(items);
 }

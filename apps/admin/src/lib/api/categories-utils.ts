@@ -13,6 +13,20 @@ export type CategoryFlatOption = {
   parentId?: string | null;
 };
 
+export function flattenCategoryTreeForSlugPicker(
+  items: AdminCategoryTreeNode[],
+  prefix = '',
+): Array<{ slug: string; label: string }> {
+  return items.flatMap((item) => {
+    const label = prefix ? `${prefix} → ${item.label}` : item.label;
+    const current = { slug: item.slug, label };
+    const children = item.subcategories
+      ? flattenCategoryTreeForSlugPicker(item.subcategories, label)
+      : [];
+    return [current, ...children];
+  });
+}
+
 export function flattenAdminCategoriesForPicker(
   nodes: AdminCategoryTreeNode[],
 ): CategoryFlatOption[] {
