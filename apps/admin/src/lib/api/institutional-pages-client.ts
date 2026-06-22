@@ -6,6 +6,22 @@ import {
   type AdminInstitutionalPageResponse,
   type UpdateInstitutionalPageBody,
 } from '@ecommerce-amazon/shared/about';
+import {
+  adminContactInstitutionalPageResponseSchema,
+  updateContactInstitutionalPageBodySchema,
+  type AdminContactInstitutionalPageResponse,
+  type UpdateContactInstitutionalPageBody,
+} from '@ecommerce-amazon/shared/contact';
+import {
+  adminLegalInstitutionalPageResponseSchema,
+  updateLegalInstitutionalPageBodySchema,
+  type AdminLegalInstitutionalPageResponse,
+  type UpdateLegalInstitutionalPageBody,
+} from '@ecommerce-amazon/shared/legal';
+import {
+  isInstitutionalPageSlug,
+  type InstitutionalPageSlug,
+} from '@ecommerce-amazon/shared/institutional';
 
 import { adminClientFetch } from './admin-client';
 
@@ -17,9 +33,7 @@ function readErrorMessage(payload: unknown): string {
   return 'Falha ao salvar página institucional';
 }
 
-export async function fetchAdminInstitutionalPageClient(
-  slug: string,
-): Promise<AdminInstitutionalPageResponse> {
+async function fetchInstitutionalPageJson(slug: InstitutionalPageSlug): Promise<unknown> {
   const response = await adminClientFetch(
     `/api/admin/institutional-pages/${encodeURIComponent(slug)}`,
     { cache: 'no-store' },
@@ -30,22 +44,19 @@ export async function fetchAdminInstitutionalPageClient(
     throw new Error(readErrorMessage(payload));
   }
 
-  const data: unknown = await response.json();
-  return adminInstitutionalPageResponseSchema.parse(data);
+  return response.json();
 }
 
-export async function updateAdminInstitutionalPageClient(
-  slug: string,
-  body: UpdateInstitutionalPageBody,
-): Promise<AdminInstitutionalPageResponse> {
-  const parsedBody = updateInstitutionalPageBodySchema.parse(body);
-
+async function patchInstitutionalPageJson(
+  slug: InstitutionalPageSlug,
+  body: unknown,
+): Promise<unknown> {
   const response = await adminClientFetch(
     `/api/admin/institutional-pages/${encodeURIComponent(slug)}`,
     {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(parsedBody),
+      body: JSON.stringify(body),
     },
   );
 
@@ -54,6 +65,79 @@ export async function updateAdminInstitutionalPageClient(
     throw new Error(readErrorMessage(payload));
   }
 
-  const data: unknown = await response.json();
-  return adminInstitutionalPageResponseSchema.parse(data);
+  return response.json();
+}
+
+export async function fetchAdminInstitutionalPageClient(
+  slug: 'sobre',
+): Promise<AdminInstitutionalPageResponse>;
+export async function fetchAdminInstitutionalPageClient(
+  slug: 'contato',
+): Promise<AdminContactInstitutionalPageResponse>;
+export async function fetchAdminInstitutionalPageClient(
+  slug: 'legal',
+): Promise<AdminLegalInstitutionalPageResponse>;
+export async function fetchAdminInstitutionalPageClient(
+  slug: InstitutionalPageSlug,
+): Promise<
+  | AdminInstitutionalPageResponse
+  | AdminContactInstitutionalPageResponse
+  | AdminLegalInstitutionalPageResponse
+> {
+  const data = await fetchInstitutionalPageJson(slug);
+
+  switch (slug) {
+    case 'sobre':
+      return adminInstitutionalPageResponseSchema.parse(data);
+    case 'contato':
+      return adminContactInstitutionalPageResponseSchema.parse(data);
+    case 'legal':
+      return adminLegalInstitutionalPageResponseSchema.parse(data);
+  }
+}
+
+export async function updateAdminInstitutionalPageClient(
+  slug: 'sobre',
+  body: UpdateInstitutionalPageBody,
+): Promise<AdminInstitutionalPageResponse>;
+export async function updateAdminInstitutionalPageClient(
+  slug: 'contato',
+  body: UpdateContactInstitutionalPageBody,
+): Promise<AdminContactInstitutionalPageResponse>;
+export async function updateAdminInstitutionalPageClient(
+  slug: 'legal',
+  body: UpdateLegalInstitutionalPageBody,
+): Promise<AdminLegalInstitutionalPageResponse>;
+export async function updateAdminInstitutionalPageClient(
+  slug: InstitutionalPageSlug,
+  body:
+    | UpdateInstitutionalPageBody
+    | UpdateContactInstitutionalPageBody
+    | UpdateLegalInstitutionalPageBody,
+): Promise<
+  | AdminInstitutionalPageResponse
+  | AdminContactInstitutionalPageResponse
+  | AdminLegalInstitutionalPageResponse
+> {
+  if (!isInstitutionalPageSlug(slug)) {
+    throw new Error('Slug institucional inválido');
+  }
+
+  switch (slug) {
+    case 'sobre': {
+      const parsedBody = updateInstitutionalPageBodySchema.parse(body);
+      const data = await patchInstitutionalPageJson(slug, parsedBody);
+      return adminInstitutionalPageResponseSchema.parse(data);
+    }
+    case 'contato': {
+      const parsedBody = updateContactInstitutionalPageBodySchema.parse(body);
+      const data = await patchInstitutionalPageJson(slug, parsedBody);
+      return adminContactInstitutionalPageResponseSchema.parse(data);
+    }
+    case 'legal': {
+      const parsedBody = updateLegalInstitutionalPageBodySchema.parse(body);
+      const data = await patchInstitutionalPageJson(slug, parsedBody);
+      return adminLegalInstitutionalPageResponseSchema.parse(data);
+    }
+  }
 }

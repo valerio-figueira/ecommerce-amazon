@@ -33,9 +33,10 @@ Documentação do **código implementado**. Especificação, roadmap e decisões
 | [web-mobile-quick-wins.md](./web-mobile-quick-wins.md)                           | Quick wins mobile: grid categorias, nav editorial, CTA sticky, safe-area                 |
 | [header-search.md](./header-search.md)                                           | Busca no header: overlay, `/busca`, `GET /products?search=`                              |
 | [brand-config.md](./brand-config.md)                                             | Marca centralizada: nome, URL, contato, helpers de título                                |
-| [legal-pages.md](./legal-pages.md)                                               | `/legal`: privacidade LGPD, termos, afiliados, cookies                                   |
-| [about-contact-pages.md](./about-contact-pages.md)                               | `/sobre` (CMS) + `/contato`: E-E-A-T, equipe, JSON-LD                                    |
+| [legal-pages.md](./legal-pages.md)                                               | `/legal` (CMS): privacidade LGPD, termos, afiliados, cookies                             |
+| [about-contact-pages.md](./about-contact-pages.md)                               | `/sobre` (CMS) + `/contato` (CMS): E-E-A-T, equipe, JSON-LD                              |
 | [admin-about-page.md](./admin-about-page.md)                                     | Editor Admin da página Sobre (`/paginas/sobre`)                                          |
+| [admin-institutional-pages.md](./admin-institutional-pages.md)                   | Editores Admin Contato e Políticas legais (`/paginas/contato`, `/paginas/legal`)         |
 | [admin-operational-settings.md](./admin-operational-settings.md)                 | Configurações operacionais (`/configuracoes`): afiliado, operadores, site_settings       |
 | [admin-marketplace-credentials.md](./admin-marketplace-credentials.md)           | Cofre de credenciais PA-API/Shopee: criptografia, Redis, aba Integrações                 |
 | [cms-category-bento-grid.md](./cms-category-bento-grid.md)                       | Bloco `category_bento_grid`: grade bento de categorias                                   |

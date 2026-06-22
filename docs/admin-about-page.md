@@ -13,7 +13,7 @@ Editor CMS da página institucional `/sobre` no painel operador. Fase 5 do plano
 
 - Preview `?preview=draft` na vitrine
 - Edição dos cards de equipe (vêm de `/perfil` → `show_on_team`)
-- `/contato` editável via CMS
+- `/contato` e `/legal` editáveis via CMS — ver [admin-institutional-pages.md](./admin-institutional-pages.md)
 
 ## Fluxo
 

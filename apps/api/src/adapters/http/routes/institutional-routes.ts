@@ -5,11 +5,12 @@ import { EntityNotFoundError, PageStatus } from '@ecommerce-amazon/domain';
 import type { ApiContainer } from '@ecommerce-amazon/infrastructure';
 import { getBrandConfig, loadEnv } from '@ecommerce-amazon/shared';
 import {
-  adminInstitutionalPageResponseSchema,
-  institutionalPageResponseSchema,
-  parseAboutPageContent,
-  updateInstitutionalPageBodySchema,
-} from '@ecommerce-amazon/shared/about';
+  isInstitutionalPageSlug,
+  parseAdminInstitutionalPageResponse,
+  parseInstitutionalPageContent,
+  parseInstitutionalPageResponse,
+  parseUpdateInstitutionalPageBody,
+} from '@ecommerce-amazon/shared/institutional';
 
 import { PageSlugParamsSchema } from '../../dtos/request/schemas.js';
 
@@ -37,11 +38,15 @@ export function registerInstitutionalRoutes(app: FastifyInstance, container: Api
   app.get('/institutional-pages/:slug', async (request, reply) => {
     try {
       const { slug } = PageSlugParamsSchema.parse(request.params);
+      if (!isInstitutionalPageSlug(slug)) {
+        return reply.status(404).send({ error: 'Institutional page not found' });
+      }
+
       const result = await useCases.getPublishedInstitutionalPage.execute(slug, brand);
       if (!result) {
         return reply.status(404).send({ error: 'Institutional page not found' });
       }
-      return reply.send(institutionalPageResponseSchema.parse(result));
+      return reply.send(parseInstitutionalPageResponse(slug, result));
     } catch (error) {
       return handleInstitutionalError(error, reply);
     }
@@ -72,6 +77,10 @@ export function registerAdminInstitutionalRoutes(
       }
 
       const { slug } = PageSlugParamsSchema.parse(request.params);
+      if (!isInstitutionalPageSlug(slug)) {
+        return reply.status(404).send({ error: 'Institutional page not found' });
+      }
+
       const result = await useCases.getAdminInstitutionalPage.execute(slug, brand);
       if (!result) {
         return reply.status(404).send({ error: 'Institutional page not found' });
@@ -90,8 +99,12 @@ export function registerAdminInstitutionalRoutes(
       }
 
       const { slug } = PageSlugParamsSchema.parse(request.params);
-      const body = updateInstitutionalPageBodySchema.parse(request.body);
-      const content = parseAboutPageContent(body.content);
+      if (!isInstitutionalPageSlug(slug)) {
+        return reply.status(404).send({ error: 'Institutional page not found' });
+      }
+
+      const body = parseUpdateInstitutionalPageBody(slug, request.body);
+      const content = parseInstitutionalPageContent(slug, body.content);
 
       const result = await useCases.updateInstitutionalPage.execute({
         slug,
@@ -101,7 +114,7 @@ export function registerAdminInstitutionalRoutes(
         ...(body.status !== undefined ? { status: parsePageStatus(body.status) } : {}),
       });
 
-      return reply.send(adminInstitutionalPageResponseSchema.parse(result));
+      return reply.send(parseAdminInstitutionalPageResponse(slug, result));
     } catch (error) {
       return handleInstitutionalError(error, reply);
     }

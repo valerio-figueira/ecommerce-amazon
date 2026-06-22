@@ -10,11 +10,11 @@ Páginas institucionais `/sobre` e `/contato` na vitrine pública, com conteúdo
 
 ## O que foi entregue
 
-| Rota       | Fonte de conteúdo                                                              |
-| ---------- | ------------------------------------------------------------------------------ |
-| `/sobre`   | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team` |
-| `/contato` | `BrandConfig` + `shared/contact` (estático)                                    |
-| `/legal`   | Inalterado — texto em código (`shared/legal`)                                  |
+| Rota       | Fonte de conteúdo                                                                      |
+| ---------- | -------------------------------------------------------------------------------------- |
+| `/sobre`   | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team`         |
+| `/contato` | CMS (`pages` slug `contato`, `page_kind=institutional`) + redes via `BrandConfig`      |
+| `/legal`   | CMS (`pages` slug `legal`, `page_kind=institutional`) — fallback em código se API down |
 
 ### Seções da Sobre
 
@@ -35,7 +35,7 @@ Páginas institucionais `/sobre` e `/contato` na vitrine pública, com conteúdo
 | GET    | `/admin/institutional-pages/:slug` | Mesmo + `status`, `pageKind` (JWT)                       |
 | PATCH  | `/admin/institutional-pages/:slug` | Atualiza `content`, SEO e `status` (JWT)                 |
 
-Ver também [admin-about-page.md](./admin-about-page.md) para o editor no painel.
+Ver também [admin-about-page.md](./admin-about-page.md) e [admin-institutional-pages.md](./admin-institutional-pages.md) para os editores no painel.
 
 ### Operadores — perfil público
 
@@ -103,7 +103,6 @@ Admin: `/paginas` → **Editar conteúdo** na Sobre, ou `/perfil` → **Exibir n
 ## Fora de escopo (próxima fase)
 
 - Preview `?preview=draft` na vitrine
-- `/contato` editável via CMS
 - Página individual `/autores/[slug]`
 - Formulário de contato com backend
 

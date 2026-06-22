@@ -49,6 +49,7 @@ export function buildCmsPageRevalidationOptions(slug: string): {
 export function buildInstitutionalPagePublicPath(slug: string): string {
   if (slug === 'sobre') return '/sobre';
   if (slug === 'contato') return '/contato';
+  if (slug === 'legal') return '/legal';
   return `/${slug}`;
 }
 

@@ -17,18 +17,19 @@ Página pública `/legal` com política de privacidade, termos de uso, divulgaç
 | `#afiliados`   | Amazon Associados / Shopee Afiliados, CTAs transparentes, `/go/`                    |
 | `#cookies`     | Cookie `vitrine_session`, analytics futuro com consentimento                        |
 
-Conteúdo parametrizado por [`BrandConfig`](../packages/shared/src/config/brand.ts) (`name`, `legalName`, `contactEmail`, `url`).
+Conteúdo parametrizado por [`BrandConfig`](../packages/shared/src/config/brand.ts) nos defaults; operador edita via CMS Admin em `/paginas/legal`. Ver [admin-institutional-pages.md](./admin-institutional-pages.md).
 
 ## Arquivos-chave
 
-| Artefato            | Path                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Conteúdo + metadata | [`packages/shared/src/legal/legal-content.ts`](../packages/shared/src/legal/legal-content.ts)                 |
-| Testes              | [`packages/shared/src/legal/legal-content.test.ts`](../packages/shared/src/legal/legal-content.test.ts)       |
-| Página Next.js      | [`apps/web/src/app/legal/page.tsx`](../apps/web/src/app/legal/page.tsx)                                       |
-| UI                  | [`apps/web/src/components/legal/LegalPageContent.tsx`](../apps/web/src/components/legal/LegalPageContent.tsx) |
-| Link no rodapé      | [`apps/web/src/components/layout/Footer.tsx`](../apps/web/src/components/layout/Footer.tsx)                   |
-| Sitemap estático    | [`apps/web/src/app/sitemap.ts`](../apps/web/src/app/sitemap.ts) — inclui `/legal`                             |
+| Artefato            | Path                                                                                                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Conteúdo + metadata | [`packages/shared/src/legal/legal-content.ts`](../packages/shared/src/legal/legal-content.ts)                                                        |
+| Testes              | [`packages/shared/src/legal/legal-content.test.ts`](../packages/shared/src/legal/legal-content.test.ts)                                              |
+| Página Next.js      | [`apps/web/src/app/legal/page.tsx`](../apps/web/src/app/legal/page.tsx)                                                                              |
+| UI                  | [`apps/web/src/components/legal/LegalPageContent.tsx`](../apps/web/src/components/legal/LegalPageContent.tsx)                                        |
+| Admin editor legal  | [`LegalPageEditor.tsx`](../apps/admin/src/components/legal/LegalPageEditor.tsx) — ver [admin-institutional-pages.md](./admin-institutional-pages.md) |
+| Link no rodapé      | [`apps/web/src/components/layout/Footer.tsx`](../apps/web/src/components/layout/Footer.tsx)                                                          |
+| Sitemap estático    | [`apps/web/src/app/sitemap.ts`](../apps/web/src/app/sitemap.ts) — inclui `/legal`                                                                    |
 
 ## Import
 

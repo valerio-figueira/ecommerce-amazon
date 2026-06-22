@@ -86,6 +86,10 @@
       "types": "./dist/contact/index.d.ts",
       "import": "./dist/contact/index.js"
     },
+    "./institutional": {
+      "types": "./dist/institutional/index.d.ts",
+      "import": "./dist/institutional/index.js"
+    },
     "./utils/type-guards": {
       "types": "./dist/utils/type-guards.d.ts",
       "import": "./dist/utils/type-guards.js"

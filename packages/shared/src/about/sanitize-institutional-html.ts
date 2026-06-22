@@ -45,8 +45,11 @@ function sanitizeRecord(value: Record<string, unknown>): Record<string, unknown>
   return result;
 }
 
-export function sanitizeAboutPageContentRecord(
+export function sanitizeInstitutionalContentRecord(
   content: Record<string, unknown>,
 ): Record<string, unknown> {
   return isRecord(content) ? sanitizeRecord(content) : content;
 }
+
+/** @deprecated Use sanitizeInstitutionalContentRecord */
+export const sanitizeAboutPageContentRecord = sanitizeInstitutionalContentRecord;

@@ -6,7 +6,7 @@ import {
   type AboutPageContent,
   type AboutSection,
 } from './about-content.schema.js';
-import { sanitizeAboutPageContentRecord } from './sanitize-institutional-html.js';
+import { sanitizeInstitutionalContentRecord } from './sanitize-institutional-html.js';
 
 export const ABOUT_PAGE_LAST_UPDATED = '2026-06-15';
 
@@ -119,7 +119,7 @@ export function resolveAboutPageContent(stored: unknown, brand: BrandConfig): Ab
 
 export function parseAboutPageContent(raw: unknown): AboutPageContent {
   const parsed = aboutPageContentSchema.parse(raw);
-  return aboutPageContentSchema.parse(sanitizeAboutPageContentRecord(parsed));
+  return aboutPageContentSchema.parse(sanitizeInstitutionalContentRecord(parsed));
 }
 
 export function buildAboutPageMetadata(

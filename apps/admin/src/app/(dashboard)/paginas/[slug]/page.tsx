@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 
 import { AboutPageEditor } from '@/components/about/AboutPageEditor';
+import { ContactPageEditor } from '@/components/contact/ContactPageEditor';
+import { LegalPageEditor } from '@/components/legal/LegalPageEditor';
 import { AdminPageCard } from '@/components/admin/AdminPageCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { CMSBlockOrderManager } from '@/components/cms/CMSBlockOrderManager';
@@ -8,6 +10,7 @@ import { getAdminInstitutionalPage } from '@/lib/api/institutional-pages';
 import { getAdminPageLayout, listAdminPages } from '@/lib/api/cms-pages';
 import { getSiteSettings } from '@/lib/api/site-settings';
 import { PageKind } from '@ecommerce-amazon/domain';
+import { isInstitutionalPageSlug } from '@ecommerce-amazon/shared/institutional';
 
 type PageEditorProps = {
   params: Promise<{ slug: string }>;
@@ -31,32 +34,80 @@ export default async function PageEditorPage({
   }
 
   if (pageSummary.pageKind === PageKind.INSTITUTIONAL) {
-    let institutionalPage: Awaited<ReturnType<typeof getAdminInstitutionalPage>>;
-    try {
-      institutionalPage = await getAdminInstitutionalPage(slug);
-    } catch {
+    if (!isInstitutionalPageSlug(slug)) {
       notFound();
     }
 
-    return (
-      <>
-        <AdminPageHeader
-          title={pageSummary.title}
-          breadcrumbs={[
-            { label: 'Painel', href: '/' },
-            { label: 'Páginas', href: '/paginas' },
-            { label: pageSummary.title },
-          ]}
-        />
-        <AdminPageCard>
-          <AboutPageEditor
-            slug={slug}
-            pageTitle={pageSummary.title}
-            initialData={institutionalPage}
+    try {
+      if (slug === 'sobre') {
+        const institutionalPage = await getAdminInstitutionalPage('sobre');
+        return (
+          <>
+            <AdminPageHeader
+              title={pageSummary.title}
+              breadcrumbs={[
+                { label: 'Painel', href: '/' },
+                { label: 'Páginas', href: '/paginas' },
+                { label: pageSummary.title },
+              ]}
+            />
+            <AdminPageCard>
+              <AboutPageEditor
+                slug={slug}
+                pageTitle={pageSummary.title}
+                initialData={institutionalPage}
+              />
+            </AdminPageCard>
+          </>
+        );
+      }
+
+      if (slug === 'contato') {
+        const institutionalPage = await getAdminInstitutionalPage('contato');
+        return (
+          <>
+            <AdminPageHeader
+              title={pageSummary.title}
+              breadcrumbs={[
+                { label: 'Painel', href: '/' },
+                { label: 'Páginas', href: '/paginas' },
+                { label: pageSummary.title },
+              ]}
+            />
+            <AdminPageCard>
+              <ContactPageEditor
+                slug={slug}
+                pageTitle={pageSummary.title}
+                initialData={institutionalPage}
+              />
+            </AdminPageCard>
+          </>
+        );
+      }
+
+      const institutionalPage = await getAdminInstitutionalPage('legal');
+      return (
+        <>
+          <AdminPageHeader
+            title={pageSummary.title}
+            breadcrumbs={[
+              { label: 'Painel', href: '/' },
+              { label: 'Páginas', href: '/paginas' },
+              { label: pageSummary.title },
+            ]}
           />
-        </AdminPageCard>
-      </>
-    );
+          <AdminPageCard>
+            <LegalPageEditor
+              slug={slug}
+              pageTitle={pageSummary.title}
+              initialData={institutionalPage}
+            />
+          </AdminPageCard>
+        </>
+      );
+    } catch {
+      notFound();
+    }
   }
 
   let layout: Awaited<ReturnType<typeof getAdminPageLayout>>;

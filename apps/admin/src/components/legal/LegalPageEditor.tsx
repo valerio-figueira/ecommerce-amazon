@@ -7,15 +7,18 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { AboutSectionFields } from '@/components/about/AboutSectionFields';
-import { AboutSeoPanel } from '@/components/about/AboutSeoPanel';
-import { AboutTrafficDirectionPanel } from '@/components/about/AboutTrafficLinksFields';
-import { INSTITUTIONAL_HTML_HINT } from '@/components/about/about-editor-constants';
-import {
-  aboutPageEditorFormSchema,
-  type AboutPageEditorFormValues,
-} from '@/components/about/about-editor-types';
+import { ArticleSeoCharCounter } from '@/components/articles/ArticleSeoCharCounter';
 import { CmsFormSection } from '@/components/cms/props-forms/CmsFormSection';
+import {
+  INSTITUTIONAL_HTML_HINT,
+  SEO_DESCRIPTION_LIMIT,
+  SEO_TITLE_LIMIT,
+} from '@/components/legal/legal-editor-constants';
+import {
+  legalPageEditorFormSchema,
+  type LegalPageEditorFormValues,
+} from '@/components/legal/legal-editor-types';
+import { LegalSectionFields } from '@/components/legal/LegalSectionFields';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,34 +35,29 @@ import { updateAdminInstitutionalPageClient } from '@/lib/api/institutional-page
 import { getClientBrandConfig } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import {
-  type AboutSectionId,
-  type AdminInstitutionalPageResponse,
-} from '@ecommerce-amazon/shared/about';
+  LEGAL_SECTION_IDS,
+  type AdminLegalInstitutionalPageResponse,
+} from '@ecommerce-amazon/shared/legal';
 
-type AboutPageEditorProps = {
+type LegalPageEditorProps = {
   slug: string;
   pageTitle: string;
-  initialData: AdminInstitutionalPageResponse;
+  initialData: AdminLegalInstitutionalPageResponse;
 };
 
-const SECTION_IDS: AboutSectionId[] = ['proposta', 'metodo', 'afiliados', 'equipe'];
-
-const TEXTAREA_CLASS =
-  'flex min-h-[5rem] w-full rounded-lg border border-[color:var(--admin-gray)] bg-white px-3 py-2 text-sm text-[color:var(--admin-navy)] shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--admin-primary)]';
-
-export function AboutPageEditor({
+export function LegalPageEditor({
   slug,
   pageTitle,
   initialData,
-}: AboutPageEditorProps): React.JSX.Element {
+}: LegalPageEditorProps): React.JSX.Element {
   const router = useRouter();
   const adminToast = useAdminToast();
   const brand = getClientBrandConfig();
   const pendingStatusRef = useRef<'draft' | 'published'>('draft');
   const [isSaving, setIsSaving] = useState(false);
 
-  const form = useForm<AboutPageEditorFormValues>({
-    resolver: zodResolver(aboutPageEditorFormSchema),
+  const form = useForm<LegalPageEditorFormValues>({
+    resolver: zodResolver(legalPageEditorFormSchema),
     defaultValues: {
       seoTitle: initialData.layout.seoTitle ?? '',
       seoDescription: initialData.layout.seoDescription ?? '',
@@ -68,12 +66,17 @@ export function AboutPageEditor({
         sections: initialData.content.sections.map((section) => ({
           ...section,
           listItems: section.listItems ?? [],
+          subsections: section.subsections?.map((subsection) => ({
+            ...subsection,
+            paragraphs: subsection.paragraphs ?? [],
+            listItems: subsection.listItems ?? [],
+          })),
         })),
       },
     },
   });
 
-  async function onSubmit(values: AboutPageEditorFormValues): Promise<void> {
+  async function onSubmit(values: LegalPageEditorFormValues): Promise<void> {
     setIsSaving(true);
     try {
       const content = {
@@ -84,10 +87,18 @@ export function AboutPageEditor({
             section.listItems && section.listItems.length > 0
               ? section.listItems.filter((item) => item.trim().length > 0)
               : undefined,
+          subsections: section.subsections?.map((subsection) => ({
+            ...subsection,
+            paragraphs: subsection.paragraphs.filter((item) => item.trim().length > 0),
+            listItems:
+              subsection.listItems && subsection.listItems.length > 0
+                ? subsection.listItems.filter((item) => item.trim().length > 0)
+                : undefined,
+          })),
         })),
       };
 
-      await updateAdminInstitutionalPageClient('sobre', {
+      await updateAdminInstitutionalPageClient('legal', {
         content,
         seoTitle: values.seoTitle.trim() ? values.seoTitle.trim() : null,
         seoDescription: values.seoDescription.trim() ? values.seoDescription.trim() : null,
@@ -95,7 +106,7 @@ export function AboutPageEditor({
       });
 
       adminToast.success(
-        pendingStatusRef.current === 'published' ? 'Página Sobre publicada.' : 'Rascunho salvo.',
+        pendingStatusRef.current === 'published' ? 'Página legal publicada.' : 'Rascunho salvo.',
       );
       router.refresh();
     } catch (error) {
@@ -120,7 +131,8 @@ export function AboutPageEditor({
           <p className="cms-panel-meta">
             <strong>{pageTitle}</strong>
             <span className="mt-1 block text-xs font-normal text-[var(--admin-text-muted)]">
-              Edite o conteúdo editorial da vitrine /{slug}. A equipe é gerenciada em Perfil.
+              Edite privacidade, termos, afiliados e cookies em /{slug}. Texto é template editorial
+              — revise com assessoria jurídica antes do go-live.
             </span>
           </p>
         </div>
@@ -129,7 +141,7 @@ export function AboutPageEditor({
             {isPublished ? 'Publicada' : 'Rascunho'}
           </span>
           <Button asChild variant="outline" size="sm">
-            <Link href={`${brand.url}/sobre`} target="_blank" rel="noopener noreferrer">
+            <Link href={`${brand.url}/legal`} target="_blank" rel="noopener noreferrer">
               Ver na vitrine
               <ExternalLink className="h-3.5 w-3.5" aria-hidden />
             </Link>
@@ -166,15 +178,53 @@ export function AboutPageEditor({
               handleSave('published');
             }}
           >
-            <AboutSeoPanel control={form.control} />
-
-            <CmsFormSection title="Hero">
+            <CmsFormSection title="SEO">
               <FormField
                 control={form.control}
-                name="content.heroTitle"
+                name="seoTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Título principal</FormLabel>
+                    <div className="flex items-center justify-between gap-2">
+                      <FormLabel>Título SEO</FormLabel>
+                      <ArticleSeoCharCounter value={field.value ?? ''} limit={SEO_TITLE_LIMIT} />
+                    </div>
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ''} maxLength={160} />
+                    </FormControl>
+                    <FormDescription>Se vazio, usa o título da página legal.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="seoDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between gap-2">
+                      <FormLabel>Meta description</FormLabel>
+                      <ArticleSeoCharCounter
+                        value={field.value ?? ''}
+                        limit={SEO_DESCRIPTION_LIMIT}
+                      />
+                    </div>
+                    <FormControl>
+                      <Textarea {...field} value={field.value ?? ''} rows={3} maxLength={320} />
+                    </FormControl>
+                    <FormDescription>Se vazio, usa o parágrafo introdutório.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CmsFormSection>
+
+            <CmsFormSection title="Introdução">
+              <FormField
+                control={form.control}
+                name="content.title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Título da página</FormLabel>
                     <FormControl>
                       <Input {...field} maxLength={160} />
                     </FormControl>
@@ -184,7 +234,7 @@ export function AboutPageEditor({
               />
               <FormField
                 control={form.control}
-                name="content.heroIntro"
+                name="content.intro"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Introdução</FormLabel>
@@ -198,8 +248,8 @@ export function AboutPageEditor({
               />
             </CmsFormSection>
 
-            {SECTION_IDS.map((sectionId, sectionIndex) => (
-              <AboutSectionFields
+            {LEGAL_SECTION_IDS.map((sectionId, sectionIndex) => (
+              <LegalSectionFields
                 key={sectionId}
                 control={form.control}
                 setValue={form.setValue}
@@ -207,31 +257,6 @@ export function AboutPageEditor({
                 sectionId={sectionId}
               />
             ))}
-
-            <CmsFormSection title="Equipe na vitrine">
-              <FormField
-                control={form.control}
-                name="content.teamSectionIntro"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Texto introdutório da seção #equipe</FormLabel>
-                    <FormControl>
-                      <textarea {...field} rows={4} className={TEXTAREA_CLASS} maxLength={500} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <p className="rounded-lg border border-[var(--admin-gray)] bg-[var(--admin-accent-muted)]/40 px-3 py-2 text-xs text-[var(--admin-text-muted)]">
-                Os cards de membros vêm dos perfis com{' '}
-                <Link href="/perfil" className="font-medium text-[var(--admin-primary)] underline">
-                  Exibir na página Sobre
-                </Link>
-                . Não edite a equipe aqui.
-              </p>
-            </CmsFormSection>
-
-            <AboutTrafficDirectionPanel control={form.control} />
 
             <CmsFormSection title="Metadados">
               <FormField

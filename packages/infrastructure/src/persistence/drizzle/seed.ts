@@ -18,6 +18,8 @@ import {
 } from '@ecommerce-amazon/domain';
 import { createConsoleLogger, loadEnv } from '@ecommerce-amazon/shared';
 import { buildDefaultAboutPageContent } from '@ecommerce-amazon/shared/about';
+import { buildDefaultContactPageContent } from '@ecommerce-amazon/shared/contact';
+import { buildDefaultLegalPageContent } from '@ecommerce-amazon/shared/legal';
 import { DEFAULT_SITE_SETTINGS } from '@ecommerce-amazon/shared/admin';
 import { heroCarouselPropsSchema } from '@ecommerce-amazon/shared/cms';
 import {
@@ -50,6 +52,8 @@ const SEED_AFFILIATE_AMAZON_ID = 'e1111111-1111-4111-8111-111111111111';
 const SEED_AFFILIATE_SHOPEE_ID = 'e2222222-2222-4222-8222-222222222222';
 const SEED_PAGE_HOME_ID = 'f1111111-1111-4111-8111-111111111111';
 const SEED_PAGE_SOBRE_ID = 'f2222222-2222-4222-8222-222222222222';
+const SEED_PAGE_CONTATO_ID = 'f3333333-3333-4333-8333-333333333333';
+const SEED_PAGE_LEGAL_ID = 'f4444444-4444-4444-8444-444444444444';
 const SEED_BLOCK_HERO_CAROUSEL_ID = 'f3111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_PILLS_ID = 'f5111111-1111-4111-8111-111111111111';
 const SEED_BLOCK_BENTO_ID = 'f8111111-1111-4111-8111-111111111111';
@@ -168,6 +172,8 @@ async function runSeed(): Promise<void> {
     await seedOperator(db, logger, devSeed, env);
     await seedSiteSettings(db, logger);
     await seedAboutPage(db, now, logger);
+    await seedContactPage(db, now, logger);
+    await seedLegalPage(db, now, logger);
     await seedAutoLinks(db, logger);
 
     if (devSeed) {
@@ -1222,6 +1228,92 @@ async function seedAboutPage(
   });
 
   logger.info('About page seed inserted');
+}
+
+async function seedContactPage(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'contato'))
+    .limit(1);
+
+  const brand = getBrandConfig(loadEnv());
+  const contactContent = buildDefaultContactPageContent(brand);
+
+  if (existing.length > 0) {
+    await db
+      .update(schema.pages)
+      .set({
+        pageKind: PageKind.INSTITUTIONAL,
+        institutionalContent: contactContent,
+        updatedAt: now,
+      })
+      .where(eq(schema.pages.slug, 'contato'));
+    logger.info('Contact page seed updated');
+    return;
+  }
+
+  await db.insert(schema.pages).values({
+    id: SEED_PAGE_CONTATO_ID,
+    slug: 'contato',
+    title: 'Contato',
+    status: PageStatus.PUBLISHED,
+    pageKind: PageKind.INSTITUTIONAL,
+    seoTitle: formatWebPageTitle('Contato', brand),
+    seoDescription: contactContent.intro.slice(0, 160),
+    institutionalContent: contactContent,
+    publishedAt: now,
+    updatedAt: now,
+  });
+
+  logger.info('Contact page seed inserted');
+}
+
+async function seedLegalPage(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  now: Date,
+  logger: ReturnType<typeof createConsoleLogger>,
+): Promise<void> {
+  const existing = await db
+    .select({ id: schema.pages.id })
+    .from(schema.pages)
+    .where(eq(schema.pages.slug, 'legal'))
+    .limit(1);
+
+  const brand = getBrandConfig(loadEnv());
+  const legalContent = buildDefaultLegalPageContent(brand);
+
+  if (existing.length > 0) {
+    await db
+      .update(schema.pages)
+      .set({
+        pageKind: PageKind.INSTITUTIONAL,
+        institutionalContent: legalContent,
+        updatedAt: now,
+      })
+      .where(eq(schema.pages.slug, 'legal'));
+    logger.info('Legal page seed updated');
+    return;
+  }
+
+  await db.insert(schema.pages).values({
+    id: SEED_PAGE_LEGAL_ID,
+    slug: 'legal',
+    title: 'Políticas legais',
+    status: PageStatus.PUBLISHED,
+    pageKind: PageKind.INSTITUTIONAL,
+    seoTitle: formatWebPageTitle(legalContent.title, brand),
+    seoDescription: legalContent.intro.slice(0, 160),
+    institutionalContent: legalContent,
+    publishedAt: now,
+    updatedAt: now,
+  });
+
+  logger.info('Legal page seed inserted');
 }
 
 async function seedAutoLinks(

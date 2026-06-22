@@ -1,31 +1,37 @@
+import { sanitizeInstitutionalContentRecord } from '../about/sanitize-institutional-html.js';
 import type { BrandConfig } from '../config/brand.js';
+import { formatWebPageTitle } from '../config/brand.js';
+
+import {
+  legalPageContentSchema,
+  type LegalPageContent,
+  type LegalSection,
+} from './legal-content.schema.js';
 
 export const LEGAL_PAGE_LAST_UPDATED = '2026-06-15';
 
 export const SESSION_COOKIE_NAME = 'vitrine_session';
 
-export type LegalSubsection = {
-  title: string;
-  paragraphs: string[];
-  listItems?: string[];
-};
+export type { LegalPageContent, LegalSection, LegalSubsection } from './legal-content.schema.js';
 
-export type LegalSection = {
-  id: string;
-  title: string;
-  paragraphs: string[];
-  listItems?: string[];
-  subsections?: LegalSubsection[];
-};
+function mergeLegalSections(
+  defaults: LegalSection[],
+  stored: LegalSection[] | undefined,
+): LegalSection[] {
+  if (!stored) return defaults;
 
-export type LegalPageContent = {
-  title: string;
-  lastUpdated: string;
-  intro: string;
-  sections: LegalSection[];
-};
+  return defaults.map((defaultSection) => {
+    const override = stored.find((section) => section.id === defaultSection.id);
+    if (!override) return defaultSection;
+    return {
+      ...defaultSection,
+      ...override,
+      id: defaultSection.id,
+    };
+  });
+}
 
-export function buildLegalPageContent(brand: BrandConfig): LegalPageContent {
+export function buildDefaultLegalPageContent(brand: BrandConfig): LegalPageContent {
   return {
     title: 'Políticas de Privacidade e Termos de Uso',
     lastUpdated: LEGAL_PAGE_LAST_UPDATED,
@@ -37,6 +43,34 @@ export function buildLegalPageContent(brand: BrandConfig): LegalPageContent {
       buildCookiesSection(brand),
     ],
   };
+}
+
+/** @deprecated Use buildDefaultLegalPageContent */
+export const buildLegalPageContent = buildDefaultLegalPageContent;
+
+export function resolveLegalPageContent(stored: unknown, brand: BrandConfig): LegalPageContent {
+  const defaults = buildDefaultLegalPageContent(brand);
+  if (!stored || typeof stored !== 'object') {
+    return defaults;
+  }
+
+  const parsed = legalPageContentSchema.partial().safeParse(stored);
+  if (!parsed.success) {
+    return defaults;
+  }
+
+  const partial = parsed.data;
+  return {
+    title: partial.title ?? defaults.title,
+    lastUpdated: partial.lastUpdated ?? defaults.lastUpdated,
+    intro: partial.intro ?? defaults.intro,
+    sections: mergeLegalSections(defaults.sections, partial.sections),
+  };
+}
+
+export function parseLegalPageContent(raw: unknown): LegalPageContent {
+  const parsed = legalPageContentSchema.parse(raw);
+  return legalPageContentSchema.parse(sanitizeInstitutionalContentRecord(parsed));
 }
 
 function buildPrivacySection(brand: BrandConfig): LegalSection {
@@ -201,7 +235,11 @@ function buildCookiesSection(_brand: BrandConfig): LegalSection {
   };
 }
 
-export function buildLegalPageMetadata(brand: BrandConfig): {
+export function buildLegalPageMetadata(
+  brand: BrandConfig,
+  content?: LegalPageContent,
+  seo?: { seoTitle?: string | null | undefined; seoDescription?: string | null | undefined },
+): {
   title: string;
   description: string;
   alternates: { canonical: string };
@@ -211,8 +249,11 @@ export function buildLegalPageMetadata(brand: BrandConfig): {
     url: string;
   };
 } {
-  const title = 'Políticas de Privacidade e Termos de Uso';
-  const description = `Política de privacidade (LGPD), termos de uso, divulgação de afiliados e cookies de ${brand.name}.`;
+  const resolved = content ?? buildDefaultLegalPageContent(brand);
+  const title = seo?.seoTitle?.trim()
+    ? seo.seoTitle.trim()
+    : formatWebPageTitle(resolved.title, brand);
+  const description = seo?.seoDescription?.trim() ?? resolved.intro.slice(0, 160);
 
   return {
     title,
