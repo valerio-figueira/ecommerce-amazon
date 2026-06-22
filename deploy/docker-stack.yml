@@ -211,6 +211,7 @@ services:
     image: "${GHCR_IMAGE_PREFIX}/vitrine-web:${IMAGE_TAG}"
     environment:
       NODE_ENV: production
+      NODE_OPTIONS: '--max-old-space-size=460'
       HOSTNAME: '0.0.0.0'
       WEB_PORT: '3001'
       PORT: '3001'
@@ -225,6 +226,18 @@ services:
       SITE_TAGLINE: ${SITE_TAGLINE_YAML}
     networks:
       - vitrine_net
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://127.0.0.1:3001/',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     deploy:
       replicas: 1
       labels:
@@ -238,16 +251,18 @@ services:
         order: start-first
       resources:
         limits:
-          memory: 384M
+          memory: 640M
         reservations:
-          memory: 192M
+          memory: 256M
       restart_policy:
         condition: on-failure
+        delay: 15s
 
   admin:
     image: "${GHCR_IMAGE_PREFIX}/vitrine-admin:${IMAGE_TAG}"
     environment:
       NODE_ENV: production
+      NODE_OPTIONS: '--max-old-space-size=460'
       HOSTNAME: '0.0.0.0'
       ADMIN_PORT: '3002'
       PORT: '3002'
@@ -261,6 +276,18 @@ services:
       SITE_TAGLINE: ${SITE_TAGLINE_YAML}
     networks:
       - vitrine_net
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://127.0.0.1:3002'+(process.env.ADMIN_HEALTH_PATH||'/login'),r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     deploy:
       replicas: 1
       labels:
@@ -274,11 +301,12 @@ services:
         order: start-first
       resources:
         limits:
-          memory: 384M
+          memory: 640M
         reservations:
-          memory: 192M
+          memory: 256M
       restart_policy:
         condition: on-failure
+        delay: 15s
 
 networks:
   vitrine_net:
