@@ -24,5 +24,5 @@ export function marketplaceWithDefiniteArticle(marketplace: string): string {
 }
 
 export function affiliatePriceCtaLabel(marketplace: string): string {
-  return `Ver preço ${marketplaceWithPreposition(marketplace)}`;
+  return `Ver ${marketplaceWithPreposition(marketplace)}`;
 }

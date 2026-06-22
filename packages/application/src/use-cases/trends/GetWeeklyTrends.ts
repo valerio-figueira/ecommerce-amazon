@@ -15,6 +15,8 @@ import type {
 
 import { toProductDeliveryItem } from '../../mappers/product-delivery.mapper.js';
 import { applyPriceComplianceToProducts } from '../../services/apply-price-compliance.js';
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+import type { PublicPricePresentationOptions } from '../../mappers/product-price.mapper.js';
 
 const WEEKLY_TRENDS_DAYS = 7;
 const PERIOD_LABEL = 'últimos 7 dias';
@@ -27,9 +29,18 @@ export class GetWeeklyTrends {
     private readonly engagementAnalyticsRepository: EngagementAnalyticsRepository,
     private readonly productRepository: ProductRepository,
     private readonly contentRepository: ContentRepository,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
-  async execute(input: WeeklyTrendsProps): Promise<GetWeeklyTrendsResult> {
+  async execute(
+    input: WeeklyTrendsProps,
+    priceOptions?: PublicPricePresentationOptions,
+  ): Promise<GetWeeklyTrendsResult> {
+    const resolvedPriceOptions =
+      priceOptions ??
+      ({
+        pricesEnabled: await this.gateService.isPricesEnabled(),
+      } satisfies PublicPricePresentationOptions);
     const to = new Date();
     const from = new Date(to.getTime() - WEEKLY_TRENDS_DAYS * 24 * 60 * 60 * 1000);
     const fetchLimit = input.limit * 2;
@@ -45,7 +56,7 @@ export class GetWeeklyTrends {
     ]);
 
     const [products, articles] = await Promise.all([
-      this.enrichProducts(topProducts, input.limit),
+      this.enrichProducts(topProducts, input.limit, resolvedPriceOptions),
       this.enrichArticles(topArticles, input.limit),
     ]);
 
@@ -63,6 +74,7 @@ export class GetWeeklyTrends {
   private async enrichProducts(
     ranked: Awaited<ReturnType<AnalyticsRepository['getTopClickedProducts']>>,
     limit: number,
+    priceOptions: PublicPricePresentationOptions,
   ): Promise<ProductDeliveryItem[]> {
     if (ranked.length === 0) {
       return [];
@@ -81,7 +93,7 @@ export class GetWeeklyTrends {
 
     applyPriceComplianceToProducts(ordered);
 
-    return ordered.slice(0, limit).map(toProductDeliveryItem);
+    return ordered.slice(0, limit).map((product) => toProductDeliveryItem(product, priceOptions));
   }
 
   private async enrichArticles(

@@ -1,10 +1,14 @@
 import type { ArticleWithEmbedsResult } from '@ecommerce-amazon/application';
+import type { PublicPricePresentationOptions } from '@ecommerce-amazon/application';
 import type { ArticlePublicDetail } from '@ecommerce-amazon/shared/admin';
 import { toIsoDateTime } from '@ecommerce-amazon/shared/admin';
 
 import { toProductDetailDto } from './product.presenter.js';
 
-export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): ArticlePublicDetail {
+export function toArticlePublicDetailDto(
+  result: ArticleWithEmbedsResult,
+  options: PublicPricePresentationOptions = {},
+): ArticlePublicDetail {
   const { article, author, category, relatedArticles, embeddedProducts, cluster } = result;
 
   return {
@@ -31,7 +35,7 @@ export function toArticlePublicDetailDto(result: ArticleWithEmbedsResult): Artic
     embeddedProducts: Object.fromEntries(
       Object.entries(embeddedProducts).map(([productSlug, product]) => [
         productSlug,
-        product ? toProductDetailDto(product) : null,
+        product ? toProductDetailDto(product, options) : null,
       ]),
     ),
     cluster: cluster

@@ -13,6 +13,7 @@ export class GetPublicSiteSettings {
       publicIndexingEnabled: settings.features.publicIndexingEnabled,
       respectAffiliateGate: settings.seo.respectAffiliateGate,
       indexingBlocked,
+      pricesEnabled: settings.features.pricesEnabled,
     };
   }
 }

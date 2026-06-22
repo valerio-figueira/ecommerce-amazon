@@ -76,6 +76,10 @@ function handleError(error: unknown, reply: FastifyReply) {
 export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
   const { useCases } = container;
 
+  const resolvePublicPriceOptions = async () => ({
+    pricesEnabled: await container.services.affiliateScaleGateService.isPricesEnabled(),
+  });
+
   const loadProductCategory = async (categoryId: string) => {
     const category = await container.repositories.categoryRepository.findById(categoryId);
     return category ? { id: category.id, slug: category.slug, label: category.label } : null;
@@ -206,7 +210,12 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
         filters.visibleOnly = filters.visibleOnly ?? true;
       }
       const result = await useCases.listProducts.execute(filters);
-      const items = await mapProductsToListItemDtos(result.items, loadProductCategory);
+      const priceOptions = await resolvePublicPriceOptions();
+      const items = await mapProductsToListItemDtos(
+        result.items,
+        loadProductCategory,
+        priceOptions,
+      );
       return reply.send({
         items,
         total: result.total,
@@ -224,7 +233,12 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
       const result = await useCases.getProductWithEmbeds.execute(slug);
       if (!result) return reply.status(404).send({ error: 'Product not found' });
 
-      const dto = toProductDetailWithEmbedsDto(result.product, result.similarProducts);
+      const priceOptions = await resolvePublicPriceOptions();
+      const dto = toProductDetailWithEmbedsDto(
+        result.product,
+        result.similarProducts,
+        priceOptions,
+      );
       if (result.product.categoryId) {
         const category = await container.repositories.categoryRepository.findById(
           result.product.categoryId,
@@ -251,6 +265,11 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
 
   app.get('/products/:id/price-history', async (request, reply) => {
     try {
+      const pricesEnabled = await container.services.affiliateScaleGateService.isPricesEnabled();
+      if (!pricesEnabled) {
+        return reply.status(403).send({ error: 'Price history is disabled by platform settings' });
+      }
+
       const { id } = ProductIdParamsSchema.parse(request.params);
       const { days } = PriceHistoryQuerySchema.parse(request.query);
       const history = await useCases.getProductPriceHistory.execute(id, days);
@@ -403,7 +422,8 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
       const { slug } = ArticleSlugParamsSchema.parse(request.params);
       const result = await useCases.getArticleWithEmbeds.execute(slug);
       if (!result) return reply.status(404).send({ error: 'Article not found' });
-      return reply.send(toArticlePublicDetailDto(result));
+      const priceOptions = await resolvePublicPriceOptions();
+      return reply.send(toArticlePublicDetailDto(result, priceOptions));
     } catch (error) {
       return handleError(error, reply);
     }
@@ -462,7 +482,12 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
       const pageSize = query.pageSize ?? 24;
       const result = await useCases.getCuratedCollection.execute(slug, { page, pageSize });
       if (!result) return reply.status(404).send({ error: 'Collection not found' });
-      const products = await mapProductsToListItemDtos(result.products, loadProductCategory);
+      const priceOptions = await resolvePublicPriceOptions();
+      const products = await mapProductsToListItemDtos(
+        result.products,
+        loadProductCategory,
+        priceOptions,
+      );
       const dto = toCuratedCollectionDto(result.collection, products, {
         total: result.total,
         page: result.page,
@@ -505,7 +530,9 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
         }
       }
 
-      return reply.send(toComparisonPublicDto(result, categoriesById));
+      return reply.send(
+        toComparisonPublicDto(result, categoriesById, await resolvePublicPriceOptions()),
+      );
     } catch (error) {
       return handleError(error, reply);
     }

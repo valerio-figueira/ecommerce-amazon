@@ -283,6 +283,7 @@ export function buildApiContainer(env = loadEnv()) {
     analyticsRepository,
     productRepository,
     contentRepository,
+    affiliateScaleGateService,
   );
 
   return {
@@ -298,7 +299,11 @@ export function buildApiContainer(env = loadEnv()) {
       getAdminProduct,
       updateProduct,
       getProductPriceHistory: new GetProductPriceHistory(snapshotRepository, cache),
-      createPriceAlert: new CreatePriceAlert(alertRepository, productRepository),
+      createPriceAlert: new CreatePriceAlert(
+        alertRepository,
+        productRepository,
+        affiliateScaleGateService,
+      ),
       confirmPriceAlert: new ConfirmPriceAlert(alertRepository),
       cancelPriceAlert: new CancelPriceAlert(alertRepository),
       addToWishlist: new AddToWishlist(wishlistRepository, productRepository),
@@ -388,6 +393,7 @@ export function buildApiContainer(env = loadEnv()) {
         productRepository,
         categoryRepository,
         getWeeklyTrends,
+        affiliateScaleGateService,
       ),
       listCategoryTree: new ListCategoryTree(categoryRepository),
       getCategoryBySlug: new GetCategoryBySlug(categoryRepository),
@@ -396,7 +402,11 @@ export function buildApiContainer(env = loadEnv()) {
       updateCategory: new UpdateCategory(categoryRepository, webRevalidator),
       deleteCategory: new DeleteCategory(categoryRepository, webRevalidator),
       reorderCategories: new ReorderCategories(categoryRepository, webRevalidator),
-      getWishlist: new GetWishlist(wishlistRepository, productRepository),
+      getWishlist: new GetWishlist(
+        wishlistRepository,
+        productRepository,
+        affiliateScaleGateService,
+      ),
       savePageBlock: new SavePageBlock(pageRepository, cache, webRevalidator),
       deletePageBlock: new DeletePageBlock(pageRepository, cache, webRevalidator),
       updatePageBlocksOrder: new UpdatePageBlocksOrder(pageRepository, cache, webRevalidator),
@@ -526,7 +536,11 @@ export function buildApiContainer(env = loadEnv()) {
       updateOperatorAccess: new UpdateOperatorAccess(operatorRepository),
       changeOperatorPassword: new ChangeOperatorPassword(operatorRepository, passwordHasher),
       getSiteSettings: new GetSiteSettings(siteSettingsRepository),
-      updateSiteSettings: new UpdateSiteSettings(siteSettingsRepository, affiliateScaleGateService),
+      updateSiteSettings: new UpdateSiteSettings(
+        siteSettingsRepository,
+        affiliateScaleGateService,
+        webRevalidator,
+      ),
       getPublicSiteSettings: new GetPublicSiteSettings(affiliateScaleGateService),
       getOperationalStatus: new GetOperationalStatus(
         affiliateAccountRepository,

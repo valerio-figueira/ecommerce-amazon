@@ -63,6 +63,11 @@ export class AffiliateScaleGateService {
     return settings.features.batchCheckoutEnabled;
   }
 
+  async isPricesEnabled(): Promise<boolean> {
+    const settings = await this.getSettings();
+    return settings.features.pricesEnabled;
+  }
+
   static fallbackSettings(): SiteSettings {
     return DEFAULT_SITE_SETTINGS;
   }

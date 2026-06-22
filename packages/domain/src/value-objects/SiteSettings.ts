@@ -4,6 +4,7 @@ export type SiteSettingsFeatures = {
   priceAlertsEnabled: boolean;
   batchCheckoutEnabled: boolean;
   publicIndexingEnabled: boolean;
+  pricesEnabled: boolean;
 };
 
 export type SiteSettingsSeo = {

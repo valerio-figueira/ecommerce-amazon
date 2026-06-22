@@ -6,6 +6,13 @@ import {
   normalizeSpecsGroups,
 } from '@ecommerce-amazon/shared/product';
 
+import {
+  resolvePublicShouldShowPrice,
+  type PublicPricePresentationOptions,
+} from '@ecommerce-amazon/application';
+
+export type { PublicPricePresentationOptions };
+
 export type ProductListItemDto = {
   id: string;
   slug: string;
@@ -99,8 +106,11 @@ export type AdminProductDetailDto = {
   createdAt: string;
 };
 
-export function toProductPriceDto(product: Product): ProductPriceDto {
-  const shouldShowPrice = product.shouldShowPrice;
+export function toProductPriceDto(
+  product: Product,
+  options: PublicPricePresentationOptions = {},
+): ProductPriceDto {
+  const shouldShowPrice = resolvePublicShouldShowPrice(product, options);
   const updatedAt =
     product.price.updatedAt instanceof Date
       ? product.price.updatedAt.toISOString()
@@ -120,12 +130,13 @@ export function toProductPriceDto(product: Product): ProductPriceDto {
 export function toProductListItemDto(
   product: Product,
   category?: { id: string; slug: string; label: string } | null,
+  options: PublicPricePresentationOptions = {},
 ): ProductListItemDto {
   return {
     id: product.id,
     slug: product.slug,
     title: product.titleClean,
-    price: toProductPriceDto(product),
+    price: toProductPriceDto(product, options),
     marketplace: product.marketplace,
     ...(product.rating !== undefined ? { rating: product.rating } : {}),
     ...(product.reviewCount !== undefined ? { reviewCount: product.reviewCount } : {}),
@@ -141,6 +152,7 @@ export function toProductListItemDto(
 export async function mapProductsToListItemDtos(
   products: Product[],
   loadCategory: (categoryId: string) => Promise<{ id: string; slug: string; label: string } | null>,
+  options: PublicPricePresentationOptions = {},
 ): Promise<ProductListItemDto[]> {
   const categoryIds = [
     ...new Set(
@@ -158,6 +170,7 @@ export async function mapProductsToListItemDtos(
     toProductListItemDto(
       product,
       product.categoryId ? (categoryById.get(product.categoryId) ?? null) : null,
+      options,
     ),
   );
 }
@@ -174,10 +187,13 @@ export function resolveProductSpecPresentation(product: Product): {
   };
 }
 
-export function toProductDetailDto(product: Product): ProductDetailDto {
+export function toProductDetailDto(
+  product: Product,
+  options: PublicPricePresentationOptions = {},
+): ProductDetailDto {
   const { specGroups, specs } = resolveProductSpecPresentation(product);
   return {
-    ...toProductListItemDto(product),
+    ...toProductListItemDto(product, null, options),
     titleRaw: product.titleRaw,
     externalId: product.externalId,
     availability: product.availability,
@@ -202,10 +218,11 @@ export function toProductDetailDto(product: Product): ProductDetailDto {
 export function toProductDetailWithEmbedsDto(
   product: Product,
   similarProducts: Product[],
+  options: PublicPricePresentationOptions = {},
 ): ProductDetailDto {
   return {
-    ...toProductDetailDto(product),
-    similarProducts: similarProducts.map((product) => toProductListItemDto(product)),
+    ...toProductDetailDto(product, options),
+    similarProducts: similarProducts.map((similar) => toProductListItemDto(similar, null, options)),
   };
 }
 

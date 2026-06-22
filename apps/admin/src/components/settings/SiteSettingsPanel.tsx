@@ -15,7 +15,16 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { updateSiteSettingsClient } from '@/lib/api/site-settings-client';
-import type { SiteSettingsResponse } from '@ecommerce-amazon/shared/admin';
+import { DEFAULT_SITE_SETTINGS, type SiteSettingsResponse } from '@ecommerce-amazon/shared/admin';
+
+function mergeSettingsWithDefaults(settings: SiteSettingsResponse): SiteSettingsResponse {
+  return {
+    ...settings,
+    features: { ...DEFAULT_SITE_SETTINGS.features, ...settings.features },
+    seo: { ...DEFAULT_SITE_SETTINGS.seo, ...settings.seo },
+    cms: { ...DEFAULT_SITE_SETTINGS.cms, ...settings.cms },
+  };
+}
 
 type SiteSettingsPanelProps = {
   initialSettings: SiteSettingsResponse;
@@ -27,7 +36,7 @@ export function SiteSettingsPanel({
   canManage,
 }: SiteSettingsPanelProps): React.JSX.Element {
   const adminToast = useAdminToast();
-  const [settings, setSettings] = useState(initialSettings);
+  const [settings, setSettings] = useState(() => mergeSettingsWithDefaults(initialSettings));
   const [saving, setSaving] = useState(false);
 
   async function handleSave(): Promise<void> {
@@ -74,6 +83,18 @@ export function SiteSettingsPanel({
 
       <div className="cms-float-panel cms-blocks-panel">
         <div className="space-y-5">
+          <SettingRow
+            label="Exibir preços na vitrine"
+            description="Oculta valores numéricos em toda a vitrine pública; CTAs de afiliado permanecem ativos."
+            checked={settings.features.pricesEnabled}
+            disabled={!canManage}
+            onCheckedChange={(checked) =>
+              setSettings((current) => ({
+                ...current,
+                features: { ...current.features, pricesEnabled: checked },
+              }))
+            }
+          />
           <SettingRow
             label="Alertas de preço por e-mail"
             description="Permite disparo de alertas pelo worker quando o preço atinge o alvo."

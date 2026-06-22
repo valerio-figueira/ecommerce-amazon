@@ -1,4 +1,5 @@
 import type { Product, ProductComparison } from '@ecommerce-amazon/domain';
+import type { PublicPricePresentationOptions } from '@ecommerce-amazon/application';
 
 import {
   toProductDetailDto,
@@ -37,6 +38,7 @@ export type ComparisonPublicDetailDto = {
 export function toComparisonPublicDto(
   result: ComparisonPresenterInput,
   categoriesById: Map<string, { id: string; slug: string; label: string }> = new Map(),
+  options: PublicPricePresentationOptions = {},
 ): ComparisonPublicDetailDto {
   const { comparison, products, relatedProducts, categorySlug, categoryLabel } = result;
 
@@ -44,7 +46,7 @@ export function toComparisonPublicDto(
     relatedProducts.length > 0
       ? relatedProducts.map((product) => {
           const category = product.categoryId ? categoriesById.get(product.categoryId) : undefined;
-          return toProductListItemDto(product, category);
+          return toProductListItemDto(product, category, options);
         })
       : undefined;
 
@@ -67,7 +69,7 @@ export function toComparisonPublicDto(
     products: products.map((product) => {
       const category = product.categoryId ? categoriesById.get(product.categoryId) : undefined;
       return {
-        ...toProductDetailDto(product),
+        ...toProductDetailDto(product, options),
         ...(category
           ? { categorySlug: category.slug, categoryLabel: category.label, categoryId: category.id }
           : {}),
@@ -79,12 +81,17 @@ export function toComparisonPublicDto(
 export function toComparisonPublicDtoLegacy(
   comparison: ProductComparison,
   products: Product[],
+  options: PublicPricePresentationOptions = {},
 ): ComparisonPublicDetailDto {
-  return toComparisonPublicDto({
-    comparison,
-    products,
-    relatedProducts: [],
-    categorySlug: undefined,
-    categoryLabel: undefined,
-  });
+  return toComparisonPublicDto(
+    {
+      comparison,
+      products,
+      relatedProducts: [],
+      categorySlug: undefined,
+      categoryLabel: undefined,
+    },
+    new Map(),
+    options,
+  );
 }

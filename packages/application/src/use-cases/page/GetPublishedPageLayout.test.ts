@@ -21,6 +21,12 @@ import {
 import { ListProducts } from '../product/ListProducts.js';
 import { GetPublishedPageLayout } from './GetPublishedPageLayout.js';
 
+function createMockGateService(pricesEnabled = true) {
+  return {
+    isPricesEnabled: vi.fn().mockResolvedValue(pricesEnabled),
+  };
+}
+
 function createMockGetCuratedCollection() {
   return {
     execute: vi.fn().mockResolvedValue(null),
@@ -167,6 +173,7 @@ describe('GetPublishedPageLayout', () => {
       deps.productRepository,
       deps.categoryRepository,
       createMockGetWeeklyTrends(),
+      createMockGateService(),
     );
     const layout = await useCase.execute('home');
 
@@ -228,6 +235,7 @@ describe('GetPublishedPageLayout', () => {
       deps.productRepository,
       deps.categoryRepository,
       createMockGetWeeklyTrends(),
+      createMockGateService(),
     );
     const layout = await useCase.execute('home');
 
@@ -344,6 +352,7 @@ describe('GetPublishedPageLayout', () => {
       deps.productRepository,
       deps.categoryRepository,
       createMockGetWeeklyTrends(),
+      createMockGateService(),
     );
 
     const layout = await useCase.execute('home');
@@ -464,6 +473,7 @@ describe('GetPublishedPageLayout', () => {
       deps.productRepository,
       deps.categoryRepository,
       createMockGetWeeklyTrends(),
+      createMockGateService(),
     );
 
     const layout = await useCase.execute('home');

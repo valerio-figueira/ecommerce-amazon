@@ -1,16 +1,25 @@
 import type { Product } from '@ecommerce-amazon/domain';
 import type { ProductDeliveryItem } from '@ecommerce-amazon/shared/cms';
 
-export function toProductDeliveryItem(product: Product): ProductDeliveryItem {
+import {
+  resolvePublicShouldShowPrice,
+  type PublicPricePresentationOptions,
+} from './product-price.mapper.js';
+
+export function toProductDeliveryItem(
+  product: Product,
+  options: PublicPricePresentationOptions = {},
+): ProductDeliveryItem {
+  const shouldShowPrice = resolvePublicShouldShowPrice(product, options);
   const pricePayload: ProductDeliveryItem['price'] = {
-    amount: product.shouldShowPrice ? product.price.amount : null,
+    amount: shouldShowPrice ? product.price.amount : null,
     currency: product.price.currency,
-    isStale: !product.shouldShowPrice,
-    shouldShowPrice: product.shouldShowPrice,
+    isStale: !shouldShowPrice,
+    shouldShowPrice,
   };
 
   if (
-    product.shouldShowPrice &&
+    shouldShowPrice &&
     product.strikethroughPrice !== undefined &&
     product.strikethroughPrice > product.price.amount
   ) {

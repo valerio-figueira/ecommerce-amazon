@@ -181,6 +181,10 @@ export { ChangeOperatorPassword } from './use-cases/admin-settings/ChangeOperato
 export { GetSiteSettings } from './use-cases/admin-settings/GetSiteSettings.js';
 export { UpdateSiteSettings } from './use-cases/admin-settings/UpdateSiteSettings.js';
 export { GetPublicSiteSettings } from './use-cases/admin-settings/GetPublicSiteSettings.js';
+export {
+  resolvePublicShouldShowPrice,
+  type PublicPricePresentationOptions,
+} from './mappers/product-price.mapper.js';
 export { GetOperationalStatus } from './use-cases/admin-settings/GetOperationalStatus.js';
 export { GetMarketplaceCredentialsStatus } from './use-cases/admin-settings/GetMarketplaceCredentialsStatus.js';
 export { SaveMarketplaceCredentials } from './use-cases/admin-settings/SaveMarketplaceCredentials.js';

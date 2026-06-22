@@ -29,6 +29,7 @@ import {
   applyPriceComplianceToProduct,
   applyPriceComplianceToProducts,
 } from '../../services/apply-price-compliance.js';
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
 import type { GetCuratedCollection } from '../content/GetCuratedCollection.js';
 import type { ListProducts } from '../product/ListProducts.js';
 import type { GetWeeklyTrends } from '../trends/GetWeeklyTrends.js';
@@ -98,6 +99,7 @@ export class GetPublishedPageLayout {
     private readonly productRepository: ProductRepository,
     private readonly categoryRepository: CategoryRepository,
     private readonly getWeeklyTrends: GetWeeklyTrends,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(slug: string): Promise<GetPublishedPageLayoutResult | null> {
@@ -131,28 +133,34 @@ export class GetPublishedPageLayout {
   private async hydrateDynamicBlocks(
     layout: PageLayoutDeliveryDto,
   ): Promise<PageLayoutDeliveryDto> {
+    const pricesEnabled = await this.gateService.isPricesEnabled();
+    const priceOptions = { pricesEnabled };
+
     const hydratedBlocks = await Promise.all(
-      layout.blocks.map(async (block) => this.hydrateBlock(block)),
+      layout.blocks.map(async (block) => this.hydrateBlock(block, priceOptions)),
     );
 
     return { ...layout, blocks: hydratedBlocks };
   }
 
-  private async hydrateBlock(block: PageBlockDeliveryDto): Promise<PageBlockDeliveryDto> {
+  private async hydrateBlock(
+    block: PageBlockDeliveryDto,
+    priceOptions: { pricesEnabled: boolean },
+  ): Promise<PageBlockDeliveryDto> {
     if (block.type === BlockType.CURATED_COLLECTION) {
-      return this.hydrateCuratedCollectionBlock(block);
+      return this.hydrateCuratedCollectionBlock(block, priceOptions);
     }
 
     if (block.type === BlockType.DYNAMIC_PRODUCT_GRID) {
-      return this.hydrateDynamicProductGridBlock(block);
+      return this.hydrateDynamicProductGridBlock(block, priceOptions);
     }
 
     if (block.type === BlockType.BENTO_HUB_MIX) {
-      return this.hydrateBentoHubMixBlock(block);
+      return this.hydrateBentoHubMixBlock(block, priceOptions);
     }
 
     if (block.type === BlockType.WEEKLY_TRENDS) {
-      return this.hydrateWeeklyTrendsBlock(block);
+      return this.hydrateWeeklyTrendsBlock(block, priceOptions);
     }
 
     return block;
@@ -160,9 +168,10 @@ export class GetPublishedPageLayout {
 
   private async hydrateWeeklyTrendsBlock(
     block: PageBlockDeliveryDto,
+    priceOptions: { pricesEnabled: boolean },
   ): Promise<PageBlockDeliveryDto> {
     const props = weeklyTrendsPropsSchema.parse(block.props);
-    const rendered = await this.getWeeklyTrends.execute(props);
+    const rendered = await this.getWeeklyTrends.execute(props, priceOptions);
 
     if (!rendered) {
       return block;
@@ -176,6 +185,7 @@ export class GetPublishedPageLayout {
 
   private async hydrateCuratedCollectionBlock(
     block: PageBlockDeliveryDto,
+    priceOptions: { pricesEnabled: boolean },
   ): Promise<PageBlockDeliveryDto> {
     const props = curatedCollectionPropsSchema.parse(block.props);
     const slides = (
@@ -196,7 +206,9 @@ export class GetPublishedPageLayout {
               ctaText: result.collection.ctaText,
               utmDefaults: result.collection.utmDefaults,
             },
-            products: result.products.map(toProductDeliveryItem),
+            products: result.products.map((product) =>
+              toProductDeliveryItem(product, priceOptions),
+            ),
           };
         }),
       )
@@ -214,6 +226,7 @@ export class GetPublishedPageLayout {
 
   private async hydrateDynamicProductGridBlock(
     block: PageBlockDeliveryDto,
+    priceOptions: { pricesEnabled: boolean },
   ): Promise<PageBlockDeliveryDto> {
     const props = dynamicProductGridPropsSchema.parse(block.props);
     const listFilters: {
@@ -243,19 +256,22 @@ export class GetPublishedPageLayout {
 
     return {
       ...block,
-      renderedData: items.filter((product) => product.shouldShowPrice).map(toProductDeliveryItem),
+      renderedData: items
+        .filter((product) => product.shouldShowPrice)
+        .map((product) => toProductDeliveryItem(product, priceOptions)),
     };
   }
 
   private async hydrateBentoHubMixBlock(
     block: PageBlockDeliveryDto,
+    priceOptions: { pricesEnabled: boolean },
   ): Promise<PageBlockDeliveryDto> {
     const props = bentoHubMixPropsSchema.parse(block.props);
 
     const [slot1, slot2, slot3] = await Promise.all([
       this.resolveBentoSlot1(props.slot1),
-      this.resolveBentoSlot2(props.slot2.productId),
-      this.resolveBentoSlot3(props.slot3),
+      this.resolveBentoSlot2(props.slot2.productId, priceOptions),
+      this.resolveBentoSlot3(props.slot3, priceOptions),
     ]);
 
     const renderedBentoHubMix: BentoHubMixRendered = { slot1, slot2, slot3 };
@@ -298,15 +314,19 @@ export class GetPublishedPageLayout {
     };
   }
 
-  private async resolveBentoSlot2(productId: string): Promise<ProductDeliveryItem | null> {
+  private async resolveBentoSlot2(
+    productId: string,
+    priceOptions: { pricesEnabled: boolean },
+  ): Promise<ProductDeliveryItem | null> {
     const product = await this.productRepository.findById(productId);
     if (!product) return null;
     applyPriceComplianceToProduct(product);
-    return toProductDeliveryItem(product);
+    return toProductDeliveryItem(product, priceOptions);
   }
 
   private async resolveBentoSlot3(
     slot: BentoHubMixSlot3Props,
+    priceOptions: { pricesEnabled: boolean },
   ): Promise<BentoHubMixRendered['slot3']> {
     if (slot.contentType === 'category') {
       const category = await this.categoryRepository.findBySlug(slot.categorySlug);
@@ -318,7 +338,9 @@ export class GetPublishedPageLayout {
         visibleOnly: true,
       });
 
-      const products = items.map(toProductDeliveryItem).slice(0, 3);
+      const products = items
+        .map((product) => toProductDeliveryItem(product, priceOptions))
+        .slice(0, 3);
 
       return {
         mode: 'category',
@@ -336,7 +358,9 @@ export class GetPublishedPageLayout {
       .map((id) => byId.get(id))
       .filter((product): product is NonNullable<typeof product> => product !== undefined);
     applyPriceComplianceToProducts(manualProducts);
-    const products = manualProducts.map(toProductDeliveryItem).slice(0, 3);
+    const products = manualProducts
+      .map((product) => toProductDeliveryItem(product, priceOptions))
+      .slice(0, 3);
 
     return {
       mode: 'products',

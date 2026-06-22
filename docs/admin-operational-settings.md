@@ -37,13 +37,15 @@ flowchart LR
 
 Combina `site_settings` + status em `affiliate_accounts`:
 
-| Flag / regra                                                          | Efeito                                   |
-| --------------------------------------------------------------------- | ---------------------------------------- |
-| `features.batchCheckoutEnabled = false`                               | Bloqueia `POST /wishlist/checkout-batch` |
-| `features.priceAlertsEnabled = false`                                 | Worker não dispara e-mails de alerta     |
-| `features.publicIndexingEnabled = false`                              | `robots.ts` → `disallow: /`              |
-| `seo.respectAffiliateGate = true` + conta `pending_manual_validation` | `robots.ts` → `disallow: /`              |
-| Conta `pending` / `suspended`                                         | Bloqueia `/go` e batch (regra existente) |
+| Flag / regra                                                          | Efeito                                                       |
+| --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `features.batchCheckoutEnabled = false`                               | Bloqueia `POST /wishlist/checkout-batch`                     |
+| `features.priceAlertsEnabled = false`                                 | Worker não dispara e-mails de alerta                         |
+| `features.pricesEnabled = false`                                      | Oculta preços na API pública e bloqueia histórico/alertas    |
+| Alteração de `pricesEnabled`                                          | Revalida cache Next.js (`public:site-settings`) + layout `/` |
+| `features.publicIndexingEnabled = false`                              | `robots.ts` → `disallow: /`                                  |
+| `seo.respectAffiliateGate = true` + conta `pending_manual_validation` | `robots.ts` → `disallow: /`                                  |
+| Conta `pending` / `suspended`                                         | Bloqueia `/go` e batch (regra existente)                     |
 
 Cache Redis: `vitrine:site-settings` (TTL 5 min), invalidado em mutações.
 
@@ -76,9 +78,9 @@ Contrato Zod: `packages/shared/src/admin/site-settings-schemas.ts`
 
 ### API pública
 
-| Método | Rota                    | Uso                                |
-| ------ | ----------------------- | ---------------------------------- |
-| GET    | `/site-settings/public` | `indexingBlocked` para `robots.ts` |
+| Método | Rota                    | Uso                                                    |
+| ------ | ----------------------- | ------------------------------------------------------ |
+| GET    | `/site-settings/public` | `indexingBlocked`, `pricesEnabled` para vitrine/robots |
 
 Promoção para `active` exige `checklistConfirmed: true` no PATCH da conta.
 

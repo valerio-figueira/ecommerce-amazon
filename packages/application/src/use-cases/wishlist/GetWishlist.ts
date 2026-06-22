@@ -1,5 +1,8 @@
 import type { Product, ProductRepository, WishlistRepository } from '@ecommerce-amazon/domain';
 
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+import { resolvePublicShouldShowPrice } from '../../mappers/product-price.mapper.js';
+
 export type WishlistItemEnriched = {
   id: string;
   productId: string;
@@ -23,9 +26,11 @@ export class GetWishlist {
   constructor(
     private readonly wishlistRepository: WishlistRepository,
     private readonly productRepository: ProductRepository,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(sessionId: string): Promise<{ items: WishlistItemEnriched[] }> {
+    const pricesEnabled = await this.gateService.isPricesEnabled();
     const items = await this.wishlistRepository.findBySessionId(sessionId);
     if (items.length === 0) return { items: [] };
 
@@ -36,6 +41,8 @@ export class GetWishlist {
     for (const item of items) {
       const product = productById.get(item.productId);
       if (!product) continue;
+
+      const shouldShowPrice = resolvePublicShouldShowPrice(product, { pricesEnabled });
 
       enriched.push({
         id: item.id,
@@ -48,9 +55,9 @@ export class GetWishlist {
           title: product.titleClean,
           ...(product.images[0] !== undefined ? { imageUrl: product.images[0] } : {}),
           price: {
-            amount: product.shouldShowPrice ? product.price.amount : null,
+            amount: shouldShowPrice ? product.price.amount : null,
             currency: product.price.currency,
-            isStale: !product.shouldShowPrice,
+            isStale: !shouldShowPrice,
           },
           goUrl: `/go/${product.slug}`,
         },

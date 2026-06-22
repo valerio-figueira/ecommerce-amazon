@@ -44,7 +44,7 @@ export function FeaturedProductBlock({
     queryFn: () => apiFetchParsed(`/products/${slug ?? ''}`, productListItemSchema),
     enabled: Boolean(slug),
     initialData: initialProduct,
-    staleTime: initialProduct ? 60_000 : 0,
+    staleTime: 0,
   });
 
   if (!slug) {

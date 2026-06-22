@@ -7,6 +7,7 @@ export const siteSettingsFeaturesSchema = z.object({
   priceAlertsEnabled: z.boolean(),
   batchCheckoutEnabled: z.boolean(),
   publicIndexingEnabled: z.boolean(),
+  pricesEnabled: z.boolean(),
 });
 
 export const siteSettingsSeoSchema = z.object({
@@ -31,6 +32,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     priceAlertsEnabled: true,
     batchCheckoutEnabled: true,
     publicIndexingEnabled: true,
+    pricesEnabled: true,
   },
   seo: {
     respectAffiliateGate: true,
@@ -56,12 +58,43 @@ export const publicSiteSettingsResponseSchema = z.object({
   publicIndexingEnabled: z.boolean(),
   respectAffiliateGate: z.boolean(),
   indexingBlocked: z.boolean(),
+  pricesEnabled: z.boolean(),
 });
 
 export type PublicSiteSettingsResponse = z.infer<typeof publicSiteSettingsResponseSchema>;
 
 export function parseSiteSettings(value: unknown): SiteSettings {
-  return siteSettingsSchema.parse(value);
+  const record = typeof value === 'object' && value !== null ? value : {};
+  const features =
+    typeof record === 'object' &&
+    record !== null &&
+    'features' in record &&
+    typeof record.features === 'object' &&
+    record.features !== null
+      ? record.features
+      : {};
+  const seo =
+    typeof record === 'object' &&
+    record !== null &&
+    'seo' in record &&
+    typeof record.seo === 'object' &&
+    record.seo !== null
+      ? record.seo
+      : {};
+  const cms =
+    typeof record === 'object' &&
+    record !== null &&
+    'cms' in record &&
+    typeof record.cms === 'object' &&
+    record.cms !== null
+      ? record.cms
+      : {};
+
+  return siteSettingsSchema.parse({
+    features: { ...DEFAULT_SITE_SETTINGS.features, ...features },
+    seo: { ...DEFAULT_SITE_SETTINGS.seo, ...seo },
+    cms: { ...DEFAULT_SITE_SETTINGS.cms, ...cms },
+  });
 }
 
 export function mergeSiteSettings(

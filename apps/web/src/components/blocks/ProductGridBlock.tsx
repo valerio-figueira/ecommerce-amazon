@@ -84,7 +84,7 @@ export function ProductGridBlock({
     ],
     queryFn: () => apiFetchParsed(`/products?${queryParams.toString()}`, productsPageSchema),
     initialData: isDefaultQuery ? initialProducts : undefined,
-    staleTime: isDefaultQuery && initialProducts ? 60_000 : 0,
+    staleTime: 0,
   });
 
   const catalogHref = useMemo(

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { PUBLIC_WEB_CACHE_TAGS } from '@ecommerce-amazon/shared/cache';
+
 import { resolveApiBaseUrl } from './resolve-api-base-url';
 
 export class ApiError extends Error {
@@ -26,7 +28,7 @@ export async function fetchPageLayout(slug: string): Promise<unknown> {
   const path = `/pages/${slug}`;
   const response = await fetch(`${resolveApiBaseUrl()}${path}`, {
     headers: { 'Content-Type': 'application/json' },
-    next: { revalidate: 60 },
+    next: { revalidate: 60, tags: [PUBLIC_WEB_CACHE_TAGS.siteSettings] },
   });
 
   if (!response.ok) {
@@ -66,7 +68,10 @@ export async function apiFetch(path: string, init?: ApiFetchInit): Promise<unkno
   const response = await fetch(`${resolveApiBaseUrl()}${path}`, {
     ...fetchInit,
     headers,
-    next: fetchInit.method === undefined ? (next ?? { revalidate: 60 }) : undefined,
+    next:
+      fetchInit.method === undefined
+        ? (next ?? { revalidate: 60, tags: [PUBLIC_WEB_CACHE_TAGS.siteSettings] })
+        : undefined,
   });
 
   if (!response.ok) {

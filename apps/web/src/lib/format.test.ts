@@ -39,8 +39,8 @@ describe('marketplaceWithDefiniteArticle', () => {
 
 describe('affiliatePriceCtaLabel', () => {
   it('builds transparent affiliate CTA copy per marketplace', () => {
-    expect(affiliatePriceCtaLabel('amazon_br')).toBe('Ver preço na Amazon');
-    expect(affiliatePriceCtaLabel('shopee_br')).toBe('Ver preço na Shopee');
-    expect(affiliatePriceCtaLabel('mercadolivre_br')).toBe('Ver preço no Mercado Livre');
+    expect(affiliatePriceCtaLabel('amazon_br')).toBe('Ver na Amazon');
+    expect(affiliatePriceCtaLabel('shopee_br')).toBe('Ver na Shopee');
+    expect(affiliatePriceCtaLabel('mercadolivre_br')).toBe('Ver no Mercado Livre');
   });
 });

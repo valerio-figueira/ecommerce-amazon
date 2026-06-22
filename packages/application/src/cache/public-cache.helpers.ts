@@ -71,11 +71,19 @@ export function buildInstitutionalRevalidationOptions(slug: string): PublicWebRe
   };
 }
 
-/** `/sobre` team grid (`GET /team`) — profile bio, avatar, showOnTeam. */
 export function buildAboutTeamRevalidationOptions(): PublicWebRevalidationOptions {
   return {
     paths: ['/sobre'],
     layoutPaths: ['/'],
     tags: [PUBLIC_WEB_CACHE_TAGS.publicTeamMembers],
+  };
+}
+
+/** Price visibility and other platform-wide flags from `site_settings`. */
+export function buildSiteSettingsRevalidationOptions(): PublicWebRevalidationOptions {
+  return {
+    paths: ['/'],
+    layoutPaths: ['/'],
+    tags: [PUBLIC_WEB_CACHE_TAGS.siteSettings],
   };
 }

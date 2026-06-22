@@ -9,10 +9,13 @@ import {
 } from '@ecommerce-amazon/domain';
 import { err, ok, type Result } from '@ecommerce-amazon/shared';
 
+import type { AffiliateScaleGateService } from '../../services/AffiliateScaleGateService.js';
+
 export class CreatePriceAlert {
   constructor(
     private readonly alertRepository: PriceAlertRepository,
     private readonly productRepository: ProductRepository,
+    private readonly gateService: AffiliateScaleGateService,
   ) {}
 
   async execute(input: {
@@ -21,6 +24,10 @@ export class CreatePriceAlert {
     targetPrice: number;
     confirmToken: string;
   }): Promise<Result<{ id: string }, ValidationError>> {
+    if (!(await this.gateService.isPricesEnabled())) {
+      return err(new ValidationError('Price alerts are disabled while platform prices are hidden'));
+    }
+
     const email = Email.create(input.email);
     const count = await this.alertRepository.countActiveByEmail(email.value);
     if (count >= 10) {

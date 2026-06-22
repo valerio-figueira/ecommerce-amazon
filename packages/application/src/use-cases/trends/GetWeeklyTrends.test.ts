@@ -14,6 +14,12 @@ import { weeklyTrendsPropsSchema } from '@ecommerce-amazon/shared/cms';
 
 import { GetWeeklyTrends } from './GetWeeklyTrends.js';
 
+function createMockGateService(pricesEnabled = true) {
+  return {
+    isPricesEnabled: vi.fn().mockResolvedValue(pricesEnabled),
+  };
+}
+
 function createProduct(id: string, slug: string, visible = true): Product {
   return Product.create({
     id,
@@ -107,6 +113,7 @@ describe('GetWeeklyTrends', () => {
       engagementAnalyticsRepository,
       productRepository,
       contentRepository,
+      createMockGateService(),
     );
 
     const result = await useCase.execute({ ...defaultProps, minItems: 1 });
@@ -154,6 +161,7 @@ describe('GetWeeklyTrends', () => {
       { getTopArticlesByEvent: vi.fn().mockResolvedValue([]) },
       { findByIds: vi.fn().mockResolvedValue([hidden, visible]) },
       { findArticleById: vi.fn() },
+      createMockGateService(),
     );
 
     const result = await useCase.execute({ ...defaultProps, minItems: 1 });
@@ -168,6 +176,7 @@ describe('GetWeeklyTrends', () => {
       { getTopArticlesByEvent: vi.fn().mockResolvedValue([]) },
       { findByIds: vi.fn().mockResolvedValue([]) },
       { findArticleById: vi.fn() },
+      createMockGateService(),
     );
 
     const result = await useCase.execute(defaultProps);
@@ -191,6 +200,7 @@ describe('GetWeeklyTrends', () => {
           status: ArticleStatus.DRAFT,
         }),
       },
+      createMockGateService(),
     );
 
     const result = await useCase.execute({ ...defaultProps, minItems: 1 });
