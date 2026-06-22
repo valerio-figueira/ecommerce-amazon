@@ -66,6 +66,8 @@ Se `REVALIDATE_SECRET` estiver vazio, a API usa `NoOpPublicWebRevalidator` (só 
 `PublicWebRevalidator` — `packages/domain/src/gateways/index.ts`  
 Implementação HTTP — `packages/infrastructure/src/cache/http-public-web.revalidator.ts`
 
+Em produção (Swarm), a API chama `http://web:3001/api/revalidate` via `WEB_INTERNAL_URL`. O erro `fetch failed` (com `ECONNREFUSED` no cause) significa que o container **web** não estava aceitando conexões — típico durante OOM/restart, não falha de autenticação. O revalidator faz até **4 tentativas** com backoff (~1,5s × tentativa).
+
 ## Mutations que disparam invalidação
 
 | Módulo                | Redis            | Web paths                                                           |
