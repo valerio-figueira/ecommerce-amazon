@@ -5,7 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { ArticleFieldHint } from '@/components/articles/ArticleFieldHint';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
+import type { AdminAutoLinkSummary, AutoLinkApplyToValue } from '@ecommerce-amazon/shared/admin';
 import {
   isManualTargetUrl,
   resolveInternalLinkLabel,
@@ -22,6 +22,12 @@ type AutoLinkListViewProps = {
   onDelete: (item: AdminAutoLinkSummary) => void;
   onToggleActive: (item: AdminAutoLinkSummary, isActive: boolean) => void;
   onCreate: () => void;
+};
+
+const APPLY_TO_LABELS: Record<AutoLinkApplyToValue, string> = {
+  articles: 'Artigos',
+  products: 'Produtos',
+  both: 'Artigos + produtos',
 };
 
 export function AutoLinkListView({
@@ -67,6 +73,9 @@ export function AutoLinkListView({
                     className={cn('cms-status-pill', item.isActive ? 'is-published' : 'is-draft')}
                   >
                     {item.isActive ? 'Ativo' : 'Inativo'}
+                  </span>
+                  <span className="cms-status-pill is-published">
+                    {APPLY_TO_LABELS[item.applyTo]}
                   </span>
                   {resolved ? (
                     <span className="cms-status-pill is-published">{resolved.typeLabel}</span>

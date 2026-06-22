@@ -5,13 +5,17 @@ import { applyAutoLinksToHtml } from '@/lib/seo/apply-auto-links';
 type ProductLongDescriptionProps = {
   html: string;
   autoLinks: AutoLinksResponse['items'];
+  productSlug: string;
 };
 
 export function ProductLongDescription({
   html,
   autoLinks,
+  productSlug,
 }: ProductLongDescriptionProps): React.JSX.Element {
-  const linkedHtml = applyAutoLinksToHtml(html, autoLinks);
+  const linkedHtml = applyAutoLinksToHtml(html, autoLinks, 'products', {
+    pagePath: `/produtos/${productSlug}`,
+  });
 
   return (
     <section

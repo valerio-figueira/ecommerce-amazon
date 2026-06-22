@@ -40,6 +40,7 @@ import {
   CancelPriceAlertParamsSchema,
   CreateComparisonSchema,
   CreatePriceAlertSchema,
+  GoAutoLinkIdParamsSchema,
   GoQuerySchema,
   GoSlugParamsSchema,
   ListProductsQuerySchema,
@@ -93,6 +94,41 @@ export function registerRoutes(app: FastifyInstance, container: ApiContainer) {
       return { status: 'ok' };
     } catch {
       return reply.status(503).send({ status: 'unavailable' });
+    }
+  });
+
+  app.get('/go/alink/:id', async (request, reply) => {
+    try {
+      const { id } = GoAutoLinkIdParamsSchema.parse(request.params);
+      const query = GoQuerySchema.parse(request.query);
+      const headerSessionId = request.headers['x-session-id'];
+      const sessionId =
+        query.sessionId ??
+        (typeof headerSessionId === 'string' && headerSessionId.length > 0
+          ? headerSessionId
+          : undefined);
+
+      const result = await useCases.resolveAutoLinkRedirect.execute({
+        id,
+        ...(query.blockId !== undefined ? { blockId: query.blockId } : {}),
+        ...(sessionId !== undefined ? { sessionId } : {}),
+        origin: query.origin ?? 'auto_link',
+        ...(query.articleId !== undefined ? { articleId: query.articleId } : {}),
+        ...(query.placement !== undefined ? { placement: query.placement } : {}),
+        ...(query.pagePath !== undefined ? { pagePath: query.pagePath } : {}),
+        ...(query.referrerPath !== undefined ? { referrerPath: query.referrerPath } : {}),
+        ...(query.utm_source !== undefined ? { utmSource: query.utm_source } : {}),
+        ...(query.utm_medium !== undefined ? { utmMedium: query.utm_medium } : {}),
+        ...(query.utm_campaign !== undefined ? { utmCampaign: query.utm_campaign } : {}),
+      });
+
+      if (!result.ok) {
+        return reply.redirect('/', 307);
+      }
+
+      return reply.redirect(result.value.targetUrl, 307);
+    } catch (error) {
+      return handleError(error, reply);
     }
   });
 

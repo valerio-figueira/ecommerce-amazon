@@ -12,6 +12,7 @@ Mascaramento de links afiliados, rich snippets Schema.org e motor de links inter
 ## Escopo entregue
 
 - `GET /go/:slug` na API com **307** para URL de afiliado parametrizada
+- `GET /go/alink/:id` para auto-links com URL de afiliado externa (HTTPS) cadastrada manualmente
 - Rewrite Next.js `/go/:slug` → API (`API_INTERNAL_URL`)
 - Telemetria `redirect_go` via `RecordClickEvent` (fire-and-forget)
 - `goUrl` nos DTOs públicos (substitui `affiliateUrl` exposto ao front)

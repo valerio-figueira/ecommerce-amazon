@@ -120,7 +120,11 @@ export default async function ProductPage({
       <ProductDetailAnalysis pros={product.pros} cons={product.cons} />
       <ProductSpecsSections specGroups={product.specGroups} />
       {product.longDescriptionHtml ? (
-        <ProductLongDescription html={product.longDescriptionHtml} autoLinks={autoLinks.items} />
+        <ProductLongDescription
+          html={product.longDescriptionHtml}
+          autoLinks={autoLinks.items}
+          productSlug={product.slug}
+        />
       ) : null}
       <ProductSimilarCarousel
         products={similarProducts}

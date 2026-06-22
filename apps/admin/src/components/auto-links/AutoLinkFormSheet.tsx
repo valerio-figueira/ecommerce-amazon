@@ -18,7 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAdminToast } from '@/components/ui/admin-toast';
 import { createAutoLinkClient, updateAutoLinkClient } from '@/lib/api/auto-links-client';
 import { isManualTargetUrl } from '@/lib/internal-link-targets';
-import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
+import type { AdminAutoLinkSummary, AutoLinkApplyToValue } from '@ecommerce-amazon/shared/admin';
 
 import { AutoLinkFieldHint } from './AutoLinkListView';
 import { InternalLinkTargetPicker } from './InternalLinkTargetPicker';
@@ -42,6 +42,7 @@ export function AutoLinkFormSheet({
   const [maxMatches, setMaxMatches] = useState('1');
   const [priority, setPriority] = useState('0');
   const [isActive, setIsActive] = useState(true);
+  const [applyTo, setApplyTo] = useState<AutoLinkApplyToValue>('both');
   const [manualUrlMode, setManualUrlMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -54,6 +55,7 @@ export function AutoLinkFormSheet({
       setMaxMatches('1');
       setPriority('0');
       setIsActive(true);
+      setApplyTo('both');
       setManualUrlMode(false);
       return;
     }
@@ -63,6 +65,7 @@ export function AutoLinkFormSheet({
     setMaxMatches(String(editing.maxMatches));
     setPriority(String(editing.priority));
     setIsActive(editing.isActive);
+    setApplyTo(editing.applyTo);
     setManualUrlMode(isManualTargetUrl(editing.targetUrl));
   }, [open, editing]);
 
@@ -95,6 +98,7 @@ export function AutoLinkFormSheet({
         maxMatches: parsedMaxMatches,
         priority: parsedPriority,
         isActive,
+        applyTo,
       };
 
       if (editing) {
@@ -120,8 +124,8 @@ export function AutoLinkFormSheet({
         <SheetHeader className="shrink-0 border-b border-[var(--admin-gray)] px-6 py-5">
           <SheetTitle>{editing ? 'Editar auto-link' : 'Nova auto-link'}</SheetTitle>
           <SheetDescription>
-            Defina a keyword e o destino. A injeção ocorre na vitrine — o HTML do artigo no banco
-            permanece intacto.
+            Defina a keyword, o destino e onde injetar. Links de produto ou afiliado passam por /go
+            na vitrine — o HTML no banco permanece intacto.
           </SheetDescription>
         </SheetHeader>
 
@@ -138,7 +142,7 @@ export function AutoLinkFormSheet({
                   required
                 />
                 <p className="text-xs leading-relaxed text-[var(--admin-text-muted)]">
-                  Primeira ocorrência do termo vira link nos artigos publicados.
+                  Primeira ocorrência do termo vira link conforme as telas selecionadas abaixo.
                 </p>
               </div>
             </CmsFormSection>
@@ -151,6 +155,30 @@ export function AutoLinkFormSheet({
                 manualMode={manualUrlMode}
                 onManualModeChange={setManualUrlMode}
               />
+            </CmsFormSection>
+
+            <CmsFormSection title="Onde exibir" className="cms-form-section-divider">
+              <div className="space-y-2">
+                <Label htmlFor="auto-link-apply-to">Telas</Label>
+                <select
+                  id="auto-link-apply-to"
+                  value={applyTo}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value === 'articles' || value === 'products' || value === 'both') {
+                      setApplyTo(value);
+                    }
+                  }}
+                  className="flex h-10 w-full rounded-md border border-[var(--admin-gray)] bg-white px-3 py-2 text-sm text-[var(--admin-navy)]"
+                >
+                  <option value="both">Artigos e produtos</option>
+                  <option value="articles">Somente artigos</option>
+                  <option value="products">Somente produtos</option>
+                </select>
+                <p className="text-xs text-[var(--admin-text-muted)]">
+                  Controla em qual conteúdo editorial a keyword será linkada automaticamente.
+                </p>
+              </div>
             </CmsFormSection>
 
             <CmsFormSection title="Regras de injeção" className="cms-form-section-divider">

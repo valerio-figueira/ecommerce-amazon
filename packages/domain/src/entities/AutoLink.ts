@@ -1,4 +1,5 @@
 import { ValidationError } from '../errors/DomainError.js';
+import { AutoLinkApplyTo as AutoLinkApplyToEnum } from '../enums/index.js';
 import { type AutoLinkId, toAutoLinkId } from '../value-objects/index.js';
 
 const KEYWORD_MAX_LENGTH = 120;
@@ -42,6 +43,13 @@ function validateMaxMatches(maxMatches: number): number {
   return maxMatches;
 }
 
+function validateApplyTo(applyTo: AutoLinkApplyToEnum): AutoLinkApplyToEnum {
+  if (!Object.values(AutoLinkApplyToEnum).includes(applyTo)) {
+    throw new ValidationError('applyTo inválido');
+  }
+  return applyTo;
+}
+
 export function normalizeAutoLinkKeyword(keyword: string): string {
   return normalizeKeyword(keyword).toLowerCase();
 }
@@ -54,6 +62,7 @@ export class AutoLink {
     readonly maxMatches: number,
     readonly priority: number,
     readonly isActive: boolean,
+    readonly applyTo: AutoLinkApplyToEnum,
     readonly createdAt: Date,
     readonly updatedAt: Date,
   ) {}
@@ -65,6 +74,7 @@ export class AutoLink {
     maxMatches?: number;
     priority?: number;
     isActive?: boolean;
+    applyTo?: AutoLinkApplyToEnum;
     createdAt?: Date;
     updatedAt?: Date;
   }): AutoLink {
@@ -76,6 +86,7 @@ export class AutoLink {
       validateMaxMatches(props.maxMatches ?? 1),
       props.priority ?? 0,
       props.isActive ?? true,
+      validateApplyTo(props.applyTo ?? AutoLinkApplyToEnum.BOTH),
       props.createdAt ?? now,
       props.updatedAt ?? now,
     );
@@ -87,6 +98,7 @@ export class AutoLink {
     maxMatches?: number;
     priority?: number;
     isActive?: boolean;
+    applyTo?: AutoLinkApplyToEnum;
   }): AutoLink {
     return AutoLink.create({
       id: this.id,
@@ -95,6 +107,7 @@ export class AutoLink {
       maxMatches: props.maxMatches ?? this.maxMatches,
       priority: props.priority ?? this.priority,
       isActive: props.isActive ?? this.isActive,
+      applyTo: props.applyTo ?? this.applyTo,
       createdAt: this.createdAt,
       updatedAt: new Date(),
     });
@@ -108,3 +121,5 @@ export class AutoLink {
     return this.withUpdates({ isActive: false });
   }
 }
+
+export { AutoLinkApplyToEnum as AutoLinkApplyTo };

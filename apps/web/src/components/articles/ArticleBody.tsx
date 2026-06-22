@@ -21,7 +21,10 @@ export function ArticleBody({
   autoLinks,
   embeddedProducts,
 }: ArticleBodyProps): React.JSX.Element {
-  const linkedHtml = applyAutoLinksToHtml(article.body, autoLinks);
+  const linkedHtml = applyAutoLinksToHtml(article.body, autoLinks, 'articles', {
+    articleId: article.id,
+    pagePath: `/artigos/${article.slug}`,
+  });
   const segments = parseArticleShortcodes(linkedHtml);
 
   return (

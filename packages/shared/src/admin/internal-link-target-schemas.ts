@@ -77,7 +77,7 @@ export const searchInternalLinkTargetsQuerySchema = z.object({
     .max(INTERNAL_LINK_TARGET_MAX_PRODUCT_LIMIT)
     .optional()
     .default(INTERNAL_LINK_TARGET_DEFAULT_PRODUCT_LIMIT),
-  selectedUrl: z.string().trim().max(255).optional(),
+  selectedUrl: z.string().trim().max(2048).optional(),
 });
 
 export type SearchInternalLinkTargetsQuery = z.infer<typeof searchInternalLinkTargetsQuerySchema>;

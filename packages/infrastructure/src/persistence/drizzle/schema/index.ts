@@ -226,6 +226,7 @@ export const autoLinks = pgTable(
     maxMatches: integer('max_matches').notNull().default(1),
     priority: integer('priority').notNull().default(0),
     isActive: boolean('is_active').notNull().default(true),
+    applyTo: varchar('apply_to', { length: 16 }).notNull().default('both'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },

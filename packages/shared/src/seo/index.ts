@@ -21,6 +21,17 @@ export {
   describeExternalAutoLinkTarget,
   isExternalAutoLinkTargetUrl,
 } from './auto-link-target.js';
+export {
+  buildAutoLinkExternalGoUrl,
+  buildAutoLinkProductGoUrl,
+  filterAutoLinksForSurface,
+  isAffiliateAutoLinkTarget,
+  resolveAutoLinkHref,
+  type AutoLinkRule,
+  type AutoLinkSurface,
+  type AutoLinkTrackingParams,
+} from './auto-link-resolve.js';
+export { detectMarketplaceFromAffiliateUrl } from './marketplace-from-url.js';
 export { injectInternalLinks, type SeoKeywordMap } from './link-parser.js';
 export { SEO_KEYWORD_MAP } from './keywords.js';
 export { buildProductJsonLd, type ProductJsonLdInput } from './product-json-ld.js';

@@ -40,7 +40,7 @@ function escapeHtmlAttribute(value: string): string {
 
 export function buildAutoLinkAnchorAttributes(targetUrl: string): string {
   const safeHref = escapeHtmlAttribute(targetUrl);
-  if (isExternalAutoLinkTargetUrl(targetUrl)) {
+  if (isExternalAutoLinkTargetUrl(targetUrl) || targetUrl.startsWith('/go/')) {
     return `href="${safeHref}" target="_blank" rel="noopener sponsored"`;
   }
   return `href="${safeHref}"`;

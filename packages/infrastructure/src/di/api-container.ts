@@ -63,6 +63,7 @@ import {
   ListAutoLinksAdmin,
   SearchInternalLinkTargets,
   ResolveAffiliateRedirect,
+  ResolveAutoLinkRedirect,
   AuthenticateOperator,
   ValidateOperatorSession,
   CreateArticleCategory,
@@ -444,6 +445,11 @@ export function buildApiContainer(env = loadEnv()) {
         affiliateAccountRepository,
         linkBuilder,
         affiliateScaleGateService,
+      ),
+      resolveAutoLinkRedirect: new ResolveAutoLinkRedirect(
+        autoLinkRepository,
+        affiliateAccountRepository,
+        linkBuilder,
       ),
       authenticateOperator: new AuthenticateOperator(
         operatorRepository,

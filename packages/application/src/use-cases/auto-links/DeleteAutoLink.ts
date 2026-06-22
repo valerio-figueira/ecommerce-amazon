@@ -22,7 +22,7 @@ export class DeleteAutoLink {
     await this.autoLinkRepository.delete(id);
     await this.cache.del(AUTO_LINKS_CACHE_KEY);
     await this.webRevalidator.revalidate({
-      layoutPaths: ['/artigos'],
+      layoutPaths: ['/artigos', '/produtos'],
     });
   }
 }

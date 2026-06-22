@@ -115,7 +115,7 @@ export function InternalLinkTargetPicker({
           />
           <p className="auto-link-picker__hint">
             Cole links de afiliado HTTPS (Amazon, Mercado Livre, Shopee) ou caminhos internos
-            começando com /.
+            começando com /. Na vitrine, produtos e afiliados passam por /go antes do marketplace.
           </p>
         </div>
       ) : (

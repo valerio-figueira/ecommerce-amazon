@@ -33,6 +33,12 @@ describe('auto-link-target helpers', () => {
     expect(attrs).toBe('href="/produtos/cadeira"');
   });
 
+  it('adds sponsored attributes for /go urls', () => {
+    const attrs = buildAutoLinkAnchorAttributes('/go/cadeira?origin=auto_link');
+    expect(attrs).toContain('target="_blank"');
+    expect(attrs).toContain('rel="noopener sponsored"');
+  });
+
   it('exposes a generous max length for affiliate urls', () => {
     expect(AUTO_LINK_TARGET_URL_MAX_LENGTH).toBeGreaterThanOrEqual(1024);
   });

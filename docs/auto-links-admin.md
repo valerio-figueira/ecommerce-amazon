@@ -59,13 +59,16 @@ flowchart LR
 
 ### Regras do parser
 
-| Regra            | Comportamento                                                                                 |
-| ---------------- | --------------------------------------------------------------------------------------------- |
-| Ordenação        | `priority DESC`, depois `keyword.length DESC`                                                 |
-| `maxMatches`     | Limite por regra no mesmo texto                                                               |
-| Zonas protegidas | Não injeta em `<a>`, headings `<h1>`–`<h6>`, `<img>`                                          |
-| Persistência     | HTML do artigo no DB **nunca** é modificado                                                   |
-| URLs externas    | HTTPS até 2048 caracteres; links injetados com `rel="noopener sponsored"` e `target="_blank"` |
+| Regra            | Comportamento                                                         |
+| ---------------- | --------------------------------------------------------------------- |
+| Ordenação        | `priority DESC`, depois `keyword.length DESC`                         |
+| `maxMatches`     | Limite por regra no mesmo texto                                       |
+| Zonas protegidas | Não injeta em `<a>`, headings `<h1>`–`<h6>`, `<img>`                  |
+| Persistência     | HTML no banco **nunca** é modificado                                  |
+| URLs externas    | HTTPS até 2048 caracteres; na vitrine viram `/go/alink/{id}`          |
+| Produtos         | Destinos `/produtos/{slug}` viram `/go/{slug}` com `origin=auto_link` |
+| Telas            | Campo `applyTo`: `articles`, `products` ou `both`                     |
+| Links comerciais | `rel="noopener sponsored"` + `target="_blank"` em destinos `/go/*`    |
 
 ## Arquivos-chave
 
@@ -94,13 +97,15 @@ flowchart LR
 
 ### Público
 
-| Método | Rota              | Resposta                                                    |
-| ------ | ----------------- | ----------------------------------------------------------- |
-| `GET`  | `/seo/auto-links` | `{ items: [{ keyword, targetUrl, maxMatches, priority }] }` |
+| Método | Rota              | Resposta                                                                 |
+| ------ | ----------------- | ------------------------------------------------------------------------ |
+| `GET`  | `/seo/auto-links` | `{ items: [{ id, keyword, targetUrl, maxMatches, priority, applyTo }] }` |
 
 Cache Redis: `vitrine:seo:auto-links`, TTL 3600s.
 
 ### Admin (Bearer JWT)
+
+Body `CreateAutoLinkBody` / `UpdateAutoLinkBody` inclui `applyTo`: `articles` | `products` | `both` (default `both`).
 
 | Método   | Rota                    | Body / query                   | Status             |
 | -------- | ----------------------- | ------------------------------ | ------------------ |

@@ -75,6 +75,10 @@ const nextConfig: NextConfig = {
     const apiUrl = nonEmptyEnv('API_INTERNAL_URL') ?? apiPublicUrl;
     return Promise.resolve([
       {
+        source: '/go/alink/:id',
+        destination: `${apiUrl}/go/alink/:id`,
+      },
+      {
         source: '/go/:slug',
         destination: `${apiUrl}/go/:slug`,
       },

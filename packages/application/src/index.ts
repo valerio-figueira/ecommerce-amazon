@@ -49,6 +49,7 @@ export { UpdateAutoLink } from './use-cases/auto-links/UpdateAutoLink.js';
 export { DeleteAutoLink } from './use-cases/auto-links/DeleteAutoLink.js';
 export { ListAutoLinksAdmin } from './use-cases/auto-links/ListAutoLinksAdmin.js';
 export { SearchInternalLinkTargets } from './use-cases/auto-links/SearchInternalLinkTargets.js';
+export { ResolveAutoLinkRedirect } from './use-cases/auto-links/ResolveAutoLinkRedirect.js';
 export { GetCuratedCollection } from './use-cases/content/GetCuratedCollection.js';
 export {
   CreateCuratedCollection,

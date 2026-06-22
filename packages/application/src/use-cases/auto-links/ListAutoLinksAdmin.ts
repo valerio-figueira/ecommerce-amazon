@@ -21,6 +21,7 @@ export class ListAutoLinksAdmin {
         maxMatches: item.maxMatches,
         priority: item.priority,
         isActive: item.isActive,
+        applyTo: item.applyTo,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
       })),

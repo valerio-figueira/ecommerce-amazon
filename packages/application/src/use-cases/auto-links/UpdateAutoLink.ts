@@ -1,5 +1,7 @@
 import {
   EntityNotFoundError,
+  parseAutoLinkApplyTo,
+  type AutoLinkApplyTo,
   type AutoLinkRepository,
   type CacheStore,
   type PublicWebRevalidator,
@@ -33,6 +35,7 @@ export class UpdateAutoLink {
       maxMatches?: number;
       priority?: number;
       isActive?: boolean;
+      applyTo?: AutoLinkApplyTo;
     } = {};
 
     if (input.keyword !== undefined) updates.keyword = input.keyword;
@@ -40,13 +43,14 @@ export class UpdateAutoLink {
     if (input.maxMatches !== undefined) updates.maxMatches = input.maxMatches;
     if (input.priority !== undefined) updates.priority = input.priority;
     if (input.isActive !== undefined) updates.isActive = input.isActive;
+    if (input.applyTo !== undefined) updates.applyTo = parseAutoLinkApplyTo(input.applyTo);
 
     const updated = existing.withUpdates(updates);
 
     await this.autoLinkRepository.save(updated);
     await this.cache.del(AUTO_LINKS_CACHE_KEY);
     await this.webRevalidator.revalidate({
-      layoutPaths: ['/artigos'],
+      layoutPaths: ['/artigos', '/produtos'],
     });
   }
 }

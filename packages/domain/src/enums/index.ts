@@ -68,6 +68,13 @@ export enum ClickOrigin {
   COLLECTION = 'coleção',
   SIMILAR = 'similar',
   REDIRECT_GO = 'redirect_go',
+  AUTO_LINK = 'auto_link',
+}
+
+export enum AutoLinkApplyTo {
+  ARTICLES = 'articles',
+  PRODUCTS = 'products',
+  BOTH = 'both',
 }
 
 export enum AffiliateAccountStatus {

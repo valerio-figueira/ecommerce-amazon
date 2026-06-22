@@ -183,6 +183,13 @@
       "when": 1720281600000,
       "tag": "0025_auto_links_target_url_text",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1720368000000,
+      "tag": "0026_auto_links_apply_to",
+      "breakpoints": true
     }
   ]
 }

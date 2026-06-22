@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import {
   AutoLink,
+  parseAutoLinkApplyTo,
   type AutoLinkRepository,
   type CacheStore,
   type PublicWebRevalidator,
@@ -29,6 +30,7 @@ export class CreateAutoLink {
       maxMatches: input.maxMatches,
       priority: input.priority,
       isActive: input.isActive,
+      applyTo: parseAutoLinkApplyTo(input.applyTo ?? 'both'),
       createdAt: now,
       updatedAt: now,
     });
@@ -36,7 +38,7 @@ export class CreateAutoLink {
     await this.autoLinkRepository.save(autoLink);
     await this.cache.del(AUTO_LINKS_CACHE_KEY);
     await this.webRevalidator.revalidate({
-      layoutPaths: ['/artigos'],
+      layoutPaths: ['/artigos', '/produtos'],
     });
 
     return { id: autoLink.id };

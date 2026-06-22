@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 import { AUTO_LINK_TARGET_URL_MAX_LENGTH } from '../seo/auto-link-target.js';
 
+export const autoLinkApplyToSchema = z.enum(['articles', 'products', 'both']);
+
+export type AutoLinkApplyToValue = z.infer<typeof autoLinkApplyToSchema>;
+
 const autoLinkTargetUrlSchema = z
   .string()
   .trim()
@@ -28,6 +32,7 @@ export const adminAutoLinkSummarySchema = z.object({
   maxMatches: z.number().int().positive(),
   priority: z.number().int(),
   isActive: z.boolean(),
+  applyTo: autoLinkApplyToSchema,
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -40,6 +45,7 @@ export const createAutoLinkBodySchema = z.object({
   maxMatches: z.number().int().min(1).max(50).optional().default(1),
   priority: z.number().int().min(0).max(1000).optional().default(0),
   isActive: z.boolean().optional().default(true),
+  applyTo: autoLinkApplyToSchema.optional().default('both'),
 });
 
 export type CreateAutoLinkBody = z.infer<typeof createAutoLinkBodySchema>;

@@ -15,6 +15,7 @@ describe('AutoLink', () => {
     expect(link.maxMatches).toBe(1);
     expect(link.priority).toBe(0);
     expect(link.isActive).toBe(true);
+    expect(link.applyTo).toBe('both');
   });
 
   it('accepts https target urls', () => {

@@ -206,11 +206,12 @@ export function parseComparisonSource(value: string): ComparisonSource {
   return isComparisonSource(value) ? value : invalidEnum('comparison source', value);
 }
 
-import { AffiliateAccountStatus, PageKind, TeamPublicRole } from './index.js';
+import { AffiliateAccountStatus, AutoLinkApplyTo, PageKind, TeamPublicRole } from './index.js';
 
 const AFFILIATE_ACCOUNT_STATUS_VALUES: ReadonlySet<string> = new Set(
   Object.values(AffiliateAccountStatus),
 );
+const AUTO_LINK_APPLY_TO_VALUES: ReadonlySet<string> = new Set(Object.values(AutoLinkApplyTo));
 const PAGE_KIND_VALUES: ReadonlySet<string> = new Set(Object.values(PageKind));
 const TEAM_PUBLIC_ROLE_VALUES: ReadonlySet<string> = new Set(Object.values(TeamPublicRole));
 
@@ -220,6 +221,14 @@ export function isAffiliateAccountStatus(value: string): value is AffiliateAccou
 
 export function parseAffiliateAccountStatus(value: string): AffiliateAccountStatus {
   return isAffiliateAccountStatus(value) ? value : invalidEnum('affiliate account status', value);
+}
+
+export function isAutoLinkApplyTo(value: string): value is AutoLinkApplyTo {
+  return AUTO_LINK_APPLY_TO_VALUES.has(value);
+}
+
+export function parseAutoLinkApplyTo(value: string): AutoLinkApplyTo {
+  return isAutoLinkApplyTo(value) ? value : invalidEnum('auto link apply to', value);
 }
 
 export function isPageKind(value: string): value is PageKind {

@@ -4,6 +4,7 @@ import { ArticleStatus, ArticleType } from '@ecommerce-amazon/domain';
 
 import { productPublicDetailSchema } from './product-schemas.js';
 import { articleClusterPublicSchema } from './content-cluster-schemas.js';
+import { autoLinkApplyToSchema } from './auto-link-schemas.js';
 
 const articleSlugSchema = z
   .string()
@@ -219,10 +220,12 @@ export const articlePublicDetailSchema = z
 export type ArticlePublicDetail = z.output<typeof articlePublicDetailSchema>;
 
 export const autoLinkItemSchema = z.object({
+  id: z.string().uuid(),
   keyword: z.string(),
   targetUrl: z.string(),
   maxMatches: z.number().int().positive(),
   priority: z.number().int().optional(),
+  applyTo: autoLinkApplyToSchema,
 });
 
 export const autoLinksResponseSchema = z.object({

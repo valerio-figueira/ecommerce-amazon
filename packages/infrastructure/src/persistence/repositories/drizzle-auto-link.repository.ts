@@ -2,12 +2,18 @@ import { count, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 import {
   AutoLink,
+  AutoLinkApplyTo,
+  isAutoLinkApplyTo,
   normalizeAutoLinkKeyword,
   type AutoLinkRepository,
 } from '@ecommerce-amazon/domain';
 
 import type { DrizzleClient } from '../drizzle/client.js';
 import { schema } from '../drizzle/client.js';
+
+function mapApplyTo(value: string): AutoLinkApplyTo {
+  return isAutoLinkApplyTo(value) ? value : AutoLinkApplyTo.BOTH;
+}
 
 function mapAutoLinkRow(row: typeof schema.autoLinks.$inferSelect): AutoLink {
   return AutoLink.create({
@@ -17,6 +23,7 @@ function mapAutoLinkRow(row: typeof schema.autoLinks.$inferSelect): AutoLink {
     maxMatches: row.maxMatches,
     priority: row.priority,
     isActive: row.isActive,
+    applyTo: mapApplyTo(row.applyTo),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   });
@@ -35,6 +42,7 @@ export class DrizzleAutoLinkRepository implements AutoLinkRepository {
         maxMatches: autoLink.maxMatches,
         priority: autoLink.priority,
         isActive: autoLink.isActive,
+        applyTo: autoLink.applyTo,
         createdAt: autoLink.createdAt,
         updatedAt: autoLink.updatedAt,
       })
@@ -46,6 +54,7 @@ export class DrizzleAutoLinkRepository implements AutoLinkRepository {
           maxMatches: autoLink.maxMatches,
           priority: autoLink.priority,
           isActive: autoLink.isActive,
+          applyTo: autoLink.applyTo,
           updatedAt: autoLink.updatedAt,
         },
       });
