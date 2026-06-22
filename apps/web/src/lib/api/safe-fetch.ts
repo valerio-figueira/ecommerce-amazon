@@ -9,8 +9,14 @@ function isBuildPhaseApiUnavailable(error: unknown): boolean {
   return error instanceof TypeError && error.message === 'fetch failed';
 }
 
+function isRuntimeNetworkFailure(error: unknown): boolean {
+  return error instanceof TypeError && error.message === 'fetch failed';
+}
+
 function isMissingResource(error: unknown): boolean {
-  return isNotFoundError(error) || isBuildPhaseApiUnavailable(error);
+  return (
+    isNotFoundError(error) || isBuildPhaseApiUnavailable(error) || isRuntimeNetworkFailure(error)
+  );
 }
 
 /** 404 (or build-time API down) → null; caller uses notFound() or empty-state view. */

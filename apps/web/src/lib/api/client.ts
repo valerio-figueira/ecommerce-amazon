@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3000';
+import { resolveApiBaseUrl } from './resolve-api-base-url';
 
 export class ApiError extends Error {
   readonly status: number;
@@ -19,12 +19,12 @@ export function isNotFoundError(error: unknown): boolean {
 }
 
 export function getApiUrl(): string {
-  return API_URL;
+  return resolveApiBaseUrl();
 }
 
 export async function fetchPageLayout(slug: string): Promise<unknown> {
   const path = `/pages/${slug}`;
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${resolveApiBaseUrl()}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     next: { revalidate: 60 },
   });
@@ -63,7 +63,7 @@ export async function apiFetch(path: string, init?: ApiFetchInit): Promise<unkno
     headers.set('x-session-id', sessionId);
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${resolveApiBaseUrl()}${path}`, {
     ...fetchInit,
     headers,
     next: fetchInit.method === undefined ? (next ?? { revalidate: 60 }) : undefined,

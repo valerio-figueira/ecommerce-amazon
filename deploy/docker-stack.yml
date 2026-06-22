@@ -217,6 +217,7 @@ services:
       PORT: '3001'
       WEB_PUBLIC_URL: ${WEB_PUBLIC_URL_YAML}
       WEB_INTERNAL_URL: ${WEB_INTERNAL_URL_YAML}
+      API_INTERNAL_URL: ${API_INTERNAL_URL_YAML}
       SITE_NAME: ${SITE_NAME_YAML}
       NEXT_PUBLIC_SITE_NAME: ${SITE_NAME_YAML}
       NEXT_PUBLIC_SITE_URL: ${WEB_PUBLIC_URL_YAML}
@@ -232,7 +233,7 @@ services:
           'CMD',
           'node',
           '-e',
-          "require('http').get('http://127.0.0.1:3001/',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+          "require('http').get('http://127.0.0.1:3001/api/health',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
         ]
       interval: 30s
       timeout: 10s

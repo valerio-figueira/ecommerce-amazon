@@ -35,10 +35,10 @@ describe('fetchOrNotFound', () => {
     await expect(fetchOrNotFound('/products/x', schema)).rejects.toThrow(ApiError);
   });
 
-  it('rethrows network failures at runtime', async () => {
+  it('returns null on network failure at runtime', async () => {
     vi.mocked(apiFetchParsed).mockRejectedValue(new TypeError('fetch failed'));
 
-    await expect(fetchOrNotFound('/products/x', schema)).rejects.toThrow('fetch failed');
+    await expect(fetchOrNotFound('/products/x', schema)).resolves.toBeNull();
   });
 
   it('returns null on network failure during production build', async () => {
@@ -57,6 +57,12 @@ describe('fetchPageLayoutOrNull', () => {
 
   it('returns null when CMS page is missing (404)', async () => {
     vi.mocked(fetchPageLayout).mockRejectedValue(new ApiError(404, '/pages/home'));
+
+    await expect(fetchPageLayoutOrNull('home')).resolves.toBeNull();
+  });
+
+  it('returns null on network failure at runtime', async () => {
+    vi.mocked(fetchPageLayout).mockRejectedValue(new TypeError('fetch failed'));
 
     await expect(fetchPageLayoutOrNull('home')).resolves.toBeNull();
   });

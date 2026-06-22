@@ -23,11 +23,17 @@ import {
 } from '@/lib/api/schemas';
 
 export const getHomeLayout = cache(async (): Promise<PageLayoutDeliveryDto | null> => {
-  const data = await fetchPageLayoutOrNull('home');
-  if (data === null) {
+  try {
+    const data = await fetchPageLayoutOrNull('home');
+    if (data === null) {
+      return null;
+    }
+
+    const parsed = pageLayoutDeliverySchema.safeParse(data);
+    return parsed.success ? parsed.data : null;
+  } catch {
     return null;
   }
-  return pageLayoutDeliverySchema.parse(data);
 });
 
 export const getProduct = cache(async (slug: string): Promise<ProductDetailDto | null> => {
