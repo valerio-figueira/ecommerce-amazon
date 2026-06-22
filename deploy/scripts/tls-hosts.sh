@@ -53,32 +53,45 @@ resolve_tls_hosts_from_public_host() {
   fi
 }
 
-# Comma-separated unique SANs for ACME (apex/www + api + admin when subdomain mode).
+# Comma-separated SANs for the vitrine host only (apex/www alias) — used by static alias routers.
+# api./admin. get their own cert via per-service TLS labels (one ACME order per hostname).
 build_tls_sans_csv() {
   local host="$1"
-  local -a sans=()
-  local item
 
   resolve_tls_hosts_from_public_host "${host}"
   if [[ "${TLS_SAN_HOST}" != "${TLS_CANONICAL_HOST}" ]]; then
-    sans+=("${TLS_SAN_HOST}")
+    TLS_SANS_CSV="${TLS_SAN_HOST}"
+  else
+    TLS_SANS_CSV=""
   fi
+}
 
-  if [[ "${DEPLOY_ROUTING_MODE:-}" == "subdomain" ]]; then
-    sans+=("${API_PUBLIC_HOST}" "${ADMIN_PUBLIC_HOST}")
-  fi
-
-  TLS_SANS_CSV=""
-  for item in "${sans[@]}"; do
-    if [[ "${item}" == "${TLS_CANONICAL_HOST}" ]]; then
-      continue
-    fi
-    if [[ -n "${TLS_SANS_CSV}" ]]; then
-      TLS_SANS_CSV+=",${item}"
-    else
-      TLS_SANS_CSV="${item}"
-    fi
-  done
+# Per-router ACME domain: vitrine (www+apex), api, or admin — avoids duplicate multi-SAN orders.
+build_traefik_service_tls_labels() {
+  local router="$1"
+  case "${router}" in
+    vitrine-web)
+      build_traefik_router_tls_labels "${router}" "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}"
+      ;;
+    vitrine-api)
+      if [[ "${DEPLOY_ROUTING_MODE:-}" == "subdomain" ]]; then
+        build_traefik_router_tls_labels "${router}" "${API_PUBLIC_HOST}" ""
+      else
+        build_traefik_router_tls_labels "${router}" "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}"
+      fi
+      ;;
+    vitrine-admin)
+      if [[ "${DEPLOY_ROUTING_MODE:-}" == "subdomain" ]]; then
+        build_traefik_router_tls_labels "${router}" "${ADMIN_PUBLIC_HOST}" ""
+      else
+        build_traefik_router_tls_labels "${router}" "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}"
+      fi
+      ;;
+    *)
+      echo "unknown traefik router: ${router}" >&2
+      return 1
+      ;;
+  esac
 }
 
 escape_domain_regex() {

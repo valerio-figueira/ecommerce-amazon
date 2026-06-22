@@ -51,9 +51,9 @@ build_tls_sans_csv "${WEB_CANONICAL_HOST}"
 if [[ "${TLS_ENABLED}" == "true" ]]; then
   : "${ACME_EMAIL:?ACME_EMAIL is required when TLS_ENABLED=true}"
   export TRAEFIK_ENTRYPOINT=websecure
-  export TRAEFIK_API_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-api "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
-  export TRAEFIK_WEB_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-web "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
-  export TRAEFIK_ADMIN_TLS_LABELS="$(build_traefik_router_tls_labels vitrine-admin "${WEB_CANONICAL_HOST}" "${TLS_SANS_CSV}")"
+  export TRAEFIK_API_TLS_LABELS="$(build_traefik_service_tls_labels vitrine-api)"
+  export TRAEFIK_WEB_TLS_LABELS="$(build_traefik_service_tls_labels vitrine-web)"
+  export TRAEFIK_ADMIN_TLS_LABELS="$(build_traefik_service_tls_labels vitrine-admin)"
   export TRAEFIK_HTTPS_PORT_BLOCK=$'- target: 443\n        published: 443\n        protocol: tcp\n        mode: host'
   export TRAEFIK_TLS_MAIN="${WEB_CANONICAL_HOST}"
   export TRAEFIK_CANONICAL_HOST="${WEB_CANONICAL_HOST}"
@@ -108,6 +108,11 @@ echo "==> Aguardando API e smoke test de login"
 bash "${SCRIPT_DIR}/wait-service-http.sh" api /health/ready 3000
 bash "${SCRIPT_DIR}/smoke-api-login.sh"
 
+echo "==> Aguardando tasks Swarm (web, api, admin)"
+bash "${SCRIPT_DIR}/wait-swarm-service.sh" web
+bash "${SCRIPT_DIR}/wait-swarm-service.sh" api
+bash "${SCRIPT_DIR}/wait-swarm-service.sh" admin
+
 echo "==> Aguardando apps no stack (cold start Next.js)"
 ADMIN_PROBE_PATH="/login"
 if [[ "${DEPLOY_ROUTING_MODE}" == "path" ]]; then
@@ -123,7 +128,12 @@ echo "    API /health/ready OK"
 bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/" "200,304"
 echo "    Web / OK"
 
+bash "${SCRIPT_DIR}/wait-http-url.sh" "${PUBLIC_BASE_URL}/sobre" "200,304"
+echo "    Web /sobre OK"
+
 bash "${SCRIPT_DIR}/wait-http-url.sh" "${ADMIN_PUBLIC_URL}/login" "200,304"
 echo "    Admin /login OK"
+
+bash "${SCRIPT_DIR}/prune-docker-images.sh"
 
 echo "==> Deploy concluído com sucesso"

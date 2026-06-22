@@ -63,6 +63,7 @@ Let's Encrypt **não emite certificado para IP** — TLS só após DNS apontando
 | `deploy/scripts/wait-postgres.sh`         | Aguarda Postgres saudável antes de migrate                               |
 | `deploy/scripts/wait-service-http.sh`     | Aguarda web/admin HTTP no container (cold start Next.js)                 |
 | `deploy/scripts/wait-http-url.sh`         | Retry em URLs públicas via Traefik (smoke tests)                         |
+| `deploy/scripts/prune-docker-images.sh`   | Remove tags `sha-*` antigas de vitrine-\* após deploy bem-sucedido       |
 | `deploy/scripts/ensure-bootstrap-seed.sh` | Seed automatico se home CMS ou operador admin ausente (pos-migrate)      |
 | `deploy/scripts/tls-hosts.sh`             | Resolução www/apex, subdomínios api./admin., labels Traefik              |
 | `deploy/scripts/migrate.sh` / `seed.sh`   | Jobs one-shot (`docker-env-passthrough.sh` repassa env após `source`)    |
@@ -210,6 +211,13 @@ bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh
 # Rollback de um serviço
 docker service rollback vitrine_api
 
+# Limpeza manual de imagens antigas (mesmo fluxo do fim do deploy)
+DOCKER_IMAGE_PRUNE_ENABLED=true IMAGE_TAG=sha-XXXXXX GHCR_IMAGE_PREFIX=ghcr.io/OWNER \
+  bash /opt/vitrine/deploy/scripts/prune-docker-images.sh
+
+# Uso de disco Docker
+docker system df
+
 # Backup Postgres (manual)
 docker exec $(docker ps -q -f name=vitrine_postgres) \
   pg_dump -U vitrine vitrine > backup.sql
@@ -317,27 +325,46 @@ Alternativa mínima sem reexecutar bootstrap completo:
 
 ## Troubleshooting
 
-| Sintoma                                      | Causa provável                                                                               | Ação                                                                                                                                                      |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 404 em `/` no smoke test                     | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine)       | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                           |
-| 404 em `/admin`                              | `ADMIN_BASE_PATH` ausente no build admin                                                     | Rebuild imagem admin com `/admin`                                                                                                                         |
-| Login admin: e-mail ou senha invalidos       | Hash ok no DB mas API com `PASSWORD_PEPPER` corrompido no stack YAML                         | Redeploy com escape YAML (`stack-env-escape.sh`); `run_seed: true`; smoke `smoke-api-login.sh` no pipeline                                                |
-| 404 em `/api/...`                            | StripPrefix ou API down                                                                      | `curl` interno + logs `vitrine_api`                                                                                                                       |
-| CORS no browser                              | `CORS_ORIGINS` sem origem exata                                                              | Usar `PUBLIC_BASE_URL` sem path                                                                                                                           |
-| ACME falhou / `TRAEFIK DEFAULT CERT`         | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado, alias sem DNS | Usar `traefik.https.yml` com redirect via router; DNS **apex e www**; logs `vitrine_traefik`; renovar volume `traefik_letsencrypt` se cert antigo sem SAN |
-| `www` OK mas apex/api/admin com cert default | Certificado LE antigo sem SAN ou DNS ausente em subdomínios                                  | Registros `A` para apex, `api`, `admin`; limpar `traefik_letsencrypt` e redeploy                                                                          |
-| Smoke test `HTTP 000` com HTTPS              | `curl` rejeita cert self-signed do Traefik (ACME ainda nao emitiu)                           | Corrigir ACME primeiro; apos LE valido, smoke passa sem `-k`                                                                                              |
-| UFW `UnicodeEncodeError`                     | Comentários com acentos em `/etc/ufw/after.rules`                                            | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                                                                                |
-| `yaml: could not find expected ':'`          | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                                     | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                                                                                      |
-| `yaml: line 14: did not find expected key`   | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`                    | Atualizar `deploy/scripts/deploy.sh` e redeploy                                                                                                           |
-| `not a swarm manager`                        | `docker swarm init` nunca rodou (bootstrap interrompido)                                     | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                   |
-| OOM 4 GB                                     | Limites de memória                                                                           | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                            |
-| Migrate falhou                               | Postgres não pronto                                                                          | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
-| Home sem CMS publicado                       | `GET /pages/home` → 404                                                                      | Web exibe `EmptySiteFallback` na `/` (200); rodar bootstrap seed ou publicar no admin                                                                     |
-| API indisponível / 5xx na home               | Erro real de infra                                                                           | HTTP 500 — investigar logs `vitrine_api` / rede overlay                                                                                                   |
-| `Public web revalidation request failed`     | Rede overlay API→web ou `WEB_INTERNAL_URL` errado                                            | `bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh`; conferir `WEB_INTERNAL_URL=http://web:3001`                                                       |
-| `Public web revalidation failed` status 401  | `REVALIDATE_SECRET` diferente entre `api` e `web`, ou secret com quebra de linha             | Regenerar secret (uma linha); redeploy; `render-env.sh` normaliza `\n` em secrets                                                                         |
-| `SITE_NAME` errado no banco (`Desk\ Setup`)  | Seed anterior com escape bash no secret                                                      | Corrigir secret `SITE_NAME=Desk Setup`; rodar seed (secao abaixo)                                                                                         |
+| Sintoma                                             | Causa provável                                                                                         | Ação                                                                                                                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 404 em `/` ou `/sobre` (texto `404 page not found`) | Traefik sem rota ou TLS rejeitado (`Could not retrieve CanonizedHost`); serviço `web` sem task running | `docker service ps vitrine_web`; logs `vitrine_traefik`; conferir DNS `api.`/`admin.`; redeploy com TLS por host (ver abaixo)                             |
+| 404 em `/` no smoke test                            | Web ainda em cold start, Traefik sem rota, ou probe com `wget` (inexistente em alpine)                 | `HOSTNAME=0.0.0.0` no stack; probe via Node; logs `vitrine_web`                                                                                           |
+| 404 em `/admin`                                     | `ADMIN_BASE_PATH` ausente no build admin                                                               | Rebuild imagem admin com `/admin`                                                                                                                         |
+| Login admin: e-mail ou senha invalidos              | Hash ok no DB mas API com `PASSWORD_PEPPER` corrompido no stack YAML                                   | Redeploy com escape YAML (`stack-env-escape.sh`); `run_seed: true`; smoke `smoke-api-login.sh` no pipeline                                                |
+| 404 em `/api/...`                                   | StripPrefix ou API down                                                                                | `curl` interno + logs `vitrine_api`                                                                                                                       |
+| CORS no browser                                     | `CORS_ORIGINS` sem origem exata                                                                        | Usar `PUBLIC_BASE_URL` sem path                                                                                                                           |
+| ACME falhou / `TRAEFIK DEFAULT CERT`                | Redirect global HTTP→HTTPS na :80 (quebra HTTP challenge), DNS, :80 bloqueado, alias sem DNS           | Usar `traefik.https.yml` com redirect via router; DNS **apex e www**; logs `vitrine_traefik`; renovar volume `traefik_letsencrypt` se cert antigo sem SAN |
+| `www` OK mas apex/api/admin com cert default        | Certificado LE antigo sem SAN ou DNS ausente em subdomínios                                            | Registros `A` para apex, `api`, `admin`; limpar `traefik_letsencrypt` e redeploy                                                                          |
+| Smoke test `HTTP 000` com HTTPS                     | `curl` rejeita cert self-signed do Traefik (ACME ainda nao emitiu)                                     | Corrigir ACME primeiro; apos LE valido, smoke passa sem `-k`                                                                                              |
+| UFW `UnicodeEncodeError`                            | Comentários com acentos em `/etc/ufw/after.rules`                                                      | Remover bloco `vitrine-docker`; reexecutar bootstrap atualizado (`LANG=C`)                                                                                |
+| `yaml: could not find expected ':'`                 | `envsubst` injeta URLs/`DATABASE_URL` sem aspas no stack                                               | Template usa `"${VAR}"` em `deploy/docker-stack.yml`                                                                                                      |
+| `yaml: line 14: did not find expected key`          | Indentacao duplicada em `TRAEFIK_HTTPS_PORT_BLOCK` com `TLS_ENABLED=true`                              | Atualizar `deploy/scripts/deploy.sh` e redeploy                                                                                                           |
+| `not a swarm manager`                               | `docker swarm init` nunca rodou (bootstrap interrompido)                                               | Na VPS como root: `docker swarm init`; ou reexecutar `bootstrap-vps.sh`                                                                                   |
+| OOM 4 GB                                            | Limites de memória                                                                                     | Reduzir réplicas ou `TELEMETRY_BUFFER_MAX_LEN`                                                                                                            |
+| Migrate falhou                                      | Postgres não pronto                                                                                    | `wait-postgres.sh`; ver rede `vitrine_vitrine_net`                                                                                                        |
+| Home sem CMS publicado                              | `GET /pages/home` → 404                                                                                | Web exibe `EmptySiteFallback` na `/` (200); rodar bootstrap seed ou publicar no admin                                                                     |
+| API indisponível / 5xx na home                      | Erro real de infra                                                                                     | HTTP 500 — investigar logs `vitrine_api` / rede overlay                                                                                                   |
+| `Public web revalidation request failed`            | Rede overlay API→web ou `WEB_INTERNAL_URL` errado                                                      | `bash /opt/vitrine/deploy/scripts/smoke-revalidate.sh`; conferir `WEB_INTERNAL_URL=http://web:3001`                                                       |
+| `Public web revalidation failed` status 401         | `REVALIDATE_SECRET` diferente entre `api` e `web`, ou secret com quebra de linha                       | Regenerar secret (uma linha); redeploy; `render-env.sh` normaliza `\n` em secrets                                                                         |
+| `SITE_NAME` errado no banco (`Desk\ Setup`)         | Seed anterior com escape bash no secret                                                                | Corrigir secret `SITE_NAME=Desk Setup`; rodar seed (secao abaixo)                                                                                         |
+| Disco VPS cheio (`no space left`)                   | Tags `sha-*` acumuladas de cada deploy                                                                 | `prune-docker-images.sh` roda ao fim do deploy; limpeza manual na secao Operacao                                                                          |
+
+## Limpeza de imagens Docker
+
+Ao final de cada deploy bem-sucedido, `deploy/scripts/prune-docker-images.sh`:
+
+1. Remove tags antigas de `vitrine-{api,worker,web,admin,migrate}` (ex.: `sha-abc1234` de deploys anteriores).
+2. **Preserva** a tag do deploy atual (`IMAGE_TAG`), `latest` e imagens ainda referenciadas por tasks Swarm (rollback recente).
+3. Executa `docker image prune -f` para camadas dangling.
+
+Variáveis opcionais (export antes do deploy ou no SSH do GitHub Actions):
+
+| Variável                       | Default  | Descrição                                       |
+| ------------------------------ | -------- | ----------------------------------------------- |
+| `DOCKER_IMAGE_PRUNE_ENABLED`   | `true`   | `false` desliga a limpeza                       |
+| `DOCKER_IMAGE_PRUNE_KEEP_TAGS` | `latest` | Tags extras a manter (CSV), além de `IMAGE_TAG` |
+
+A limpeza **não** remove imagens de infra (`postgres`, `redis`, `traefik`) nem volumes de dados.
 
 ## Object storage (S3)
 
