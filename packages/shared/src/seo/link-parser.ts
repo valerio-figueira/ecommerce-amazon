@@ -1,3 +1,5 @@
+import { buildAutoLinkAnchorAttributes } from './auto-link-target.js';
+
 export type SeoKeywordMap = {
   keyword: string;
   targetUrl: string;
@@ -34,7 +36,7 @@ function linkKeywordOccurrences(segment: string, item: SeoKeywordMap): string {
       return match;
     }
     matchCount += 1;
-    return `<a href="${item.targetUrl}" class="${LINK_CLASS}">${match}</a>`;
+    return `<a ${buildAutoLinkAnchorAttributes(item.targetUrl)} class="${LINK_CLASS}">${match}</a>`;
   });
 }
 

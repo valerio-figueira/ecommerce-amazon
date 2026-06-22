@@ -171,9 +171,11 @@ Migration: [`0013_article_taxonomy_authors.sql`](../packages/infrastructure/src/
 
 ### SEO — `auto_links`
 
-| Tabela       | Colunas                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `auto_links` | `keyword`, `target_url`, `max_matches`, `priority`, `is_active`, `created_at`, `updated_at` |
+| Tabela       | Colunas                                                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auto_links` | `keyword` varchar(120), `target_url` text (URLs internas ou afiliado HTTPS), `max_matches`, `priority`, `is_active`, `created_at`, `updated_at` |
+
+Migration `0025_auto_links_target_url_text.sql` amplia `target_url` de `varchar(255)` para `text` (links de afiliado com query string).
 
 Seed inicial migra `SEO_KEYWORD_MAP` estático.
 

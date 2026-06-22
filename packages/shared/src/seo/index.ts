@@ -15,6 +15,12 @@ export {
   resolveCategorySeoTitle,
 } from './category-meta.js';
 export { AUTO_LINKS_CACHE_KEY } from './auto-links-cache.js';
+export {
+  AUTO_LINK_TARGET_URL_MAX_LENGTH,
+  buildAutoLinkAnchorAttributes,
+  describeExternalAutoLinkTarget,
+  isExternalAutoLinkTargetUrl,
+} from './auto-link-target.js';
 export { injectInternalLinks, type SeoKeywordMap } from './link-parser.js';
 export { SEO_KEYWORD_MAP } from './keywords.js';
 export { buildProductJsonLd, type ProductJsonLdInput } from './product-json-ld.js';

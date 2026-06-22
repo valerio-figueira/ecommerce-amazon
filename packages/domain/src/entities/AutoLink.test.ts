@@ -27,6 +27,18 @@ describe('AutoLink', () => {
     expect(link.targetUrl).toBe('https://example.com/oferta');
   });
 
+  it('accepts long marketplace affiliate urls', () => {
+    const affiliateUrl =
+      'https://www.amazon.com.br/dp/B08411SMN5?tag=vitrine-20&linkCode=ogi&th=1&psc=1&ref_=as_li_ss_tl&camp=1789&creative=9325&creativeASIN=B08411SMN5';
+    const link = AutoLink.create({
+      id: 'a1111111-1111-4111-8111-111111111111',
+      keyword: 'oferta amazon',
+      targetUrl: affiliateUrl,
+    });
+
+    expect(link.targetUrl).toBe(affiliateUrl);
+  });
+
   it('rejects empty keyword', () => {
     expect(() =>
       AutoLink.create({

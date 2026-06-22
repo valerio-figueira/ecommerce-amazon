@@ -222,7 +222,7 @@ export const autoLinks = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     keyword: varchar('keyword', { length: 120 }).notNull(),
-    targetUrl: varchar('target_url', { length: 255 }).notNull(),
+    targetUrl: text('target_url').notNull(),
     maxMatches: integer('max_matches').notNull().default(1),
     priority: integer('priority').notNull().default(0),
     isActive: boolean('is_active').notNull().default(true),

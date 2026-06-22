@@ -2,6 +2,10 @@ import {
   parseInternalLinkTargetUrl as parseSharedInternalLinkTargetUrl,
   type InternalLinkTargetType,
 } from '@ecommerce-amazon/shared/admin';
+import {
+  describeExternalAutoLinkTarget,
+  isExternalAutoLinkTargetUrl,
+} from '@ecommerce-amazon/shared/seo';
 
 export type { InternalLinkTargetType };
 
@@ -68,10 +72,14 @@ export function isManualTargetUrl(url: string): boolean {
   if (trimmed.length === 0) {
     return false;
   }
-  if (trimmed.startsWith('https://')) {
+  if (isExternalAutoLinkTargetUrl(trimmed)) {
     return true;
   }
   return parseInternalLinkTargetUrl(trimmed) === null;
+}
+
+export function resolveManualTargetLabel(targetUrl: string): string | null {
+  return describeExternalAutoLinkTarget(targetUrl);
 }
 
 export function groupInternalLinkTargets(targets: InternalLinkTarget[]): InternalLinkTargetGroup[] {

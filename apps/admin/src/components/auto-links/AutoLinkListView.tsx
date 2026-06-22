@@ -9,6 +9,7 @@ import type { AdminAutoLinkSummary } from '@ecommerce-amazon/shared/admin';
 import {
   isManualTargetUrl,
   resolveInternalLinkLabel,
+  resolveManualTargetLabel,
   type InternalLinkTarget,
 } from '@/lib/internal-link-targets';
 import { cn } from '@/lib/utils';
@@ -54,6 +55,7 @@ export function AutoLinkListView({
       {items.map((item) => {
         const resolved = resolveInternalLinkLabel(item.targetUrl, targets);
         const manual = isManualTargetUrl(item.targetUrl);
+        const manualLabel = manual ? resolveManualTargetLabel(item.targetUrl) : null;
 
         return (
           <li key={item.id} className="cms-block-card cms-block-card--plain">
@@ -69,7 +71,7 @@ export function AutoLinkListView({
                   {resolved ? (
                     <span className="cms-status-pill is-published">{resolved.typeLabel}</span>
                   ) : manual ? (
-                    <span className="cms-status-pill is-draft">Manual</span>
+                    <span className="cms-status-pill is-draft">{manualLabel ?? 'Manual'}</span>
                   ) : null}
                 </div>
                 <p className="mt-0.5 truncate text-xs text-[var(--admin-navy)]">

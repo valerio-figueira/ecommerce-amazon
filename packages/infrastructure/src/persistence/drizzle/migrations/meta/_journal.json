@@ -176,6 +176,13 @@
       "when": 1720195200000,
       "tag": "0024_specs_normalized_groups",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1720281600000,
+      "tag": "0025_auto_links_target_url_text",
+      "breakpoints": true
     }
   ]
 }

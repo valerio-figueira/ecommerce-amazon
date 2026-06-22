@@ -110,10 +110,13 @@ export function InternalLinkTargetPicker({
             id="auto-link-target-url-manual"
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="/caminho/custom ou https://..."
+            placeholder="https://www.amazon.com.br/... ou /caminho/custom"
             required
           />
-          <p className="auto-link-picker__hint">Use caminho relativo (/) ou URL HTTPS absoluta.</p>
+          <p className="auto-link-picker__hint">
+            Cole links de afiliado HTTPS (Amazon, Mercado Livre, Shopee) ou caminhos internos
+            começando com /.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -232,7 +235,7 @@ export function InternalLinkTargetPicker({
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--admin-navy)]">URL manual</p>
           <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">
-            Link externo ou caminho customizado.
+            Link externo, afiliado ou caminho customizado.
           </p>
         </div>
         <Switch

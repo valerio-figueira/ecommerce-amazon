@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
+import { AUTO_LINK_TARGET_URL_MAX_LENGTH } from '../seo/auto-link-target.js';
+
 const autoLinkTargetUrlSchema = z
   .string()
   .trim()
   .min(1, 'URL de destino é obrigatória')
-  .max(255, 'URL de destino deve ter no máximo 255 caracteres')
+  .max(
+    AUTO_LINK_TARGET_URL_MAX_LENGTH,
+    `URL de destino deve ter no máximo ${AUTO_LINK_TARGET_URL_MAX_LENGTH} caracteres`,
+  )
   .refine(
     (value) => value.startsWith('/') || value.startsWith('https://'),
     'URL de destino deve ser um caminho relativo (/) ou HTTPS',

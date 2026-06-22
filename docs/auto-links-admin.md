@@ -22,7 +22,7 @@ Plano de referência: [`.cursor/plans/auto-links_admin_api_41238b7c.plan.md`](..
 - Listagem paginada com busca por keyword/URL
 - CRUD via Sheet lateral (`AutoLinkFormSheet`)
 - **Picker híbrido de URL de destino** (`InternalLinkTargetPicker`): busca **server-side** via `GET /admin/internal-link-targets` com debounce; produtos e artigos só após ≥2 caracteres, limitados a 20 produtos por busca; categorias, coleções e taxonomias editoriais carregadas sob demanda
-- Listagem exibe **label amigável** + tipo do destino quando resolvível (badge Manual para URLs externas/custom)
+- Listagem exibe **label amigável** + tipo do destino quando resolvível (badge **Amazon**, **Mercado Livre**, **Shopee** ou **Link externo** para URLs manuais HTTPS)
 - Toggle **`is_active`** inline na listagem (PATCH imediato)
 - BFF Next.js: `/api/admin/auto-links` e `/api/admin/auto-links/[id]`
 - Atalho em **Artigos** → botão "Auto-Links"
@@ -54,12 +54,13 @@ flowchart LR
 
 ### Regras do parser
 
-| Regra            | Comportamento                                        |
-| ---------------- | ---------------------------------------------------- |
-| Ordenação        | `priority DESC`, depois `keyword.length DESC`        |
-| `maxMatches`     | Limite por regra no mesmo texto                      |
-| Zonas protegidas | Não injeta em `<a>`, headings `<h1>`–`<h6>`, `<img>` |
-| Persistência     | HTML do artigo no DB **nunca** é modificado          |
+| Regra            | Comportamento                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| Ordenação        | `priority DESC`, depois `keyword.length DESC`                                                 |
+| `maxMatches`     | Limite por regra no mesmo texto                                                               |
+| Zonas protegidas | Não injeta em `<a>`, headings `<h1>`–`<h6>`, `<img>`                                          |
+| Persistência     | HTML do artigo no DB **nunca** é modificado                                                   |
+| URLs externas    | HTTPS até 2048 caracteres; links injetados com `rel="noopener sponsored"` e `target="_blank"` |
 
 ## Arquivos-chave
 
@@ -139,7 +140,7 @@ Checklist UI:
 
 1. Login → sidebar **Auto-Links**
 2. Criar keyword escolhendo destino via combobox (produto, categoria, coleção ou artigo)
-3. Criar com toggle **URL manual** + link HTTPS externo
+3. Criar com toggle **URL manual** + link HTTPS de afiliado (Amazon, Mercado Livre, Shopee) ou caminho interno
 4. Listagem mostra label amigável + badge de tipo (ou Manual)
 5. Toggle inativo na listagem
 6. Buscar por keyword

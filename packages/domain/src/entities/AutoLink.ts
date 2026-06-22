@@ -2,7 +2,7 @@ import { ValidationError } from '../errors/DomainError.js';
 import { type AutoLinkId, toAutoLinkId } from '../value-objects/index.js';
 
 const KEYWORD_MAX_LENGTH = 120;
-const TARGET_URL_MAX_LENGTH = 255;
+const TARGET_URL_MAX_LENGTH = 2048;
 
 function normalizeKeyword(keyword: string): string {
   return keyword.trim();

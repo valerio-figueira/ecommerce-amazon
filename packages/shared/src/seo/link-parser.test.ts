@@ -76,4 +76,19 @@ describe('injectInternalLinks', () => {
     expect(result).toContain('alt="cadeira ergonômica premium"');
     expect(result.match(/href="\/produtos\/cadeira"/g)?.length).toBe(1);
   });
+
+  it('adds sponsored attributes for external affiliate urls', () => {
+    const affiliateUrl =
+      'https://www.amazon.com.br/dp/B08411SMN5?tag=vitrine-20&linkCode=ogi&th=1&psc=1';
+    const html = 'Confira esta cadeira ergonômica em promoção.';
+    const result = injectInternalLinks(html, [
+      { keyword: 'cadeira ergonômica', targetUrl: affiliateUrl, maxMatches: 1 },
+    ]);
+
+    expect(result).toContain(
+      'href="https://www.amazon.com.br/dp/B08411SMN5?tag=vitrine-20&amp;linkCode=ogi&amp;th=1&amp;psc=1"',
+    );
+    expect(result).toContain('target="_blank"');
+    expect(result).toContain('rel="noopener sponsored"');
+  });
 });
