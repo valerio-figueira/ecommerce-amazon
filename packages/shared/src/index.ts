@@ -77,7 +77,7 @@ const envSchemaBase = z.object({
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   SITE_NAME: z.string().default('Vitrine'),
   NEXT_PUBLIC_SITE_NAME: z.string().optional(),
-  COMPANY_LEGAL_NAME: z.string().default('Vitrine Ltda'),
+  COMPANY_LEGAL_NAME: z.string().default('Desk Setup'),
   CONTACT_EMAIL: z.string().email().default('contato@vitrine.com.br'),
   SITE_TAGLINE: z.string().default('Curadoria inteligente'),
   SITE_SOCIAL_INSTAGRAM: z.string().url().default('https://instagram.com/vitrine'),

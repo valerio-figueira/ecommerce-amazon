@@ -89,7 +89,7 @@ describe('createObjectStorage', () => {
       REVALIDATE_SECRET: '',
       WEB_PUBLIC_URL: 'http://localhost:3001',
       SITE_NAME: 'Vitrine',
-      COMPANY_LEGAL_NAME: 'Vitrine Ltda',
+      COMPANY_LEGAL_NAME: 'Desk Setup',
       CONTACT_EMAIL: 'contato@vitrine.com.br',
       SITE_TAGLINE: 'Curadoria inteligente',
       SITE_SOCIAL_INSTAGRAM: 'https://instagram.com/vitrine',

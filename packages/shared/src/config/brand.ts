@@ -1,8 +1,8 @@
 import { normalizeSiteBaseUrl } from '../seo/product-canonical.js';
 
 export const BRAND_DEFAULTS = {
-  name: 'Vitrine',
-  legalName: 'Vitrine Ltda',
+  name: 'Desk Setup',
+  legalName: 'Desk Setup',
   contactEmail: 'contato@vitrine.com.br',
   tagline: 'Curadoria inteligente',
   socials: {
