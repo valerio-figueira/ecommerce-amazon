@@ -62,22 +62,22 @@ Comportamento com preço stale: mesmo CTA "Ver preço na {marketplace}" (sem val
 
 ## Arquivos-chave
 
-| Arquivo                                                      | Mudança                                         |
-| ------------------------------------------------------------ | ----------------------------------------------- |
-| `apps/web/src/app/categorias/[slug]/page.tsx`                | Grid 1 col mobile                               |
-| `apps/web/src/components/loading/ProductGridSkeleton.tsx`    | Skeleton alinhado                               |
-| `apps/web/src/components/layout/Footer.tsx`                  | Link Artigos                                    |
-| `apps/web/src/components/layout/CategoryCatalogDrawer.tsx`   | Seção Explorar                                  |
-| `apps/web/src/components/product/ProductDetailStickyCta.tsx` | Novo componente                                 |
-| `apps/web/src/app/produtos/[slug]/page.tsx`                  | Sticky CTA, breadcrumb scroll, padding inferior |
-| `apps/web/src/components/product/ProductImageGallery.tsx`    | Thumbnails scroll                               |
-| `apps/web/src/components/product/ProductCard.tsx`            | Editorial embed: CTAs na coluna de conteúdo     |
-| `apps/web/src/components/product/ProductCardActions.tsx`     | `text-xs` em compact; touch-friendly editorial  |
-| `apps/web/src/components/articles/ArticleProductEmbed.tsx`   | Wrapper `min-w-0` anti-overflow em prose        |
-| `apps/web/src/components/product/ProductDetailEmbed.tsx`     | Idem descrição longa de produto                 |
-| `apps/web/src/app/globals.css`                               | `.pb-safe`, drawer safe-area                    |
-| `apps/web/src/app/layout.tsx`                                | Viewport export                                 |
-| `apps/web/src/components/legal/CookieConsentProvider.tsx`    | `pb-safe` no banner                             |
+| Arquivo                                                      | Mudança                                                                                 |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `apps/web/src/app/categorias/[slug]/page.tsx`                | Grid 1 col mobile                                                                       |
+| `apps/web/src/components/loading/ProductGridSkeleton.tsx`    | Skeleton alinhado                                                                       |
+| `apps/web/src/components/layout/Footer.tsx`                  | Link Artigos                                                                            |
+| `apps/web/src/components/layout/CategoryCatalogDrawer.tsx`   | Seção Explorar                                                                          |
+| `apps/web/src/components/product/ProductDetailStickyCta.tsx` | Novo componente                                                                         |
+| `apps/web/src/app/produtos/[slug]/page.tsx`                  | Sticky CTA, breadcrumb scroll, padding inferior                                         |
+| `apps/web/src/components/product/ProductImageGallery.tsx`    | Thumbnails scroll                                                                       |
+| `apps/web/src/components/product/ProductCard.tsx`            | Editorial embed: grid 2 col mobile, 3 col desktop (CTAs à direita, centrados no eixo Y) |
+| `apps/web/src/components/product/ProductCardActions.tsx`     | `text-xs` em compact; touch-friendly editorial                                          |
+| `apps/web/src/components/articles/ArticleProductEmbed.tsx`   | Wrapper `min-w-0` anti-overflow em prose                                                |
+| `apps/web/src/components/product/ProductDetailEmbed.tsx`     | Idem descrição longa de produto                                                         |
+| `apps/web/src/app/globals.css`                               | `.pb-safe`, drawer safe-area                                                            |
+| `apps/web/src/app/layout.tsx`                                | Viewport export                                                                         |
+| `apps/web/src/components/legal/CookieConsentProvider.tsx`    | `pb-safe` no banner                                                                     |
 
 ## Como testar
 

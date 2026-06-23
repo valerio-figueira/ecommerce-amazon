@@ -41,7 +41,8 @@ export function ProductCardActions({
   const isStale = product.price.isStale || product.price.amount === null;
   const priceCtaLabel = affiliatePriceCtaLabel(product.marketplace);
   const detailHref = `/produtos/${product.slug}`;
-  const editorialStackGap = 'flex w-full flex-col items-stretch gap-2 sm:gap-2.5';
+  const editorialStackGap =
+    'flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-2.5';
   const stackGap = editorial ? editorialStackGap : compact ? 'space-y-1' : 'space-y-2';
   const editorialButtonClass =
     'min-h-10 px-3 py-2 text-xs leading-snug sm:min-h-0 sm:px-4 sm:py-2.5 sm:text-sm';
@@ -56,7 +57,7 @@ export function ProductCardActions({
       ? 'px-3 py-1.5 text-xs'
       : 'px-4 py-2.5 text-xs';
   const widthClass = editorial
-    ? 'w-full whitespace-normal text-center sm:whitespace-nowrap'
+    ? 'w-full whitespace-normal text-center sm:min-w-[10.5rem] sm:whitespace-nowrap'
     : 'w-full';
 
   if (isStale) {

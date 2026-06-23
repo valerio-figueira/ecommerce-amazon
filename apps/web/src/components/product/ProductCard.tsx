@@ -87,7 +87,7 @@ export function ProductCard({
           className,
         )}
       >
-        <div className="flex items-start gap-3 sm:gap-4">
+        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-x-4 sm:gap-y-0">
           <div className="relative w-24 shrink-0 self-start sm:w-28 md:w-32">
             <Link
               href={detailHref}
@@ -120,7 +120,7 @@ export function ProductCard({
             ) : null}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2 self-start sm:gap-2.5">
+          <div className="flex min-w-0 flex-col gap-2 self-start sm:gap-2.5">
             <Link
               href={detailHref}
               className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
@@ -140,19 +140,20 @@ export function ProductCard({
               maxCons={1}
               className="text-xs sm:text-sm"
             />
-            <ProductCardActions
-              product={product}
-              sessionId={sessionId}
-              blockId={blockId}
-              articleId={articleId}
-              collectionId={collectionId}
-              clickOrigin={clickOrigin}
-              {...(placement !== undefined ? { placement } : {})}
-              editorial
-              className="mt-0.5 w-full sm:max-w-xs"
-              {...(utmDefaults !== undefined ? { utmDefaults } : {})}
-            />
           </div>
+
+          <ProductCardActions
+            product={product}
+            sessionId={sessionId}
+            blockId={blockId}
+            articleId={articleId}
+            collectionId={collectionId}
+            clickOrigin={clickOrigin}
+            {...(placement !== undefined ? { placement } : {})}
+            editorial
+            className="col-span-2 w-full sm:col-span-1 sm:col-start-3 sm:w-auto sm:shrink-0 sm:self-center"
+            {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+          />
         </div>
       </article>
     );
