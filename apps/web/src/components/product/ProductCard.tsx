@@ -83,12 +83,12 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          'group relative overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white p-3 shadow-sm sm:p-4',
+          'group relative min-w-0 overflow-hidden rounded-[var(--radius)] border border-neutral-200 bg-white p-3 shadow-sm sm:p-4',
           className,
         )}
       >
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="relative w-28 shrink-0 self-start sm:w-40">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="relative w-24 shrink-0 self-start sm:w-28 md:w-32">
             <Link
               href={detailHref}
               className="relative block aspect-square w-full overflow-hidden rounded-xl bg-white"
@@ -99,7 +99,7 @@ export function ProductCard({
                   alt={product.title}
                   fill
                   className="object-contain transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width:640px) 112px, 160px"
+                  sizes="(max-width:640px) 96px, (max-width:768px) 112px, 128px"
                 />
               )}
               <ProductEditorialBadges product={product} />
@@ -120,7 +120,7 @@ export function ProductCard({
             ) : null}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5 self-start sm:gap-2">
+          <div className="flex min-w-0 flex-1 flex-col gap-2 self-start sm:gap-2.5">
             <Link
               href={detailHref}
               className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-900 hover:underline sm:text-base"
@@ -140,18 +140,19 @@ export function ProductCard({
               maxCons={1}
               className="text-xs sm:text-sm"
             />
+            <ProductCardActions
+              product={product}
+              sessionId={sessionId}
+              blockId={blockId}
+              articleId={articleId}
+              collectionId={collectionId}
+              clickOrigin={clickOrigin}
+              {...(placement !== undefined ? { placement } : {})}
+              editorial
+              className="mt-0.5 w-full sm:max-w-xs"
+              {...(utmDefaults !== undefined ? { utmDefaults } : {})}
+            />
           </div>
-          <ProductCardActions
-            product={product}
-            sessionId={sessionId}
-            blockId={blockId}
-            articleId={articleId}
-            collectionId={collectionId}
-            clickOrigin={clickOrigin}
-            {...(placement !== undefined ? { placement } : {})}
-            editorial
-            {...(utmDefaults !== undefined ? { utmDefaults } : {})}
-          />
         </div>
       </article>
     );

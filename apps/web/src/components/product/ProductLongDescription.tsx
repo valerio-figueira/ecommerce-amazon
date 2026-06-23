@@ -49,7 +49,7 @@ export function ProductLongDescription({
         return (
           <aside
             key={`product-${segment.slug}-${index}`}
-            className="not-prose my-6 sm:my-8"
+            className="not-prose my-6 min-w-0 w-full sm:my-8"
             aria-label="Produto relacionado"
           >
             <ProductDetailEmbed slug={segment.slug} product={product} />

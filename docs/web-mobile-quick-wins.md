@@ -9,6 +9,7 @@ Correções de layout e responsividade na vitrine pública para telas estreitas 
 - Grid de produtos em categorias: 1 coluna no mobile (`sm:grid-cols-2` a partir de 640px)
 - Link **Artigos** no footer + seção **Explorar** no drawer de categorias
 - CTA afiliado fixo no rodapé da página de produto (`<md`)
+- Cards embed editoriais (`ProductCard variant="editorial"`) responsivos em artigos e descrição longa de produto
 - Utility `pb-safe` + `viewportFit: cover` para safe-area iOS
 - Thumbnails da galeria com scroll horizontal
 - Breadcrumb do detalhe com scroll horizontal
@@ -70,7 +71,10 @@ Comportamento com preço stale: mesmo CTA "Ver preço na {marketplace}" (sem val
 | `apps/web/src/components/product/ProductDetailStickyCta.tsx` | Novo componente                                 |
 | `apps/web/src/app/produtos/[slug]/page.tsx`                  | Sticky CTA, breadcrumb scroll, padding inferior |
 | `apps/web/src/components/product/ProductImageGallery.tsx`    | Thumbnails scroll                               |
-| `apps/web/src/components/product/ProductCardActions.tsx`     | `text-xs` em compact                            |
+| `apps/web/src/components/product/ProductCard.tsx`            | Editorial embed: CTAs na coluna de conteúdo     |
+| `apps/web/src/components/product/ProductCardActions.tsx`     | `text-xs` em compact; touch-friendly editorial  |
+| `apps/web/src/components/articles/ArticleProductEmbed.tsx`   | Wrapper `min-w-0` anti-overflow em prose        |
+| `apps/web/src/components/product/ProductDetailEmbed.tsx`     | Idem descrição longa de produto                 |
 | `apps/web/src/app/globals.css`                               | `.pb-safe`, drawer safe-area                    |
 | `apps/web/src/app/layout.tsx`                                | Viewport export                                 |
 | `apps/web/src/components/legal/CookieConsentProvider.tsx`    | `pb-safe` no banner                             |
@@ -90,6 +94,7 @@ DevTools — viewports 360px, 375px, 390px:
 4. `/produtos/{slug}` — rolar até o fim; CTA fixo visível; breadcrumb não quebra layout
 5. Produto com 5+ imagens — thumbnails com scroll horizontal
 6. iPhone com notch (simulador) — cookie banner e CTA sticky acima do home indicator
+7. `/artigos/{slug}` ou `/produtos/{slug}` com embed `[[product:]]` — CTAs full-width abaixo do conteúdo; sem overflow horizontal em 360px
 
 ## Próximos passos (não implementados)
 
@@ -97,4 +102,3 @@ DevTools — viewports 360px, 375px, 390px:
 - Grid 2 col em `CategoryBentoGrid` / `CuratedCollectionSlide` (impacto menor)
 - Placeholder visual quando preço stale em grids
 - Touch targets 44px em ícones do header
-- Sticky CTA em embeds editoriais longos

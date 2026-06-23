@@ -40,7 +40,7 @@ export function ArticleBody({
           return (
             <aside
               key={`compare-${segment.slugs.join('-')}-${index}`}
-              className="not-prose my-8"
+              className="not-prose my-8 min-w-0 w-full"
               aria-label="Comparativo de produtos"
             >
               <ComparisonTable slugs={segment.slugs} products={products} articleId={article.id} />
@@ -52,7 +52,7 @@ export function ArticleBody({
         return (
           <aside
             key={`product-${segment.slug}-${index}`}
-            className="not-prose my-6 sm:my-8"
+            className="not-prose my-6 min-w-0 w-full sm:my-8"
             aria-label="Produto recomendado"
           >
             <ArticleProductEmbed slug={segment.slug} product={product} articleId={article.id} />

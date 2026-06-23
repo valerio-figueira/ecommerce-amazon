@@ -24,7 +24,7 @@ export function ProductDetailEmbed({
   }
 
   return (
-    <div>
+    <div className="min-w-0 w-full">
       <ProductCard
         product={product}
         variant="editorial"
