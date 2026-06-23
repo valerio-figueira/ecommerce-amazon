@@ -98,7 +98,7 @@ export function ProductCard({
                   src={product.imageUrl}
                   alt={product.title}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
                   sizes="(max-width:640px) 112px, 160px"
                 />
               )}
@@ -178,7 +178,7 @@ export function ProductCard({
               src={product.imageUrl}
               alt={product.title}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
               sizes={isCompact ? '(max-width:768px) 40vw, 18vw' : '(max-width:768px) 50vw, 25vw'}
             />
           )}

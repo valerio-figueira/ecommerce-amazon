@@ -27,7 +27,7 @@ export function ProductImageGallery({ images, alt }: ProductImageGalleryProps): 
             src={selectedImage}
             alt={alt}
             fill
-            className="object-cover"
+            className="object-contain"
             priority
             sizes="(max-width:768px) 100vw, 50vw"
           />

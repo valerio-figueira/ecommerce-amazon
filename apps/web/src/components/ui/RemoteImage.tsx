@@ -66,7 +66,6 @@ export function RemoteImage({
           height: '100%',
           width: '100%',
           inset: 0,
-          objectFit: 'cover',
         }}
       />
     );

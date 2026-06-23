@@ -41,6 +41,55 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+export type DrawRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+/** Clamp a crop rectangle to the natural bounds of the source image. */
+export function clampSourceCrop(
+  pixelCrop: Area,
+  naturalWidth: number,
+  naturalHeight: number,
+): DrawRect {
+  const x = Math.max(0, Math.min(pixelCrop.x, naturalWidth));
+  const y = Math.max(0, Math.min(pixelCrop.y, naturalHeight));
+  const right = Math.max(x, Math.min(pixelCrop.x + pixelCrop.width, naturalWidth));
+  const bottom = Math.max(y, Math.min(pixelCrop.y + pixelCrop.height, naturalHeight));
+
+  return {
+    x,
+    y,
+    width: right - x,
+    height: bottom - y,
+  };
+}
+
+/** Fit a source region into the output canvas (letterbox) preserving aspect ratio. */
+export function computeContainDrawRect(
+  outputWidth: number,
+  outputHeight: number,
+  srcWidth: number,
+  srcHeight: number,
+): DrawRect {
+  if (srcWidth <= 0 || srcHeight <= 0) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+
+  const scale = Math.min(outputWidth / srcWidth, outputHeight / srcHeight);
+  const drawWidth = srcWidth * scale;
+  const drawHeight = srcHeight * scale;
+
+  return {
+    x: (outputWidth - drawWidth) / 2,
+    y: (outputHeight - drawHeight) / 2,
+    width: drawWidth,
+    height: drawHeight,
+  };
+}
+
 export async function getCroppedImageBlob(
   imageSrc: string,
   pixelCrop: Area,
@@ -57,16 +106,38 @@ export async function getCroppedImageBlob(
     throw new Error('Canvas não suportado');
   }
 
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, width, height);
+
+  const sourceCrop = clampSourceCrop(pixelCrop, image.naturalWidth, image.naturalHeight);
+  if (sourceCrop.width <= 0 || sourceCrop.height <= 0) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Falha ao processar imagem'));
+            return;
+          }
+          resolve(blob);
+        },
+        'image/jpeg',
+        quality,
+      );
+    });
+  }
+
+  const dest = computeContainDrawRect(width, height, sourceCrop.width, sourceCrop.height);
+
   context.drawImage(
     image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    width,
-    height,
+    sourceCrop.x,
+    sourceCrop.y,
+    sourceCrop.width,
+    sourceCrop.height,
+    dest.x,
+    dest.y,
+    dest.width,
+    dest.height,
   );
 
   return new Promise((resolve, reject) => {

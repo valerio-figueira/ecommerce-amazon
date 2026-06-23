@@ -115,6 +115,9 @@ export function AdminImageCropDialog({
               maxZoom={maxZoom}
               restrictPosition={false}
               showGrid={cropShape === 'rect'}
+              style={{
+                containerStyle: { backgroundColor: '#ffffff' },
+              }}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}

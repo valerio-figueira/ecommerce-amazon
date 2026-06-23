@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { computeMaxZoomForCrop, computeMinZoomToFitMedia } from './admin-image-crop';
+import {
+  clampSourceCrop,
+  computeContainDrawRect,
+  computeMaxZoomForCrop,
+  computeMinZoomToFitMedia,
+} from './admin-image-crop';
 
 describe('computeMinZoomToFitMedia', () => {
   const cropAspect = 4 / 3;
@@ -25,5 +30,36 @@ describe('computeMinZoomToFitMedia', () => {
 describe('computeMaxZoomForCrop', () => {
   it('keeps enough zoom-in range for small min zoom values', () => {
     expect(computeMaxZoomForCrop(0.25)).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe('clampSourceCrop', () => {
+  it('clamps crop coordinates to image bounds', () => {
+    expect(clampSourceCrop({ x: -10, y: -5, width: 200, height: 150 }, 120, 90)).toEqual({
+      x: 0,
+      y: 0,
+      width: 120,
+      height: 90,
+    });
+  });
+});
+
+describe('computeContainDrawRect', () => {
+  it('centers a portrait region inside a landscape canvas', () => {
+    expect(computeContainDrawRect(1200, 900, 600, 900)).toEqual({
+      x: 300,
+      y: 0,
+      width: 600,
+      height: 900,
+    });
+  });
+
+  it('fills the canvas when aspects match', () => {
+    expect(computeContainDrawRect(1200, 900, 800, 600)).toEqual({
+      x: 0,
+      y: 0,
+      width: 1200,
+      height: 900,
+    });
   });
 });

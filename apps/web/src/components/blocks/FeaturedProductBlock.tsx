@@ -84,7 +84,7 @@ export function FeaturedProductBlock({
         className="relative block min-h-[180px] flex-1 overflow-hidden rounded-2xl bg-white"
       >
         {product.imageUrl && (
-          <RemoteImage src={product.imageUrl} alt={product.title} fill className="object-cover" />
+          <RemoteImage src={product.imageUrl} alt={product.title} fill className="object-contain" />
         )}
         <ProductEditorialBadges product={product} />
       </Link>

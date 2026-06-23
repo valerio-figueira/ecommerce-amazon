@@ -2003,6 +2003,7 @@ body.admin-login-page {
 
 .admin-image-crop-wrap .reactEasyCrop_Container {
   border-radius: 0.5rem;
+  background-color: #ffffff;
 }
 
 .admin-image-status {
