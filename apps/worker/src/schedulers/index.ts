@@ -69,7 +69,8 @@ export async function registerSchedulers(container: WorkerContainer) {
         const hourKey = new Date().toISOString().slice(0, 13);
         const jobData: MarketplaceJobData = { marketplace, externalIds: batch };
         await queues.priceRefresh.add('price-batch', jobData, {
-          jobId: `price_refresh:${marketplace}:${hourKey}:${i}`,
+          // BullMQ rejects custom job IDs containing ":" (reserved delimiter).
+          jobId: `price_refresh-${marketplace}-${hourKey}-${i}`,
         });
       }
     }

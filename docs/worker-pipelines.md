@@ -41,7 +41,7 @@ Arquivo: [`apps/worker/src/schedulers/index.ts`](../apps/worker/src/schedulers/i
 
 Na inicialização também enfileira batches de preço para produtos due (`findDueForPriceRefresh`, limit 500), agrupados por marketplace em lotes de 15 `external_id`.
 
-**JobId determinístico (preço):** `price_refresh:{marketplace}:{hourKey}:{offset}`
+**JobId determinístico (preço):** `price_refresh-{marketplace}-{hourKey}-{offset}` (sem `:` — BullMQ rejeita dois-pontos em IDs customizados)
 
 ## Fluxo Pipeline B (preços)
 

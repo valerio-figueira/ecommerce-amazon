@@ -30,7 +30,7 @@ Chamar APIs/scrapers Amazon/Shopee, rodar higienização, verificar cupons, inva
 
 ## Idempotência
 
-- JobId determinístico: `price_refresh:{productId}:{dateHour}`
+- JobId determinístico: `price_refresh-{productId}-{dateHour}` (sem `:` — BullMQ proíbe dois-pontos)
 - Snapshot: unique `(product_id, captured_at::date)`
 - Alert handler: só dispara se alerta `active` e preço não stale
 
