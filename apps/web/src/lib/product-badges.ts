@@ -8,7 +8,7 @@ export type EditorialBadge = {
 };
 
 const EDITORS_PICK_THRESHOLD = 80;
-const TOP_RATED_MIN_RATING = 4.5;
+const TOP_RATED_MIN_RATING = 4.9;
 const TOP_RATED_MIN_REVIEWS = 50;
 
 export function resolveEditorialBadge(product: ProductListItemDto): EditorialBadge | null {

@@ -19,7 +19,7 @@ export const PRODUCT_FORM_HINTS = {
   editorialScore:
     'Nota de 0 a 10 da sua curadoria. Acima de 8,0 o produto pode receber o selo "Escolha editorial" na vitrine.',
   rating:
-    'Nota média do marketplace (0 a 5). Exibida na vitrine e usada no selo "Top avaliado" (≥ 4,5 com 50+ avaliações).',
+    'Nota média do marketplace (0 a 5). Exibida na vitrine e usada no selo "Top avaliado" (≥ 4,9 com 50+ avaliações).',
   reviewCount:
     'Quantidade de avaliações no marketplace. Complementa a nota para estrelas e selos na vitrine.',
   tags: 'Etiquetas internas para organização (ex.: gamer, home-office). Não aparecem na vitrine pública no MVP.',

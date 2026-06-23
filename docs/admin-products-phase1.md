@@ -178,15 +178,15 @@ O operador informa título limpo, imagens, prós/contras, preço e link de afili
 
 ## Campos do schema disponíveis no admin
 
-| Campo             | Aba / seção                                 | Observação                                           |
-| ----------------- | ------------------------------------------- | ---------------------------------------------------- |
-| `editorial_score` | Link & Essenciais → Curadoria e avaliações  | UI 0–10; banco 0–100; selo ≥ 8,0                     |
-| `rating`          | Link & Essenciais → Curadoria e avaliações  | Nota marketplace 0–5; estrelas e selo "Top avaliado" |
-| `review_count`    | Link & Essenciais → Curadoria e avaliações  | Complementa `rating` na vitrine                      |
-| `tags`            | Link & Essenciais → Curadoria e avaliações  | Etiquetas internas (organização)                     |
-| `title_raw`       | Link & Essenciais → Dados essenciais        | Título bruto do parceiro; default = `title_clean`    |
-| `availability`    | Link & Essenciais → Preço e disponibilidade | Inclui opção `unknown`                               |
-| `canonical_url`   | **Sem input**                               | Override avançado via DB/Drizzle Studio              |
+| Campo             | Aba / seção                                 | Observação                                                                    |
+| ----------------- | ------------------------------------------- | ----------------------------------------------------------------------------- |
+| `editorial_score` | Link & Essenciais → Curadoria e avaliações  | UI 0–10; banco 0–100; selo ≥ 8,0                                              |
+| `rating`          | Link & Essenciais → Curadoria e avaliações  | Nota marketplace 0–5; estrelas e selo "Top avaliado" (≥ 4,9 e 50+ avaliações) |
+| `review_count`    | Link & Essenciais → Curadoria e avaliações  | Complementa `rating` na vitrine                                               |
+| `tags`            | Link & Essenciais → Curadoria e avaliações  | Etiquetas internas (organização)                                              |
+| `title_raw`       | Link & Essenciais → Dados essenciais        | Título bruto do parceiro; default = `title_clean`                             |
+| `availability`    | Link & Essenciais → Preço e disponibilidade | Inclui opção `unknown`                                                        |
+| `canonical_url`   | **Sem input**                               | Override avançado via DB/Drizzle Studio                                       |
 
 ## Escala editorial
 
