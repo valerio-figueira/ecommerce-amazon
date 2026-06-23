@@ -51,12 +51,10 @@ describe('ResolveAffiliateRedirect', () => {
         ),
     };
 
-    const affiliateLinkBuilder = {
-      build: vi.fn(),
-      buildBatchCheckout: vi.fn(),
-      buildWithTracking: vi.fn().mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21'),
-      appendTrackingToStoredUrl: vi.fn(),
-    };
+    const appendTrackingToStoredUrl = vi
+      .fn()
+      .mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21');
+    const buildWithTracking = vi.fn();
 
     const gateService = {
       isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true),
@@ -65,7 +63,12 @@ describe('ResolveAffiliateRedirect', () => {
     const useCase = new ResolveAffiliateRedirect(
       productRepository,
       affiliateAccountRepository,
-      affiliateLinkBuilder,
+      {
+        build: vi.fn(),
+        buildBatchCheckout: vi.fn(),
+        buildWithTracking,
+        appendTrackingToStoredUrl,
+      },
       gateService,
     );
 
@@ -76,6 +79,13 @@ describe('ResolveAffiliateRedirect', () => {
       expect(result.value.productId).toBe(product.id);
       expect(result.value.marketplace).toBe(Marketplace.AMAZON_BR);
     }
+    expect(appendTrackingToStoredUrl).toHaveBeenCalledWith(
+      product.affiliateLink.url,
+      Marketplace.AMAZON_BR,
+      {},
+      'vitrine-21',
+    );
+    expect(buildWithTracking).not.toHaveBeenCalled();
   });
 
   it('blocks redirect when affiliate account is pending validation', async () => {
@@ -154,7 +164,7 @@ describe('ResolveAffiliateRedirect', () => {
     }
   });
 
-  it('passes comparisonSlug to affiliate link builder', async () => {
+  it('passes comparisonSlug to affiliate link builder via stored Amazon URL', async () => {
     const product = Product.create({
       id: 'a1111111-1111-4111-8111-111111111111',
       marketplace: Marketplace.AMAZON_BR,
@@ -172,9 +182,10 @@ describe('ResolveAffiliateRedirect', () => {
       createdAt: new Date(),
     });
 
-    const buildWithTracking = vi
+    const appendTrackingToStoredUrl = vi
       .fn()
       .mockReturnValue('https://amazon.com.br/dp/B001?tag=vitrine-21');
+    const buildWithTracking = vi.fn();
     const useCase = new ResolveAffiliateRedirect(
       createMockProductRepository({ findBySlug: vi.fn().mockResolvedValue(product) }),
       {
@@ -193,7 +204,7 @@ describe('ResolveAffiliateRedirect', () => {
         build: vi.fn(),
         buildBatchCheckout: vi.fn(),
         buildWithTracking,
-        appendTrackingToStoredUrl: vi.fn(),
+        appendTrackingToStoredUrl,
       },
       { isBatchCheckoutEnabled: vi.fn().mockResolvedValue(true) },
     );
@@ -203,12 +214,13 @@ describe('ResolveAffiliateRedirect', () => {
       comparisonSlug: 'cadeira-a-vs-cadeira-b',
     });
 
-    expect(buildWithTracking).toHaveBeenCalledWith(
+    expect(appendTrackingToStoredUrl).toHaveBeenCalledWith(
+      product.affiliateLink.url,
       Marketplace.AMAZON_BR,
-      'B001',
       expect.objectContaining({ comparisonSlug: 'cadeira-a-vs-cadeira-b' }),
       'vitrine-21',
     );
+    expect(buildWithTracking).not.toHaveBeenCalled();
   });
 
   it('uses stored affiliate link for Mercado Livre instead of rebuilding product URL', async () => {
@@ -267,6 +279,7 @@ describe('ResolveAffiliateRedirect', () => {
       'https://meli.la/32y878h',
       Marketplace.MERCADOLIVRE_BR,
       expect.objectContaining({ origin: 'listagem' }),
+      '',
     );
     expect(buildWithTracking).not.toHaveBeenCalled();
   });

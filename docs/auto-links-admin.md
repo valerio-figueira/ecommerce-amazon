@@ -118,6 +118,8 @@ Body `CreateAutoLinkBody` / `UpdateAutoLinkBody` inclui `applyTo`: `articles` | 
 
 ## Como testar
 
+> **Links Amazon SiteStripe:** URLs de afiliado costumam ter 500+ caracteres. Exige migration `0025_auto_links_target_url_text` (`target_url` como `text`). Sem ela, o PostgreSQL rejeita o insert com `value too long for type character varying(255)`.
+
 ```bash
 npm run db:migrate && npm run db:seed
 npm run dev:api    # :3000

@@ -40,11 +40,12 @@ export interface AffiliateLinkBuilder {
     tracking: AffiliateTrackingParams,
     affiliateTag?: string,
   ): string;
-  /** Appends telemetry query params to a persisted affiliate URL (e.g. meli.la for Mercado Livre). */
+  /** Appends telemetry query params to a persisted affiliate URL (e.g. meli.la, Amazon SiteStripe). */
   appendTrackingToStoredUrl(
     affiliateUrl: string,
     marketplace: Marketplace,
     tracking: AffiliateTrackingParams,
+    affiliateTag?: string,
   ): string;
 }
 

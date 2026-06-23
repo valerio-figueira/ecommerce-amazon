@@ -65,6 +65,7 @@ describe('ResolveAutoLinkRedirect', () => {
       autoLink.targetUrl,
       Marketplace.AMAZON_BR,
       expect.objectContaining({ origin: 'auto_link' }),
+      'tag-20',
     );
   });
 

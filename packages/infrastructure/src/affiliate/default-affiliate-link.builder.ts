@@ -72,6 +72,7 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
     affiliateUrl: string,
     marketplace: Marketplace,
     tracking: AffiliateTrackingParams,
+    affiliateTag?: string,
   ): string {
     const url = new URL(affiliateUrl);
 
@@ -83,6 +84,10 @@ export class DefaultAffiliateLinkBuilder implements AffiliateLinkBuilder {
         url.searchParams.set('utm_campaign', tracking.comparisonSlug.slice(0, 50));
       }
     } else if (marketplace === Marketplace.AMAZON_BR) {
+      const tag = affiliateTag ?? this.amazonTag;
+      if (tag && !url.searchParams.has('tag')) {
+        url.searchParams.set('tag', tag);
+      }
       const subTag = this.composeSubTag(tracking);
       if (subTag) {
         url.searchParams.set('ascsubtag', subTag);

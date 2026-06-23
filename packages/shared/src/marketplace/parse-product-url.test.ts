@@ -10,6 +10,14 @@ describe('parseMarketplaceProductUrl', () => {
     ).toEqual({ marketplace: 'amazon_br', externalId: 'B08411SMN5' });
   });
 
+  it('parses Amazon SEO path dp URLs', () => {
+    expect(
+      parseMarketplaceProductUrl(
+        'https://www.amazon.com.br/Monitor-AOC-DESTINY-FreeSync-25G3ZM/dp/B0CJ9NVNW6?tag=vitrine70-20',
+      ),
+    ).toEqual({ marketplace: 'amazon_br', externalId: 'B0CJ9NVNW6' });
+  });
+
   it('parses Amazon gp/product URLs', () => {
     expect(parseMarketplaceProductUrl('https://www.amazon.com.br/gp/product/B08411SMN5')).toEqual({
       marketplace: 'amazon_br',

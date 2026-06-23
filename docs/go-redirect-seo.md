@@ -34,7 +34,8 @@ Mascaramento de links afiliados, rich snippets Schema.org e motor de links inter
 3. `ResolveAffiliateRedirect` valida produto + conta afiliado
 4. `RecordClickEvent` com origem `redirect_go`
 5. Resposta **307**:
-   - **Amazon/Shopee:** URL reconstruída via `AffiliateLinkBuilder.buildWithTracking` (tag da conta + subIDs)
+   - **Amazon:** URL persistida em `products.affiliate_deep_link` (link SiteStripe com `tag` do operador) com `ascsubtag` de telemetria via `appendTrackingToStoredUrl` — **não** é substituída por `/dp/{ASIN}` reconstruído
+   - **Shopee:** URL reconstruída via `AffiliateLinkBuilder.buildWithTracking` (tag da conta + subIDs)
    - **Mercado Livre:** URL persistida em `products.affiliate_deep_link` (ex.: `meli.la/...`) com UTMs de telemetria via `appendTrackingToStoredUrl` — o link gerado no portal de afiliados **não** é substituído por `produto.mercadolivre.com.br/{externalId}`
 
 Falha (produto inexistente, conta pending): **307** para `/`.

@@ -42,14 +42,16 @@ export class ResolveAutoLinkRedirect {
     }
 
     const marketplace = detectMarketplaceFromAffiliateUrl(autoLink.targetUrl);
-    if (marketplace) {
-      const account = await this.affiliateAccountRepository.findByMarketplace(marketplace);
-      if (account !== null && account.status === AffiliateAccountStatus.PENDING) {
-        return err(new ValidationError('Affiliate account pending manual validation'));
-      }
-      if (account !== null && account.status === AffiliateAccountStatus.SUSPENDED) {
-        return err(new ValidationError('Affiliate account suspended'));
-      }
+    const account =
+      marketplace !== null
+        ? await this.affiliateAccountRepository.findByMarketplace(marketplace)
+        : null;
+
+    if (account !== null && account.status === AffiliateAccountStatus.PENDING) {
+      return err(new ValidationError('Affiliate account pending manual validation'));
+    }
+    if (account !== null && account.status === AffiliateAccountStatus.SUSPENDED) {
+      return err(new ValidationError('Affiliate account suspended'));
     }
 
     const tracking: AffiliateTrackingParams = {
@@ -64,12 +66,14 @@ export class ResolveAutoLinkRedirect {
       ...(input.utmCampaign !== undefined ? { utmCampaign: input.utmCampaign } : {}),
     };
 
+    const affiliateTag = account?.affiliateTag;
     const targetUrl =
       marketplace !== null
         ? this.affiliateLinkBuilder.appendTrackingToStoredUrl(
             autoLink.targetUrl,
             marketplace,
             tracking,
+            affiliateTag,
           )
         : autoLink.targetUrl;
 

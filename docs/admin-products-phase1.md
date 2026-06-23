@@ -200,11 +200,11 @@ O operador informa título limpo, imagens, prós/contras, preço e link de afili
 
 Módulo: [`packages/shared/src/marketplace/parse-product-url.ts`](../packages/shared/src/marketplace/parse-product-url.ts)
 
-| Marketplace   | Padrão                                               |
-| ------------- | ---------------------------------------------------- |
-| Amazon BR     | `/dp/{ASIN}`, `/gp/product/{ASIN}`                   |
-| Shopee BR     | `/product/{shopId}/{itemId}`, `-i.{shopId}.{itemId}` |
-| Mercado Livre | `MLB-{id}` normalizado para `MLB{id}`                |
+| Marketplace   | Padrão                                                  |
+| ------------- | ------------------------------------------------------- |
+| Amazon BR     | `/dp/{ASIN}`, `/gp/product/{ASIN}`, `/{slug}/dp/{ASIN}` |
+| Shopee BR     | `/product/{shopId}/{itemId}`, `-i.{shopId}.{itemId}`    |
+| Mercado Livre | `MLB-{id}` normalizado para `MLB{id}`                   |
 
 Revalidado no backend em `CreateProduct` (não confiar só no client).
 

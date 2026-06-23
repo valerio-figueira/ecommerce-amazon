@@ -61,19 +61,22 @@ export class ResolveAffiliateRedirect {
     };
 
     const affiliateTag = account?.affiliateTag;
-    const targetUrl =
-      product.marketplace === Marketplace.MERCADOLIVRE_BR
-        ? this.affiliateLinkBuilder.appendTrackingToStoredUrl(
-            product.affiliateLink.url,
-            product.marketplace,
-            tracking,
-          )
-        : this.affiliateLinkBuilder.buildWithTracking(
-            product.marketplace,
-            product.externalId,
-            tracking,
-            affiliateTag,
-          );
+    const useStoredAffiliateUrl =
+      product.marketplace === Marketplace.MERCADOLIVRE_BR ||
+      product.marketplace === Marketplace.AMAZON_BR;
+    const targetUrl = useStoredAffiliateUrl
+      ? this.affiliateLinkBuilder.appendTrackingToStoredUrl(
+          product.affiliateLink.url,
+          product.marketplace,
+          tracking,
+          affiliateTag,
+        )
+      : this.affiliateLinkBuilder.buildWithTracking(
+          product.marketplace,
+          product.externalId,
+          tracking,
+          affiliateTag,
+        );
 
     return ok({
       productId: product.id,

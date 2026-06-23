@@ -31,6 +31,34 @@ describe('DefaultAffiliateLinkBuilder', () => {
       expect(url.searchParams.get('foo')).toBe('bar');
       expect(url.searchParams.get('utm_source')).toBe('detalhe');
     });
+
+    it('preserves Amazon SiteStripe tag and appends ascsubtag', () => {
+      const storedUrl =
+        'https://www.amazon.com.br/Monitor-AOC-DESTINY-FreeSync-25G3ZM/dp/B0CJ9NVNW6?tag=vitrine70-20';
+      const result = builder.appendTrackingToStoredUrl(
+        storedUrl,
+        Marketplace.AMAZON_BR,
+        { origin: 'redirect_go', blockId: 'block-1' },
+        'vitrine-21',
+      );
+
+      const url = new URL(result);
+      expect(url.searchParams.get('tag')).toBe('vitrine70-20');
+      expect(url.searchParams.get('ascsubtag')).toContain('redirect_go');
+      expect(url.pathname).toContain('B0CJ9NVNW6');
+    });
+
+    it('adds Amazon tag from account when stored URL has no tag', () => {
+      const result = builder.appendTrackingToStoredUrl(
+        'https://www.amazon.com.br/dp/B0CJ9NVNW6',
+        Marketplace.AMAZON_BR,
+        { origin: 'listagem' },
+        'vitrine-21',
+      );
+
+      const url = new URL(result);
+      expect(url.searchParams.get('tag')).toBe('vitrine-21');
+    });
   });
 
   describe('buildWithTracking', () => {
