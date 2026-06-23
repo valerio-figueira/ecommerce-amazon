@@ -1,11 +1,20 @@
 import { z } from 'zod';
 
+import { operatorSocialLinksSchema } from '../about/about-content.schema.js';
+
+export const contactSocialLinksSchema = operatorSocialLinksSchema;
+
+export type ContactSocialLinks = z.infer<typeof contactSocialLinksSchema>;
+
 export const contactPageContentSchema = z.object({
   title: z.string().min(1).max(120),
   intro: z.string().min(1).max(500),
   emailLabel: z.string().min(1).max(60),
   email: z.string().email().max(120),
   socialHeading: z.string().min(1).max(80),
+  socialLinks: contactSocialLinksSchema,
+  socialsEnabled: z.boolean(),
+  showOnHome: z.boolean(),
   legalLinkLabel: z.string().min(1).max(120),
   aboutLinkLabel: z.string().min(1).max(80),
   lastUpdated: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

@@ -10,11 +10,11 @@ Páginas institucionais `/sobre` e `/contato` na vitrine pública, com conteúdo
 
 ## O que foi entregue
 
-| Rota       | Fonte de conteúdo                                                                      |
-| ---------- | -------------------------------------------------------------------------------------- |
-| `/sobre`   | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team`         |
-| `/contato` | CMS (`pages` slug `contato`, `page_kind=institutional`) + redes via `BrandConfig`      |
-| `/legal`   | CMS (`pages` slug `legal`, `page_kind=institutional`) — fallback em código se API down |
+| Rota       | Fonte de conteúdo                                                                              |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| `/sobre`   | CMS (`pages` slug `sobre`, `page_kind=institutional`) + equipe via `GET /team`                 |
+| `/contato` | CMS (`pages` slug `contato`, `page_kind=institutional`) — e-mail, redes e visibilidade na home |
+| `/legal`   | CMS (`pages` slug `legal`, `page_kind=institutional`) — fallback em código se API down         |
 
 ### Seções da Sobre
 
@@ -55,6 +55,7 @@ Novos campos em `operators` (editáveis em Admin `/perfil`):
 | Rotas API               | [`institutional-routes.ts`](../apps/api/src/adapters/http/routes/institutional-routes.ts)                                                                                                                 |
 | Web Sobre               | [`apps/web/src/app/sobre/page.tsx`](../apps/web/src/app/sobre/page.tsx)                                                                                                                                   |
 | Web Contato             | [`apps/web/src/app/contato/page.tsx`](../apps/web/src/app/contato/page.tsx)                                                                                                                               |
+| Bloco contato na home   | [`ContactHomeSection.tsx`](../apps/web/src/components/contact/ContactHomeSection.tsx)                                                                                                                     |
 | UI Sobre                | [`AboutPageContent.tsx`](../apps/web/src/components/about/AboutPageContent.tsx)                                                                                                                           |
 | Admin perfil            | [`ProfileForm.tsx`](../apps/admin/src/components/profile/ProfileForm.tsx)                                                                                                                                 |
 | Admin editor Sobre      | [`AboutPageEditor.tsx`](../apps/admin/src/components/about/AboutPageEditor.tsx) — ver [admin-about-page.md](./admin-about-page.md)                                                                        |

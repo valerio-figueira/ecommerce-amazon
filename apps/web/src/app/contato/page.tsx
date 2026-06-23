@@ -25,13 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage(): Promise<React.JSX.Element> {
-  const brand = getServerBrandConfig();
   const content = await fetchInstitutionalContactPage();
 
   return (
     <main>
       <ContactPageJsonLd />
-      <ContactPageContentView content={content} brand={brand} />
+      <ContactPageContentView content={content} />
     </main>
   );
 }

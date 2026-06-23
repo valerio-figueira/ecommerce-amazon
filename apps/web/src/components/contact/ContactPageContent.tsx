@@ -1,18 +1,17 @@
 import Link from 'next/link';
-import { Instagram, Mail, Send } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 import type { ContactPageContent } from '@ecommerce-amazon/shared/contact';
-import type { BrandConfig } from '@ecommerce-amazon/shared/config/brand';
+
+import { ContactSocialLinks } from '@/components/contact/ContactSocialLinks';
 
 type ContactPageContentProps = {
   content: ContactPageContent;
-  brand: BrandConfig;
 };
 
-export function ContactPageContentView({
-  content,
-  brand,
-}: ContactPageContentProps): React.JSX.Element {
+export function ContactPageContentView({ content }: ContactPageContentProps): React.JSX.Element {
+  const showSocials = content.socialsEnabled;
+
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
       <header className="mb-10">
@@ -36,39 +35,14 @@ export function ContactPageContentView({
           </a>
         </div>
 
-        <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-            {content.socialHeading}
-          </h2>
-          <ul className="mt-3 flex flex-wrap gap-3">
-            {brand.socials.instagram ? (
-              <li>
-                <a
-                  href={brand.socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 px-4 py-2 text-sm text-neutral-700 transition hover:border-neutral-300"
-                >
-                  <Instagram className="h-4 w-4" aria-hidden />
-                  Instagram
-                </a>
-              </li>
-            ) : null}
-            {brand.socials.telegram ? (
-              <li>
-                <a
-                  href={brand.socials.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 px-4 py-2 text-sm text-neutral-700 transition hover:border-neutral-300"
-                >
-                  <Send className="h-4 w-4" aria-hidden />
-                  Telegram
-                </a>
-              </li>
-            ) : null}
-          </ul>
-        </div>
+        {showSocials ? (
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+              {content.socialHeading}
+            </h2>
+            <ContactSocialLinks socialLinks={content.socialLinks} />
+          </div>
+        ) : null}
 
         <nav className="border-t border-neutral-100 pt-6 text-sm text-neutral-500">
           <Link href="/sobre" className="underline decoration-neutral-300 underline-offset-[3px]">

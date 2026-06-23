@@ -38,16 +38,17 @@ flowchart LR
 
 ## Painéis do editor Contato
 
-| Painel             | Campos                                           |
-| ------------------ | ------------------------------------------------ |
-| Contexto           | Status, link vitrine, Salvar rascunho / Publicar |
-| SEO                | `seoTitle`, `seoDescription`                     |
-| Conteúdo principal | `title`, `intro`                                 |
-| Canal de contato   | `emailLabel`, `email`, `socialHeading`           |
-| Links de rodapé    | `aboutLinkLabel`, `legalLinkLabel`               |
-| Meta               | `lastUpdated` (auto no save)                     |
+| Painel             | Campos                                                                  |
+| ------------------ | ----------------------------------------------------------------------- |
+| Contexto           | Status, link vitrine, Salvar rascunho / Publicar                        |
+| SEO                | `seoTitle`, `seoDescription`                                            |
+| Conteúdo principal | `title`, `intro`                                                        |
+| Canal de contato   | `emailLabel`, `email`, `socialHeading`, `socialLinks`, `socialsEnabled` |
+| Visibilidade       | `showOnHome` — bloco de contato no final da home                        |
+| Links de rodapé    | `aboutLinkLabel`, `legalLinkLabel`                                      |
+| Meta               | `lastUpdated` (auto no save)                                            |
 
-Redes sociais (Instagram, Telegram) continuam vindo de `BrandConfig` / env.
+Redes sociais (Instagram, Telegram, LinkedIn, X) são editáveis no CMS. `socialsEnabled` controla a seção na `/contato` e na home; `showOnHome` oculta o bloco de contato no final da página inicial.
 
 ## Painéis do editor Legal
 
