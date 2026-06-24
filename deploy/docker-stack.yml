@@ -91,7 +91,6 @@ services:
       placement:
         constraints:
           - node.role == manager
-      stop_grace_period: 30s
       resources:
         limits:
           memory: 192M
