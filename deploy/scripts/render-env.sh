@@ -11,6 +11,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=deploy/scripts/tls-hosts.sh
 source "${SCRIPT_DIR}/tls-hosts.sh"
+# shellcheck source=deploy/scripts/swarm-overlay-env.sh
+source "${SCRIPT_DIR}/swarm-overlay-env.sh"
 
 APP_DIR="${APP_DIR:-/opt/vitrine}"
 ENV_FILE="${APP_DIR}/.env"
@@ -38,16 +40,7 @@ normalize_single_line_secret() {
 }
 
 # RFC 3986 percent-encoding — evita subprocesso com credenciais na argv (V1).
-urlencode() {
-  local raw="$1" i c
-  for ((i = 0; i < ${#raw}; i++)); do
-    c="${raw:i:1}"
-    case "$c" in
-      [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
-      *) printf '%%%.2X' "'$c" ;;
-    esac
-  done
-}
+# urlencode() lives in swarm-overlay-env.sh (sourced above).
 
 cleanup() {
   if [[ -n "${tmp_env}" && -f "${tmp_env}" ]]; then
@@ -127,11 +120,7 @@ export REDIS_CACHE_DB="${REDIS_CACHE_DB:-0}"
 export REDIS_QUEUE_DB="${REDIS_QUEUE_DB:-1}"
 export REDIS_TELEMETRY_DB="${REDIS_TELEMETRY_DB:-2}"
 
-POSTGRES_USER_ENC="$(urlencode "${POSTGRES_USER}")"
-POSTGRES_PASSWORD_ENC="$(urlencode "${POSTGRES_PASSWORD}")"
-export DATABASE_URL="${DATABASE_URL:-postgresql://${POSTGRES_USER_ENC}:${POSTGRES_PASSWORD_ENC}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}"
-# Always use Swarm service hostname — never persist overlay VIPs from secrets into REDIS_URL.
-export REDIS_URL="redis://${REDIS_HOST}:${REDIS_PORT}"
+apply_swarm_overlay_urls
 
 export API_PORT="${API_PORT:-3000}"
 export WEB_PORT="${WEB_PORT:-3001}"

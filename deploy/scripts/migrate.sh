@@ -12,11 +12,15 @@ MIGRATE_IMAGE="${GHCR_IMAGE_PREFIX}/vitrine-migrate:${IMAGE_TAG}"
 
 # shellcheck source=deploy/scripts/docker-env-passthrough.sh
 source "${SCRIPT_DIR}/docker-env-passthrough.sh"
+# shellcheck source=deploy/scripts/swarm-overlay-env.sh
+source "${SCRIPT_DIR}/swarm-overlay-env.sh"
 
 # shellcheck source=/dev/null
 set -a
 source "${APP_DIR}/.env"
 set +a
+
+apply_swarm_overlay_urls
 
 docker_env_args=()
 collect_docker_env_passthrough_args "${APP_DIR}/.env" docker_env_args
@@ -27,8 +31,6 @@ docker pull "${MIGRATE_IMAGE}"
 docker run --rm \
   --network "${NETWORK}" \
   "${docker_env_args[@]}" \
-  -e POSTGRES_HOST=postgres \
-  -e REDIS_HOST=redis \
   "${MIGRATE_IMAGE}"
 
 echo "==> Migrations concluídas"

@@ -12,6 +12,8 @@ MIGRATE_IMAGE="${GHCR_IMAGE_PREFIX}/vitrine-migrate:${IMAGE_TAG}"
 
 # shellcheck source=deploy/scripts/docker-env-passthrough.sh
 source "${SCRIPT_DIR}/docker-env-passthrough.sh"
+# shellcheck source=deploy/scripts/swarm-overlay-env.sh
+source "${SCRIPT_DIR}/swarm-overlay-env.sh"
 
 # shellcheck source=/dev/null
 set -a
@@ -22,13 +24,14 @@ set +a
 : "${ADMIN_SEED_EMAIL:?ADMIN_SEED_EMAIL is required}"
 : "${ADMIN_SEED_PASSWORD:?ADMIN_SEED_PASSWORD is required}"
 
+apply_swarm_overlay_urls
+
 docker_env_args=()
 collect_docker_env_passthrough_args "${APP_DIR}/.env" docker_env_args
 
 docker run --rm \
   --network "${NETWORK}" \
   "${docker_env_args[@]}" \
-  -e POSTGRES_HOST=postgres \
   -e NODE_ENV=production \
   -e "PASSWORD_PEPPER=${PASSWORD_PEPPER}" \
   -e "ADMIN_SEED_EMAIL=${ADMIN_SEED_EMAIL}" \
