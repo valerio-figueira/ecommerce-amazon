@@ -8,7 +8,7 @@
 # - Invariante: apenas traefik no stack deve ter bloco ports: (Postgres/Redis só overlay).
 set -euo pipefail
 
-DEPLOY_USER="${DEPLOY_USER:-deploy}"
+DEPLOY_USER="${DEPLOY_USER:-desksetup}"
 APP_DIR="/opt/vitrine"
 UFW_AFTER_RULES="/etc/ufw/after.rules"
 UFW_DOCKER_BEGIN="# BEGIN vitrine-docker"
