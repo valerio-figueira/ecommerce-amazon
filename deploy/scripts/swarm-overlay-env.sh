@@ -26,9 +26,26 @@ apply_swarm_overlay_urls() {
   : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
   : "${POSTGRES_DB:?POSTGRES_DB is required}"
 
+  export DATABASE_URL="$(build_database_url "${POSTGRES_HOST}")"
+  export REDIS_URL="redis://${REDIS_HOST}:${REDIS_PORT}"
+}
+
+build_database_url() {
+  local host="$1"
   local user_enc pass_enc
   user_enc="$(urlencode "${POSTGRES_USER}")"
   pass_enc="$(urlencode "${POSTGRES_PASSWORD}")"
-  export DATABASE_URL="postgresql://${user_enc}:${pass_enc}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
-  export REDIS_URL="redis://${REDIS_HOST}:${REDIS_PORT}"
+  printf 'postgresql://%s:%s@%s:%s/%s' \
+    "${user_enc}" "${pass_enc}" "${host}" "${POSTGRES_PORT:-5432}" "${POSTGRES_DB}"
 }
+
+# One-shot jobs (migrate/seed) join the postgres task network namespace — avoids overlay
+# EHOSTUNREACH from ephemeral `docker run` containers on some Swarm single-node setups.
+apply_postgres_sidecar_database_url() {
+  export POSTGRES_PORT="${POSTGRES_PORT:-5432}"
+  : "${POSTGRES_USER:?POSTGRES_USER is required}"
+  : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
+  : "${POSTGRES_DB:?POSTGRES_DB is required}"
+  export DATABASE_URL="$(build_database_url "127.0.0.1")"
+}
+
