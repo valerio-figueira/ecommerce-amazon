@@ -50,4 +50,4 @@ fetch(url, {
   });
 "
 
-echo "==> OK — revalidate respondeu 200"
+echo "==> OK - revalidate respondeu 200"

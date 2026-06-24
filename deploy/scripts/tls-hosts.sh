@@ -53,7 +53,7 @@ resolve_tls_hosts_from_public_host() {
   fi
 }
 
-# Comma-separated SANs for the vitrine host only (apex/www alias) — used by static alias routers.
+# Comma-separated SANs for the vitrine host only (apex/www alias) - used by static alias routers.
 # api./admin. get their own cert via per-service TLS labels (one ACME order per hostname).
 build_tls_sans_csv() {
   local host="$1"
@@ -66,7 +66,7 @@ build_tls_sans_csv() {
   fi
 }
 
-# Per-router ACME domain: vitrine (www+apex), api, or admin — avoids duplicate multi-SAN orders.
+# Per-router ACME domain: vitrine (www+apex), api, or admin - avoids duplicate multi-SAN orders.
 build_traefik_service_tls_labels() {
   local router="$1"
   case "${router}" in

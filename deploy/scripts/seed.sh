@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Seed opcional (primeiro deploy) — bootstrap sem catálogo demo; exige SEED_FORCE=true.
+# Seed opcional (primeiro deploy) - bootstrap sem catálogo demo; exige SEED_FORCE=true.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -47,5 +47,5 @@ docker run --rm \
   "${MIGRATE_IMAGE}" \
   npm run db:seed
 
-echo "==> Seed concluído — verificando credenciais do operador"
+echo "==> Seed concluído - verificando credenciais do operador"
 bash "${SCRIPT_DIR}/verify-operator-seed.sh"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Aguarda URL publica (Traefik) retornar codigos HTTP aceitos — retry para rotas apos stack deploy.
+# Aguarda URL publica (Traefik) retornar codigos HTTP aceitos - retry para rotas apos stack deploy.
 # Uso: wait-http-url.sh <url> [accepted_codes_csv]
 set -euo pipefail
 
@@ -22,6 +22,6 @@ done
 echo "ERRO: ${URL} nao retornou ${ACCEPT_CODES} a tempo (ultimo: ${HTTP_CODE:-000})" >&2
 if [[ "${HTTP_CODE:-000}" == "000" ]]; then
   echo "    Dica: HTTP 000 = conexao recusada, timeout ou falha SSL." >&2
-  echo "    Se o browser mostra TRAEFIK DEFAULT CERT, ACME nao emitiu — checar :80 aberto e redirect global removido." >&2
+  echo "    Se o browser mostra TRAEFIK DEFAULT CERT, ACME nao emitiu - checar :80 aberto e redirect global removido." >&2
 fi
 exit 1

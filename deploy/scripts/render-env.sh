@@ -39,7 +39,7 @@ normalize_single_line_secret() {
   printf '%s' "$value"
 }
 
-# RFC 3986 percent-encoding — evita subprocesso com credenciais na argv (V1).
+# RFC 3986 percent-encoding - evita subprocesso com credenciais na argv (V1).
 # urlencode() lives in swarm-overlay-env.sh (sourced above).
 
 cleanup() {
@@ -71,7 +71,7 @@ REVALIDATE_SECRET="$(normalize_single_line_secret "${REVALIDATE_SECRET:-}")"
 ADMIN_SEED_EMAIL="$(trim_trailing_ws "${ADMIN_SEED_EMAIL}")"
 ADMIN_SEED_PASSWORD="$(normalize_single_line_secret "${ADMIN_SEED_PASSWORD}")"
 
-# Remove trailing slash — URLs derivadas são montadas de forma consistente.
+# Remove trailing slash - URLs derivadas são montadas de forma consistente.
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL%/}"
 
 export NODE_ENV="${NODE_ENV:-production}"
@@ -155,14 +155,14 @@ if [[ ! -w "${APP_DIR}" ]]; then
   exit 1
 fi
 
-# V3: temp no mesmo filesystem que .env — mv -f só é atômico no mesmo mount (nunca /tmp).
+# V3: temp no mesmo filesystem que .env - mv -f só é atômico no mesmo mount (nunca /tmp).
 tmp_env="$(mktemp "${APP_DIR}/.env.XXXXXX")"
 chmod 600 "${tmp_env}"
 
 (
   umask 077
   cat >"${tmp_env}" <<EOF
-# Gerado por render-env.sh — não editar manualmente no VPS.
+# Gerado por render-env.sh - não editar manualmente no VPS.
 NODE_ENV=$(env_quote "${NODE_ENV}")
 TLS_ENABLED=$(env_quote "${TLS_ENABLED}")
 PUBLIC_BASE_URL=$(env_quote "${PUBLIC_BASE_URL}")

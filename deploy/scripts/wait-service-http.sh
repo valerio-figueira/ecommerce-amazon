@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Aguarda task Swarm responder HTTP dentro do container (cold start Next.js).
-# Usa Node (presente na imagem) — node:20-alpine nao inclui wget/curl.
+# Usa Node (presente na imagem) - node:20-alpine nao inclui wget/curl.
 # Uso: wait-service-http.sh <web|admin|api> <path> <port>
 set -euo pipefail
 

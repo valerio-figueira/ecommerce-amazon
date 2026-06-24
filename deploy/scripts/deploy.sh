@@ -55,7 +55,7 @@ ensure_ufw_swarm_overlay() {
     return 0
   fi
 
-  echo "AVISO: patch UFW requer root — east-west overlay pode falhar (EHOSTUNREACH api→postgres/redis)." >&2
+  echo "AVISO: patch UFW requer root - east-west overlay pode falhar (EHOSTUNREACH api→postgres/redis)." >&2
   echo "       Na VPS como root: bash ${patch_script}" >&2
 }
 

@@ -87,7 +87,7 @@ else
 fi
 
 if [[ "${RUN_SEED:-false}" == "true" ]]; then
-  echo "    RUN_SEED=true — reexecutando seed (idempotente)"
+  echo "    RUN_SEED=true - reexecutando seed (idempotente)"
   bash "${SCRIPT_DIR}/seed.sh"
 elif [[ "${home_ready}" == "true" && "${operator_ready}" == "true" && "${credentials_valid}" == "true" ]]; then
   exit 0
@@ -113,4 +113,4 @@ if ! operator_credentials_valid; then
   exit 1
 fi
 
-echo "    Bootstrap seed OK — home CMS e operador admin prontos"
+echo "    Bootstrap seed OK - home CMS e operador admin prontos"

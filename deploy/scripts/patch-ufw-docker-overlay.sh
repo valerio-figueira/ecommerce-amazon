@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Allow Swarm overlay east-west traffic in UFW DOCKER-USER (fixes EHOSTUNREACH between services).
-# Run as root on an already-provisioned VPS — idempotent, no ufw reset.
+# Run as root on an already-provisioned VPS - idempotent, no ufw reset.
 #
 # Symptom: vitrine_api logs show connect EHOSTUNREACH 10.0.x.x:5432|6379 while postgres/redis are healthy.
 set -euo pipefail
@@ -15,7 +15,7 @@ if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
 fi
 
 if [[ ! -f "${UFW_AFTER_RULES}" ]]; then
-  echo "ERRO: ${UFW_AFTER_RULES} não encontrado — rode bootstrap-vps.sh primeiro" >&2
+  echo "ERRO: ${UFW_AFTER_RULES} não encontrado - rode bootstrap-vps.sh primeiro" >&2
   exit 1
 fi
 
@@ -26,7 +26,7 @@ if grep -qF "${OVERLAY_MARKER}" "${UFW_AFTER_RULES}"; then
   echo "==> Regra overlay Swarm já presente em ${UFW_AFTER_RULES}"
 else
   if ! grep -qF "ufw-user-forward" "${UFW_AFTER_RULES}"; then
-    echo "ERRO: cadeia ufw-user-forward ausente — rode bootstrap-vps.sh" >&2
+    echo "ERRO: cadeia ufw-user-forward ausente - rode bootstrap-vps.sh" >&2
     exit 1
   fi
 
@@ -48,4 +48,4 @@ fi
 echo "==> Recarregando UFW"
 ufw reload
 
-echo "==> Patch concluído — tráfego overlay 10.0.0.0/8 liberado entre containers Swarm"
+echo "==> Patch concluído - tráfego overlay 10.0.0.0/8 liberado entre containers Swarm"

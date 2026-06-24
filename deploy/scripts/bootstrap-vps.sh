@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap único para VPS Debian 12 — Docker CE, Swarm, usuário deploy, firewall.
+# Bootstrap único para VPS Debian 12 - Docker CE, Swarm, usuário deploy, firewall.
 # Executar como root: bash deploy/scripts/bootstrap-vps.sh
 #
 # Mitigações de segurança:
@@ -17,7 +17,7 @@ UFW_DOCKER_END="# END vitrine-docker"
 configure_docker_daemon() {
   echo "==> Configurando /etc/docker/daemon.json"
   install -d -m 0755 /etc/docker
-  # live-restore is incompatible with Swarm mode — do not enable on production VPS.
+  # live-restore is incompatible with Swarm mode - do not enable on production VPS.
   cat >/etc/docker/daemon.json <<'EOF'
 {
   "log-driver": "json-file",
@@ -37,13 +37,13 @@ inject_ufw_docker_block() {
     sed -i "/${UFW_DOCKER_BEGIN}/,/${UFW_DOCKER_END}/d" "${UFW_AFTER_RULES}"
   fi
 
-  # UFW backend writes rule files with ASCII only — no accented chars in this heredoc.
+  # UFW backend writes rule files with ASCII only - no accented chars in this heredoc.
   cat >>"${UFW_AFTER_RULES}" <<'EOF'
 
 # BEGIN vitrine-docker
 # Mitigates UFW bypass for Docker-published ports (FORWARD/DOCKER-USER chain).
 # Only Traefik (80/443 host-mode) should be reachable from the internet.
-# Swarm overlay east-west (10.0.0.0/8) must pass — otherwise api/worker get EHOSTUNREACH to postgres/redis VIPs.
+# Swarm overlay east-west (10.0.0.0/8) must pass - otherwise api/worker get EHOSTUNREACH to postgres/redis VIPs.
 *filter
 :ufw-user-forward - [0:0]
 :DOCKER-USER - [0:0]
@@ -100,7 +100,7 @@ assert_stack_no_internal_ports() {
     svc != "" && /published:/ { found=1; exit }
     END { exit found ? 0 : 1 }
   ' "${stack_file}"; then
-    echo "ERRO: ${stack_file} expõe postgres/redis com published — remova ports: desses serviços" >&2
+    echo "ERRO: ${stack_file} expõe postgres/redis com published - remova ports: desses serviços" >&2
     exit 1
   fi
 }
