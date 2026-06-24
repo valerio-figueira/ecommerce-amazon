@@ -17,14 +17,14 @@ UFW_DOCKER_END="# END vitrine-docker"
 configure_docker_daemon() {
   echo "==> Configurando /etc/docker/daemon.json"
   install -d -m 0755 /etc/docker
+  # live-restore is incompatible with Swarm mode — do not enable on production VPS.
   cat >/etc/docker/daemon.json <<'EOF'
 {
   "log-driver": "json-file",
   "log-opts": { "max-size": "10m", "max-file": "3" },
   "iptables": true,
   "ip-forward": true,
-  "userland-proxy": false,
-  "live-restore": true
+  "userland-proxy": false
 }
 EOF
   systemctl enable docker
