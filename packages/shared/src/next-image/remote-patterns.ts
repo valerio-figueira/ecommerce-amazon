@@ -128,8 +128,9 @@ export function isNextImageRemoteUrl(
   src: string,
   patterns: NextImageRemotePattern[] = buildNextImageRemotePatterns(),
 ): boolean {
+  // Same-origin /uploads proxy — use plain <img> so SSR does not hard-fail via _next/image when API is down.
   if (src.startsWith('/uploads/')) {
-    return true;
+    return false;
   }
 
   try {

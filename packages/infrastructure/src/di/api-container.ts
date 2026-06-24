@@ -120,11 +120,12 @@ import {
 
 import { DefaultAffiliateLinkBuilder } from '../affiliate/default-affiliate-link.builder.js';
 import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.js';
+import { buildRedisConnectionOptions } from '../cache/redis-connection.js';
+import { ResilientCacheStore } from '../cache/resilient-cache.store.js';
 import {
   HttpPublicWebRevalidator,
   NoOpPublicWebRevalidator,
 } from '../cache/http-public-web.revalidator.js';
-import { parseRedisUrl } from '../cache/redis-connection.js';
 import { createDrizzleClient } from '../persistence/drizzle/client.js';
 import { DrizzleProductRepository } from '../persistence/repositories/drizzle-product.repository.js';
 import { DrizzleCategoryRepository } from '../persistence/repositories/drizzle-category.repository.js';
@@ -171,12 +172,12 @@ export function buildApiContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
   const db = createDrizzleClient(env.DATABASE_URL);
   const cacheRedis = createRedisClient(
-    parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB),
+    buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_CACHE_DB, env.REDIS_HOST),
     (error) => {
       logger.warn('Redis cache connection error', { error: error.message });
     },
   );
-  const cache = new RedisCacheStore(cacheRedis);
+  const cache = new ResilientCacheStore(new RedisCacheStore(cacheRedis), logger);
   const webRevalidatorBaseUrl = env.WEB_INTERNAL_URL ?? env.WEB_PUBLIC_URL;
   const webRevalidator = env.REVALIDATE_SECRET
     ? new HttpPublicWebRevalidator(webRevalidatorBaseUrl, env.REVALIDATE_SECRET, logger)
@@ -220,7 +221,7 @@ export function buildApiContainer(env = loadEnv()) {
 
   if (env.TELEMETRY_BUFFER_ENABLED) {
     const telemetryRedis = createRedisClient(
-      parseRedisUrl(env.REDIS_URL, env.REDIS_TELEMETRY_DB),
+      buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_TELEMETRY_DB, env.REDIS_HOST),
       (error) => {
         logger.warn('Redis telemetry connection error', { error: error.message });
       },

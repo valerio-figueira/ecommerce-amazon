@@ -39,8 +39,8 @@ COPY --from=build /app/apps/api ./apps/api
 
 EXPOSE 3000
 
-# Internal healthcheck hits Fastify directly (no /api prefix inside the container).
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3000/health/ready || exit 1
+# Liveness only — /health does not depend on Postgres/Redis (node:20-alpine has no wget).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://127.0.0.1:3000/health',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))"
 
 CMD ["node", "apps/api/dist/main.js"]

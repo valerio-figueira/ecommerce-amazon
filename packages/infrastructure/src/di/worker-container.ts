@@ -12,7 +12,7 @@ import type { DomainEventMessage } from '@ecommerce-amazon/domain';
 import { loadEnv, createConsoleLogger } from '@ecommerce-amazon/shared';
 
 import { createRedisClient, RedisCacheStore } from '../cache/redis-cache.store.js';
-import { parseRedisUrl } from '../cache/redis-connection.js';
+import { buildRedisConnectionOptions } from '../cache/redis-connection.js';
 import { ConsoleEmailSender, ResendEmailSender } from '../email/email.sender.js';
 import { BullMQEventBus, createQueue, QUEUE_NAMES } from '../messaging/queues.js';
 import type {
@@ -48,8 +48,13 @@ import { createCredentialCipher } from '../security/aes-gcm-credential-cipher.js
 export function buildWorkerContainer(env = loadEnv()) {
   const logger = createConsoleLogger();
   const db = createDrizzleClient(env.DATABASE_URL);
-  const cacheRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_CACHE_DB));
-  const queueRedis = createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_QUEUE_DB));
+  const redisHost = env.REDIS_HOST;
+  const cacheRedis = createRedisClient(
+    buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_CACHE_DB, redisHost),
+  );
+  const queueRedis = createRedisClient(
+    buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_QUEUE_DB, redisHost),
+  );
   const cache = new RedisCacheStore(cacheRedis);
 
   const productRepository = new DrizzleProductRepository(db);
@@ -83,7 +88,7 @@ export function buildWorkerContainer(env = loadEnv()) {
     new MercadoLivreFetcherStrategy(),
   ]);
 
-  const queueConnection = parseRedisUrl(env.REDIS_URL, env.REDIS_QUEUE_DB);
+  const queueConnection = buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_QUEUE_DB, redisHost);
   const domainEventsQueue = createQueue<DomainEventMessage>(
     QUEUE_NAMES.DOMAIN_EVENTS,
     queueConnection,
@@ -97,7 +102,9 @@ export function buildWorkerContainer(env = loadEnv()) {
 
   const telemetryBufferStore = env.TELEMETRY_BUFFER_ENABLED
     ? new RedisTelemetryBufferStore(
-        createRedisClient(parseRedisUrl(env.REDIS_URL, env.REDIS_TELEMETRY_DB)),
+        createRedisClient(
+          buildRedisConnectionOptions(env.REDIS_URL, env.REDIS_TELEMETRY_DB, redisHost),
+        ),
         env.TELEMETRY_BUFFER_MAX_LEN,
       )
     : null;

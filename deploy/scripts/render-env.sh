@@ -130,7 +130,8 @@ export REDIS_TELEMETRY_DB="${REDIS_TELEMETRY_DB:-2}"
 POSTGRES_USER_ENC="$(urlencode "${POSTGRES_USER}")"
 POSTGRES_PASSWORD_ENC="$(urlencode "${POSTGRES_PASSWORD}")"
 export DATABASE_URL="${DATABASE_URL:-postgresql://${POSTGRES_USER_ENC}:${POSTGRES_PASSWORD_ENC}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}"
-export REDIS_URL="${REDIS_URL:-redis://${REDIS_HOST}:${REDIS_PORT}}"
+# Always use Swarm service hostname — never persist overlay VIPs from secrets into REDIS_URL.
+export REDIS_URL="redis://${REDIS_HOST}:${REDIS_PORT}"
 
 export API_PORT="${API_PORT:-3000}"
 export WEB_PORT="${WEB_PORT:-3001}"

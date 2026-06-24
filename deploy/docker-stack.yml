@@ -68,7 +68,16 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: ['redis-server', '--appendonly', 'yes']
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'yes',
+        '--appendfsync',
+        'everysec',
+        '--no-appendfsync-on-rewrite',
+        'yes',
+      ]
     volumes:
       - redis_data:/data
     networks:
@@ -82,6 +91,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+      stop_grace_period: 30s
       resources:
         limits:
           memory: 192M
@@ -136,6 +146,18 @@ services:
       - uploads_data:/app/uploads
     networks:
       - vitrine_net
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://127.0.0.1:3000/health',r=>{r.resume();process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     deploy:
       replicas: 1
       labels:

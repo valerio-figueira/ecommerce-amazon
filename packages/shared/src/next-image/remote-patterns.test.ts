@@ -47,7 +47,7 @@ describe('next-image remote patterns', () => {
     expect(isNextImageRemoteUrl('https://unknown-cdn.example/photo.jpg', patterns)).toBe(false);
   });
 
-  it('allows same-origin proxied upload paths', () => {
-    expect(isNextImageRemoteUrl('/uploads/admin-avatars/x.jpg', [])).toBe(true);
+  it('uses plain img for same-origin proxied upload paths (no _next/image hard failure)', () => {
+    expect(isNextImageRemoteUrl('/uploads/admin-avatars/x.jpg', [])).toBe(false);
   });
 });
