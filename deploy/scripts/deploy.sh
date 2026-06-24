@@ -38,8 +38,30 @@ ensure_swarm_manager() {
   fi
 }
 
+ensure_ufw_swarm_overlay() {
+  local patch_script="${SCRIPT_DIR}/patch-ufw-docker-overlay.sh"
+  if [[ ! -f "${patch_script}" ]]; then
+    return 0
+  fi
+
+  if grep -qF 'vitrine-swarm-overlay-east-west' /etc/ufw/after.rules 2>/dev/null; then
+    echo "    UFW overlay Swarm OK"
+    return 0
+  fi
+
+  echo "==> UFW: aplicando patch overlay Swarm (east-west 10.0.0.0/8)"
+  if sudo -n bash "${patch_script}" 2>/dev/null; then
+    echo "    UFW overlay patch aplicado"
+    return 0
+  fi
+
+  echo "AVISO: patch UFW requer root — east-west overlay pode falhar (EHOSTUNREACH api→postgres/redis)." >&2
+  echo "       Na VPS como root: bash ${patch_script}" >&2
+}
+
 echo "==> Verificando Docker Swarm"
 ensure_swarm_manager
+ensure_ufw_swarm_overlay
 
 echo "==> Selecionando config Traefik (TLS_ENABLED=${TLS_ENABLED})"
 mkdir -p "${APP_DIR}/traefik"
@@ -104,8 +126,8 @@ echo "==> Bootstrap CMS / seed (se necessario)"
 export RUN_SEED="${RUN_SEED:-false}"
 bash "${SCRIPT_DIR}/ensure-bootstrap-seed.sh"
 
-echo "==> Aguardando API e smoke test de login"
-bash "${SCRIPT_DIR}/wait-service-http.sh" api /health/ready 3000
+echo "==> Aguardando API (liveness) e smoke test de login"
+bash "${SCRIPT_DIR}/wait-service-http.sh" api /health 3000
 bash "${SCRIPT_DIR}/smoke-api-login.sh"
 
 echo "==> Aguardando tasks Swarm (web, api, admin)"

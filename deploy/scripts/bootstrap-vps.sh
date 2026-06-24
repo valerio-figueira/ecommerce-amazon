@@ -43,11 +43,14 @@ inject_ufw_docker_block() {
 # BEGIN vitrine-docker
 # Mitigates UFW bypass for Docker-published ports (FORWARD/DOCKER-USER chain).
 # Only Traefik (80/443 host-mode) should be reachable from the internet.
+# Swarm overlay east-west (10.0.0.0/8) must pass — otherwise api/worker get EHOSTUNREACH to postgres/redis VIPs.
 *filter
 :ufw-user-forward - [0:0]
 :DOCKER-USER - [0:0]
 -A DOCKER-USER -j ufw-user-forward
 -A ufw-user-forward -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN
+# vitrine-swarm-overlay-east-west
+-A ufw-user-forward -s 10.0.0.0/8 -d 10.0.0.0/8 -j RETURN
 -A ufw-user-forward -p tcp -m tcp --dport 80 -j RETURN
 -A ufw-user-forward -p tcp -m tcp --dport 443 -j RETURN
 -A ufw-user-forward -j DROP
@@ -139,6 +142,13 @@ if ! id "${DEPLOY_USER}" &>/dev/null; then
   useradd -m -s /bin/bash "${DEPLOY_USER}"
 fi
 usermod -aG docker "${DEPLOY_USER}"
+
+SUDOERS_DROPIN="/etc/sudoers.d/vitrine-deploy"
+cat >"${SUDOERS_DROPIN}" <<EOF
+# Allow deploy user to patch UFW overlay rule without full bootstrap reset.
+${DEPLOY_USER} ALL=(ALL) NOPASSWD: ${APP_DIR}/deploy/scripts/patch-ufw-docker-overlay.sh
+EOF
+chmod 440 "${SUDOERS_DROPIN}"
 
 echo "==> Preparando diretórios em ${APP_DIR}"
 mkdir -p "${APP_DIR}/traefik" "${APP_DIR}/stack"
